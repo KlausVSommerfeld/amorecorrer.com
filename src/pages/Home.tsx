@@ -81,27 +81,27 @@ const Home = () => {
           <div className="grid md:grid-cols-5 gap-8 max-w-6xl mx-auto">
             {[
               {
-                step: "0",
+                step: "1",
                 title: "Pagamento",
                 description: "Pague R$ 19,99 via Stripe. Após sucesso, você será redirecionado ao formulário."
               },
               {
-                step: "1",
+                step: "2",
                 title: "Formulário",
                 description: "Preencha o formulário com seus dados pessoais e informações do auto de infração."
               },
               {
-                step: "2",
+                step: "3",
                 title: "IA Jurídica",
                 description: "Nossa IA especializada redige a peça seguindo o CTB e linguagem jurídica formal."
               },
               {
-                step: "3",
+                step: "4",
                 title: "Formatação",
                 description: "Higienização e formatação A4 com título e rodapé automáticos."
               },
               {
-                step: "4",
+                step: "5",
                 title: "Entrega",
                 description: "PDF no seu e-mail, pronto para imprimir e protocolar."
               }
