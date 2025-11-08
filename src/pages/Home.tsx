@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Countdown from '../components/Countdown';
 import FAQ from '../components/FAQ';
+import { createCheckout } from '../lib/checkout';
 
 const Home = () => {
   const [isPromoExpired, setIsPromoExpired] = useState(false);
@@ -21,10 +22,24 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handlePaymentClick = () => {
-    const paymentLink = import.meta.env.VITE_STRIPE_PAYMENT_LINK_URL;
-    if (paymentLink && !isPromoExpired) {
-      window.open(paymentLink, '_blank');
+  // Recuperação do case_id: exemplo usando localStorage, pode ser adaptado conforme fluxo real
+  const getCaseId = () => {
+    // Exemplo: buscar case_id do localStorage, sessionStorage, ou contexto
+    // Ajuste conforme sua lógica real
+    return localStorage.getItem('case_id') || '';
+  };
+
+  const handlePaymentClick = async () => {
+    if (isPromoExpired) return;
+    const caseId = getCaseId();
+    if (!caseId) {
+      alert('ID do caso não encontrado. Por favor, preencha o formulário primeiro.');
+      return;
+    }
+    try {
+      await createCheckout(caseId);
+    } catch (err: any) {
+      alert('Erro ao criar checkout: ' + (err?.message || err));
     }
   };
 
