@@ -142,11 +142,11 @@ const Form = () => {
     try {
       const normalizedData = normalizeData(formData);
       
-      const response = await fetch(import.meta.env.VITE_N8N_WEBHOOK_URL, {
+      // Send form data to Supabase Edge Function `form-submit` instead of n8n webhook
+      const response = await fetch(import.meta.env.VITE_FORM_SUBMIT_URL, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_N8N_BASIC_USER}:${import.meta.env.VITE_N8N_BASIC_PASS}`)}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(normalizedData)
       });
