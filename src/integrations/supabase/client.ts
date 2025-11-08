@@ -2,8 +2,9 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://tsdzvxgkokrjqayxukud.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzZHp2eGdrb2tyanFheXh1a3VkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3NjEzNDUsImV4cCI6MjA3MjMzNzM0NX0.sl22MuovwUNy6iW-iwSXUrT7GHDbK608rKWEpxC0ex0";
+// Read Supabase config from Vite env to avoid hard-coded secrets/urls
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
