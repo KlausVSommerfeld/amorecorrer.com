@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Countdown from '../components/Countdown';
 import FAQ from '../components/FAQ';
 import { createCheckout } from '../lib/checkout';
+import { getCaseIdFromUrl } from '../lib/caseId';
 
 const Home = () => {
   const [isPromoExpired, setIsPromoExpired] = useState(false);
@@ -22,22 +23,15 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Recuperação do case_id: exemplo usando localStorage, pode ser adaptado conforme fluxo real
-  const getCaseId = () => {
-    // Exemplo: buscar case_id do localStorage, sessionStorage, ou contexto
-    // Ajuste conforme sua lógica real
-    return localStorage.getItem('case_id') || '';
-  };
+  useEffect(() => {
+    // Detect and store case_id from URL if present
+    getCaseIdFromUrl();
+  }, []);
 
   const handlePaymentClick = async () => {
     if (isPromoExpired) return;
-    const caseId = getCaseId();
-    if (!caseId) {
-      alert('ID do caso não encontrado. Por favor, preencha o formulário primeiro.');
-      return;
-    }
     try {
-      await createCheckout(caseId);
+      await createCheckout();
     } catch (err: any) {
       alert('Erro ao criar checkout: ' + (err?.message || err));
     }

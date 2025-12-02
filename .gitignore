@@ -23,4 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 .env
-scripts/*.js
+.env.local
+scripts/*
+supabase/config.toml
+supabase/.branches/
+supabase/.temp/

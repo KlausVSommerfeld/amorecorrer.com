@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { getCaseIdFromUrl } from '../lib/caseId';
 
 interface FormData {
   nomeCompleto: string;
@@ -55,6 +56,13 @@ const Form = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    // Detect and store case_id from URL (for debugging)
+    const caseId = getCaseIdFromUrl();
+    if (caseId) {
+      // Log case_id for debugging
+      console.log('case_id detected:', caseId);
+    }
+
     // Get or create form token
     let token = localStorage.getItem('form_token');
     if (!token) {
