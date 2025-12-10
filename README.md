@@ -2,6 +2,22 @@
 
 Plataforma web para venda e geração automatizada de recursos de multa. O frontend em React/Vite conduz o usuário do checkout Stripe até o envio do formulário; as Edge Functions no Supabase criam a sessão de pagamento, validam e armazenam os dados do caso e disparam automações (n8n) após a submissão.
 
+## 🔐 Autenticação Bearer Token
+
+Este projeto implementa um sistema completo de autenticação com bearer tokens usando Supabase Auth. Todas as requisições para Edge Functions são protegidas com tokens JWT.
+
+**Documentação completa:**
+- 📖 [Implementação detalhada](./BEARER_TOKEN_IMPLEMENTATION.md)
+- 🚀 [Guia rápido](./AUTH_QUICK_START.md)
+- 💡 [Exemplos de código](./src/examples/authentication-examples.tsx)
+
+**Principais recursos:**
+- Sessões anônimas automáticas
+- Refresh automático de tokens
+- Retry em 401 (unauthorized)
+- Headers de autenticação padronizados
+- Hooks React para gerenciamento de estado
+
 ## Funcionalidades principais
 - Landing page com contagem regressiva de promoção, CTAs para pagamento e cópia de valor (R$ 19,99).
 - Checkout Stripe via Edge Function (`create-checkout-session`), com geração de `case_id` no backend e persistência em `stripe_sessions`.

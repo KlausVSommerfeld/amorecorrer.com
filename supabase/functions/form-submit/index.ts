@@ -101,6 +101,33 @@ Deno.serve(async (req)=>{
   if (!originAllowed(origin)) {
     return bad("Origin not allowed", 403, corsHeaders);
   }
+  
+  // Optional: Validate bearer token for additional security
+  // Uncomment to enforce authentication
+  /*
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return bad("Missing or invalid Authorization header", 401, corsHeaders);
+  }
+  
+  const token = authHeader.replace('Bearer ', '');
+  
+  // Validate token using Supabase
+  const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+  const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    return bad("Server not configured", 500, corsHeaders);
+  }
+  
+  const supabaseAuth = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token);
+  
+  if (authError || !user) {
+    return bad("Invalid authentication token", 401, corsHeaders);
+  }
+  */
+  
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? null;
   try {
     enforceRateLimit(ip);
@@ -133,7 +160,7 @@ Deno.serve(async (req)=>{
   }
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
     auth: {
-      persistSession: false
+      persistSession: true
     }
   });
   const norm = normalizePayload(raw);

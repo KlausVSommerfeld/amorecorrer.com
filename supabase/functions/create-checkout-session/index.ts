@@ -16,7 +16,7 @@ const stripe = new Stripe(stripeSecret, {
 });
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
-    persistSession: false
+    persistSession: true
   }
 });
 Deno.serve(async (req)=>{
@@ -31,6 +31,38 @@ Deno.serve(async (req)=>{
         }
       });
     }
+    
+    // Optional: Validate bearer token for additional security
+    // Uncomment to enforce authentication
+    /*
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({
+        error: "Missing or invalid Authorization header"
+      }), {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+    }
+    
+    const token = authHeader.replace('Bearer ', '');
+    
+    // Validate token using Supabase
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !user) {
+      return new Response(JSON.stringify({
+        error: "Invalid authentication token"
+      }), {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+    }
+    */
+    
     const contentType = req.headers.get("content-type") || "";
     if (!contentType.includes("application/json")) {
       return new Response(JSON.stringify({

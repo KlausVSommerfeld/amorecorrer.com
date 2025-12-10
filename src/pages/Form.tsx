@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { getCaseIdFromUrl } from '../lib/caseId';
+import { submitForm, assertResponseOk } from '../lib/api';
+import { useAuth } from '../hooks/useAuth';
 
 interface FormData {
   nomeCompleto: string;
@@ -27,6 +29,8 @@ interface FormData {
 }
 
 const Form = () => {
+  const { ensureSession } = useAuth();
+  
   const [formData, setFormData] = useState<FormData>({
     nomeCompleto: '',
     email: '',
@@ -56,6 +60,9 @@ const Form = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    // Ensure we have a valid session on mount
+    ensureSession().catch(console.error);
+    
     // Detect and store case_id from URL (for debugging)
     const caseId = getCaseIdFromUrl();
     if (caseId) {
@@ -70,7 +77,7 @@ const Form = () => {
       localStorage.setItem('form_token', token);
     }
     setFormData(prev => ({ ...prev, form_token: token! }));
-  }, []);
+  }, [ensureSession]);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -148,37 +155,35 @@ const Form = () => {
     setMessage(null);
 
     try {
+      // Ensure session is valid before submitting
+      await ensureSession();
+      
       const normalizedData = normalizeData(formData);
       
-      // Send form data to Supabase Edge Function `form-submit` instead of n8n webhook
-      const response = await fetch(import.meta.env.VITE_FORM_SUBMIT_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(normalizedData)
+      // Send form data using authenticated API with bearer token
+      const response = await submitForm(normalizedData);
+      
+      // Check if response is ok
+      await assertResponseOk(response);
+      
+      setMessage({
+        type: 'success',
+        text: 'Recebemos seus dados. Se o pagamento já foi concluído, sua petição será gerada e enviada por e-mail. Caso ainda não tenha pago, finalize o pagamento para liberar a geração.'
       });
-
-      if (response.ok) {
-        setMessage({
-          type: 'success',
-          text: 'Recebemos seus dados. Se o pagamento já foi concluído, sua petição será gerada e enviada por e-mail. Caso ainda não tenha pago, finalize o pagamento para liberar a geração.'
-        });
-        // Clear form
-        setFormData(prev => ({
-          nomeCompleto: '', email: '', telefone: '', cpf: '', cnh: '', cep: '', endereco: '',
-          orgaoAutuador: '', notificacaoPenalidade: '', especieDocumento: '', autoInfracao: '',
-          expedidaEm: '', placa: '', marcaModeloEspecie: '', localSentido: '', dataHora: '',
-          renainf: '', descricaoInfracao: '', amparoLegal: '', justificativa: '', form_token: prev.form_token
-        }));
-        setErrors({});
-      } else {
-        throw new Error('Erro no servidor');
-      }
+      
+      // Clear form
+      setFormData(prev => ({
+        nomeCompleto: '', email: '', telefone: '', cpf: '', cnh: '', cep: '', endereco: '',
+        orgaoAutuador: '', notificacaoPenalidade: '', especieDocumento: '', autoInfracao: '',
+        expedidaEm: '', placa: '', marcaModeloEspecie: '', localSentido: '', dataHora: '',
+        renainf: '', descricaoInfracao: '', amparoLegal: '', justificativa: '', form_token: prev.form_token
+      }));
+      setErrors({});
     } catch (error) {
+      console.error('Form submission error:', error);
       setMessage({
         type: 'error',
-        text: 'Erro ao enviar formulário. Tente novamente em alguns instantes.'
+        text: error instanceof Error ? error.message : 'Erro ao enviar formulário. Tente novamente em alguns instantes.'
       });
     } finally {
       setIsSubmitting(false);
