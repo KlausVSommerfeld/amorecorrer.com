@@ -1,4 +1,4 @@
-import Stripe from "npm:stripe@13.7.0";
+import Stripe from "stripe";
 import { createClient } from "npm:@supabase/supabase-js@2.31.0";
 const stripeSecret = Deno.env.get("STRIPE_SECRET_KEY");
 if (!stripeSecret) {
