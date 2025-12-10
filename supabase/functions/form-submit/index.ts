@@ -54,11 +54,6 @@ function normalizePayload(p) {
   }
   return norm;
 }
-async function sha256Hex(input) {
-  const enc = new TextEncoder();
-  const hashBuf = await crypto.subtle.digest("SHA-256", enc.encode(input));
-  return Array.from(new Uint8Array(hashBuf)).map((b)=>b.toString(16).padStart(2, "0")).join("");
-}
 function enforceRateLimit(ip) {
   if (!ip) return;
   const now = Date.now();
@@ -73,6 +68,11 @@ function enforceRateLimit(ip) {
   entry.count += 1;
   if (entry.count > RATE_LIMIT_MAX) throw new Error("Too many requests");
   rateLimits.set(ip, entry);
+}
+async function sha256Hex(input) {
+  const enc = new TextEncoder();
+  const hashBuf = await crypto.subtle.digest("SHA-256", enc.encode(input));
+  return Array.from(new Uint8Array(hashBuf)).map((b)=>b.toString(16).padStart(2, "0")).join("");
 }
 function hmacSha256Hex(secret, message) {
   // Use Web Crypto HMAC with subtle
@@ -164,18 +164,7 @@ Deno.serve(async (req)=>{
     }
   });
   const norm = normalizePayload(raw);
-  const dupSource = {
-    case_id: norm.case_id,
-    form_token: norm.form_token,
-    nome: norm.nome,
-    email: norm.email,
-    telefone: norm.telefone ?? null,
-    cpf: norm.cpf ?? null,
-    renavam: norm.renavam ?? null,
-    cnh: norm.cnh ?? null,
-    placa: norm.placa ?? null
-  };
-  const dup_guard = await sha256Hex(JSON.stringify(dupSource));
+  
   try {
     const { data: existingCase, error: caseErr } = await supabase.from("form_submissions").select("case_id,document_status,dup_guard,stripe_session_id,email").eq("case_id", norm.case_id).single();
     if (caseErr) {
@@ -194,6 +183,22 @@ Deno.serve(async (req)=>{
     ].includes(existingCase.document_status)) {
       return bad("Caso já finalizado", 409, corsHeaders);
     }
+    
+    // Calculate dup_guard to detect duplicate submissions in this request
+    const dupSource = {
+      case_id: norm.case_id,
+      form_token: norm.form_token,
+      nome: norm.nome,
+      email: norm.email,
+      telefone: norm.telefone ?? null,
+      cpf: norm.cpf ?? null,
+      renavam: norm.renavam ?? null,
+      cnh: norm.cnh ?? null,
+      placa: norm.placa ?? null
+    };
+    const dup_guard = await sha256Hex(JSON.stringify(dupSource));
+    
+    // Check for duplicate by dup_guard (same form data submitted twice)
     if (existingCase && existingCase.dup_guard === dup_guard) {
       return json({
         ok: true,
@@ -201,6 +206,8 @@ Deno.serve(async (req)=>{
         dup_guard
       }, 200, corsHeaders);
     }
+    
+    // Check for duplicate by stripe_session_id
     if (norm.stripe_session_id && existingCase && existingCase.stripe_session_id === norm.stripe_session_id) {
       return json({
         ok: true,
