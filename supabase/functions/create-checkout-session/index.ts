@@ -1,25 +1,46 @@
 import Stripe from "stripe";
 import { createClient } from "npm:@supabase/supabase-js@2.31.0";
+
 const stripeSecret = Deno.env.get("STRIPE_SECRET_KEY");
 if (!stripeSecret) {
   console.error("Missing STRIPE_SECRET_KEY env var");
   throw new Error("Missing STRIPE_SECRET_KEY");
 }
+
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 if (!supabaseUrl || !supabaseServiceKey) {
   console.error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY env vars");
   throw new Error("Missing Supabase environment variables");
 }
+
 const stripe = new Stripe(stripeSecret, {
   apiVersion: "2024-06-20"
 });
+
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     persistSession: true
   }
 });
-Deno.serve(async (req)=>{
+
+// CORS headers
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  // Allow anon key and supabase client headers sent by browsers
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey, X-Client-Info"
+};
+
+Deno.serve(async (req) => {
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders
+    });
+  }
+
   try {
     if (req.method !== "POST") {
       return new Response(JSON.stringify({
@@ -27,6 +48,7 @@ Deno.serve(async (req)=>{
       }), {
         status: 405,
         headers: {
+          ...corsHeaders,
           "Content-Type": "application/json"
         }
       });
@@ -42,6 +64,7 @@ Deno.serve(async (req)=>{
       }), {
         status: 401,
         headers: {
+          ...corsHeaders,
           "Content-Type": "application/json"
         }
       });
@@ -57,6 +80,7 @@ Deno.serve(async (req)=>{
       }), {
         status: 401,
         headers: {
+          ...corsHeaders,
           "Content-Type": "application/json"
         }
       });
@@ -70,31 +94,34 @@ Deno.serve(async (req)=>{
       }), {
         status: 400,
         headers: {
+          ...corsHeaders,
           "Content-Type": "application/json"
         }
       });
     }
-    const body = await req.json().catch(()=>null);
+
+    const body = await req.json().catch(() => null);
     if (!body) {
       return new Response(JSON.stringify({
         error: "Invalid JSON"
       }), {
         status: 400,
         headers: {
+          ...corsHeaders,
           "Content-Type": "application/json"
         }
       });
     }
+
     // CRITICAL CHANGE: generate case_id server-side for control, uniqueness, traceability
     const case_id = crypto.randomUUID();
     const origin = new URL(req.url).origin;
+
     // Create Stripe Checkout session
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       client_reference_id: case_id,
-      payment_method_types: [
-        "card"
-      ],
+      payment_method_types: ["card"],
       line_items: [
         {
           price_data: {
@@ -114,6 +141,7 @@ Deno.serve(async (req)=>{
       success_url: `${origin}/form?success=true&case_id=${encodeURIComponent(case_id)}`,
       cancel_url: `${origin}/?cancel=true`
     });
+
     // Persist session to Supabase
     const insertPayload = {
       id: session.id,
@@ -122,15 +150,24 @@ Deno.serve(async (req)=>{
       url: session.url || null,
       metadata: session.metadata || {}
     };
+
     try {
-      const { error: dbError } = await supabase.from("stripe_sessions").insert(insertPayload).select();
+      const { error: dbError } = await supabase
+        .from("stripe_sessions")
+        .insert(insertPayload)
+        .select();
+      
       if (dbError) {
         console.error("Failed to persist stripe session:", dbError.message);
-      // Do not fail the flow for DB insert error; return session to client but surface log.
+        // Do not fail the flow for DB insert error; return session to client but surface log.
       }
     } catch (e) {
-      console.error("Unexpected DB error while inserting stripe session:", e instanceof Error ? e.message : String(e));
+      console.error(
+        "Unexpected DB error while inserting stripe session:",
+        e instanceof Error ? e.message : String(e)
+      );
     }
+
     return new Response(JSON.stringify({
       url: session.url,
       id: session.id,
@@ -138,16 +175,23 @@ Deno.serve(async (req)=>{
     }), {
       status: 200,
       headers: {
+        ...corsHeaders,
         "Content-Type": "application/json"
       }
     });
+
   } catch (err) {
-    console.error("Erro creating checkout session:", err instanceof Error ? err.message : String(err));
+    console.error(
+      "Erro creating checkout session:",
+      err instanceof Error ? err.message : String(err)
+    );
+    
     return new Response(JSON.stringify({
       error: "Falha ao criar sessão"
     }), {
       status: 500,
       headers: {
+        ...corsHeaders,
         "Content-Type": "application/json"
       }
     });

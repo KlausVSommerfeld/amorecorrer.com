@@ -31,7 +31,16 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Apply trigger to form_submissions table
-CREATE TRIGGER form_submissions_dup_guard_trigger
-BEFORE INSERT OR UPDATE ON public.form_submissions
-FOR EACH ROW
-EXECUTE FUNCTION calculate_dup_guard();
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger 
+    WHERE tgname = 'form_submissions_dup_guard_trigger'
+      AND tgrelid = 'public.form_submissions'::regclass
+  ) THEN
+    CREATE TRIGGER form_submissions_dup_guard_trigger
+    BEFORE INSERT OR UPDATE ON public.form_submissions
+    FOR EACH ROW EXECUTE FUNCTION calculate_dup_guard();
+  END IF;
+END;
+$$;

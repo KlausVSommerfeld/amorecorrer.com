@@ -24,6 +24,7 @@ dist-ssr
 *.sw?
 .env
 .env.local
+.env.production
 scripts/*
 supabase/config.toml
 supabase/.branches/
