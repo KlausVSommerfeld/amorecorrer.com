@@ -115,7 +115,10 @@ Deno.serve(async (req) => {
 
     // CRITICAL CHANGE: generate case_id server-side for control, uniqueness, traceability
     const case_id = crypto.randomUUID();
-    const origin = new URL(req.url).origin;
+    // Use explicit frontend origin when provided to avoid redirecting to the Supabase domain.
+    // Normalize to avoid trailing slashes that would generate "//cancel".
+    const frontendUrl = Deno.env.get("FRONTEND_URL");
+    const origin = (frontendUrl || new URL(req.url).origin).replace(/\/+$/, "");
 
     // Create Stripe Checkout session
     const session = await stripe.checkout.sessions.create({
@@ -139,7 +142,7 @@ Deno.serve(async (req) => {
         case_id
       },
       success_url: `${origin}/form?success=true&case_id=${encodeURIComponent(case_id)}`,
-      cancel_url: `${origin}/?cancel=true`
+      cancel_url: `${origin}/cancel?case_id=${encodeURIComponent(case_id)}`
     });
 
     // Persist session to Supabase
