@@ -287,8 +287,14 @@ npx supabase link --project-ref YOUR_PROJECT_REF
 # Deploy database
 npx supabase db push
 
+# List migrations
+npx supabase migration list
+
 # Set secrets
 npx supabase secrets set KEY=value
+
+# List secrets
+npx supabase secrets list
 
 # Deploy functions
 npx supabase functions deploy

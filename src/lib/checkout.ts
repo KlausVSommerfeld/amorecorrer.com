@@ -33,6 +33,19 @@ export async function createCheckout(): Promise<string | null> {
     }
 
     const data = await res.json();
+    const caseId: string | null =
+      data?.case_id ??
+      data?.checkout_session?.metadata?.case_id ??
+      null;
+
+    if (caseId) {
+      try {
+        localStorage.setItem('case_id', caseId);
+      } catch (err) {
+        console.warn('Failed to persist case_id locally:', err);
+      }
+    }
+
     const url = data?.checkout_session?.url ?? data?.url ?? null;
 
     if (url) {

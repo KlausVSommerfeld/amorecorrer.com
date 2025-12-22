@@ -26,6 +26,7 @@ interface FormData {
   amparoLegal: string;
   justificativa: string;
   form_token: string;
+  case_id: string;
 }
 
 const Form = () => {
@@ -52,7 +53,8 @@ const Form = () => {
     descricaoInfracao: '',
     amparoLegal: '',
     justificativa: '',
-    form_token: ''
+    form_token: '',
+    case_id: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,7 +78,11 @@ const Form = () => {
       token = uuidv4();
       localStorage.setItem('form_token', token);
     }
-    setFormData(prev => ({ ...prev, form_token: token! }));
+    setFormData(prev => ({
+      ...prev,
+      form_token: token!,
+      case_id: caseId ?? prev.case_id
+    }));
   }, [ensureSession]);
 
   const validateForm = (): boolean => {
@@ -147,7 +153,16 @@ const Form = () => {
     e.preventDefault();
     
     if (!validateForm()) {
-      setMessage({ type: 'error', text: 'Por favor, corrija os erros no formulário.' });
+      setMessage({ type: 'error', text: 'Por favor, corrija os erros no formulario.' });
+      return;
+    }
+
+    const caseId = formData.case_id || getCaseIdFromUrl();
+    if (!caseId) {
+      setMessage({
+        type: 'error',
+        text: 'Nao encontramos seu case_id. Refaca o checkout ou use o link de retorno apos o pagamento.'
+      });
       return;
     }
 
@@ -159,6 +174,7 @@ const Form = () => {
       await ensureSession();
       
       const normalizedData = normalizeData(formData);
+      normalizedData.case_id = caseId;
       
       // Send form data using authenticated API with bearer token
       const response = await submitForm(normalizedData);
@@ -168,7 +184,7 @@ const Form = () => {
       
       setMessage({
         type: 'success',
-        text: 'Recebemos seus dados. Se o pagamento já foi concluído, sua petição será gerada e enviada por e-mail. Caso ainda não tenha pago, finalize o pagamento para liberar a geração.'
+        text: 'Recebemos seus dados. Se o pagamento ja foi concluido, sua peticao sera gerada e enviada por e-mail. Caso ainda nao tenha pago, finalize o pagamento para liberar a geracao.'
       });
       
       // Clear form
@@ -176,14 +192,16 @@ const Form = () => {
         nomeCompleto: '', email: '', telefone: '', cpf: '', cnh: '', cep: '', endereco: '',
         orgaoAutuador: '', notificacaoPenalidade: '', especieDocumento: '', autoInfracao: '',
         expedidaEm: '', placa: '', marcaModeloEspecie: '', localSentido: '', dataHora: '',
-        renainf: '', descricaoInfracao: '', amparoLegal: '', justificativa: '', form_token: prev.form_token
+        renainf: '', descricaoInfracao: '', amparoLegal: '', justificativa: '',
+        form_token: prev.form_token,
+        case_id: prev.case_id
       }));
       setErrors({});
     } catch (error) {
       console.error('Form submission error:', error);
       setMessage({
         type: 'error',
-        text: error instanceof Error ? error.message : 'Erro ao enviar formulário. Tente novamente em alguns instantes.'
+        text: error instanceof Error ? error.message : 'Erro ao enviar formulario. Tente novamente em alguns instantes.'
       });
     } finally {
       setIsSubmitting(false);
