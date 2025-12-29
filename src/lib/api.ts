@@ -24,22 +24,7 @@ export async function authenticatedFetch(
 ): Promise<Response> {
   const { skipAuth = false, retryOnUnauthorized = true, ...fetchOptions } = options;
 
-  // Ensure we have a valid session if auth is required
-  if (!skipAuth) {
-    const valid = await isSessionValid();
-    
-    if (!valid) {
-      // Try to refresh the session
-      const refreshed = await refreshSession();
-      
-      if (!refreshed) {
-        // If refresh fails, create a new anonymous session
-        await ensureAnonymousSession();
-      }
-    }
-  }
-
-  // Get headers with bearer token
+  // Get headers with bearer token (includes anon key as fallback)
   const authHeaders = skipAuth ? {} : await getAuthHeaders();
 
   // Merge headers
@@ -53,31 +38,6 @@ export async function authenticatedFetch(
     ...fetchOptions,
     headers,
   });
-
-  // Handle 401 Unauthorized
-  if (response.status === 401 && retryOnUnauthorized && !skipAuth) {
-    console.warn('Received 401, attempting to refresh session and retry...');
-    
-    // Try to refresh session
-    const refreshed = await refreshSession();
-    
-    if (!refreshed) {
-      // Create new anonymous session if refresh fails
-      await ensureAnonymousSession();
-    }
-    
-    // Retry the request once
-    const retryHeaders = await getAuthHeaders();
-    const mergedRetryHeaders = {
-      ...retryHeaders,
-      ...fetchOptions.headers,
-    };
-    
-    return fetch(url, {
-      ...fetchOptions,
-      headers: mergedRetryHeaders,
-    });
-  }
 
   return response;
 }

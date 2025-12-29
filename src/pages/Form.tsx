@@ -62,13 +62,9 @@ const Form = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    // Ensure we have a valid session on mount
-    ensureSession().catch(console.error);
-    
-    // Detect and store case_id from URL (for debugging)
+    // Detect and store case_id from URL
     const caseId = getCaseIdFromUrl();
     if (caseId) {
-      // Log case_id for debugging
       console.log('case_id detected:', caseId);
     }
 
@@ -83,7 +79,7 @@ const Form = () => {
       form_token: token!,
       case_id: caseId ?? prev.case_id
     }));
-  }, [ensureSession]);
+  }, []);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -137,15 +133,31 @@ const Form = () => {
 
   const normalizeData = (data: FormData) => {
     return {
-      ...data,
+      case_id: data.case_id,
+      form_token: data.form_token,
+      // Required fields
+      nome: data.nomeCompleto.trim(),
       email: data.email.trim().toLowerCase(),
-      telefone: data.telefone.replace(/\D/g, ''),
-      cpf: data.cpf.replace(/\D/g, ''),
-      cep: data.cep.replace(/\D/g, ''),
-      placa: data.placa.toUpperCase().replace(/\s+/g, ''),
-      autoInfracao: data.autoInfracao.toUpperCase().replace(/[^A-Z0-9]/g, ''),
-      renainf: data.renainf.toUpperCase().replace(/[^A-Z0-9]/g, ''),
-      notificacaoPenalidade: data.notificacaoPenalidade.toUpperCase().replace(/[^A-Z0-9]/g, '')
+      // Personal data
+      telefone: data.telefone.replace(/\D/g, '') || null,
+      cpf: data.cpf.replace(/\D/g, '') || null,
+      cnh: data.cnh.trim() || null,
+      cep: data.cep.replace(/\D/g, '') || null,
+      endereco: data.endereco.trim() || null,
+      // Infraction data
+      orgao_autuador: data.orgaoAutuador.trim() || null,
+      numero_auto: data.autoInfracao.toUpperCase().replace(/[^A-Z0-9]/g, '') || null,
+      data_infracao: data.dataHora || null,
+      local_infracao: data.localSentido.trim() || null,
+      placa: data.placa.toUpperCase().replace(/\s+/g, '') || null,
+      // Additional identification
+      renavam: data.renainf.toUpperCase().replace(/[^A-Z0-9]/g, '') || null,
+      // Optional fields
+      cidade: null,
+      estado: null,
+      velocidade_permitida: null,
+      velocidade_aferida: null,
+      artigo_ctb: null
     };
   };
 
@@ -170,11 +182,8 @@ const Form = () => {
     setMessage(null);
 
     try {
-      // Ensure session is valid before submitting
-      await ensureSession();
-      
+      // No need to ensure session - we use anon key for API auth
       const normalizedData = normalizeData(formData);
-      normalizedData.case_id = caseId;
       
       // Send form data using authenticated API with bearer token
       const response = await submitForm(normalizedData);

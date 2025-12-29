@@ -56,27 +56,8 @@ export async function getRefreshToken(): Promise<string | null> {
  * @returns Promise<Session | null>
  */
 export async function ensureAnonymousSession(): Promise<Session | null> {
-  // Check if we already have a session
-  const session = await getSession();
-  
-  if (session) {
-    // Check if session is still valid (not expired)
-    const expiresAt = session.expires_at ? session.expires_at * 1000 : 0;
-    const now = Date.now();
-    
-    if (expiresAt > now + 60000) { // Valid for at least 1 more minute
-      return session;
-    }
-    
-    // Try to refresh the session
-    const refreshed = await refreshSession();
-    if (refreshed) {
-      return refreshed;
-    }
-  }
-  
-  // Don't attempt to create anonymous session as it may not be enabled
-  // The app will function correctly using just the anon key
+  // Just return null - we don't need sessions for this app
+  // The Edge Functions will authenticate using the anon key in the Authorization header
   return null;
 }
 
