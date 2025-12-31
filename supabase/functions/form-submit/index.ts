@@ -201,15 +201,27 @@ Deno.serve(async (req) => {
       .from("form_submissions")
       .select("case_id,document_status,dup_guard,stripe_session_id,email")
       .eq("case_id", norm.case_id)
-      .single();
+      .maybeSingle();
 
     if (caseErr) {
-      const msg = caseErr.message ?? String(caseErr);
-      if (msg.includes("No rows") || caseErr.status === 404) {
-        return bad("case_id inválido", 404, corsHeadersForOrigin);
-      } else {
-        console.error("DB lookup error:", caseErr);
+      console.error("DB lookup error:", caseErr);
+      return bad("DB error", 500, corsHeadersForOrigin);
+    }
+
+    if (!existingCase) {
+      const { data: sessionRow, error: sessionErr } = await supabase
+        .from("stripe_sessions")
+        .select("case_id")
+        .eq("case_id", norm.case_id)
+        .limit(1)
+        .maybeSingle();
+
+      if (sessionErr) {
+        console.error("Stripe session lookup error:", sessionErr);
         return bad("DB error", 500, corsHeadersForOrigin);
+      }
+      if (!sessionRow) {
+        return bad("case_id inválido", 404, corsHeadersForOrigin);
       }
     }
 
@@ -261,6 +273,7 @@ Deno.serve(async (req) => {
     }
 
     const updateFields = {
+      case_id: norm.case_id,
       form_token: norm.form_token,
       nome: norm.nome,
       email: norm.email,
@@ -271,15 +284,23 @@ Deno.serve(async (req) => {
       estado: norm.estado ?? null,
       cep: norm.cep ?? null,
       placa: norm.placa ?? null,
+      renainf: norm.renainf ?? null,
       renavam: norm.renavam ?? null,
       cnh: norm.cnh ?? null,
       data_infracao: norm.data_infracao ?? null,
       numero_auto: norm.numero_auto ?? null,
+      notificacao_penalidade: norm.notificacao_penalidade ?? null,
       local_infracao: norm.local_infracao ?? null,
+      especie_documento: norm.especie_documento ?? null,
+      marca_modelo_especie: norm.marca_modelo_especie ?? null,
+      expedida_em: norm.expedida_em ?? null,
+      descricao_infracao: norm.descricao_infracao ?? null,
       velocidade_permitida: norm.velocidade_permitida ?? null,
       velocidade_aferida: norm.velocidade_aferida ?? null,
       orgao_autuador: norm.orgao_autuador ?? null,
       artigo_ctb: norm.artigo_ctb ?? null,
+      amparo_legal: norm.amparo_legal ?? null,
+      justificativa: norm.justificativa ?? null,
       dup_guard,
       stripe_session_id: norm.stripe_session_id ?? null,
       updated_at: new Date().toISOString()
@@ -287,8 +308,7 @@ Deno.serve(async (req) => {
 
     const { data: updated, error: upsertErr } = await supabase
       .from("form_submissions")
-      .update(updateFields)
-      .eq("case_id", norm.case_id)
+      .upsert(updateFields, { onConflict: "case_id" })
       .select("*")
       .single();
 

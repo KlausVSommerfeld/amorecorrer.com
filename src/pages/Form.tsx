@@ -147,11 +147,18 @@ const Form = () => {
       // Infraction data
       orgao_autuador: data.orgaoAutuador.trim() || null,
       numero_auto: data.autoInfracao.toUpperCase().replace(/[^A-Z0-9]/g, '') || null,
+      notificacao_penalidade: data.notificacaoPenalidade.toUpperCase().replace(/[^A-Z0-9]/g, '') || null,
       data_infracao: data.dataHora || null,
       local_infracao: data.localSentido.trim() || null,
       placa: data.placa.toUpperCase().replace(/\s+/g, '') || null,
       // Additional identification
-      renavam: data.renainf.toUpperCase().replace(/[^A-Z0-9]/g, '') || null,
+      renainf: data.renainf.toUpperCase().replace(/[^A-Z0-9]/g, '') || null,
+      especie_documento: data.especieDocumento.trim() || null,
+      marca_modelo_especie: data.marcaModeloEspecie.trim() || null,
+      expedida_em: data.expedidaEm.trim() || null,
+      descricao_infracao: data.descricaoInfracao.trim() || null,
+      amparo_legal: data.amparoLegal.trim() || null,
+      justificativa: data.justificativa.trim() || null,
       // Optional fields
       cidade: null,
       estado: null,
@@ -183,7 +190,7 @@ const Form = () => {
 
     try {
       // No need to ensure session - we use anon key for API auth
-      const normalizedData = normalizeData(formData);
+      const normalizedData = normalizeData({ ...formData, case_id: caseId });
       
       // Send form data using authenticated API with bearer token
       const response = await submitForm(normalizedData);
@@ -279,6 +286,7 @@ const Form = () => {
                     onChange={handleInputChange}
                     className={`form-input ${errors.nomeCompleto ? 'border-destructive' : ''}`}
                     required
+                    maxLength={40}
                   />
                   {errors.nomeCompleto && (
                     <p className="text-destructive text-sm mt-1">{errors.nomeCompleto}</p>
