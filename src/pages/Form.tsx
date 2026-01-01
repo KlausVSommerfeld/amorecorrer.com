@@ -132,6 +132,16 @@ const Form = () => {
   };
 
   const normalizeData = (data: FormData) => {
+    // Convert datetime-local to ISO timestamp
+    const convertToISOTimestamp = (datetimeLocal: string): string | null => {
+      if (!datetimeLocal) return null;
+      // datetime-local format is YYYY-MM-DDTHH:mm
+      // Convert to ISO 8601 with timezone (assuming local timezone)
+      const date = new Date(datetimeLocal);
+      if (isNaN(date.getTime())) return null;
+      return date.toISOString();
+    };
+
     return {
       case_id: data.case_id,
       form_token: data.form_token,
@@ -148,7 +158,7 @@ const Form = () => {
       orgao_autuador: data.orgaoAutuador.trim() || null,
       numero_auto: data.autoInfracao.toUpperCase().replace(/[^A-Z0-9]/g, '') || null,
       notificacao_penalidade: data.notificacaoPenalidade.toUpperCase().replace(/[^A-Z0-9]/g, '') || null,
-      data_infracao: data.dataHora || null,
+      data_infracao: convertToISOTimestamp(data.dataHora),
       local_infracao: data.localSentido.trim() || null,
       placa: data.placa.toUpperCase().replace(/\s+/g, '') || null,
       // Additional identification

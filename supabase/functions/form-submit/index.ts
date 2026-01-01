@@ -190,7 +190,7 @@ Deno.serve(async (req) => {
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
     auth: {
-      persistSession: true
+      persistSession: false
     }
   });
 
@@ -237,7 +237,7 @@ Deno.serve(async (req) => {
       email: norm.email,
       telefone: norm.telefone ?? null,
       cpf: norm.cpf ?? null,
-      renavam: norm.renavam ?? null,
+      renainf: norm.renainf ?? null,
       cnh: norm.cnh ?? null,
       placa: norm.placa ?? null
     };
@@ -285,7 +285,6 @@ Deno.serve(async (req) => {
       cep: norm.cep ?? null,
       placa: norm.placa ?? null,
       renainf: norm.renainf ?? null,
-      renavam: norm.renavam ?? null,
       cnh: norm.cnh ?? null,
       data_infracao: norm.data_infracao ?? null,
       numero_auto: norm.numero_auto ?? null,

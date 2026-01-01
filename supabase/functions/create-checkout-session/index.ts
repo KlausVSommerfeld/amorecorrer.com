@@ -20,7 +20,7 @@ const stripe = new Stripe(stripeSecret, {
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
-    persistSession: true
+    persistSession: false
   }
 });
 
@@ -114,7 +114,8 @@ Deno.serve(async (req) => {
     }
 
     // CRITICAL CHANGE: generate case_id server-side for control, uniqueness, traceability
-    const case_id = crypto.randomUUID();
+    // Format: CASO_<uuid> to match the database constraint (case_id ~ '^CASO_')
+    const case_id = `CASO_${crypto.randomUUID()}`;
     // Use explicit frontend origin when provided to avoid redirecting to the Supabase domain.
     // Normalize to avoid trailing slashes that would generate "//cancel".
     const frontendUrl = Deno.env.get("FRONTEND_URL");
@@ -162,13 +163,14 @@ Deno.serve(async (req) => {
       
       if (dbError) {
         console.error("Failed to persist stripe session:", dbError.message);
-        // Do not fail the flow for DB insert error; return session to client but surface log.
+        throw new Error(`DB insert failed: ${dbError.message}`);
       }
     } catch (e) {
       console.error(
         "Unexpected DB error while inserting stripe session:",
         e instanceof Error ? e.message : String(e)
       );
+      throw e;
     }
 
     return new Response(JSON.stringify({
