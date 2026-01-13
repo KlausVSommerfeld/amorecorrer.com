@@ -1,7 +1,7 @@
 // form-submit (patched + n8n dispatch + confirm_dispatch)
-// Uses Deno.serve and npm:@supabase/supabase-js@2.x
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "npm:@supabase/supabase-js@2.29.0";
+// Uses Deno.serve and @supabase/supabase-js@2.x
+// Import from bare specifier, assuming deno.json imports: "@supabase/supabase-js": "jsr:@supabase/supabase-js@2"
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const MAX_BODY_BYTES = 64 * 1024; // 64KB
 const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
@@ -15,7 +15,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey, X-Client-Info',
 };
 
-function json(data, status = 200, headers = {}) {
+function json(data: unknown, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
@@ -26,7 +26,7 @@ function json(data, status = 200, headers = {}) {
   });
 }
 
-function bad(msg, status = 400, headers = {}) {
+function bad(msg: string, status = 400, headers = {}) {
   return json({
     ok: false,
     error: msg
@@ -41,13 +41,13 @@ function getAllowedOrigins() {
   return env.split(",").map((s) => s.trim()).filter(Boolean);
 }
 
-function originAllowed(origin) {
+function originAllowed(origin: string | null) {
   const allowed = getAllowedOrigins();
   if (allowed.length === 0) return false;
   return origin !== null && allowed.includes(origin);
 }
 
-function buildCorsHeaders(origin) {
+function buildCorsHeaders(origin: string | null) {
   const allowed = getAllowedOrigins();
   const allowOrigin = origin && allowed.includes(origin) ? origin : "null";
   return {
@@ -57,11 +57,11 @@ function buildCorsHeaders(origin) {
   };
 }
 
-function normalizePayload(p) {
+function normalizePayload(p: Record<string, unknown>) {
   const norm = { ...p };
   if (typeof norm.email === "string") norm.email = norm.email.trim().toLowerCase();
   
-  const digitsOnly = (v) => (v || "").toString().replace(/\D/g, "") || null;
+  const digitsOnly = (v: unknown) => (v || "").toString().replace(/\D/g, "") || null;
   if ("telefone" in norm) norm.telefone = digitsOnly(norm.telefone);
   if ("cpf" in norm) norm.cpf = digitsOnly(norm.cpf);
   if ("cep" in norm) norm.cep = digitsOnly(norm.cep);
@@ -74,7 +74,7 @@ function normalizePayload(p) {
   return norm;
 }
 
-function enforceRateLimit(ip) {
+function enforceRateLimit(ip: string | null) {
   if (!ip) return;
   const now = Date.now();
   const entry = rateLimits.get(ip);
@@ -87,7 +87,7 @@ function enforceRateLimit(ip) {
   rateLimits.set(ip, entry);
 }
 
-async function sha256Hex(input) {
+async function sha256Hex(input: string) {
   const enc = new TextEncoder();
   const hashBuf = await crypto.subtle.digest("SHA-256", enc.encode(input));
   return Array.from(new Uint8Array(hashBuf))
@@ -95,7 +95,7 @@ async function sha256Hex(input) {
     .join("");
 }
 
-function hmacSha256Hex(secret, message) {
+function hmacSha256Hex(secret: string, message: string) {
   const enc = new TextEncoder();
   const keyData = enc.encode(secret);
   const msgData = enc.encode(message);
@@ -173,7 +173,7 @@ Deno.serve(async (req) => {
   let raw;
   try {
     raw = await req.json();
-  } catch (e) {
+  } catch (_e) {
     return bad("Invalid JSON", 400, corsHeadersForOrigin);
   }
 
@@ -209,15 +209,17 @@ Deno.serve(async (req) => {
     }
 
     if (!existingCase) {
+      // Atualiza stripe_sessions: status = 'complete', payment_at = agora
       const { data: sessionRow, error: sessionErr } = await supabase
         .from("stripe_sessions")
-        .select("case_id")
+        .update({ status: "complete", payment_at: new Date().toISOString() })
         .eq("case_id", norm.case_id)
+        .select("case_id")
         .limit(1)
         .maybeSingle();
 
       if (sessionErr) {
-        console.error("Stripe session lookup error:", sessionErr);
+        console.error("Stripe session update error:", sessionErr);
         return bad("DB error", 500, corsHeadersForOrigin);
       }
       if (!sessionRow) {
@@ -324,7 +326,7 @@ Deno.serve(async (req) => {
         })
         .single();
 
-      const dispatch_row = rpcResult;
+      const dispatch_row = rpcResult.data as { dispatch_key?: string } | null;
       const dispatch_key = dispatch_row?.dispatch_key ?? null;
 
       if (dispatch_key) {
@@ -348,7 +350,8 @@ Deno.serve(async (req) => {
             let success = false;
             try {
               const signature = await sigPromise;
-              const headers = {
+
+              const headers: Record<string, string> = {
                 "Content-Type": "application/json",
                 "Idempotency-Key": idempotencyKey
               };
@@ -379,8 +382,13 @@ Deno.serve(async (req) => {
             }
           })();
 
-          // @ts-ignore
-          EdgeRuntime.waitUntil(sendPromise);
+          // Use Deno's waitUntil if available, otherwise fallback to no-op
+          if ("waitUntil" in req) {
+            // @ts-expect-error: Deno.Request.waitUntil is available in edge runtime
+            req.waitUntil(sendPromise);
+          } else if (typeof (globalThis as Record<string, unknown>).waitUntil === "function") {
+            (globalThis as { waitUntil?: (p: Promise<unknown>) => void }).waitUntil?.(sendPromise);
+          } // else: no-op
         } else {
           console.warn("N8N_WEBHOOK_URL not configured; skipping dispatch and marking failed");
           try {
@@ -405,9 +413,9 @@ Deno.serve(async (req) => {
       200,
       corsHeadersForOrigin
     );
-  } catch (e) {
-    console.error("Handler error:", e);
-    if (e.message === "Too many requests") {
+  } catch (_e) {
+    console.error("Handler error:", _e);
+    if (_e instanceof Error && _e.message === "Too many requests") {
       return bad("Rate limit exceeded", 429, corsHeadersForOrigin);
     }
     return bad("Internal server error", 500, corsHeadersForOrigin);

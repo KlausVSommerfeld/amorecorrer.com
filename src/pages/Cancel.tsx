@@ -6,7 +6,19 @@ type AnalyticsPayload = Record<string, unknown>;
 
 function logCancelAnalytics(caseId: string | null) {
   const payload: AnalyticsPayload = caseId ? { case_id: caseId } : {};
-  const w = typeof window === "undefined" ? undefined : (window as Record<string, any>);
+  type GtagEvent = (
+    event: string,
+    action: string,
+    params?: Record<string, unknown>
+  ) => void;
+  type AnalyticsWindow = typeof window & {
+    analytics?: {
+      track?: (event: string, payload?: AnalyticsPayload) => void;
+    };
+    gtag?: GtagEvent;
+    dataLayer?: unknown[];
+  };
+  const w = typeof window === "undefined" ? undefined : (window as AnalyticsWindow);
 
   if (!w) return;
 

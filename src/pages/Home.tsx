@@ -32,8 +32,14 @@ const Home = () => {
     if (isPromoExpired) return;
     try {
       await createCheckout();
-    } catch (err: any) {
-      alert('Erro ao criar checkout: ' + (err?.message || err));
+    } catch (err: unknown) {
+      let message = 'Erro ao criar checkout';
+      if (err instanceof Error) {
+        message += ': ' + err.message;
+      } else if (typeof err === 'string') {
+        message += ': ' + err;
+      }
+      alert(message);
     }
   };
 
