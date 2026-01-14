@@ -7,6 +7,12 @@ if (!stripeSecret) {
   throw new Error("Missing STRIPE_SECRET_KEY");
 }
 
+const stripePriceId = Deno.env.get("STRIPE_PRICE_ID");
+if (!stripePriceId) {
+  console.error("Missing STRIPE_PRICE_ID env var");
+  throw new Error("Missing STRIPE_PRICE_ID");
+}
+
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 if (!supabaseUrl || !supabaseServiceKey) {
@@ -126,16 +132,10 @@ Deno.serve(async (req) => {
       mode: "payment",
       client_reference_id: case_id,
       payment_method_types: ["card"],
+      customer_email: body.email,
       line_items: [
         {
-          price_data: {
-            currency: "brl",
-            unit_amount: 1999,
-            product_data: {
-              name: "Recurso de multa",
-              description: "Petição em PDF gerada automaticamente"
-            }
-          },
+          price: stripePriceId,
           quantity: 1
         }
       ],
