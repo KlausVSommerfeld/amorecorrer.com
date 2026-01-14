@@ -25,6 +25,8 @@ interface FormData {
   descricaoInfracao: string;
   amparoLegal: string;
   justificativa: string;
+  velocidade_permitida: string;
+  velocidade_aferida: string;
   form_token: string;
   case_id: string;
 }
@@ -53,6 +55,8 @@ const Form = () => {
     descricaoInfracao: '',
     amparoLegal: '',
     justificativa: '',
+    velocidade_permitida: '',
+    velocidade_aferida: '',
     form_token: '',
     case_id: ''
   });
@@ -169,11 +173,12 @@ const Form = () => {
       descricao_infracao: data.descricaoInfracao.trim() || null,
       amparo_legal: data.amparoLegal.trim() || null,
       justificativa: data.justificativa.trim() || null,
+      // Speed data
+      velocidade_permitida: data.velocidade_permitida.trim() ? parseInt(data.velocidade_permitida) : null,
+      velocidade_aferida: data.velocidade_aferida.trim() ? parseInt(data.velocidade_aferida) : null,
       // Optional fields
       cidade: null,
       estado: null,
-      velocidade_permitida: null,
-      velocidade_aferida: null,
       artigo_ctb: null
     };
   };
@@ -219,6 +224,7 @@ const Form = () => {
         orgaoAutuador: '', notificacaoPenalidade: '', especieDocumento: '', autoInfracao: '',
         expedidaEm: '', placa: '', marcaModeloEspecie: '', localSentido: '', dataHora: '',
         renainf: '', descricaoInfracao: '', amparoLegal: '', justificativa: '',
+        velocidade_permitida: '', velocidade_aferida: '',
         form_token: prev.form_token,
         case_id: prev.case_id
       }));
@@ -565,6 +571,32 @@ const Form = () => {
                     value={formData.descricaoInfracao}
                     onChange={handleInputChange}
                     className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label" htmlFor="velocidade_permitida">Velocidade Permitida (km/h)</label>
+                  <input
+                    type="number"
+                    id="velocidade_permitida"
+                    name="velocidade_permitida"
+                    value={formData.velocidade_permitida}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    min="0"
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label" htmlFor="velocidade_aferida">Velocidade Aferida (km/h)</label>
+                  <input
+                    type="number"
+                    id="velocidade_aferida"
+                    name="velocidade_aferida"
+                    value={formData.velocidade_aferida}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    min="0"
                   />
                 </div>
 
