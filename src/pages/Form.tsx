@@ -200,12 +200,26 @@ const Form = () => {
       return;
     }
 
+    // Get stripe_session_id from localStorage
+    const stripeSessionId = localStorage.getItem('stripe_session_id');
+    if (!stripeSessionId) {
+      setMessage({
+        type: 'error',
+        text: 'Nao encontramos sua sessao de pagamento. Refaca o checkout.'
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     setMessage(null);
 
     try {
       // No need to ensure session - we use anon key for API auth
-      const normalizedData = normalizeData({ ...formData, case_id: caseId });
+      const normalizedData = normalizeData({ 
+        ...formData, 
+        case_id: caseId,
+        stripe_session_id: stripeSessionId 
+      });
       
       // Send form data using authenticated API with bearer token
       const response = await submitForm(normalizedData);

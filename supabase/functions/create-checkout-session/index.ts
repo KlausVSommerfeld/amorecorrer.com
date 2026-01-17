@@ -175,7 +175,7 @@ Deno.serve(async (req) => {
 
     return new Response(JSON.stringify({
       url: session.url,
-      id: session.id,
+      stripe_session_id: session.id,
       case_id
     }), {
       status: 200,

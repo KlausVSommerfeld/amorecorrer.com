@@ -96,11 +96,11 @@ export async function submitForm(formData: Record<string, unknown>): Promise<Res
 /**
  * Create a checkout session
  * 
- * @returns Promise<{ url: string; id: string; case_id: string }>
+ * @returns Promise<{ url: string; stripe_session_id: string; case_id: string }>
  */
 export async function createCheckoutSession(): Promise<{
   url: string;
-  id: string;
+  stripe_session_id: string;
   case_id: string;
 }> {
   if (!import.meta.env.VITE_CREATE_CHECKOUT_URL) {

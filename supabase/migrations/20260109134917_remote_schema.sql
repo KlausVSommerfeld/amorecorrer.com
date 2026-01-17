@@ -4,9 +4,10 @@ drop trigger if exists "dispatches_update_updated_at" on "public"."dispatches";
 
 drop trigger if exists "form_submissions_update_updated_at" on "public"."form_submissions";
 
-alter table "public"."dispatches" drop constraint "dispatches_case_id_fkey";
+alter table "public"."dispatches" drop constraint if exists "dispatches_case_id_fkey";
 
 alter table "public"."dispatches" drop constraint "dispatches_case_id_format";
+
 
 alter table "public"."dispatches" drop constraint "dispatches_case_id_key";
 
@@ -18,9 +19,8 @@ alter table "public"."form_submissions" drop constraint "form_submissions_form_t
 
 alter table "public"."stripe_sessions" drop constraint "stripe_sessions_case_id_format";
 
-alter table "public"."stripe_sessions" drop constraint "stripe_sessions_case_id_key";
-
-alter table "public"."form_submissions" drop constraint "form_submissions_payment_status_check";
+alter table "public"."stripe_sessions" drop constraint if exists "stripe_sessions_case_id_key";
+alter table "public"."stripe_sessions" drop constraint if exists "stripe_sessions_case_id_unique";
 
 drop function if exists "public"."attempt_dispatch"(p_case_id text);
 
@@ -53,6 +53,7 @@ drop index if exists "public"."idx_form_submissions_stripe_session_id";
 drop index if exists "public"."idx_stripe_sessions_status";
 
 drop index if exists "public"."stripe_sessions_case_id_key";
+drop index if exists "public"."stripe_sessions_case_id_unique";
 
 drop index if exists "public"."idx_dispatches_case_id";
 
@@ -70,8 +71,6 @@ alter table "public"."form_submissions" alter column "data_infracao" set data ty
 
 alter table "public"."form_submissions" alter column "document_status" drop not null;
 
-alter table "public"."form_submissions" alter column "payment_status" drop not null;
-
 alter table "public"."stripe_sessions" add column "payment_at" timestamp without time zone;
 
 CREATE UNIQUE INDEX dispatches_dispatch_key_key ON public.dispatches USING btree (dispatch_key);
@@ -82,13 +81,13 @@ CREATE UNIQUE INDEX idx_dispatches_case_id ON public.dispatches USING btree (cas
 
 alter table "public"."dispatches" add constraint "dispatches_dispatch_key_key" UNIQUE using index "dispatches_dispatch_key_key";
 
-alter table "public"."form_submissions" add constraint "form_submissions_payment_status_check" CHECK ((payment_status = ANY (ARRAY['pending'::text, 'paid'::text, 'failed'::text, 'cancelled'::text]))) not valid;
+alter table "public"."dispatches" add constraint "dispatches_stripe_session_id_fkey" FOREIGN KEY (stripe_session_id) REFERENCES public.stripe_sessions(id);
 
-alter table "public"."form_submissions" validate constraint "form_submissions_payment_status_check";
+CREATE INDEX idx_dispatches_stripe_session_id ON public.dispatches USING btree (stripe_session_id);
 
 set check_function_bodies = off;
 
-CREATE OR REPLACE FUNCTION public.attempt_dispatch(case_id uuid)
+CREATE OR REPLACE FUNCTION public.attempt_dispatch(case_id text)
  RETURNS TABLE(dispatch_key uuid)
  LANGUAGE plpgsql
  SECURITY DEFINER
@@ -97,12 +96,15 @@ DECLARE
   _payment_status TEXT;
   _document_status TEXT;
   _dispatch_key UUID;
+  _stripe_session_id TEXT;
 BEGIN
   -- Check if both payment and form are complete
-  SELECT payment_status, document_status
-  INTO _payment_status, _document_status
-  FROM form_submissions
-  WHERE form_submissions.case_id = attempt_dispatch.case_id;
+  -- Get form submission and stripe session status
+  SELECT fs.document_status, fs.stripe_session_id, ss.payment_status
+  INTO _document_status, _stripe_session_id, _payment_status
+  FROM form_submissions fs
+  LEFT JOIN stripe_sessions ss ON fs.stripe_session_id = ss.id
+  WHERE fs.case_id = attempt_dispatch.case_id;
 
   -- If form doesn't exist, return null
   IF NOT FOUND THEN
@@ -112,8 +114,8 @@ BEGIN
   -- Both must be "completed" or "approved" to dispatch
   IF _payment_status = 'paid' AND _document_status = 'completed' THEN
     -- Create dispatch record with idempotency key
-    INSERT INTO dispatches (case_id, dispatch_key, status, created_at)
-    VALUES (case_id, gen_random_uuid(), 'pending', NOW())
+    INSERT INTO dispatches (case_id, dispatch_key, stripe_session_id, status, created_at)
+    VALUES (case_id, gen_random_uuid(), _stripe_session_id, 'pending', NOW())
     ON CONFLICT (case_id) DO UPDATE
     SET updated_at = NOW()
     RETURNING dispatch_key INTO _dispatch_key;

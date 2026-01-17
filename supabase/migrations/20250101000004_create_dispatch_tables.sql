@@ -10,8 +10,7 @@ CREATE TABLE public.dispatches (
   CONSTRAINT dispatches_case_id_format CHECK (case_id ~ '^CASO_'),
   CONSTRAINT dispatches_status_check CHECK (
     status = ANY(ARRAY['pending', 'in_progress', 'completed', 'failed'])
-  ),
-  FOREIGN KEY (case_id) REFERENCES public.form_submissions(case_id) ON DELETE CASCADE
+  )
 );
 
 -- Create indexes

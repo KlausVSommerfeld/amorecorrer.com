@@ -38,11 +38,21 @@ export async function createCheckout(): Promise<string | null> {
       data?.checkout_session?.metadata?.case_id ??
       null;
 
+    const stripeSessionId: string | null = data?.stripe_session_id ?? null;
+
     if (caseId) {
       try {
         localStorage.setItem('case_id', caseId);
       } catch (err) {
         console.warn('Failed to persist case_id locally:', err);
+      }
+    }
+
+    if (stripeSessionId) {
+      try {
+        localStorage.setItem('stripe_session_id', stripeSessionId);
+      } catch (err) {
+        console.warn('Failed to persist stripe_session_id locally:', err);
       }
     }
 
