@@ -29,6 +29,7 @@ interface FormData {
   velocidade_aferida: string;
   form_token: string;
   case_id: string;
+  stripe_session_id: string;
 }
 
 const Form = () => {
@@ -58,7 +59,8 @@ const Form = () => {
     velocidade_permitida: '',
     velocidade_aferida: '',
     form_token: '',
-    case_id: ''
+    case_id: '',
+    stripe_session_id: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -78,10 +80,15 @@ const Form = () => {
       token = uuidv4();
       localStorage.setItem('form_token', token);
     }
+
+    // Get stripe_session_id from localStorage
+    const stripeSessionId = localStorage.getItem('stripe_session_id');
+
     setFormData(prev => ({
       ...prev,
       form_token: token!,
-      case_id: caseId ?? prev.case_id
+      case_id: caseId ?? prev.case_id,
+      stripe_session_id: stripeSessionId ?? prev.stripe_session_id
     }));
   }, []);
 
@@ -149,6 +156,7 @@ const Form = () => {
     return {
       case_id: data.case_id,
       form_token: data.form_token,
+      stripe_session_id: data.stripe_session_id || null,
       // Required fields
       nome: data.nomeCompleto.trim(),
       email: data.email.trim().toLowerCase(),
@@ -200,9 +208,7 @@ const Form = () => {
       return;
     }
 
-    // Get stripe_session_id from localStorage
-    const stripeSessionId = localStorage.getItem('stripe_session_id');
-    if (!stripeSessionId) {
+    if (!formData.stripe_session_id) {
       setMessage({
         type: 'error',
         text: 'Nao encontramos sua sessao de pagamento. Refaca o checkout.'
@@ -217,8 +223,7 @@ const Form = () => {
       // No need to ensure session - we use anon key for API auth
       const normalizedData = normalizeData({ 
         ...formData, 
-        case_id: caseId,
-        stripe_session_id: stripeSessionId 
+        case_id: caseId
       });
       
       // Send form data using authenticated API with bearer token
@@ -240,7 +245,8 @@ const Form = () => {
         renainf: '', descricaoInfracao: '', amparoLegal: '', justificativa: '',
         velocidade_permitida: '', velocidade_aferida: '',
         form_token: prev.form_token,
-        case_id: prev.case_id
+        case_id: prev.case_id,
+        stripe_session_id: prev.stripe_session_id
       }));
       setErrors({});
     } catch (error) {
