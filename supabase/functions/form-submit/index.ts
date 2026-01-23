@@ -212,7 +212,7 @@ Deno.serve(async (req) => {
       // Atualiza stripe_sessions: status = 'complete', payment_at = agora
       const { data: sessionRow, error: sessionErr } = await supabase
         .from("stripe_sessions")
-        .update({ status: "complete", payment_at: new Date().toISOString() })
+        .update({ status: "complete" })
         .eq("case_id", norm.case_id)
         .select("case_id")
         .limit(1)

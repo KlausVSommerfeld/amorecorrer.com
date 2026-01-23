@@ -9,10 +9,11 @@ CREATE TABLE public.stripe_sessions (
   url TEXT,
   metadata JSONB,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  event_payload JSONB,
   CONSTRAINT stripe_sessions_case_id_format CHECK (case_id ~ '^CASO_'),
   CONSTRAINT stripe_sessions_case_id_unique UNIQUE (case_id),
   CONSTRAINT stripe_sessions_payment_status_check CHECK (
-    payment_status = ANY(ARRAY['pending', 'completed', 'failed', 'refunded'])
+    payment_status = ANY(ARRAY['pending', 'paid', 'cancelled', 'failed'])
   )
 );
 
@@ -32,4 +33,4 @@ CREATE POLICY "Service role can manage stripe sessions"
 -- Comments
 COMMENT ON TABLE public.stripe_sessions IS 'Stores Stripe checkout sessions linked to appeal cases';
 COMMENT ON COLUMN public.stripe_sessions.case_id IS 'Foreign reference to form_submissions.case_id';
-COMMENT ON COLUMN public.stripe_sessions.payment_status IS 'Status of Stripe payment: pending, completed, failed, refunded';
+COMMENT ON COLUMN public.stripe_sessions.payment_status IS 'Status of Stripe payment: pending, paid, cancelled, failed';
