@@ -111,8 +111,8 @@ BEGIN
     RETURN;
   END IF;
 
-  -- Both must be "completed" or "approved" to dispatch
-  IF _payment_status = 'paid' AND _document_status = 'completed' THEN
+  -- Payment must be paid and document status must be pending to dispatch
+  IF _payment_status = 'paid' AND _document_status = 'pending' THEN
     -- Create dispatch record with idempotency key
     INSERT INTO dispatches (case_id, dispatch_key, stripe_session_id, status, created_at)
     VALUES (case_id, gen_random_uuid(), _stripe_session_id, 'pending', NOW())
@@ -183,5 +183,4 @@ CREATE TRIGGER dispatches_set_updated_at BEFORE UPDATE ON public.dispatches FOR 
 CREATE TRIGGER form_submissions_dup_guard_trigger BEFORE INSERT OR UPDATE ON public.form_submissions FOR EACH ROW EXECUTE FUNCTION public.calculate_dup_guard();
 
 CREATE TRIGGER update_form_submissions_updated_at BEFORE UPDATE ON public.form_submissions FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-
 

@@ -109,6 +109,14 @@ function hmacSha256Hex(secret: string, message: string) {
     );
 }
 
+function logDispatchError(stage: string, details: Record<string, unknown>) {
+  console.error(`[dispatch] ${stage}`, details);
+}
+
+function logDispatchInfo(stage: string, details: Record<string, unknown>) {
+  console.info(`[dispatch] ${stage}`, details);
+}
+
 Deno.serve(async (req) => {
   // Handle preflight OPTIONS request
   if (req.method === "OPTIONS") {
@@ -330,6 +338,11 @@ Deno.serve(async (req) => {
       const dispatch_key = dispatch_row?.dispatch_key ?? null;
 
       if (dispatch_key) {
+        logDispatchInfo("dispatch_iniciado", {
+          case_id: norm.case_id,
+          dispatch_key
+        });
+
         const N8N_WEBHOOK_URL = Deno.env.get("N8N_WEBHOOK_URL");
         const N8N_HMAC_SECRET = Deno.env.get("N8N_HMAC_SECRET");
 
@@ -346,63 +359,166 @@ Deno.serve(async (req) => {
             ? hmacSha256Hex(N8N_HMAC_SECRET, bodyStr)
             : Promise.resolve("");
 
-          const sendPromise = (async () => {
-            let success = false;
-            try {
-              const signature = await sigPromise;
+          let success = false;
+          try {
+            const signature = await sigPromise;
 
-              const headers: Record<string, string> = {
-                "Content-Type": "application/json",
-                "Idempotency-Key": idempotencyKey
-              };
-              if (signature) headers["X-Signature"] = signature;
+            const headers: Record<string, string> = {
+              "Content-Type": "application/json",
+              "Idempotency-Key": idempotencyKey
+            };
+            if (signature) headers["X-Signature"] = signature;
 
-              const res = await fetch(N8N_WEBHOOK_URL, {
-                method: "POST",
-                headers,
-                body: bodyStr
-              });
-              success = res.ok;
-              if (!res.ok) {
-                const txt = await res.text().catch(() => "<no body>");
-                console.error("n8n webhook non-2xx:", res.status, txt);
-              }
-            } catch (err) {
-              console.error("n8n dispatch error (async):", err);
-              success = false;
-            } finally {
-              try {
-                await supabase.rpc("confirm_dispatch", {
-                  dispatch_key,
-                  success
-                });
-              } catch (rpcErr) {
-                console.error("confirm_dispatch RPC error (async):", rpcErr);
+            const dispatchSentAt = new Date().toISOString();
+            const res = await fetch(N8N_WEBHOOK_URL, {
+              method: "POST",
+              headers,
+              body: bodyStr
+            });
+            success = res.ok;
+            if (res.ok) {
+              const { error: statusErr } = await supabase
+                .from("form_submissions")
+                .update({
+                  document_status: "generating",
+                  updated_at: dispatchSentAt
+                })
+                .eq("case_id", norm.case_id);
+
+              if (statusErr) {
+                console.error("Failed to update document_status after n8n dispatch:", statusErr);
               }
             }
-          })();
-
-          // Use Deno's waitUntil if available, otherwise fallback to no-op
-          if ("waitUntil" in req) {
-            // @ts-expect-error: Deno.Request.waitUntil is available in edge runtime
-            req.waitUntil(sendPromise);
-          } else if (typeof (globalThis as Record<string, unknown>).waitUntil === "function") {
-            (globalThis as { waitUntil?: (p: Promise<unknown>) => void }).waitUntil?.(sendPromise);
-          } // else: no-op
+            if (!res.ok) {
+              const txt = await res.text().catch(() => "<no body>");
+              logDispatchError("n8n_webhook_non_2xx", {
+                case_id: norm.case_id,
+                dispatch_key,
+                status: res.status,
+                body: txt
+              });
+            }
+          } catch (err) {
+            logDispatchError("n8n_dispatch_error", {
+              case_id: norm.case_id,
+              dispatch_key,
+              error: err instanceof Error ? err.message : String(err)
+            });
+            success = false;
+          } finally {
+            try {
+              await supabase.rpc("confirm_dispatch", {
+                dispatch_key,
+                success
+              });
+            } catch (rpcErr) {
+              logDispatchError("confirm_dispatch_rpc_error", {
+                case_id: norm.case_id,
+                dispatch_key,
+                error: rpcErr instanceof Error ? rpcErr.message : String(rpcErr)
+              });
+            }
+          }
         } else {
-          console.warn("N8N_WEBHOOK_URL not configured; skipping dispatch and marking failed");
+          logDispatchError("n8n_webhook_url_missing", {
+            case_id: norm.case_id,
+            dispatch_key
+          });
           try {
             await supabase.rpc("confirm_dispatch", {
               dispatch_key,
               success: false
             });
           } catch (rpcErr) {
-            console.error("confirm_dispatch RPC error (immediate):", rpcErr);
+            logDispatchError("confirm_dispatch_rpc_error", {
+              case_id: norm.case_id,
+              dispatch_key,
+              error: rpcErr instanceof Error ? rpcErr.message : String(rpcErr)
+            });
           }
         }
+      } else {
+        const missing: string[] = [];
+        let document_status: string | null = null;
+        let stripe_session_id: string | null = null;
+        let payment_status: string | null = null;
+
+        const { data: formRowData, error: formErr } = await supabase
+          .from("form_submissions")
+          .select("document_status,stripe_session_id")
+          .eq("case_id", norm.case_id)
+          .maybeSingle();
+
+        if (formErr) {
+          logDispatchError("dispatch_status_lookup_error", {
+            case_id: norm.case_id,
+            error: formErr instanceof Error ? formErr.message : String(formErr)
+          });
+          missing.push("form_submissions_lookup_error");
+        }
+
+        const formRow = formRowData as {
+          document_status?: string | null;
+          stripe_session_id?: string | null;
+        } | null;
+
+        if (!formRow) {
+          missing.push("form_submissions");
+        } else {
+          document_status = formRow.document_status ?? null;
+          stripe_session_id = formRow.stripe_session_id ?? null;
+
+          if (document_status !== "pending") {
+            missing.push("form_submissions.document_status=pending");
+          }
+
+          if (!stripe_session_id) {
+            missing.push("form_submissions.stripe_session_id");
+          } else {
+            const { data: stripeRowData, error: stripeErr } = await supabase
+              .from("stripe_sessions")
+              .select("payment_status")
+              .eq("id", stripe_session_id)
+              .maybeSingle();
+
+            if (stripeErr) {
+              logDispatchError("dispatch_status_lookup_error", {
+                case_id: norm.case_id,
+                stripe_session_id,
+                error: stripeErr instanceof Error ? stripeErr.message : String(stripeErr)
+              });
+              missing.push("stripe_sessions_lookup_error");
+            }
+
+            const stripeRow = stripeRowData as { payment_status?: string | null } | null;
+            if (!stripeRow) {
+              missing.push("stripe_sessions");
+            } else {
+              payment_status = stripeRow.payment_status ?? null;
+              if (payment_status !== "paid") {
+                missing.push("stripe_sessions.payment_status=paid");
+              }
+            }
+          }
+        }
+
+        if (missing.length === 0) {
+          missing.push("dispatch_precondition_unknown");
+        }
+
+        logDispatchInfo("dispatch_ignorado", {
+          case_id: norm.case_id,
+          missing,
+          document_status,
+          stripe_session_id,
+          payment_status
+        });
       }
     } catch (rpcErr) {
-      console.error("attempt_dispatch RPC error:", rpcErr);
+      logDispatchError("attempt_dispatch_rpc_error", {
+        case_id: norm.case_id,
+        error: rpcErr instanceof Error ? rpcErr.message : String(rpcErr)
+      });
     }
 
     return json(
