@@ -50,7 +50,9 @@ Este projeto implementa um sistema completo de autenticação com bearer tokens 
 ```
 
 ## Requisitos do sistema / dependências
-- Node.js 18+ e npm.
+- Node.js 18+.
+- Gerenciador de pacotes oficial: `npm` (lockfile versionado: `package-lock.json`).
+- Não usar Bun/Yarn/pnpm neste repositório para evitar drift de lockfile.
 - Supabase CLI (para `supabase start`, `functions serve/deploy`); Deno é usado nas Edge Functions.
 - Conta Stripe com `STRIPE_SECRET_KEY`.
 - Opcional: endpoint n8n para automação pós-formulário.
@@ -59,6 +61,12 @@ Este projeto implementa um sistema completo de autenticação com bearer tokens 
 ## Como instalar
 ```bash
 npm install
+```
+
+## Atualizar base do Browserslist
+Com o repositório padronizado em `npm`, use:
+```bash
+npx update-browserslist-db@latest
 ```
 
 ## Como configurar variáveis de ambiente
