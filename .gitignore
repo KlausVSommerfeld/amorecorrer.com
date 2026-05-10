@@ -27,5 +27,11 @@ dist-ssr
 .env
 .env.local
 scripts/*
+**/venv/
+.venv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
 supabase/.branches/
 supabase/.temp/

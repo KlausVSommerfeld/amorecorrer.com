@@ -75,8 +75,11 @@ You have 3 edge functions:
 # Stripe Secret Key
 npx supabase secrets set STRIPE_SECRET_KEY=sk_test_51RrARwPyoFJoyBNVJvg5YFp3OVny2JCYJX3cSLYizdyYtU9no8bAHLZiNZw3dNPAmB68S69WEoGSZBlA8gZMlVmm00GsTvODMB
 
-# n8n Webhook URL
-npx supabase secrets set N8N_WEBHOOK_URL=https://w0danaz.app.n8n.cloud/webhook-test/f49a5305-bce4-4c9a-97be-36ab91f80631
+# Pipeline FastAPI URL (HTTPS público — não use localhost das Edge remotas)
+npx supabase secrets set DISPATCH_PIPELINE_URL=https://YOUR_PUBLIC_HOST/hooks/dispatch
+
+# HMAC igual ao servidor Express (PIPELINE_HMAC_SECRET) e ao pipeline (.env PYTHON)
+npx supabase secrets set DISPATCH_PIPELINE_HMAC_SECRET=YOUR_SHARED_HMAC_HEX_SECRET
 
 # Supabase Service Role Key (from Dashboard → Project Settings → API)
 npx supabase secrets set SUPABASE_SERVICE_ROLE_KEY=YOUR_SERVICE_ROLE_KEY
@@ -331,7 +334,7 @@ npx supabase unlink
 
 - [ ] Project linked: `npx supabase link --project-ref YOUR_REF`
 - [ ] Migrations deployed: `npx supabase db push`
-- [ ] Secrets set: STRIPE_SECRET_KEY, N8N_WEBHOOK_URL, SUPABASE_SERVICE_ROLE_KEY
+- [ ] Secrets set: STRIPE_SECRET_KEY, DISPATCH_PIPELINE_URL, DISPATCH_PIPELINE_HMAC_SECRET, SUPABASE_SERVICE_ROLE_KEY
 - [ ] Edge functions deployed: `npx supabase functions deploy`
 - [ ] Frontend `.env.local` updated with remote URLs
 - [ ] RLS policies enabled on tables

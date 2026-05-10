@@ -41,8 +41,30 @@ npx supabase functions serve --env-file supabase/.env.local
 
 Isso carregará:
 - ✅ STRIPE_SECRET_KEY do arquivo supabase/.env.local
-- ✅ N8N_WEBHOOK_URL
+- ✅ DISPATCH_PIPELINE_URL (URL pública do FastAPI; ex. túnel apontando para `http://127.0.0.1:8000/hooks/dispatch`)
+- ✅ DISPATCH_PIPELINE_HMAC_SECRET (igual ao `PIPELINE_HMAC_SECRET` da API Express e do `.env` do pipeline)
 - ✅ SUPABASE_SERVICE_ROLE_KEY
+
+### Opcional Terminal 4 / 5 — API Express + Pipeline
+
+As Edge chamam primeiro o **FastAPI**. O worker Python chama **Express**, que faz `confirm_dispatch` no Postgres.
+
+API Express (`server/.env`: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `PIPELINE_HMAC_SECRET`):  
+```powershell
+cd C:\Users\klaus\Coding\Atlas\amorecorrer.com\server
+npm install
+npm run dev
+```
+Pipeline Python (na pasta `pipeline/`, arquivo `.env`; ver `pipeline/.env.example`):  
+```powershell
+cd C:\Users\klaus\Coding\Atlas\amorecorrer.com\pipeline
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python -m uvicorn main:app --host 0.0.0.0 --port 8000
+```
+
+Com **projeto Supabase na nuvem**, use um túnel (Cloudflare/ngrok) e coloque **só** a URL pública HTTPS do listener em `:8000` em `DISPATCH_PIPELINE_URL`; o Express também precisa estar acessível na mesma LAN ou público onde o Python rode.
 
 ### 3️⃣ Terminal 3 - Iniciar Vite (IMPORTANTE: DA RAIZ)
 ```powershell
@@ -76,18 +98,21 @@ Depois de iniciar os 3 terminais, teste:
 | Arquivo | Propósito | Chaves |
 |---------|-----------|--------|
 | `.env.local` (raiz) | Vite & Frontend | VITE_SUPABASE_URL, VITE_CREATE_CHECKOUT_URL |
-| `supabase/.env.local` | Edge Functions | STRIPE_SECRET_KEY, N8N_WEBHOOK_URL, SUPABASE_SERVICE_ROLE_KEY |
+| `supabase/.env.local` | Edge Functions | STRIPE_SECRET_KEY, DISPATCH_PIPELINE_URL, DISPATCH_PIPELINE_HMAC_SECRET, SUPABASE_SERVICE_ROLE_KEY |
+| `server/.env` | Express | SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, PIPELINE_HMAC_SECRET |
+| `pipeline/.env` | FastAPI/worker | PIPELINE_HMAC_SECRET, EXPRESS_INTERNAL_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, STORAGE_BUCKET, DEEPSEEK_API_KEY?, SMTP_*? |
+
+Após `supabase db push`, crie no Dashboard um bucket **privado** (ex.: `generated-recursos`) e políticas de Storage permitindo upload/leitura à **service role** do projeto, para o pipeline gravar os PDFs antes de `generated_documents`.
 
 ---
 
 ## 🔑 Chaves Configuradas
 
 ### Stripe
-- ✅ sk_test_51RrARwPyoFJoyBNVJvg5YFp3OVny2JCYJX3cSLYizdyYtU9no8bAHLZiNZw3dNPAmB68S69WEoGSZBlA8gZMlVmm00GsTvODMB
+- Defina sua `STRIPE_SECRET_KEY` de teste/live no `supabase/.env.local` (não compartilhe em repositórios públicos).
 
-### n8n (Teste/Staging)
-- ✅ Webhook: https://w0danaz.app.n8n.cloud/webhook-test/f49a5305-bce4-4c9a-97be-36ab91f80631
-- ✅ Secret: bd0d80a2c5c04f32962ff2d99d52f9e5
+### Pipeline (`DISPATCH_PIPELINE_URL`)
+- Endpoint `POST …/hooks/dispatch` deve aceitar JSON `{ case_id, email, dispatch_key }` assinado com `DISPATCH_PIPELINE_HMAC_SECRET`. Resposta esperada **`202 Accepted`** para trabalho pesado async.
 
 ---
 

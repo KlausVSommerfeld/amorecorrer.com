@@ -1,4 +1,4 @@
-// form-submit (patched + n8n dispatch + confirm_dispatch)
+// form-submit (dispatch pipeline + deferred confirm_dispatch for async runners)
 // Uses Deno.serve and @supabase/supabase-js@2.x
 // Import from bare specifier, assuming deno.json imports: "@supabase/supabase-js": "jsr:@supabase/supabase-js@2"
 import { createClient } from "jsr:@supabase/supabase-js@2";
@@ -343,10 +343,13 @@ Deno.serve(async (req) => {
           dispatch_key
         });
 
-        const N8N_WEBHOOK_URL = Deno.env.get("N8N_WEBHOOK_URL");
-        const N8N_HMAC_SECRET = Deno.env.get("N8N_HMAC_SECRET");
+        const pipelineUrl = Deno.env.get("DISPATCH_PIPELINE_URL") ??
+          Deno.env.get("N8N_WEBHOOK_URL");
+        const pipelineHmacSecret =
+          Deno.env.get("DISPATCH_PIPELINE_HMAC_SECRET") ??
+          Deno.env.get("N8N_HMAC_SECRET");
 
-        if (N8N_WEBHOOK_URL) {
+        if (pipelineUrl) {
           const payload = {
             case_id: norm.case_id,
             email: norm.email,
@@ -355,11 +358,13 @@ Deno.serve(async (req) => {
           const idempotencyKey = dispatch_key;
           const bodyStr = JSON.stringify(payload);
 
-          const sigPromise = N8N_HMAC_SECRET
-            ? hmacSha256Hex(N8N_HMAC_SECRET, bodyStr)
+          const sigPromise = pipelineHmacSecret
+            ? hmacSha256Hex(pipelineHmacSecret, bodyStr)
             : Promise.resolve("");
 
-          let success = false;
+          let shouldConfirmDispatch = true;
+          let confirmSuccess = false;
+
           try {
             const signature = await sigPromise;
 
@@ -370,12 +375,18 @@ Deno.serve(async (req) => {
             if (signature) headers["X-Signature"] = signature;
 
             const dispatchSentAt = new Date().toISOString();
-            const res = await fetch(N8N_WEBHOOK_URL, {
+            const res = await fetch(pipelineUrl, {
               method: "POST",
               headers,
               body: bodyStr
             });
-            success = res.ok;
+            confirmSuccess = res.ok;
+            // Python/FastAPI pipeline acknowledges work with 202; confirm_dispatch runs via Express callback
+            const asyncAccepted = res.ok && res.status === 202;
+            if (asyncAccepted) {
+              shouldConfirmDispatch = false;
+            }
+
             if (res.ok) {
               const { error: statusErr } = await supabase
                 .from("form_submissions")
@@ -386,12 +397,16 @@ Deno.serve(async (req) => {
                 .eq("case_id", norm.case_id);
 
               if (statusErr) {
-                console.error("Failed to update document_status after n8n dispatch:", statusErr);
+                console.error(
+                  "Failed to update document_status after pipeline dispatch:",
+                  statusErr
+                );
               }
             }
+
             if (!res.ok) {
               const txt = await res.text().catch(() => "<no body>");
-              logDispatchError("n8n_webhook_non_2xx", {
+              logDispatchError("pipeline_dispatch_non_2xx", {
                 case_id: norm.case_id,
                 dispatch_key,
                 status: res.status,
@@ -399,28 +414,32 @@ Deno.serve(async (req) => {
               });
             }
           } catch (err) {
-            logDispatchError("n8n_dispatch_error", {
+            logDispatchError("pipeline_dispatch_error", {
               case_id: norm.case_id,
               dispatch_key,
               error: err instanceof Error ? err.message : String(err)
             });
-            success = false;
+            confirmSuccess = false;
+            shouldConfirmDispatch = true;
           } finally {
             try {
-              await supabase.rpc("confirm_dispatch", {
-                dispatch_key,
-                success
-              });
+              if (shouldConfirmDispatch) {
+                await supabase.rpc("confirm_dispatch", {
+                  dispatch_key,
+                  success: confirmSuccess
+                });
+              }
             } catch (rpcErr) {
               logDispatchError("confirm_dispatch_rpc_error", {
                 case_id: norm.case_id,
                 dispatch_key,
-                error: rpcErr instanceof Error ? rpcErr.message : String(rpcErr)
+                error:
+                  rpcErr instanceof Error ? rpcErr.message : String(rpcErr)
               });
             }
           }
         } else {
-          logDispatchError("n8n_webhook_url_missing", {
+          logDispatchError("pipeline_webhook_url_missing", {
             case_id: norm.case_id,
             dispatch_key
           });
@@ -433,7 +452,8 @@ Deno.serve(async (req) => {
             logDispatchError("confirm_dispatch_rpc_error", {
               case_id: norm.case_id,
               dispatch_key,
-              error: rpcErr instanceof Error ? rpcErr.message : String(rpcErr)
+              error:
+                rpcErr instanceof Error ? rpcErr.message : String(rpcErr)
             });
           }
         }

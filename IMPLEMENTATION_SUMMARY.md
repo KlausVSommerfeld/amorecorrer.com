@@ -207,8 +207,8 @@ No new dependencies added! Uses existing:
 - [ ] `SUPABASE_SERVICE_ROLE_KEY` - Service role key
 - [ ] `STRIPE_SECRET_KEY` - Stripe secret
 - [ ] `ORIGIN_WHITELIST` - Allowed origins
-- [ ] `N8N_WEBHOOK_URL` - N8N webhook (optional)
-- [ ] `N8N_HMAC_SECRET` - N8N signature (optional)
+- [ ] `DISPATCH_PIPELINE_URL` - FastAPI webhook `POST …/hooks/dispatch` (HTTPS público com Supabase remoto)
+- [ ] `DISPATCH_PIPELINE_HMAC_SECRET` / `PIPELINE_HMAC_SECRET` – HMAC compartilhado (Edge / Express / Python)
 
 ### Supabase Configuration
 - [ ] Enable anonymous sign-ins
