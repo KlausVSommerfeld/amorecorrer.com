@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import hmac
 import io
 import json
 import logging
@@ -36,7 +37,7 @@ def verify_incoming_hmac(body_text: str, signature_header: str | None) -> bool:
     if not signature_header:
         return False
     expected = hmac_sha256_hex(settings.pipeline_hmac_secret, body_text)
-    return signature_header.strip() == expected
+    return hmac.compare_digest(signature_header.strip(), expected)
 
 
 def _compact_json(payload: dict[str, Any]) -> str:
@@ -166,11 +167,17 @@ def _message_id_domain(mail_from: str) -> str:
 
 
 async def send_email_pdf(
-    to_email: str, pdf_bytes: bytes, case_id: str, body_intro: str
+    to_email: str,
+    pdf_bytes: bytes,
+    case_id: str,
+    dispatch_key: str,
+    body_intro: str,
 ) -> str | None:
     """Returns Message-ID used as provider_message_id when SMTP is configured."""
     if not settings.smtp_host or not settings.mail_from:
-        log.warning("SMTP not configured — skipping email send")
+        if settings.pipeline_env.lower() == "production":
+            raise RuntimeError("SMTP_HOST and MAIL_FROM are required in production")
+        log.warning("SMTP not configured - skipping email send in non-production")
         return None
 
     import aiosmtplib
@@ -181,6 +188,7 @@ async def send_email_pdf(
     msg["From"] = settings.mail_from
     msg["To"] = to_email
     msg["Message-ID"] = msg_id
+    msg["Resend-Idempotency-Key"] = f"dispatch/{case_id}/{dispatch_key}"
     msg.set_content(
         body_intro
         + f"\n\nIdentificação do caso: {case_id}\n"
@@ -305,7 +313,7 @@ async def run_dispatch_pipeline(body_text: str) -> None:
             email_error: str | None = None
             try:
                 msg_id = await send_email_pdf(
-                    official_email, pdf_bytes, payload.case_id, intro
+                    official_email, pdf_bytes, payload.case_id, dk, intro
                 )
             except Exception as mail_exc:
                 email_failed = True
@@ -350,10 +358,10 @@ async def run_dispatch_pipeline(body_text: str) -> None:
                     {
                         "action": "email_result",
                         "dispatch_key": dk,
-                        "status": "emailed",
-                        "provider": "skipped_no_smtp",
+                        "status": "email_skipped",
+                        "provider": "none",
                         "provider_message_id": None,
-                        "sent_at": sent_iso,
+                        "sent_at": None,
                     },
                 )
 

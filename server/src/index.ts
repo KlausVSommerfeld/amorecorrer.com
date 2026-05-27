@@ -1,7 +1,20 @@
 import crypto from "crypto";
-import "dotenv/config";
+import fs from "node:fs";
+import path from "node:path";
+import dotenv from "dotenv";
 import express, { Request, Response, NextFunction } from "express";
 import { createClient } from "@supabase/supabase-js";
+
+const dotenvCandidates = [process.env.DOTENV_CONFIG_PATH, ".env.local", ".env"].filter(
+  (value): value is string => Boolean(value),
+);
+for (const candidate of dotenvCandidates) {
+  const resolved = path.resolve(process.cwd(), candidate);
+  if (fs.existsSync(resolved)) {
+    dotenv.config({ path: resolved });
+    break;
+  }
+}
 
 const PIPELINE_HMAC_SECRET = process.env.PIPELINE_HMAC_SECRET ?? "";
 const SUPABASE_URL = process.env.SUPABASE_URL ?? "";
@@ -71,7 +84,7 @@ interface GeneratedDocRegisterPdf {
 interface GeneratedDocEmailResult {
   action: "email_result";
   dispatch_key: string;
-  status: "emailed" | "email_failed";
+  status: "emailed" | "email_failed" | "email_skipped";
   provider?: string | null;
   provider_message_id?: string | null;
   sent_at?: string | null;
@@ -249,7 +262,7 @@ app.post(
         if (!b.dispatch_key || !b.status) {
           return res.status(400).json({ error: "email_result requires dispatch_key and status" });
         }
-        if (b.status !== "emailed" && b.status !== "email_failed") {
+        if (!["emailed", "email_failed", "email_skipped"].includes(b.status)) {
           return res.status(400).json({ error: "invalid status" });
         }
 

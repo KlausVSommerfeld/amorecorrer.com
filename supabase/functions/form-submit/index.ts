@@ -117,6 +117,54 @@ function logDispatchInfo(stage: string, details: Record<string, unknown>) {
   console.info(`[dispatch] ${stage}`, details);
 }
 
+function formatDispatchError(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (typeof err === "object" && err !== null) {
+    const e = err as Record<string, unknown>;
+    const message = typeof e.message === "string" ? e.message : null;
+    const code = typeof e.code === "string" ? e.code : null;
+    const details = typeof e.details === "string" ? e.details : null;
+    const hint = typeof e.hint === "string" ? e.hint : null;
+
+    const parts = [message, code, details, hint].filter(Boolean);
+    if (parts.length > 0) return parts.join(" | ");
+
+    try {
+      return JSON.stringify(e);
+    } catch {
+      return String(err);
+    }
+  }
+  return String(err);
+}
+
+function extractDispatchKey(data: unknown): string | null {
+  if (!data) return null;
+
+  if (typeof data === "string") {
+    const v = data.trim();
+    return v.length > 0 ? v : null;
+  }
+
+  if (Array.isArray(data)) {
+    for (const row of data) {
+      const key = extractDispatchKey(row);
+      if (key) return key;
+    }
+    return null;
+  }
+
+  if (typeof data === "object") {
+    const row = data as Record<string, unknown>;
+    const key = row.dispatch_key;
+    if (typeof key === "string" && key.trim().length > 0) {
+      return key.trim();
+    }
+  }
+
+  return null;
+}
+
 Deno.serve(async (req) => {
   // Handle preflight OPTIONS request
   if (req.method === "OPTIONS") {
@@ -328,14 +376,52 @@ Deno.serve(async (req) => {
 
     // After successful update, attempt dispatch via RPC
     try {
-      const rpcResult = await supabase
-        .rpc("attempt_dispatch", {
-          case_id: norm.case_id
-        })
-        .single();
+      let dispatch_key: string | null = null;
+      const dispatchRpcErrors: string[] = [];
+      let dispatchRpcRawData: unknown = null;
 
-      const dispatch_row = rpcResult.data as { dispatch_key?: string } | null;
-      const dispatch_key = dispatch_row?.dispatch_key ?? null;
+      // Be compatible with both RPC signatures seen across migrations:
+      // attempt_dispatch(case_id text) and attempt_dispatch(p_case_id text).
+      const rpcAttempts: Array<{ label: string; args: Record<string, unknown> }> = [
+        { label: "case_id", args: { case_id: norm.case_id } },
+        { label: "p_case_id", args: { p_case_id: norm.case_id } }
+      ];
+
+      for (const attempt of rpcAttempts) {
+        const rpcResult = await supabase.rpc("attempt_dispatch", attempt.args);
+        dispatchRpcRawData = rpcResult.data;
+
+        if (rpcResult.error) {
+          dispatchRpcErrors.push(`${attempt.label}: ${formatDispatchError(rpcResult.error)}`);
+          continue;
+        }
+
+        dispatch_key = extractDispatchKey(rpcResult.data);
+        if (dispatch_key) break;
+      }
+
+      // Recovery path: if RPC call shape failed but dispatch row already exists, resume from it.
+      if (!dispatch_key) {
+        const { data: dispatchRow, error: dispatchRowErr } = await supabase
+          .from("dispatches")
+          .select("dispatch_key,status")
+          .eq("case_id", norm.case_id)
+          .in("status", ["pending", "in_progress"])
+          .order("updated_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (dispatchRowErr) {
+          dispatchRpcErrors.push(`dispatches_lookup: ${formatDispatchError(dispatchRowErr)}`);
+        } else if (dispatchRow?.dispatch_key) {
+          dispatch_key = String(dispatchRow.dispatch_key);
+          logDispatchInfo("dispatch_key_recuperado", {
+            case_id: norm.case_id,
+            dispatch_key,
+            status: dispatchRow.status ?? null
+          });
+        }
+      }
 
       if (dispatch_key) {
         logDispatchInfo("dispatch_iniciado", {
@@ -531,7 +617,9 @@ Deno.serve(async (req) => {
           missing,
           document_status,
           stripe_session_id,
-          payment_status
+          payment_status,
+          rpc_errors: dispatchRpcErrors,
+          rpc_data: dispatchRpcRawData
         });
       }
     } catch (rpcErr) {

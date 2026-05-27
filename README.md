@@ -123,7 +123,7 @@ cd server && npm install && npm run dev
 ```
 5) Pipeline Python (`pipeline/`; recomenda-se venv).
 ```bash
-cd pipeline && python -m venv .venv && .venv\Scripts\activate
+cd pipeline && python -m venv .venv && .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 python -m uvicorn main:app --host 0.0.0.0 --port 8000
 ```
@@ -144,7 +144,7 @@ npm run preview
 supabase functions deploy create-checkout-session
 supabase functions deploy form-submit
 ```
-- Aplique a migration `supabase/migrations/20251130_create_stripe_sessions.sql` e garanta a existência da tabela `form_submissions` e das RPCs `attempt_dispatch` e `confirm_dispatch` no Supabase.
+- Aplique a migration `supabase/migrations/20250101000002_create_stripe_sessions.sql` e garanta a existência da tabela `form_submissions` e das RPCs `attempt_dispatch` e `confirm_dispatch` no Supabase.
 - Configure secrets no Supabase (Stripe, service role, `ORIGIN_WHITELIST`, `DISPATCH_PIPELINE_URL`, `DISPATCH_PIPELINE_HMAC_SECRET`).
 
 ## Como rodar testes
@@ -155,7 +155,7 @@ Informação não encontrada no repositório atual.
 - **Formulário (`src/pages/Form.tsx`):** cria `form_token` no `localStorage`, resgata `case_id` da URL/`localStorage`, valida campos obrigatórios e formatos (CPF 11 dígitos, CEP 8 dígitos, placa Mercosul), normaliza dados e envia JSON para `VITE_FORM_SUBMIT_URL`.
 - **Edge Function `form-submit`:** CORS por `ORIGIN_WHITELIST`, limite de 64 KB, rate limit 30 req/min por IP. Campos obrigatórios mínimos: `case_id`, `form_token`, `nome`, `email`; deduplicação e bloqueios como acima. Após `attempt_dispatch`, POST JSON para `DISPATCH_PIPELINE_URL` (retrocompatível: `N8N_WEBHOOK_URL`) com HMAC opcional. Resposta **`202 Accepted`** apenas marca `document_status = generating`; **`confirm_dispatch(true|false)`** ocorre no **Express** quando o pipeline concluí (ou continua sendo chamado pela Edge em falhas de rede/respostas não assíncronas herdadas).
 - **Fluxo PDF/Storage/IA/email:** `/hooks/dispatch` no Python valida corpo+HMAC → worker busca dados via Express `GET /internal/cases/:caseId` (e-mail oficial = `form_submissions.email`), gera conteúdo (DeepSeek se `DEEPSEEK_API_KEY`), PDF (`reportlab`), **upload no Supabase Storage** (bucket privado; variáveis `SUPABASE_*` + `STORAGE_BUCKET` em `pipeline/.env`), registo em **`generated_documents`** via `POST /internal/generated-documents` (ações `register_pdf` / `email_result`), e-mail (SMTP opcional; `Message-ID` como `provider_message_id`), e por fim `POST /internal/dispatch/finish` na API Express, que atualiza `form_submissions.document_status` e chama RPC `confirm_dispatch`. Criar bucket privado no Dashboard e políticas de Storage para a service role; aplicar migration `20260209130000_generated_documents.sql`.
-- **Persistência (`supabase/migrations/20251130_create_stripe_sessions.sql`):** tabela `stripe_sessions` com RLS habilitado e política ampla para service role; índices por `case_id` e `created_at`.
+- **Persistência (`supabase/migrations/20250101000002_create_stripe_sessions.sql`):** tabela `stripe_sessions` com RLS habilitado e política ampla para service role; índices por `case_id` e `created_at`.
 - **Rotas do frontend:** `/` (Home), `/form`, `/terms`, `/privacy`, `*` (404). Router em `src/App.tsx`.
 
 ## Tecnologias utilizadas

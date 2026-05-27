@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(".env.local", ".env"),
         env_file_encoding="utf-8",
         extra="ignore",
     )
@@ -28,13 +28,16 @@ class Settings(BaseSettings):
     deepseek_api_base: str = "https://api.deepseek.com"
     deepseek_model: str = "deepseek-chat"
 
-    # SMTP (leave host empty to skip sending — still completes pipeline for testing)
+    # Runtime mode: production requires SMTP; development/test may skip email.
+    pipeline_env: str = "development"
+
+    # SMTP via Resend. Port 587 uses STARTTLS and matches aiosmtplib start_tls=True.
     smtp_host: str = ""
     smtp_port: int = 587
-    smtp_user: str = ""
+    smtp_user: str = "resend"
     smtp_password: str = ""
     mail_from: str = ""
-    mail_subject: str = "Seu recurso de multa — Amo Recorrer"
+    mail_subject: str = "Seu recurso de multa - Amo Recorrer"
 
 
 settings = Settings()
