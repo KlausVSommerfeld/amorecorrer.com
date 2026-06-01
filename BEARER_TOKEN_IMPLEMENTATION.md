@@ -55,6 +55,7 @@ Helper functions for authenticated API calls:
 - `assertResponseOk()` - Response validation helper
 
 Features:
+
 - Automatic bearer token injection
 - Session validation before requests
 - Automatic session refresh on 401
@@ -148,12 +149,14 @@ async function customRequest() {
 The Edge Functions already validate bearer tokens in their headers:
 
 #### create-checkout-session
+
 ```typescript
 // Receives Authorization header with Bearer token
 // Validates using Supabase client with service role
 ```
 
 #### form-submit
+
 ```typescript
 // CORS headers allow Authorization
 "Access-Control-Allow-Headers": "Content-Type, Authorization"
@@ -211,21 +214,25 @@ Deno.serve(async (req) => {
 ## Security Features
 
 ### 1. Anonymous Sessions
+
 - Users don't need to register
 - Automatic anonymous session creation
 - Sessions persist across page reloads
 
 ### 2. Token Refresh
+
 - Automatic token refresh before expiry
 - Retry logic on 401 responses
 - Seamless user experience
 
 ### 3. Session Validation
+
 - Check session validity before requests
 - Automatic refresh of expired sessions
 - Fallback to anonymous session creation
 
 ### 4. Secure Headers
+
 - Bearer token in Authorization header
 - Supabase anon key in apikey header
 - CORS protection on Edge Functions
@@ -342,6 +349,7 @@ Content-Type: application/json
 **Cause:** Expired or invalid token
 
 **Solution:** The system auto-refreshes. If persistent:
+
 1. Check VITE_SUPABASE_ANON_KEY is correct
 2. Verify Supabase project is active
 3. Check Edge Function environment variables
@@ -351,6 +359,7 @@ Content-Type: application/json
 **Cause:** Supabase client not initialized
 
 **Solution:**
+
 1. Verify environment variables
 2. Check browser console for errors
 3. Ensure Supabase project allows anonymous sign-ins
@@ -360,6 +369,7 @@ Content-Type: application/json
 **Cause:** Edge Function CORS configuration
 
 **Solution:** Ensure Edge Functions include:
+
 ```typescript
 "Access-Control-Allow-Origin": allowed_origin,
 "Access-Control-Allow-Headers": "Content-Type, Authorization"
@@ -368,49 +378,43 @@ Content-Type: application/json
 ## Best Practices
 
 1. **Always ensure session before API calls**
-   ```typescript
+  ```typescript
    await ensureSession();
    const response = await authenticatedPost(...);
-   ```
-
+  ```
 2. **Use the provided utilities**
-   - Don't manually construct auth headers
-   - Use `getAuthHeaders()` for consistency
-
+  - Don't manually construct auth headers
+  - Use `getAuthHeaders()` for consistency
 3. **Handle errors gracefully**
-   ```typescript
+  ```typescript
    try {
      await authenticatedPost(...);
    } catch (error) {
      // Handle error
    }
-   ```
-
+  ```
 4. **Monitor token expiry**
-   - The system auto-refreshes
-   - Use `isSessionValid()` to check manually
-
+  - The system auto-refreshes
+  - Use `isSessionValid()` to check manually
 5. **Secure environment variables**
-   - Never commit `.env` files
-   - Use `.env.example` for templates
-   - Rotate keys periodically
+  - Never commit `.env` files
+  - Use `.env.example` for templates
+  - Rotate keys periodically
 
 ## Future Enhancements
 
 1. **User Authentication**
-   - Add email/password login
-   - Social auth (Google, GitHub)
-   - User profile management
-
+  - Add email/password login
+  - Social auth (Google, GitHub)
+  - User profile management
 2. **Token Revocation**
-   - Implement logout on all devices
-   - Token blacklisting
-
+  - Implement logout on all devices
+  - Token blacklisting
 3. **Rate Limiting**
-   - Token-based rate limits
-   - User-specific quotas
-
+  - Token-based rate limits
+  - User-specific quotas
 4. **Audit Logging**
-   - Log all authenticated requests
-   - Track token usage
-   - Security event monitoring
+  - Log all authenticated requests
+  - Track token usage
+  - Security event monitoring
+

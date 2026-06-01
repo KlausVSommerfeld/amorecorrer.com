@@ -1,4 +1,5 @@
 import Stripe from "npm:stripe@12.16.0";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -11,6 +12,11 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !STRIPE_WEBHOOK_SECRET || !ST
 }
 
 const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: "2023-08-16" });
+
+// Cliente admin reutilizável para chamadas RPC
+const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+  auth: { persistSession: false },
+});
 
 /** Map Stripe event + session fields to local decisive status.
  * Returns null for non-decisive events.
@@ -35,14 +41,13 @@ function shouldPromoteStatus(current: string | null, next: string): boolean {
     failed: 2,
     cancelled: 2,
     paid: 3,
-    refunded: 3, // se você usar no futuro
+    refunded: 3,
   };
   return (rank[next] ?? 0) >= (rank[current] ?? 0);
 }
 
 /**
  * Read existing stripe_sessions.payment_status/payment_at for a given session id.
- * Returns current values or nulls if not found / failed.
  */
 async function getCurrentStripePaymentState(
   sessionId: string
@@ -58,9 +63,7 @@ async function getCurrentStripePaymentState(
         },
       }
     );
-    if (!res.ok) {
-      return { payment_status: null, payment_at: null };
-    }
+    if (!res.ok) return { payment_status: null, payment_at: null };
     const arr = await res.json();
     return {
       payment_status: arr?.[0]?.payment_status ?? null,
@@ -71,50 +74,94 @@ async function getCurrentStripePaymentState(
   }
 }
 
-/** Upsert stripe_sessions via Supabase REST and update form_submissions linkage (no payment_status in form_submissions). */
+/**
+ * Chama attempt_dispatch via RPC após confirmação de pagamento.
+ * Tenta p_case_id (assinatura atual) e cai para case_id como fallback.
+ */
+async function triggerDispatch(case_id: string): Promise<void> {
+  const attempts = [
+    { label: "p_case_id", args: { p_case_id: case_id } },
+    { label: "case_id",   args: { case_id } },
+  ];
+
+  for (const attempt of attempts) {
+    const { data, error } = await supabaseAdmin.rpc("attempt_dispatch", attempt.args);
+
+    if (error) {
+      console.warn(`[webhook] attempt_dispatch(${attempt.label}) falhou:`, error.message);
+      continue;
+    }
+
+    // RPC retornou sem erro — dispatch enfileirado com sucesso
+    console.info("[webhook] attempt_dispatch concluído", {
+      case_id,
+      param: attempt.label,
+      result: data,
+    });
+    return;
+  }
+
+  // Ambas as tentativas falharam — loga para investigação mas não derruba o webhook
+  console.error("[webhook] attempt_dispatch: todas as tentativas falharam", { case_id });
+}
+
+/** Upsert stripe_sessions e atualiza form_submissions. Retorna se o pagamento foi
+ *  efetivamente promovido para "paid" nesta invocação. */
 async function handleSessionUpsertAndFormUpdate(
   event: any,
   session: any,
   statusToApply: string | null
-): Promise<void> {
+): Promise<{ paymentConfirmed: boolean; case_id: string | null }> {
   const case_id = session.client_reference_id ?? session.metadata?.case_id ?? null;
 
-  // Decide what to write into stripe_sessions.payment_status/payment_at, without demoting
+  // Guard: sessão sem case_id não pode ser persistida (coluna NOT NULL).
+  // Em produção o checkout sempre envia case_id via metadata.
+  // Em testes sintéticos (stripe trigger) este campo vem nulo — ignoramos graciosamente.
+  if (!case_id) {
+    console.warn("[webhook] Sessão ignorada: case_id ausente", {
+      session_id: session.id,
+      event_type: event.type,
+    });
+    return { paymentConfirmed: false, case_id: null };
+  }
+
   let nextPaymentStatus: string | null = null;
   let nextPaymentAt: string | null = null;
+
   if (statusToApply) {
     const current = await getCurrentStripePaymentState(session.id);
     if (shouldPromoteStatus(current.payment_status, statusToApply)) {
       nextPaymentStatus = statusToApply;
       if (statusToApply === "paid" && !current.payment_at) {
-        const ts = typeof event?.created === "number"
-          ? event.created
-          : (typeof session?.created === "number" ? session.created : Math.floor(Date.now() / 1000));
+        const ts =
+          typeof event?.created === "number"
+            ? event.created
+            : typeof session?.created === "number"
+            ? session.created
+            : Math.floor(Date.now() / 1000);
         nextPaymentAt = new Date(ts * 1000).toISOString();
       }
-    } else {
-      nextPaymentStatus = null; // keep existing
     }
   }
 
   const payloadSession: Record<string, unknown> = {
     id: session.id,
     case_id,
-    // "status" = raw stripe status snapshot for visibility
     status: session.payment_status ?? session.status ?? null,
-    // "payment_status" = decisive local status driven by events (paid/failed/cancelled)
     ...(nextPaymentStatus ? { payment_status: nextPaymentStatus } : {}),
-    ...(nextPaymentAt ? { payment_at: nextPaymentAt } : {}),
+    ...(nextPaymentAt  ? { payment_at: nextPaymentAt }   : {}),
     metadata: session.metadata ?? null,
     event_payload: event,
-    created_at: new Date((session.created ?? Math.floor(Date.now() / 1000)) * 1000).toISOString(),
+    created_at: new Date(
+      (session.created ?? Math.floor(Date.now() / 1000)) * 1000
+    ).toISOString(),
   };
   if (typeof session.url === "string" && session.url.length > 0) {
     payloadSession.url = session.url;
   }
 
-  // Upsert stripe_sessions (idempotent)
-  const upsertRes = await fetch(`${SUPABASE_URL}/rest/v1/stripe_sessions`, {
+  // Upsert stripe_sessions (idempotente por case_id — um case pode ter no máximo uma sessão)
+  const upsertRes = await fetch(`${SUPABASE_URL}/rest/v1/stripe_sessions?on_conflict=case_id`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
@@ -131,18 +178,7 @@ async function handleSessionUpsertAndFormUpdate(
     throw new Error("Failed to upsert stripe_sessions");
   }
 
-  // If no case_id, cannot link to form_submissions — return (still ok)
-  if (!case_id) {
-    console.warn("No case_id found on session", session.id);
-    return;
-  }
-
-  // Update link on form_submissions (NO payment_status column here)
-  const patchBody = {
-    stripe_session_id: session.id,
-    updated_at: new Date().toISOString(),
-  };
-
+  // Atualiza link em form_submissions
   const patchRes = await fetch(
     `${SUPABASE_URL}/rest/v1/form_submissions?case_id=eq.${encodeURIComponent(case_id)}`,
     {
@@ -152,7 +188,10 @@ async function handleSessionUpsertAndFormUpdate(
         apikey: SUPABASE_SERVICE_ROLE_KEY,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(patchBody),
+      body: JSON.stringify({
+        stripe_session_id: session.id,
+        updated_at: new Date().toISOString(),
+      }),
     }
   );
 
@@ -161,6 +200,10 @@ async function handleSessionUpsertAndFormUpdate(
     console.error("Failed to patch form_submissions:", patchRes.status, text);
     throw new Error("Failed to patch form_submissions");
   }
+
+  // Informa se o pagamento foi de fato confirmado nesta invocação
+  const paymentConfirmed = nextPaymentStatus === "paid";
+  return { paymentConfirmed, case_id };
 }
 
 Deno.serve(async (req) => {
@@ -175,7 +218,6 @@ Deno.serve(async (req) => {
 
     let event: any;
     try {
-      // CHANGE #1: async verification for Deno SubtleCrypto provider
       event = await stripe.webhooks.constructEventAsync(rawBody, sig, STRIPE_WEBHOOK_SECRET);
     } catch (err) {
       console.error("Webhook signature verification failed:", err);
@@ -200,11 +242,25 @@ Deno.serve(async (req) => {
     const session = event.data.object ?? {};
     const statusToApply = mapStripeToLocalStatus(event.type, session);
 
+    let paymentConfirmed = false;
+    let case_id: string | null = null;
+
     try {
-      await handleSessionUpsertAndFormUpdate(event, session, statusToApply);
+      ({ paymentConfirmed, case_id } = await handleSessionUpsertAndFormUpdate(
+        event,
+        session,
+        statusToApply
+      ));
     } catch (err) {
       console.error("Error processing session:", err);
       return new Response("Internal Server Error", { status: 500 });
+    }
+
+    // Dispara attempt_dispatch somente quando o pagamento foi confirmado agora
+    // (evita re-disparar em eventos duplicados ou não-pagamento)
+    if (paymentConfirmed && case_id) {
+      console.info("[webhook] Pagamento confirmado — disparando attempt_dispatch", { case_id });
+      await triggerDispatch(case_id);
     }
 
     return new Response(JSON.stringify({ received: true }), {

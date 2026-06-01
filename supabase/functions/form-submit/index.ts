@@ -612,15 +612,31 @@ Deno.serve(async (req) => {
           missing.push("dispatch_precondition_unknown");
         }
 
-        logDispatchInfo("dispatch_ignorado", {
-          case_id: norm.case_id,
-          missing,
-          document_status,
-          stripe_session_id,
-          payment_status,
-          rpc_errors: dispatchRpcErrors,
-          rpc_data: dispatchRpcRawData
-        });
+        // Race condition esperada: form submetido antes do webhook Stripe confirmar pagamento.
+        // Neste caso NÃO é erro — o webhook chamará attempt_dispatch quando payment_status=paid.
+        const isPendingPayment =
+          missing.length === 1 &&
+          missing[0] === "stripe_sessions.payment_status=paid";
+
+        if (isPendingPayment) {
+          logDispatchInfo("dispatch_aguardando_pagamento", {
+            case_id: norm.case_id,
+            stripe_session_id,
+            payment_status,
+            note: "Webhook Stripe ainda não confirmou pagamento. attempt_dispatch será chamado pelo stripe-webhook."
+          });
+        } else {
+          // Qualquer outro motivo de falha é um erro real e deve ser logado como tal.
+          logDispatchError("dispatch_ignorado", {
+            case_id: norm.case_id,
+            missing,
+            document_status,
+            stripe_session_id,
+            payment_status,
+            rpc_errors: dispatchRpcErrors,
+            rpc_data: dispatchRpcRawData
+          });
+        }
       }
     } catch (rpcErr) {
       logDispatchError("attempt_dispatch_rpc_error", {
