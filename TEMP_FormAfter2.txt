@@ -1,0 +1,76 @@
+      newErrors.notificacaoPenalidade = 'Preencha pelo menos um: Nº do auto, RENAINF ou Nº da notificação';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const normalizeData = (data: FormData) => {
+    return {
+      ...data,
+      email: data.email.trim().toLowerCase(),
+      telefone: data.telefone.replace(/\D/g, ''),
+      cpf: data.cpf.replace(/\D/g, ''),
+      cep: data.cep.replace(/\D/g, ''),
+      placa: data.placa.toUpperCase().replace(/\s+/g, ''),
+      autoInfracao: data.autoInfracao.toUpperCase().replace(/[^A-Z0-9]/g, ''),
+      renainf: data.renainf.toUpperCase().replace(/[^A-Z0-9]/g, ''),
+      notificacaoPenalidade: data.notificacaoPenalidade.toUpperCase().replace(/[^A-Z0-9]/g, '')
+    };
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      setMessage({ type: 'error', text: 'Por favor, corrija os erros no formulario.' });
+      return;
+    }
+
+    const caseId = formData.case_id || getCaseIdFromUrl();
+    if (!caseId) {
+      setMessage({
+        type: 'error',
+        text: 'Nao encontramos seu case_id. Refaca o checkout ou use o link de retorno apos o pagamento.'
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setMessage(null);
+
+    try {
+      // Ensure session is valid before submitting
+      await ensureSession();
+      
+      const normalizedData = normalizeData(formData);
+      normalizedData.case_id = caseId;
+      
+      // Send form data using authenticated API with bearer token
+      const response = await submitForm(normalizedData);
+      
+      // Check if response is ok
+      await assertResponseOk(response);
+      
+      setMessage({
+        type: 'success',
+        text: 'Recebemos seus dados. Se o pagamento ja foi concluido, sua peticao sera gerada e enviada por e-mail. Caso ainda nao tenha pago, finalize o pagamento para liberar a geracao.'
+      });
+      
+      // Clear form
+      setFormData(prev => ({
+        nomeCompleto: '', email: '', telefone: '', cpf: '', cnh: '', cep: '', endereco: '',
+        orgaoAutuador: '', notificacaoPenalidade: '', especieDocumento: '', autoInfracao: '',
+        expedidaEm: '', placa: '', marcaModeloEspecie: '', localSentido: '', dataHora: '',
+        renainf: '', descricaoInfracao: '', amparoLegal: '', justificativa: '',
+        form_token: prev.form_token,
+        case_id: prev.case_id
+      }));
+      setErrors({});
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : 'Erro ao enviar formulario. Tente novamente em alguns instantes.'
+      });
+    } finally {

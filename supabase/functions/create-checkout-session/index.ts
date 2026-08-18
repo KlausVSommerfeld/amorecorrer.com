@@ -1,0 +1,204 @@
+import Stripe from "stripe";
+import { createClient } from "npm:@supabase/supabase-js@2.31.0";
+
+const stripeSecret = Deno.env.get("STRIPE_SECRET_KEY");
+if (!stripeSecret) {
+  console.error("Missing STRIPE_SECRET_KEY env var");
+  throw new Error("Missing STRIPE_SECRET_KEY");
+}
+
+const stripePriceId = Deno.env.get("STRIPE_PRICE_ID");
+if (!stripePriceId) {
+  console.error("Missing STRIPE_PRICE_ID env var");
+  throw new Error("Missing STRIPE_PRICE_ID");
+}
+
+const supabaseUrl = Deno.env.get("SUPABASE_URL");
+const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY env vars");
+  throw new Error("Missing Supabase environment variables");
+}
+
+const stripe = new Stripe(stripeSecret, {
+  apiVersion: "2024-06-20"
+});
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    persistSession: false
+  }
+});
+
+// CORS headers
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  // Allow anon key and supabase client headers sent by browsers
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey, X-Client-Info"
+};
+
+Deno.serve(async (req) => {
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders
+    });
+  }
+
+  try {
+    if (req.method !== "POST") {
+      return new Response(JSON.stringify({
+        error: "Method not allowed"
+      }), {
+        status: 405,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        }
+      });
+    }
+    
+    // Optional: Validate bearer token for additional security
+    // Uncomment to enforce authentication
+    /*
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({
+        error: "Missing or invalid Authorization header"
+      }), {
+        status: 401,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        }
+      });
+    }
+    
+    const token = authHeader.replace('Bearer ', '');
+    
+    // Validate token using Supabase
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !user) {
+      return new Response(JSON.stringify({
+        error: "Invalid authentication token"
+      }), {
+        status: 401,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        }
+      });
+    }
+    */
+    
+    const contentType = req.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      return new Response(JSON.stringify({
+        error: "Expected application/json"
+      }), {
+        status: 400,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        }
+      });
+    }
+
+    const body = await req.json().catch(() => null);
+    if (!body) {
+      return new Response(JSON.stringify({
+        error: "Invalid JSON"
+      }), {
+        status: 400,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        }
+      });
+    }
+
+    // CRITICAL CHANGE: generate case_id server-side for control, uniqueness, traceability
+    // Format: CASO_<uuid> to match the database constraint (case_id ~ '^CASO_')
+    const case_id = `CASO_${crypto.randomUUID()}`;
+    // Use explicit frontend origin when provided to avoid redirecting to the Supabase domain.
+    // Normalize to avoid trailing slashes that would generate "//cancel".
+    const frontendUrl = Deno.env.get("FRONTEND_URL");
+    const origin = (frontendUrl || new URL(req.url).origin).replace(/\/+$/, "");
+
+    // Create Stripe Checkout session
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      client_reference_id: case_id,
+      payment_method_types: ["card"],
+      customer_email: body.email,
+      line_items: [
+        {
+          price: stripePriceId,
+          quantity: 1
+        }
+      ],
+      metadata: {
+        case_id
+      },
+      success_url: `${origin}/form?success=true&case_id=${encodeURIComponent(case_id)}`,
+      cancel_url: `${origin}/cancel?case_id=${encodeURIComponent(case_id)}`
+    });
+
+    // Persist session to Supabase
+    const insertPayload = {
+      id: session.id,
+      case_id: case_id,
+      status: session.status || "created",
+      url: session.url || null,
+      metadata: session.metadata || {}
+    };
+
+    try {
+      const { error: dbError } = await supabase
+        .from("stripe_sessions")
+        .insert(insertPayload)
+        .select();
+      
+      if (dbError) {
+        console.error("Failed to persist stripe session:", dbError.message);
+        throw new Error(`DB insert failed: ${dbError.message}`);
+      }
+    } catch (e) {
+      console.error(
+        "Unexpected DB error while inserting stripe session:",
+        e instanceof Error ? e.message : String(e)
+      );
+      throw e;
+    }
+
+    return new Response(JSON.stringify({
+      url: session.url,
+      stripe_session_id: session.id,
+      case_id
+    }), {
+      status: 200,
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json"
+      }
+    });
+
+  } catch (err) {
+    console.error(
+      "Erro creating checkout session:",
+      err instanceof Error ? err.message : String(err)
+    );
+    
+    return new Response(JSON.stringify({
+      error: "Falha ao criar sessão"
+    }), {
+      status: 500,
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json"
+      }
+    });
+  }
+});

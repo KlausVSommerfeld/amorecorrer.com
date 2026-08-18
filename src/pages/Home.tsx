@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Countdown from '../components/Countdown';
 import FAQ from '../components/FAQ';
+import { createCheckout } from '../lib/checkout';
+import { getCaseIdFromUrl } from '../lib/caseId';
 
 const Home = () => {
   const [isPromoExpired, setIsPromoExpired] = useState(false);
@@ -21,10 +23,23 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handlePaymentClick = () => {
-    const paymentLink = import.meta.env.VITE_STRIPE_PAYMENT_LINK_URL;
-    if (paymentLink && !isPromoExpired) {
-      window.open(paymentLink, '_blank');
+  useEffect(() => {
+    // Detect and store case_id from URL if present
+    getCaseIdFromUrl();
+  }, []);
+
+  const handlePaymentClick = async () => {
+    if (isPromoExpired) return;
+    try {
+      await createCheckout();
+    } catch (err: unknown) {
+      let message = 'Erro ao criar checkout';
+      if (err instanceof Error) {
+        message += ': ' + err.message;
+      } else if (typeof err === 'string') {
+        message += ': ' + err;
+      }
+      alert(message);
     }
   };
 

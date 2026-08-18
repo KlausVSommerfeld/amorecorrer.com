@@ -1,0 +1,120 @@
+import { v4 as uuidv4 } from 'uuid';
+import { getCaseIdFromUrl } from '../lib/caseId';
+import { submitForm, assertResponseOk } from '../lib/api';
+import { useAuth } from '../hooks/useAuth';
+
+interface FormData {
+  nomeCompleto: string;
+  email: string;
+  telefone: string;
+  cpf: string;
+  cnh: string;
+  cep: string;
+  endereco: string;
+  orgaoAutuador: string;
+  notificacaoPenalidade: string;
+  especieDocumento: string;
+  autoInfracao: string;
+  expedidaEm: string;
+  placa: string;
+  marcaModeloEspecie: string;
+  localSentido: string;
+  dataHora: string;
+  renainf: string;
+  descricaoInfracao: string;
+  amparoLegal: string;
+  justificativa: string;
+  form_token: string;
+}
+
+const Form = () => {
+  const { ensureSession } = useAuth();
+  
+  const [formData, setFormData] = useState<FormData>({
+    nomeCompleto: '',
+    email: '',
+    telefone: '',
+    cpf: '',
+    cnh: '',
+    cep: '',
+    endereco: '',
+    orgaoAutuador: '',
+    notificacaoPenalidade: '',
+    especieDocumento: '',
+    autoInfracao: '',
+    expedidaEm: '',
+    placa: '',
+    marcaModeloEspecie: '',
+    localSentido: '',
+    dataHora: '',
+    renainf: '',
+    descricaoInfracao: '',
+    amparoLegal: '',
+    justificativa: '',
+    form_token: ''
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    // Ensure we have a valid session on mount
+    ensureSession().catch(console.error);
+    
+    // Detect and store case_id from URL (for debugging)
+    const caseId = getCaseIdFromUrl();
+    if (caseId) {
+      // Log case_id for debugging
+      console.log('case_id detected:', caseId);
+    }
+
+    // Get or create form token
+    let token = localStorage.getItem('form_token');
+    if (!token) {
+      token = uuidv4();
+      localStorage.setItem('form_token', token);
+    }
+    setFormData(prev => ({ ...prev, form_token: token! }));
+  }, [ensureSession]);
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    // Required fields
+    if (!formData.nomeCompleto.trim()) newErrors.nomeCompleto = 'Nome completo é obrigatório';
+    if (!formData.email.trim()) newErrors.email = 'Email é obrigatório';
+    if (!formData.telefone.trim()) newErrors.telefone = 'Telefone é obrigatório';
+    if (!formData.cpf.trim()) newErrors.cpf = 'CPF é obrigatório';
+    if (!formData.cep.trim()) newErrors.cep = 'CEP é obrigatório';
+    if (!formData.endereco.trim()) newErrors.endereco = 'Endereço é obrigatório';
+    if (!formData.orgaoAutuador.trim()) newErrors.orgaoAutuador = 'Órgão Autuador é obrigatório';
+    if (!formData.placa.trim()) newErrors.placa = 'Placa é obrigatória';
+    if (!formData.localSentido.trim()) newErrors.localSentido = 'Local da infração é obrigatório';
+    if (!formData.dataHora.trim()) newErrors.dataHora = 'Data e hora são obrigatórias';
+    if (!formData.justificativa.trim()) newErrors.justificativa = 'Justificativa é obrigatória';
+
+    // Email validation
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Email inválido';
+    }
+
+    // CPF validation (11 digits)
+    const cpfDigits = formData.cpf.replace(/\D/g, '');
+    if (formData.cpf && cpfDigits.length !== 11) {
+      newErrors.cpf = 'CPF deve ter 11 dígitos';
+    }
+
+    // CEP validation (8 digits)
+    const cepDigits = formData.cep.replace(/\D/g, '');
+    if (formData.cep && cepDigits.length !== 8) {
+      newErrors.cep = 'CEP deve ter 8 dígitos';
+    }
+
+    // Placa validation (Mercosul format)
+    const placaClean = formData.placa.toUpperCase().replace(/\s+/g, '');
+    if (formData.placa && !/^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$/.test(placaClean)) {
+      newErrors.placa = 'Placa deve estar no formato Mercosul (ex: ABC1D23)';
+    }
+
+    // At least one identification number required

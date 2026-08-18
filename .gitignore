@@ -6,6 +6,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+bun.lockb
+bun.lock
 
 node_modules
 dist
@@ -23,3 +25,13 @@ dist-ssr
 *.sln
 *.sw?
 .env
+.env.local
+scripts/*
+**/venv/
+.venv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+supabase/.branches/
+supabase/.temp/

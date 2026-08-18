@@ -15,35 +15,37 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 13.3%;
 
-    /* Amo Recorrer Brand Colors */
-    --primary: 349 74% 63%; /* #e74266 */
-    --primary-foreground: 0 0% 100%;
-    --primary-light: 349 74% 75%;
-    --primary-dark: 349 74% 50%;
+  /* Amo Recorrer Brand Colors — atualizadas a partir do favicon */
+  /* Primary: deep teal (favicon dominant) */
+  --primary: 160 60% 23.5%; /* approx #186048 */
+  --primary-foreground: 0 0% 100%;
+  --primary-light: 150 20% 47.1%; /* approx #609078 */
+  --primary-dark: 160 60% 18.8%; /* approx #006030 */
 
-    --secondary: 171 71% 43%; /* #20b69e */
-    --secondary-foreground: 0 0% 100%;
-    --secondary-light: 171 71% 60%;
-    --secondary-dark: 171 71% 30%;
+  /* Secondary: muted green accent */
+  --secondary: 150 20% 47.1%; /* approx #609078 */
+  --secondary-foreground: 0 0% 100%;
+  --secondary-light: 120 16% 70.6%; /* approx #A8C0A8 */
+  --secondary-dark: 150 20% 23.5%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+  --muted: 60 44.4% 89.4%; /* light neutral */
+  --muted-foreground: 150 20% 47.1%;
 
-    --accent: 349 74% 96%;
-    --accent-foreground: 349 74% 63%;
+  --accent: 60 44.4% 89.4%; /* pale accent from favicon */
+  --accent-foreground: 160 60% 23.5%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
+  --destructive: 0 68.3% 51.8%; /* approx #D83030 */
+  --destructive-foreground: 0 0% 100%;
 
-    --success: 142 76% 36%;
-    --success-foreground: 0 0% 100%;
+  --success: 142 76% 36%;
+  --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 349 74% 63%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 160 60% 23.5%;
 
     --radius: 0.5rem;
 
@@ -74,17 +76,17 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+  --primary: 120 16% 70.6%; /* approx #A8C0A8 */
+  --primary-foreground: 160 60% 23.5%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+  --secondary: 150 20% 47.1%; /* approx #609078 */
+  --secondary-foreground: 210 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+  --accent: 150 20% 47.1%;
+  --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;

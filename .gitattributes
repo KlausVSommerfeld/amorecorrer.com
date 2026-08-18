@@ -1,0 +1,43 @@
+# Default: normalize to LF in the repo
+* text=auto eol=lf
+
+# Mark binaries so Git won’t try to change line endings
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.zip binary
+
+# Common config files stay LF
+*.sh text eol=lf
+*.ps1 text eol=lf
+# Keep Windows scripts usable
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Keep lockfiles consistent
+package-lock.json text eol=lf
+pnpm-lock.yaml text eol=lf
+yarn.lock text eol=lf
+
+# Source code (explicit, though covered by default)
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.toml text eol=lf
+*.sql text eol=lf
+
+# Optional: prevent diff on certain artifacts
+*.snap -diff
+*.min.js -diff
+*.min.css -diff

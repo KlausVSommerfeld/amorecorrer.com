@@ -1,0 +1,1 @@
+SELECT * FROM attempt_dispatch('CASO_313fd1ba-56d9-4e48-956b-939c036af8ac');
