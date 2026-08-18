@@ -1,65 +1,29 @@
-import { useState, useEffect } from 'react';
+import { usePromo } from '../hooks/use-promo';
 
-const TIMER_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
+const pad = (value: number) => value.toString().padStart(2, '0');
 
+/**
+ * Prazo da promoção. Mono tabular no vermelho da paleta, sem pulso: o dígito
+ * muda a cada segundo, o layout não treme. Quem decide o que aparece depois do
+ * fim do prazo é a página — aqui o componente simplesmente sai de cena.
+ */
 const Countdown = () => {
-  const [timeLeft, setTimeLeft] = useState<number>(0);
-  const [isExpired, setIsExpired] = useState(false);
+  const { msLeft, isExpired } = usePromo();
 
-  useEffect(() => {
-    // Get or set promo expiration time
-    const getPromoExpiration = () => {
-      const stored = sessionStorage.getItem('promo_expires_at');
-      if (stored) {
-        return parseInt(stored);
-      } else {
-        const expiresAt = Date.now() + TIMER_DURATION;
-        sessionStorage.setItem('promo_expires_at', expiresAt.toString());
-        return expiresAt;
-      }
-    };
+  if (isExpired) return null;
 
-    const expiresAt = getPromoExpiration();
-    
-    const updateTimer = () => {
-      const now = Date.now();
-      const remaining = Math.max(0, expiresAt - now);
-      
-      if (remaining === 0) {
-        setIsExpired(true);
-      }
-      
-      setTimeLeft(remaining);
-    };
-
-    // Update immediately
-    updateTimer();
-
-    // Update every second
-    const interval = setInterval(updateTimer, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const formatTime = (ms: number) => {
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  if (isExpired) {
-    return (
-      <div className="timer-highlight bg-muted text-muted-foreground">
-        Promoção encerrada
-      </div>
-    );
-  }
+  const totalSeconds = Math.floor(msLeft / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
 
   return (
-    <div className="timer-highlight animate-pulse">
-      ⏰ {formatTime(timeLeft)}
-    </div>
+    <time
+      className="countdown"
+      dateTime={`PT${minutes}M${seconds}S`}
+      aria-label={`Faltam ${minutes} minutos e ${seconds} segundos`}
+    >
+      {pad(minutes)}:{pad(seconds)}
+    </time>
   );
 };
 

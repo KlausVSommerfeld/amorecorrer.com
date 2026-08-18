@@ -1,10 +1,15 @@
 import { getAuthHeaders, ensureAnonymousSession } from './auth';
 
+/** Faixa de preço pedida ao backend. Ver `create-checkout-session`. */
+export type PricingTier = 'promo' | 'full';
+
 /**
  * Create a Stripe checkout session and redirect to payment
+ * @param pricing 'full' cobra o preço cheio (promoção expirada); o padrão é o
+ *   promocional. Quem manda é o navegador — o backend confia neste campo.
  * @returns Promise<string | null> The checkout URL
  */
-export async function createCheckout(): Promise<string | null> {
+export async function createCheckout(pricing: PricingTier = 'promo'): Promise<string | null> {
   if (!import.meta.env.VITE_CREATE_CHECKOUT_URL) {
     throw new Error('VITE_CREATE_CHECKOUT_URL is not defined in environment');
   }
@@ -24,7 +29,7 @@ export async function createCheckout(): Promise<string | null> {
     const res = await fetch(import.meta.env.VITE_CREATE_CHECKOUT_URL as string, {
       method: 'POST',
       headers,
-      body: JSON.stringify({})
+      body: JSON.stringify({ pricing })
     });
 
     if (!res.ok) {

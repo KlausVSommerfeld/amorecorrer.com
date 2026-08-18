@@ -1,21 +1,20 @@
 import { Link } from 'react-router-dom';
+import PageShell from '../components/PageShell';
 
 const Terms = () => {
   return (
-    <div className="min-h-screen py-12 bg-background">
-      <div className="container max-w-4xl mx-auto">
-        <div className="bg-card rounded-lg shadow-lg p-8">
-          <div className="mb-8">
-            <Link to="/" className="text-primary hover:text-primary-dark transition-colors">
-              ← Voltar ao início
-            </Link>
+    <PageShell>
+      <div className="container">
+        <div className="legal">
+
+          <div className="page__head">
+            <span className="eyebrow">Documento</span>
+            <h1 className="page__title">Termos de uso</h1>
           </div>
 
-          <h1 className="text-3xl md:text-4xl font-bold mb-8">Termos de Uso</h1>
-
-          <div className="prose prose-gray max-w-none space-y-6">
+          <div className="space-y-2">
             <section>
-              <h2 className="text-2xl font-semibold mb-4">1. Aceite dos Termos</h2>
+              <h2 className="legal__h2">1. Aceite dos Termos</h2>
               <p>
                 Ao utilizar os serviços da Amo Recorrer, você concorda com estes Termos de Uso. 
                 Se não concordar com qualquer parte destes termos, não utilize nossos serviços.
@@ -23,7 +22,7 @@ const Terms = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">2. Descrição do Serviço</h2>
+              <h2 className="legal__h2">2. Descrição do Serviço</h2>
               <p>
                 A Amo Recorrer oferece um serviço automatizado de geração de recursos de multa 
                 de trânsito. Nosso sistema utiliza inteligência artificial para criar documentos 
@@ -37,8 +36,8 @@ const Terms = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">3. Responsabilidades do Usuário</h2>
-              <ul className="list-disc list-inside space-y-2">
+              <h2 className="legal__h2">3. Responsabilidades do Usuário</h2>
+              <ul className="legal__list">
                 <li>Fornecer informações verdadeiras e precisas</li>
                 <li>Verificar a exatidão dos dados antes do envio</li>
                 <li>Utilizar o documento gerado conforme a legislação</li>
@@ -48,7 +47,7 @@ const Terms = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">4. Limitações de Responsabilidade</h2>
+              <h2 className="legal__h2">4. Limitações de Responsabilidade</h2>
               <p>
                 A Amo Recorrer não garante a aprovação dos recursos gerados. Nossa responsabilidade 
                 se limita à entrega do documento conforme as informações fornecidas.
@@ -56,7 +55,7 @@ const Terms = () => {
               <p>
                 Não nos responsabilizamos por:
               </p>
-              <ul className="list-disc list-inside space-y-2">
+              <ul className="legal__list">
                 <li>Decisões dos órgãos de trânsito</li>
                 <li>Perdas de prazo para protocolo</li>
                 <li>Informações incorretas fornecidas pelo usuário</li>
@@ -65,7 +64,7 @@ const Terms = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">5. Política de Pagamento</h2>
+              <h2 className="legal__h2">5. Política de Pagamento</h2>
               <p>
                 O pagamento é processado via Stripe antes da geração do documento. 
                 Após a confirmação do pagamento, o usuário será redirecionado ao formulário.
@@ -77,7 +76,7 @@ const Terms = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">6. Propriedade Intelectual</h2>
+              <h2 className="legal__h2">6. Propriedade Intelectual</h2>
               <p>
                 Todo o conteúdo e tecnologia da Amo Recorrer são protegidos por direitos autorais. 
                 É proibida a reprodução ou redistribuição sem autorização expressa.
@@ -85,7 +84,7 @@ const Terms = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">7. Modificações nos Termos</h2>
+              <h2 className="legal__h2">7. Modificações nos Termos</h2>
               <p>
                 Reservamo-nos o direito de modificar estes termos a qualquer momento. 
                 As alterações entram em vigor imediatamente após a publicação.
@@ -93,7 +92,7 @@ const Terms = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">8. Lei Aplicável</h2>
+              <h2 className="legal__h2">8. Lei Aplicável</h2>
               <p>
                 Estes termos são regidos pela legislação brasileira. Qualquer disputa 
                 será resolvida no foro da comarca competente.
@@ -101,23 +100,23 @@ const Terms = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">9. Contato</h2>
+              <h2 className="legal__h2">9. Contato</h2>
               <p>
                 Para dúvidas sobre estes termos, entre em contato:
               </p>
-              <ul className="list-none space-y-2">
+              <ul className="legal__list legal__list--plain">
                 <li>📧 Email: {import.meta.env.VITE_CONTACT_EMAIL}</li>
-                <li>📱 WhatsApp: <a href={import.meta.env.VITE_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary-dark">Clique aqui</a></li>
+                <li>📱 WhatsApp: <a href={import.meta.env.VITE_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" >Clique aqui</a></li>
               </ul>
             </section>
 
-            <div className="text-sm text-muted-foreground mt-8 pt-8 border-t border-border">
+            <div className="mt-10 border-t border-rule pt-6 text-sm">
               <p>Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 };
 

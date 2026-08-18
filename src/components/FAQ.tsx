@@ -1,67 +1,61 @@
-import { useState } from 'react';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from './ui/accordion';
 
-const FAQ = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+/**
+ * Antes era um `useState` à mão com uma seta `↓` literal, sem semântica de
+ * teclado. O Accordion do shadcn (Radix) já é dependência do projeto e traz
+ * `aria-expanded`, navegação por teclado e o chevron em traço fino.
+ */
+const PERGUNTAS = [
+  {
+    pergunta: 'Quais dados preciso fornecer?',
+    resposta:
+      'Seus dados pessoais (nome, e-mail, telefone, CPF e endereço) e os dados do auto de infração: órgão autuador, número do auto, placa do veículo, local, data e hora da infração e o artigo do CTB.',
+  },
+  {
+    pergunta: 'Como recebo o recurso?',
+    resposta:
+      'Em PDF A4 no seu e-mail, pronto para imprimir e protocolar no órgão autuador.',
+  },
+  {
+    pergunta: 'O pagamento é seguro?',
+    resposta:
+      'O pagamento é processado pela Stripe, que segue o padrão PCI DSS. Os dados do cartão não passam por este site.',
+  },
+  {
+    pergunta: 'Quanto tempo demora para receber?',
+    resposta:
+      'Alguns minutos. A peça é redigida e formatada assim que você envia o formulário — não há fila nem análise manual.',
+  },
+  {
+    pergunta: 'O recurso tem garantia de aprovação?',
+    resposta:
+      'Não. O serviço monta o documento com base no que você informa e na legislação do CTB. A decisão é do órgão autuador e depende das circunstâncias de cada caso.',
+  },
+];
 
-  const faqs = [
-    {
-      question: "Quais dados preciso fornecer?",
-      answer: "Você precisa fornecer seus dados pessoais (nome, email, telefone, CPF, endereço) e os dados do auto de infração (órgão autuador, número do auto, placa do veículo, local, data/hora da infração, etc.)."
-    },
-    {
-      question: "Como recebo o recurso?",
-      answer: "O recurso será enviado por e-mail em formato PDF A4, pronto para imprimir e protocolar junto ao órgão competente."
-    },
-    {
-      question: "O pagamento é seguro?",
-      answer: "Sim, todos os pagamentos são processados pela Stripe, que segue os mais altos padrões de segurança PCI DSS para proteção de dados financeiros."
-    },
-    {
-      question: "Quanto tempo demora para receber?",
-      answer: "Após o pagamento e preenchimento do formulário, o recurso é gerado automaticamente pela nossa IA e enviado por e-mail em alguns minutos."
-    },
-    {
-      question: "O recurso tem garantia de aprovação?",
-      answer: "Nosso serviço automatiza a criação do documento com base nas informações fornecidas, seguindo a legislação do CTB. O resultado depende das circunstâncias específicas de cada caso."
-    }
-  ];
-
-  const toggleFAQ = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
-  return (
-    <section className="py-16 bg-muted/30">
-      <div className="container">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-          Perguntas Frequentes
-        </h2>
-        
-        <div className="max-w-3xl mx-auto space-y-4">
-          {faqs.map((faq, index) => (
-            <div key={index} className="border border-border rounded-lg overflow-hidden">
-              <button
-                onClick={() => toggleFAQ(index)}
-                className="w-full px-6 py-4 text-left bg-card hover:bg-accent transition-colors duration-200 flex justify-between items-center"
-              >
-                <span className="font-semibold">{faq.question}</span>
-                <span className={`transform transition-transform duration-200 ${
-                  openIndex === index ? 'rotate-180' : ''
-                }`}>
-                  ↓
-                </span>
-              </button>
-              {openIndex === index && (
-                <div className="px-6 py-4 bg-background border-t border-border">
-                  <p className="text-muted-foreground">{faq.answer}</p>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+const FAQ = () => (
+  <section className="section">
+    <div className="container">
+      <div className="section__head mx-auto max-w-3xl">
+        <span className="eyebrow">Antes de pagar</span>
+        <h2 className="section__title">Perguntas frequentes</h2>
       </div>
-    </section>
-  );
-};
+
+      <Accordion type="single" collapsible className="faq">
+        {PERGUNTAS.map(({ pergunta, resposta }) => (
+          <AccordionItem key={pergunta} value={pergunta} className="faq__item">
+            <AccordionTrigger className="faq__question">{pergunta}</AccordionTrigger>
+            <AccordionContent className="faq__answer">{resposta}</AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </div>
+  </section>
+);
 
 export default FAQ;

@@ -13,14 +13,10 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !STRIPE_WEBHOOK_SECRET || !ST
 
 const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: "2023-08-16" });
 
-// Cliente admin reutilizável para chamadas RPC
 const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   auth: { persistSession: false },
 });
 
-/** Map Stripe event + session fields to local decisive status.
- * Returns null for non-decisive events.
- */
 function mapStripeToLocalStatus(eventType: string, session: any): string | null {
   if (eventType === "checkout.session.completed") return "paid";
   if (eventType === "checkout.session.async_payment_succeeded") return "paid";
@@ -33,7 +29,6 @@ function mapStripeToLocalStatus(eventType: string, session: any): string | null 
   return null;
 }
 
-/** Promotion guard to avoid overwriting higher states with weaker ones. */
 function shouldPromoteStatus(current: string | null, next: string): boolean {
   if (!current) return true;
   const rank: Record<string, number> = {
@@ -46,38 +41,6 @@ function shouldPromoteStatus(current: string | null, next: string): boolean {
   return (rank[next] ?? 0) >= (rank[current] ?? 0);
 }
 
-/**
- * Read existing stripe_sessions.payment_status/payment_at for a given session id.
- */
-async function getCurrentStripePaymentState(
-  sessionId: string
-): Promise<{ payment_status: string | null; payment_at: string | null }> {
-  try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/stripe_sessions?id=eq.${encodeURIComponent(sessionId)}&select=payment_status,payment_at`,
-      {
-        headers: {
-          Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-          apikey: SUPABASE_SERVICE_ROLE_KEY,
-          Accept: "application/json",
-        },
-      }
-    );
-    if (!res.ok) return { payment_status: null, payment_at: null };
-    const arr = await res.json();
-    return {
-      payment_status: arr?.[0]?.payment_status ?? null,
-      payment_at: arr?.[0]?.payment_at ?? null,
-    };
-  } catch {
-    return { payment_status: null, payment_at: null };
-  }
-}
-
-/**
- * Chama attempt_dispatch via RPC após confirmação de pagamento.
- * Tenta p_case_id (assinatura atual) e cai para case_id como fallback.
- */
 async function triggerDispatch(case_id: string): Promise<void> {
   const attempts = [
     { label: "p_case_id", args: { p_case_id: case_id } },
@@ -92,7 +55,6 @@ async function triggerDispatch(case_id: string): Promise<void> {
       continue;
     }
 
-    // RPC retornou sem erro — dispatch enfileirado com sucesso
     console.info("[webhook] attempt_dispatch concluído", {
       case_id,
       param: attempt.label,
@@ -101,12 +63,9 @@ async function triggerDispatch(case_id: string): Promise<void> {
     return;
   }
 
-  // Ambas as tentativas falharam — loga para investigação mas não derruba o webhook
   console.error("[webhook] attempt_dispatch: todas as tentativas falharam", { case_id });
 }
 
-/** Upsert stripe_sessions e atualiza form_submissions. Retorna se o pagamento foi
- *  efetivamente promovido para "paid" nesta invocação. */
 async function handleSessionUpsertAndFormUpdate(
   event: any,
   session: any,
@@ -115,8 +74,6 @@ async function handleSessionUpsertAndFormUpdate(
   const case_id = session.client_reference_id ?? session.metadata?.case_id ?? null;
 
   // Guard: sessão sem case_id não pode ser persistida (coluna NOT NULL).
-  // Em produção o checkout sempre envia case_id via metadata.
-  // Em testes sintéticos (stripe trigger) este campo vem nulo — ignoramos graciosamente.
   if (!case_id) {
     console.warn("[webhook] Sessão ignorada: case_id ausente", {
       session_id: session.id,
@@ -125,14 +82,39 @@ async function handleSessionUpsertAndFormUpdate(
     return { paymentConfirmed: false, case_id: null };
   }
 
+  // Determina o status a promover
   let nextPaymentStatus: string | null = null;
   let nextPaymentAt: string | null = null;
 
+  const sessionCreatedAt = new Date(
+    (session.created ?? Math.floor(Date.now() / 1000)) * 1000
+  ).toISOString();
+
+  // ── SELECT: verifica se já existe linha para este case_id ──────────────────
+  // Estratégia: INSERT se não existe, PATCH seletivo se existe.
+  // Nunca alteramos o `id` de uma linha existente — preserva a FK
+  // dispatches.stripe_session_id → stripe_sessions.id.
+  const existingRes = await fetch(
+    `${SUPABASE_URL}/rest/v1/stripe_sessions?case_id=eq.${encodeURIComponent(case_id)}&select=id,payment_status,payment_at&limit=1`,
+    {
+      headers: {
+        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+        apikey: SUPABASE_SERVICE_ROLE_KEY,
+        Accept: "application/json",
+      },
+    }
+  );
+  const existingArr = existingRes.ok ? await existingRes.json() : [];
+  const existingRow: { id: string; payment_status: string | null; payment_at: string | null } | null =
+    existingArr?.[0] ?? null;
+
+  // Calcula promoção de status com base na linha existente (ou null se nova)
   if (statusToApply) {
-    const current = await getCurrentStripePaymentState(session.id);
-    if (shouldPromoteStatus(current.payment_status, statusToApply)) {
+    const currentStatus = existingRow?.payment_status ?? null;
+    const currentPaymentAt = existingRow?.payment_at ?? null;
+    if (shouldPromoteStatus(currentStatus, statusToApply)) {
       nextPaymentStatus = statusToApply;
-      if (statusToApply === "paid" && !current.payment_at) {
+      if (statusToApply === "paid" && !currentPaymentAt) {
         const ts =
           typeof event?.created === "number"
             ? event.created
@@ -144,41 +126,79 @@ async function handleSessionUpsertAndFormUpdate(
     }
   }
 
-  const payloadSession: Record<string, unknown> = {
-    id: session.id,
-    case_id,
-    status: session.payment_status ?? session.status ?? null,
-    ...(nextPaymentStatus ? { payment_status: nextPaymentStatus } : {}),
-    ...(nextPaymentAt  ? { payment_at: nextPaymentAt }   : {}),
-    metadata: session.metadata ?? null,
-    event_payload: event,
-    created_at: new Date(
-      (session.created ?? Math.floor(Date.now() / 1000)) * 1000
-    ).toISOString(),
-  };
-  if (typeof session.url === "string" && session.url.length > 0) {
-    payloadSession.url = session.url;
+  if (!existingRow) {
+    // ── INSERT: primeira vez que este case_id aparece ─────────────────────────
+    const insertPayload: Record<string, unknown> = {
+      id: session.id,
+      case_id,
+      status: session.payment_status ?? session.status ?? null,
+      ...(nextPaymentStatus ? { payment_status: nextPaymentStatus } : {}),
+      ...(nextPaymentAt    ? { payment_at: nextPaymentAt }         : {}),
+      metadata: session.metadata ?? null,
+      event_payload: event,
+      created_at: sessionCreatedAt,
+    };
+    if (typeof session.url === "string" && session.url.length > 0) {
+      insertPayload.url = session.url;
+    }
+
+    const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/stripe_sessions`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+        apikey: SUPABASE_SERVICE_ROLE_KEY,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify([insertPayload]),
+    });
+
+    if (!insertRes.ok) {
+      const text = await insertRes.text();
+      console.error("Failed to insert stripe_sessions:", insertRes.status, text);
+      throw new Error("Failed to insert stripe_sessions");
+    }
+  } else {
+    // ── PATCH: linha já existe — atualiza só campos de pagamento, NUNCA o id ──
+    if (nextPaymentStatus) {
+      const patchPayload: Record<string, unknown> = {
+        status: session.payment_status ?? session.status ?? null,
+        payment_status: nextPaymentStatus,
+        metadata: session.metadata ?? null,
+        event_payload: event,
+        ...(nextPaymentAt ? { payment_at: nextPaymentAt } : {}),
+      };
+
+      const patchSessionRes = await fetch(
+        `${SUPABASE_URL}/rest/v1/stripe_sessions?case_id=eq.${encodeURIComponent(case_id)}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+            apikey: SUPABASE_SERVICE_ROLE_KEY,
+            "Content-Type": "application/json",
+            Prefer: "return=minimal",
+          },
+          body: JSON.stringify(patchPayload),
+        }
+      );
+
+      if (!patchSessionRes.ok) {
+        const text = await patchSessionRes.text();
+        console.error("Failed to patch stripe_sessions:", patchSessionRes.status, text);
+        throw new Error("Failed to patch stripe_sessions");
+      }
+    } else {
+      console.info("[webhook] stripe_sessions não atualizada: promoção desnecessária", {
+        case_id,
+        current: existingRow.payment_status,
+        attempted: statusToApply,
+      });
+    }
   }
 
-  // Upsert stripe_sessions (idempotente por case_id — um case pode ter no máximo uma sessão)
-  const upsertRes = await fetch(`${SUPABASE_URL}/rest/v1/stripe_sessions?on_conflict=case_id`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      "Content-Type": "application/json",
-      Prefer: "resolution=merge-duplicates",
-    },
-    body: JSON.stringify([payloadSession]),
-  });
-
-  if (!upsertRes.ok) {
-    const text = await upsertRes.text();
-    console.error("Failed to upsert stripe_sessions:", upsertRes.status, text);
-    throw new Error("Failed to upsert stripe_sessions");
-  }
-
-  // Atualiza link em form_submissions
+  // Atualiza link em form_submissions (stripe_session_id aponta para o id ORIGINAL preservado)
+  const sessionIdToLink = existingRow?.id ?? session.id;
   const patchRes = await fetch(
     `${SUPABASE_URL}/rest/v1/form_submissions?case_id=eq.${encodeURIComponent(case_id)}`,
     {
@@ -187,9 +207,10 @@ async function handleSessionUpsertAndFormUpdate(
         Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
         apikey: SUPABASE_SERVICE_ROLE_KEY,
         "Content-Type": "application/json",
+        Prefer: "return=minimal",
       },
       body: JSON.stringify({
-        stripe_session_id: session.id,
+        stripe_session_id: sessionIdToLink,
         updated_at: new Date().toISOString(),
       }),
     }
@@ -201,7 +222,6 @@ async function handleSessionUpsertAndFormUpdate(
     throw new Error("Failed to patch form_submissions");
   }
 
-  // Informa se o pagamento foi de fato confirmado nesta invocação
   const paymentConfirmed = nextPaymentStatus === "paid";
   return { paymentConfirmed, case_id };
 }
@@ -256,8 +276,6 @@ Deno.serve(async (req) => {
       return new Response("Internal Server Error", { status: 500 });
     }
 
-    // Dispara attempt_dispatch somente quando o pagamento foi confirmado agora
-    // (evita re-disparar em eventos duplicados ou não-pagamento)
     if (paymentConfirmed && case_id) {
       console.info("[webhook] Pagamento confirmado — disparando attempt_dispatch", { case_id });
       await triggerDispatch(case_id);

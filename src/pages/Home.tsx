@@ -1,37 +1,62 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Countdown from '../components/Countdown';
+import NotificacaoHero from '../components/NotificacaoHero';
+import Masthead from '../components/Masthead';
+import ComoFunciona from '../components/ComoFunciona';
+import RecursoPreview from '../components/RecursoPreview';
 import FAQ from '../components/FAQ';
+import Rodape from '../components/Rodape';
 import { createCheckout } from '../lib/checkout';
 import { getCaseIdFromUrl } from '../lib/caseId';
+import { usePromo } from '../hooks/use-promo';
+
+const PRECO_PROMO = 'R$ 19,99';
+const PRECO_CHEIO = 'R$ 39,99';
+
+/** O campo de preço do documento, usado no hero e na faixa de fechamento. */
+const CampoPreco = ({ expirado }: { expirado: boolean }) => (
+  <div className="offer__cell">
+    <span className="eyebrow block">
+      {expirado ? 'Preço' : 'Preço promocional'}
+    </span>
+    <span className="price mt-1 block">
+      {!expirado && <s className="price__from">{PRECO_CHEIO}</s>}
+      {expirado ? PRECO_CHEIO : PRECO_PROMO}
+    </span>
+  </div>
+);
 
 const Home = () => {
-  const [isPromoExpired, setIsPromoExpired] = useState(false);
-
-  useEffect(() => {
-    const checkPromoStatus = () => {
-      const stored = sessionStorage.getItem('promo_expires_at');
-      if (stored) {
-        const expiresAt = parseInt(stored);
-        const now = Date.now();
-        setIsPromoExpired(now >= expiresAt);
-      }
-    };
-
-    checkPromoStatus();
-    const interval = setInterval(checkPromoStatus, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const { isExpired: isPromoExpired } = usePromo();
+  const heroCtaRef = useRef<HTMLDivElement>(null);
+  const [showStickyCta, setShowStickyCta] = useState(false);
 
   useEffect(() => {
     // Detect and store case_id from URL if present
     getCaseIdFromUrl();
   }, []);
 
+  // O CTA fixo do mobile só entra depois que o do hero sai por cima da tela.
+  useEffect(() => {
+    const update = () => {
+      const target = heroCtaRef.current;
+      if (!target) return;
+      setShowStickyCta(target.getBoundingClientRect().bottom < 0);
+    };
+
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      window.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+
   const handlePaymentClick = async () => {
-    if (isPromoExpired) return;
     try {
-      await createCheckout();
+      await createCheckout(isPromoExpired ? 'full' : 'promo');
     } catch (err: unknown) {
       let message = 'Erro ao criar checkout';
       if (err instanceof Error) {
@@ -45,196 +70,110 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="hero-gradient py-20 text-white">
-        <div className="container text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Recurso de multa em minutos.
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed">
-            Preencha um formulário. Nossa IA monta sua defesa e enviamos o PDF por e-mail.
-          </p>
-          
-          <div className="mb-8">
-            <div className="text-lg mb-4">
-              <span className="line-through text-primary-light">De R$ 39,99</span>
-              <span className="text-3xl font-bold ml-4">por R$ 19,99</span>
-            </div>
-            <div className="flex justify-center items-center gap-4 flex-wrap">
-              <span className="text-lg">Promoção válida por:</span>
-              <Countdown />
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {!isPromoExpired ? (
-              <button
-                onClick={handlePaymentClick}
-                className="btn-primary text-lg px-8 py-4 inline-block"
-              >
-                🚀 Garantir preço e iniciar
-              </button>
-            ) : (
-              <button className="btn-disabled text-lg px-8 py-4 inline-block cursor-not-allowed">
-                Promoção encerrada - tente novamente mais tarde
-              </button>
-            )}
-            <p className="text-sm opacity-90">
-              Processamento seguro via Stripe
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Como Funciona */}
-      <section className="py-16">
+      {/* Hero — a réplica do auto e a resposta */}
+      <header className="hero">
         <div className="container">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Como Funciona - 5 Passos Simples
-          </h2>
-          
-          <div className="grid md:grid-cols-5 gap-8 max-w-6xl mx-auto">
-            {[
-              {
-                step: "1",
-                title: "Pagamento",
-                description: "Pague R$ 19,99 via Stripe. Após sucesso, você será redirecionado ao formulário."
-              },
-              {
-                step: "2",
-                title: "Formulário",
-                description: "Preencha o formulário com seus dados pessoais e informações do auto de infração."
-              },
-              {
-                step: "3",
-                title: "IA Jurídica",
-                description: "Nossa IA especializada redige a peça seguindo o CTB e linguagem jurídica formal."
-              },
-              {
-                step: "4",
-                title: "Formatação",
-                description: "Higienização e formatação A4 com título e rodapé automáticos."
-              },
-              {
-                step: "5",
-                title: "Entrega",
-                description: "PDF no seu e-mail, pronto para imprimir e protocolar."
-              }
-            ].map((item) => (
-              <div key={item.step} className="text-center">
-                <div className="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
-                  {item.step}
-                </div>
-                <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
-                <p className="text-muted-foreground">{item.description}</p>
+          <Masthead />
+
+          <div className="hero__grid">
+            <div className="hero__head">
+              <p className="eyebrow">Notificação de autuação → recurso</p>
+              <h1 className="hero__title">Sua multa tem resposta.</h1>
+            </div>
+
+            <NotificacaoHero className="hero__figure" />
+
+            <div className="hero__body">
+              <p className="hero__lead">
+                Você preenche os dados do auto. A IA redige a defesa. O PDF chega
+                no seu e-mail, pronto para protocolar.
+              </p>
+
+              <div className="offer">
+                <CampoPreco expirado={isPromoExpired} />
+
+                {!isPromoExpired && (
+                  <div className="offer__cell">
+                    <span className="eyebrow block">Prazo da promoção</span>
+                    <span className="mt-1 block">
+                      <Countdown />
+                    </span>
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* O que você recebe */}
-      <section className="py-16 bg-accent/20">
-        <div className="container">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            O Que Você Recebe
-          </h2>
-          
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center p-6 bg-card rounded-lg shadow-md">
-              <div className="text-4xl mb-4">📄</div>
-              <h3 className="text-xl font-semibold mb-3">PDF A4 do Recurso</h3>
-              <p className="text-muted-foreground">Documento completo e formatado, pronto para protocolar</p>
-            </div>
-            
-            <div className="text-center p-6 bg-card rounded-lg shadow-md">
-              <div className="text-4xl mb-4">💻</div>
-              <h3 className="text-xl font-semibold mb-3">HTML da Peça (Opcional)</h3>
-              <p className="text-muted-foreground">Versão digital para consulta online</p>
-            </div>
-            
-            <div className="text-center p-6 bg-card rounded-lg shadow-md">
-              <div className="text-4xl mb-4">📧</div>
-              <h3 className="text-xl font-semibold mb-3">E-mail com Resumo</h3>
-              <p className="text-muted-foreground">Dados do órgão, placa, data/hora e artigo do CTB</p>
+              <div ref={heroCtaRef} className="flex flex-col items-start gap-3">
+                <button
+                  onClick={handlePaymentClick}
+                  className="btn btn--solid px-8 py-4 text-lg"
+                >
+                  Gerar meu recurso
+                </button>
+                <p className="note">
+                  Pagamento via Stripe · Sem cadastro · Entrega por e-mail
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </section>
+      </header>
 
-      {/* CTA Checkout */}
-      <section className="py-16 bg-secondary text-white">
-        <div className="container text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Pronto para Começar?
-          </h2>
-          <p className="text-xl mb-8">
-            Aproveite o preço promocional válido apenas por tempo limitado.
-          </p>
-          
-          {!isPromoExpired ? (
-            <button
-              onClick={handlePaymentClick}
-              className="btn-primary bg-white text-secondary hover:bg-gray-100 text-lg px-8 py-4 mb-4"
-            >
-              💳 Pagar R$ 19,99
-            </button>
-          ) : (
-            <button className="btn-disabled text-lg px-8 py-4 mb-4">
-              Promoção encerrada - tente novamente mais tarde
-            </button>
-          )}
-          
-          <p className="text-sm opacity-90">
-            Após pagamento aprovado, você será redirecionado ao{' '}
+      <ComoFunciona />
+
+      <RecursoPreview />
+
+      {/* Fechamento: a última chance de comprar antes do FAQ. */}
+      <section className="closer on-green">
+        <div className="container flex flex-col items-start gap-6">
+          <span className="eyebrow">Pagamento único</span>
+          <h2 className="closer__title">Sua multa não vai responder sozinha.</h2>
+
+          <div className="offer">
+            <CampoPreco expirado={isPromoExpired} />
+          </div>
+
+          <button
+            onClick={handlePaymentClick}
+            className="btn btn--inverse px-8 py-4 text-lg"
+          >
+            Gerar meu recurso
+          </button>
+
+          <p className="text-sm text-paper">
+            Depois do pagamento você cai direto no{' '}
             <Link to="/form" className="underline hover:no-underline">
               formulário
             </Link>
+            .
           </p>
         </div>
       </section>
 
-      {/* FAQ */}
       <FAQ />
 
-      {/* Footer */}
-      <footer className="bg-primary text-white py-12">
-        <div className="container">
-          <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold mb-4">Amo Recorrer</h3>
-            <p className="text-primary-foreground/80 max-w-2xl mx-auto">
-              Automatização inteligente para recursos de multa. 
-              Tecnologia jurídica ao seu alcance.
-            </p>
-          </div>
-          
-          <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-8">
-            <a 
-              href={import.meta.env.VITE_WHATSAPP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-primary-light transition-colors"
+      <Rodape />
+
+      {/* CTA fixo no rodapé da viewport — só mobile, e só depois do hero. */}
+      {showStickyCta && (
+        <>
+          <div className="cta-bar md:hidden">
+            <div>
+              <span className="eyebrow block">Preço</span>
+              <span className="price text-xl">
+                {isPromoExpired ? PRECO_CHEIO : PRECO_PROMO}
+              </span>
+            </div>
+            <button
+              onClick={handlePaymentClick}
+              className="btn btn--solid whitespace-nowrap"
             >
-              📱 WhatsApp
-            </a>
-            <a 
-              href={`mailto:${import.meta.env.VITE_CONTACT_EMAIL}`}
-              className="hover:text-primary-light transition-colors"
-            >
-              ✉️ {import.meta.env.VITE_CONTACT_EMAIL}
-            </a>
+              Gerar meu recurso
+            </button>
           </div>
-          
-          <div className="text-center text-sm text-primary-foreground/70">
-            <p className="mb-4">
-              <strong>Aviso Legal:</strong> Serviço automatiza a geração do documento com base nas informações fornecidas. 
-              Leia os <Link to="/terms" className="underline hover:no-underline">Termos</Link> e a{' '}
-              <Link to="/privacy" className="underline hover:no-underline">Política de Privacidade</Link>.
-            </p>
-            <p>&copy; {new Date().getFullYear()} Amo Recorrer. Todos os direitos reservados.</p>
-          </div>
-        </div>
-      </footer>
+          {/* Reserva a altura da barra para que ela não cubra o rodapé. */}
+          <div aria-hidden="true" className="h-20 md:hidden" />
+        </>
+      )}
     </div>
   );
 };

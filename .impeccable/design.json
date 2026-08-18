@@ -1,0 +1,250 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-18T00:00:00.000Z",
+  "title": "Design System: Amo Recorrer",
+  "extensions": {
+    "colorMeta": {
+      "verde-autuacao": {
+        "role": "primary",
+        "displayName": "Verde Autuação",
+        "canonical": "hsl(160 60% 23.5%)",
+        "tonalRamp": ["oklch(15% 0.030 163)", "oklch(25% 0.050 163)", "oklch(33% 0.065 163)", "oklch(41% 0.077 163)", "oklch(55% 0.080 163)", "oklch(68% 0.070 163)", "oklch(82% 0.045 163)", "oklch(94% 0.020 163)"]
+      },
+      "verde-autuacao-fundo": {
+        "role": "primary",
+        "displayName": "Verde Autuação Fundo",
+        "canonical": "hsl(160 60% 18.8%)",
+        "tonalRamp": ["oklch(15% 0.030 163)", "oklch(22% 0.045 163)", "oklch(30% 0.060 163)", "oklch(36% 0.068 163)", "oklch(50% 0.075 163)", "oklch(65% 0.065 163)", "oklch(80% 0.045 163)", "oklch(93% 0.020 163)"]
+      },
+      "verde-protocolo": {
+        "role": "primary",
+        "displayName": "Verde Protocolo",
+        "canonical": "hsl(150 100% 18.8%)",
+        "tonalRamp": ["oklch(15% 0.045 152)", "oklch(24% 0.070 152)", "oklch(32% 0.090 152)", "oklch(40% 0.100 152)", "oklch(54% 0.105 152)", "oklch(68% 0.090 152)", "oklch(82% 0.055 152)", "oklch(94% 0.022 152)"]
+      },
+      "tinta-carimbo": {
+        "role": "primary",
+        "displayName": "Tinta de Carimbo",
+        "canonical": "hsl(160 60% 21%)",
+        "tonalRamp": ["oklch(15% 0.028 163)", "oklch(23% 0.048 163)", "oklch(31% 0.062 163)", "oklch(38% 0.072 163)", "oklch(52% 0.078 163)", "oklch(67% 0.068 163)", "oklch(81% 0.045 163)", "oklch(94% 0.020 163)"]
+      },
+      "salvia-margem": {
+        "role": "secondary",
+        "displayName": "Sálvia de Margem",
+        "canonical": "hsl(150 20% 47.1%)",
+        "tonalRamp": ["oklch(15% 0.020 158)", "oklch(25% 0.030 158)", "oklch(36% 0.040 158)", "oklch(47% 0.048 158)", "oklch(58% 0.050 158)", "oklch(70% 0.042 158)", "oklch(83% 0.028 158)", "oklch(95% 0.012 158)"]
+      },
+      "salvia-clara": {
+        "role": "secondary",
+        "displayName": "Sálvia Clara",
+        "canonical": "hsl(120 16% 70.6%)",
+        "tonalRamp": ["oklch(15% 0.015 145)", "oklch(26% 0.022 145)", "oklch(38% 0.028 145)", "oklch(50% 0.032 145)", "oklch(63% 0.034 145)", "oklch(76% 0.033 145)", "oklch(87% 0.022 145)", "oklch(95% 0.010 145)"]
+      },
+      "papel-talao": {
+        "role": "neutral",
+        "displayName": "Papel do Talão",
+        "canonical": "hsl(60 44.4% 89.4%)",
+        "tonalRamp": ["oklch(15% 0.014 105)", "oklch(27% 0.020 105)", "oklch(40% 0.026 105)", "oklch(53% 0.030 105)", "oklch(66% 0.032 105)", "oklch(79% 0.034 105)", "oklch(88% 0.033 105)", "oklch(95% 0.032 105)"]
+      },
+      "vermelho-infracao": {
+        "role": "tertiary",
+        "displayName": "Vermelho Infração",
+        "canonical": "hsl(0 68.3% 51.8%)",
+        "tonalRamp": ["oklch(18% 0.070 27)", "oklch(28% 0.110 27)", "oklch(38% 0.150 27)", "oklch(47% 0.180 27)", "oklch(57% 0.200 27)", "oklch(70% 0.160 27)", "oklch(83% 0.095 27)", "oklch(94% 0.035 27)"]
+      },
+      "vermelho-prazo": {
+        "role": "tertiary",
+        "displayName": "Vermelho Prazo",
+        "canonical": "hsl(0 62% 45%)",
+        "tonalRamp": ["oklch(18% 0.065 27)", "oklch(27% 0.100 27)", "oklch(36% 0.140 27)", "oklch(44% 0.170 27)", "oklch(51% 0.180 27)", "oklch(66% 0.150 27)", "oklch(81% 0.090 27)", "oklch(93% 0.033 27)"]
+      },
+      "grafite-texto": {
+        "role": "neutral",
+        "displayName": "Grafite",
+        "canonical": "hsl(0 0% 13.3%)",
+        "tonalRamp": ["oklch(15% 0 0)", "oklch(26% 0 0)", "oklch(37% 0 0)", "oklch(48% 0 0)", "oklch(60% 0 0)", "oklch(72% 0 0)", "oklch(84% 0 0)", "oklch(95% 0 0)"]
+      },
+      "verde-secundario-texto": {
+        "role": "neutral",
+        "displayName": "Verde Secundário de Texto",
+        "canonical": "hsl(150 20% 30%)",
+        "tonalRamp": ["oklch(15% 0.018 158)", "oklch(24% 0.028 158)", "oklch(33% 0.036 158)", "oklch(42% 0.042 158)", "oklch(55% 0.046 158)", "oklch(69% 0.040 158)", "oklch(83% 0.026 158)", "oklch(95% 0.012 158)"]
+      },
+      "filete": {
+        "role": "neutral",
+        "displayName": "Filete",
+        "canonical": "hsl(150 18% 84%)",
+        "tonalRamp": ["oklch(15% 0.010 160)", "oklch(27% 0.014 160)", "oklch(40% 0.018 160)", "oklch(52% 0.020 160)", "oklch(65% 0.020 160)", "oklch(77% 0.018 160)", "oklch(88% 0.015 160)", "oklch(96% 0.008 160)"]
+      },
+      "contorno-campo": {
+        "role": "neutral",
+        "displayName": "Contorno de Campo",
+        "canonical": "hsl(150 14% 86%)",
+        "tonalRamp": ["oklch(15% 0.008 160)", "oklch(27% 0.012 160)", "oklch(40% 0.014 160)", "oklch(52% 0.016 160)", "oklch(65% 0.016 160)", "oklch(78% 0.014 160)", "oklch(89% 0.012 160)", "oklch(96% 0.006 160)"]
+      },
+      "branco-folha": {
+        "role": "neutral",
+        "displayName": "Branco Folha",
+        "canonical": "hsl(0 0% 100%)",
+        "tonalRamp": ["oklch(15% 0 0)", "oklch(27% 0 0)", "oklch(39% 0 0)", "oklch(51% 0 0)", "oklch(63% 0 0)", "oklch(75% 0 0)", "oklch(88% 0 0)", "oklch(100% 0 0)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Só o título do hero. Uma ocorrência por site." },
+      "headline": { "displayName": "Headline", "purpose": "Título de seção, título de página interna e faixa de fechamento — os três com o mesmo valor." },
+      "title": { "displayName": "Title", "purpose": "Etapa da trilha, pergunta do FAQ, subtítulo de página legal." },
+      "lead": { "displayName": "Lead", "purpose": "Parágrafo de abertura sob o título do hero, teto de 44ch." },
+      "body": { "displayName": "Body", "purpose": "Texto corrido, com teto de leitura entre 54ch e 72ch." },
+      "label": { "displayName": "Label", "purpose": "O átomo do sistema: rótulo de campo, sobretítulo, aviso sob CTA, navegação, rodapé." },
+      "data": { "displayName": "Data", "purpose": "Preço, cronômetro, placa, CPF, nº do auto e case_id. Sempre tabular-nums." },
+      "document": { "displayName": "Document", "purpose": "Só o interior do documento gerado e citações do CTB. Nunca em cromo de página." }
+    },
+    "shadows": [
+      { "name": "papel-assentado", "value": "0 1px 2px hsl(var(--primary) / 0.08), 0 18px 36px -24px hsl(var(--primary) / 0.45)", "purpose": "A réplica do auto de infração: um contato duro de 1px e uma difusão longa de folha sobre mesa." },
+      { "name": "papel-pousando", "value": "0 -1px 3px hsl(var(--primary) / 0.06), 0 24px 44px -28px hsl(var(--primary) / 0.7)", "purpose": "A folha do recurso pousada sobre a autuação. Mais funda, com um fio de luz para cima porque está sobre outra folha." },
+      { "name": "documento-em-repouso", "value": "0 1px 2px hsl(var(--primary) / 0.08), 0 20px 40px -28px hsl(var(--primary) / 0.5)", "purpose": "Prévia do PDF e recibo do envio." },
+      { "name": "barra-sobreposta", "value": "0 -10px 28px -22px hsl(var(--primary) / 0.9)", "purpose": "Projeta para cima, sob a barra fixa de CTA." },
+      { "name": "contato-de-botao", "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)", "purpose": "O único preto do sistema e a única sombra que não representa papel. Variantes sólida e invertida do botão." }
+    ],
+    "motion": [
+      { "name": "transicao-de-cor", "value": "200ms", "purpose": "Única transição do sistema: cor, em botões, links e campos. Sem movimento." },
+      { "name": "notice-settle", "value": "notice-settle 180ms ease-out both", "purpose": "Primeiro passo da sequência do hero: a notificação assenta." },
+      { "name": "sheet-slide", "value": "sheet-slide 240ms cubic-bezier(.2,.7,.3,1) 180ms both", "purpose": "Segundo passo: a folha do recurso desliza por cima." },
+      { "name": "stamp-drop", "value": "stamp-drop 200ms cubic-bezier(.3,1.4,.5,1) 420ms both", "purpose": "Terceiro passo: o carimbo cai, com leve overshoot. Encerra a única animação do site." },
+      { "name": "reduced-motion-guard", "value": "animation-duration: 0.01ms; animation-delay: -1ms; transition-duration: 0.01ms", "purpose": "Sob prefers-reduced-motion zera duração E atraso — sem o atraso negativo, o usuário esperaria a sequência sem vê-la." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "container", "value": "72rem" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botão Sólido",
+      "kind": "button",
+      "refersTo": "button-solid",
+      "description": "CTA principal sobre fundo claro. A variante resolve a cor sozinha — nunca empilhar utilitário de cor por cima.",
+      "html": "<button class=\"ds-btn ds-btn-solid\">Gerar meu recurso</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 4px; font-family: 'Archivo Variable', system-ui, sans-serif; font-weight: 600; font-size: 1rem; padding: 12px 24px; cursor: pointer; user-select: none; transition: background-color 200ms, color 200ms; } .ds-btn-solid { background: hsl(var(--primary, 160 60% 23.5%)); color: hsl(var(--primary-foreground, 0 0% 100%)); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); } .ds-btn-solid:hover { background: hsl(var(--primary-dark, 160 60% 18.8%)); } .ds-btn-solid:focus-visible { outline: 2px solid hsl(var(--ring, 160 60% 23.5%)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Botão Invertido sobre Verde",
+      "kind": "button",
+      "refersTo": "button-inverse",
+      "description": "Para uso sobre fundo verde: o papel do talão vira o botão. O contorno de foco troca para creme, senão o anel verde some no fundo verde.",
+      "html": "<div class=\"ds-green-ground\"><button class=\"ds-btn ds-btn-inverse\">Gerar meu recurso</button></div>",
+      "css": ".ds-green-ground { background: linear-gradient(135deg, hsl(var(--primary, 160 60% 23.5%)) 0%, hsl(var(--primary-dark, 160 60% 18.8%)) 100%); padding: 24px; border-radius: 4px; } .ds-btn-inverse { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 4px; font-family: 'Archivo Variable', system-ui, sans-serif; font-weight: 600; font-size: 1rem; padding: 12px 24px; cursor: pointer; background: hsl(var(--paper, 60 44.4% 89.4%)); color: hsl(var(--primary, 160 60% 23.5%)); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: background-color 200ms; } .ds-btn-inverse:hover { background: hsl(var(--secondary-light, 120 16% 70.6%)); } .ds-btn-inverse:focus-visible { outline: 2px solid hsl(var(--paper, 60 44.4% 89.4%)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Botão Fantasma",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Ação secundária. Borda de filete, sem preenchimento; o hover pinta o fundo de papel creme.",
+      "html": "<button class=\"ds-btn-ghost\">Voltar ao início</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid hsl(var(--rule, 150 18% 84%)); border-radius: 4px; background: transparent; font-family: 'Archivo Variable', system-ui, sans-serif; font-weight: 600; font-size: 1rem; padding: 12px 24px; color: hsl(var(--primary, 160 60% 23.5%)); cursor: pointer; transition: background-color 200ms; } .ds-btn-ghost:hover { background: hsl(var(--accent, 60 44.4% 89.4%)); } .ds-btn-ghost:focus-visible { outline: 2px solid hsl(var(--ring, 160 60% 23.5%)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Campo de Formulário",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Rótulo mono em caixa alta acima do campo. A variante de código serve placa, CPF, CEP e nº do auto. O estado de erro sai de aria-invalid, não de classe.",
+      "html": "<div class=\"ds-form-row\"><label class=\"ds-form-label\" for=\"ds-placa\">Placa do veículo</label><input class=\"ds-form-input ds-form-input-code\" id=\"ds-placa\" value=\"BRA2E19\" /><p class=\"ds-form-hint\">Formato Mercosul ou antigo.</p></div>",
+      "css": ".ds-form-row { max-width: 320px; } .ds-form-label { display: block; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: hsl(var(--muted-foreground, 150 20% 30%)); margin-bottom: 8px; } .ds-form-input { width: 100%; padding: 12px 16px; background: hsl(var(--background, 0 0% 100%)); border: 1px solid hsl(var(--input, 150 14% 86%)); border-radius: 4px; font-family: 'Archivo Variable', system-ui, sans-serif; font-size: 1rem; color: hsl(var(--foreground, 0 0% 13.3%)); transition: border-color 200ms; } .ds-form-input-code { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; letter-spacing: 0.025em; } .ds-form-input:focus { outline: none; border-color: hsl(var(--primary, 160 60% 23.5%)); box-shadow: 0 0 0 1px hsl(var(--background, 0 0% 100%)), 0 0 0 3px hsl(var(--ring, 160 60% 23.5%)); } .ds-form-input[aria-invalid='true'] { border-color: hsl(var(--destructive, 0 68.3% 51.8%)); } .ds-form-hint { margin-top: 4px; font-family: 'Archivo Variable', system-ui, sans-serif; font-size: 12px; line-height: 1.375; color: hsl(var(--muted-foreground, 150 20% 30%)); }"
+    },
+    {
+      "name": "O Campo (.field)",
+      "kind": "custom",
+      "refersTo": "field-label",
+      "description": "Componente-assinatura e átomo do sistema, copiado da notificação de autuação: rótulo mono minúsculo, valor em mono abaixo, filete separando. Monta a réplica do auto, a faixa de preço, o cabeçalho do documento e o recibo.",
+      "html": "<div class=\"ds-field-stack\"><div class=\"ds-field\"><span class=\"ds-field-label\">Órgão autuador</span><span class=\"ds-field-value\">DETRAN/SP</span></div><hr class=\"ds-rule\" /><div class=\"ds-field\"><span class=\"ds-field-label\">Nº do auto</span><span class=\"ds-field-value\">AA-1234567-8</span></div><hr class=\"ds-rule\" /><div class=\"ds-field\"><span class=\"ds-field-label\">Artigo do CTB</span><span class=\"ds-field-value\">Art. 218, II</span></div></div>",
+      "css": ".ds-field-stack { max-width: 320px; background: hsl(var(--paper, 60 44.4% 89.4%)); border: 1px solid hsl(var(--rule, 150 18% 84%)); border-radius: 4px; padding: 16px; } .ds-field { display: flex; flex-direction: column; gap: 4px; padding: 8px 0; } .ds-field-label { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: hsl(var(--muted-foreground, 150 20% 30%)); } .ds-field-value { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 1rem; color: hsl(var(--foreground, 0 0% 13.3%)); } .ds-rule { border: 0; border-top: 1px solid hsl(var(--rule, 150 18% 84%)); margin: 0; }"
+    },
+    {
+      "name": "Carimbo",
+      "kind": "chip",
+      "refersTo": "stamp",
+      "description": "Componente-assinatura. Aresta viva (rounded-sm resolve para 0px neste projeto), borda de 2px, tinta verde. Um por tela, nunca preenchido, nunca vermelho.",
+      "html": "<span class=\"ds-stamp\">Recurso protocolado</span>",
+      "css": ".ds-stamp { display: inline-block; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 600; padding: 6px 12px; border-radius: 0; color: hsl(var(--stamp, 160 60% 21%)); border: 2px solid hsl(var(--stamp, 160 60% 21%)); background: transparent; }"
+    },
+    {
+      "name": "Bloco do Formulário",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Agrupa os campos na ordem da notificação. A legenda é o nome do bloco em mono verde com um filete atravessando até a borda — a tarja que separa as seções do documento.",
+      "html": "<fieldset class=\"ds-fieldset\"><legend class=\"ds-fieldset-legend\"><span class=\"ds-fieldset-name\">Dados da autuação</span><span class=\"ds-fieldset-rule\"></span></legend><div class=\"ds-field\"><span class=\"ds-field-label\">Local da infração</span><span class=\"ds-field-value\">Av. Paulista, 1000</span></div></fieldset>",
+      "css": ".ds-fieldset { border: 1px solid hsl(var(--rule, 150 18% 84%)); border-radius: 4px; background: hsl(var(--background, 0 0% 100%)); padding: 20px; max-width: 380px; } .ds-fieldset-legend { display: flex; width: 100%; align-items: center; gap: 12px; margin-bottom: 20px; padding: 0; } .ds-fieldset-name { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: hsl(var(--primary, 160 60% 23.5%)); white-space: nowrap; } .ds-fieldset-rule { height: 1px; flex: 1; background: hsl(var(--rule, 150 18% 84%)); }"
+    },
+    {
+      "name": "Cabeçalho",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "O topo da notificação: quem emite à esquerda em grotesca 800 caixa alta, os avisos à direita em mono 11px. Separado do conteúdo por filete, sem hambúrguer.",
+      "html": "<header class=\"ds-masthead\"><a class=\"ds-masthead-brand\" href=\"#\">Amo Recorrer</a><nav class=\"ds-masthead-links\"><a href=\"#\">Como funciona</a><a href=\"#\">Dúvidas</a><a href=\"#\">Termos</a></nav></header>",
+      "css": ".ds-masthead { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 0; border-bottom: 1px solid hsl(var(--rule, 150 18% 84%)); } .ds-masthead-brand { font-family: 'Archivo Variable', system-ui, sans-serif; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.14em; color: hsl(var(--primary, 160 60% 23.5%)); text-decoration: none; } .ds-masthead-links { display: flex; align-items: center; gap: 20px; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; } .ds-masthead-links a { color: hsl(var(--muted-foreground, 150 20% 30%)); text-decoration: none; transition: color 200ms; } .ds-masthead-links a:hover { color: hsl(var(--primary, 160 60% 23.5%)); } .ds-masthead-links a:focus-visible { outline: 2px solid hsl(var(--ring, 160 60% 23.5%)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Faixa da Oferta",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Dois campos do documento lado a lado, separados por filete: o preço e o prazo. Empilha no celular. Os números usam tabular-nums e o cronômetro não pulsa.",
+      "html": "<div class=\"ds-offer\"><div class=\"ds-offer-cell\"><span class=\"ds-field-label\">Pagamento único</span><div class=\"ds-price\"><span class=\"ds-price-from\">R$ 39,99</span>R$ 19,99</div></div><div class=\"ds-offer-cell\"><span class=\"ds-field-label\">Prazo da promoção</span><div class=\"ds-countdown\">29:41</div></div></div>",
+      "css": ".ds-offer { display: inline-flex; flex-direction: row; border: 1px solid hsl(var(--rule, 150 18% 84%)); border-radius: 4px; background: hsl(var(--background, 0 0% 100%)); } .ds-offer-cell { padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; } .ds-offer-cell + .ds-offer-cell { border-left: 1px solid hsl(var(--rule, 150 18% 84%)); } .ds-price { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 1.5rem; font-weight: 700; line-height: 1; color: hsl(var(--foreground, 0 0% 13.3%)); font-variant-numeric: tabular-nums; } .ds-price-from { margin-right: 8px; font-size: 14px; font-weight: 400; text-decoration: line-through; color: hsl(var(--muted-foreground, 150 20% 30%)); } .ds-countdown { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 1.5rem; font-weight: 700; line-height: 1; color: hsl(var(--warning, 0 62% 45%)); font-variant-numeric: tabular-nums; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Notificação e Resposta",
+    "overview": "O sistema não ilustra o problema — ele o cita. A página é construída com o vocabulário visual do documento que o usuário tem na mão: campo rotulado em mono minúsculo, filete de 1px separando linhas, código monoespaçado, papel creme, carimbo. Quem chega já passou os últimos minutos lendo uma notificação de autuação; a interface fala a mesma língua, e é por isso que ela é lida como legítima antes de ser lida como site.\n\nO caráter é calmo sob pressão. O usuário está com prazo, irritado e frequentemente no celular. Nada aqui encena a urgência que ele já sente: o cronômetro não pulsa, o vermelho aparece em três lugares e some, os botões não se mexem. A firmeza vem da estrutura — filete, rótulo, alinhamento — e não do volume. A segunda metade do caráter é material e tátil: os objetos que representam papel se comportam como papel. A réplica do auto tem rotação e sombra longa, a folha do recurso pousa por cima dela, o carimbo cai por último. Esses três momentos concentram toda a ousadia do sistema; o restante é filete, campo e tipografia.\n\nA semântica de cor é o eixo moral da direção e não se negocia: vermelho é a multa e o prazo; verde é o recurso e o protocolado. Nada que o produto entrega aparece em vermelho, e nada que o órgão autuador cobra aparece em verde.",
+    "keyCharacteristics": [
+      "O documento como material: papel creme, filete, carimbo, sombra tingida de verde.",
+      "Três famílias com fronteiras rígidas — grotesca institucional, mono para dado, serifa só dentro da peça.",
+      "Rótulo mono em caixa alta como átomo repetido, copiado da notificação.",
+      "Cantos de 4px ou nenhum; nenhuma bolha.",
+      "Movimento reservado a uma única sequência, uma única vez, no load.",
+      "Contraste AA verificado numericamente como condição de commit."
+    ],
+    "rules": [
+      { "name": "A Regra dos Dois Lados", "body": "Vermelho pertence ao órgão autuador — a multa, o prazo, o erro. Verde pertence ao usuário — o recurso, o protocolo, o sucesso. Um elemento nunca troca de lado para chamar atenção.", "section": "colors" },
+      { "name": "A Regra do Matiz Fechado", "body": "A paleta está encerrada nos oito matizes do favicon. Uma necessidade nova se resolve com um papel novo ou uma luminosidade nova, nunca com um matiz novo.", "section": "colors" },
+      { "name": "A Regra do Neutro Enviesado", "body": "Não existe cinza neutro neste sistema. Todo neutro é puxado para o verde da marca (matiz 150–160), inclusive bordas e texto secundário.", "section": "colors" },
+      { "name": "A Regra do Par Verificado", "body": "Toda combinação nova de texto sobre fundo passa por cálculo de contraste antes do commit. Duas falhas reais já existiram aqui e nenhuma foi visível a olho nu.", "section": "colors" },
+      { "name": "A Regra das Três Fronteiras", "body": "Mono é para o que se confere: código, placa, número, dinheiro, tempo, rótulo. Serifa é para o que se protocola: só dentro do documento gerado e em citação do CTB. Grotesca é todo o resto.", "section": "typography" },
+      { "name": "A Regra do Dígito Estável", "body": "Qualquer número que muda sozinho na tela usa tabular-nums. Um cronômetro que reflui a linha a cada segundo é defeito, não detalhe.", "section": "typography" },
+      { "name": "A Regra do Rótulo Pequeno", "body": "O rótulo mono é minúsculo (11px), em caixa alta e muito espaçado. Ele não compete com o valor que anuncia — ele o classifica.", "section": "typography" },
+      { "name": "A Regra do Filete Contínuo", "body": "A trilha do como funciona é uma sequência, não cinco ilhas: um filete de 1px atravessa as cinco etapas inteiras. Por isso a trilha usa gap zero e tira o espaço do padding interno — qualquer calha no grid parte o filete.", "section": "layout" },
+      { "name": "A Regra da Medida", "body": "Todo texto corrido tem teto de largura declarado (44ch no lead, 54ch na abertura de seção, 68ch na resposta do FAQ, 70–72ch nas páginas legais).", "section": "layout" },
+      { "name": "A Regra da Área Segura", "body": "Qualquer barra grudada no fundo da viewport soma env(safe-area-inset-bottom) ao seu padding.", "section": "layout" },
+      { "name": "A Regra do Papel", "body": "Se o elemento não representa uma folha, ele não tem sombra. Separação é trabalho do filete.", "section": "elevation" },
+      { "name": "A Regra da Sombra Verde", "body": "Sombra preta não existe neste sistema, exceto o contato de 1px do botão. A luz da página é verde porque a marca é verde.", "section": "elevation" },
+      { "name": "A Regra do Canto Duro", "body": "Documento tem canto, não bolha. Nada passa de 4px, exceto o marcador circular da trilha.", "section": "shapes" },
+      { "name": "A Regra da Espessura Significante", "body": "1px separa; 2–3px significa. Se uma borda ficou mais grossa sem carregar sentido, ela está errada.", "section": "shapes" },
+      { "name": "A Regra da Variante Única", "body": "Um botão resolve sua cor inteiramente na variante. Empilhar utilitário de cor sobre .btn--* está proibido: foi essa colisão que a refatoração eliminou.", "section": "components" },
+      { "name": "A Regra do Estado Anunciado", "body": "O estado visual sai do atributo de acessibilidade, não o contrário. Erro vem de aria-invalid, expansão vem do Accordion do Radix.", "section": "components" },
+      { "name": "A Regra do Movimento Único", "body": "Existe uma animação no site: a sequência do hero, uma vez, no load. Sob prefers-reduced-motion, duração vai a 0.01ms e o atraso a -1ms.", "section": "components" }
+    ],
+    "dos": [
+      "Do manter a paleta fechada nos oito matizes do favicon; resolva necessidades novas com papel ou luminosidade, nunca com matiz novo.",
+      "Do respeitar a semântica: vermelho para a multa e o prazo, verde para o recurso e o protocolado.",
+      "Do usar o filete de 1px como separador padrão, antes de considerar caixa ou sombra.",
+      "Do enviesar todo neutro para o verde da marca (matiz 150–160) — bordas e texto secundário inclusive.",
+      "Do aplicar tabular-nums em qualquer número que se atualize sozinho.",
+      "Do calcular o contraste de todo par novo de texto sobre fundo antes de commitar; AA é piso, não meta.",
+      "Do derivar o estado visual do atributo de acessibilidade (aria-invalid, Radix), nunca o inverso.",
+      "Do usar .btn mais uma variante, deixando a variante resolver a cor sozinha.",
+      "Do declarar largura máxima de leitura em todo texto corrido."
+    ],
+    "donts": [
+      "Don't trazer estética SaaS genérica: gradiente roxo-azul, glassmorphism, cartão com canto de 16px e sombra difusa, ilustração 3D. O único gradiente permitido é o verde da faixa de fechamento.",
+      "Don't trazer fofura de fintech: ilustração de personagem, emoji em botão, canto arredondado grande, tom brincalhão. O assunto é uma multa.",
+      "Don't empilhar utilitário de cor sobre uma variante de botão.",
+      "Don't usar Sálvia de Margem (#609078) sobre o verde da marca — reprova em contraste a 2,05:1.",
+      "Don't pôr serifa em cromo de página; ela pertence ao interior do documento gerado.",
+      "Don't dar sombra a elemento que não representa uma folha de papel, nem usar sombra preta.",
+      "Don't passar de 4px de canto em botão ou cartão.",
+      "Don't acrescentar animação fora da sequência do hero, e nunca fazer o cronômetro pulsar.",
+      "Don't reintroduzir cinza azulado de biblioteca (#E5E7EB e parentes) — já saiu uma vez."
+    ]
+  }
+}

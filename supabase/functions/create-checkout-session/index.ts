@@ -13,6 +13,14 @@ if (!stripePriceId) {
   throw new Error("Missing STRIPE_PRICE_ID");
 }
 
+// Preço cheio, cobrado quando a promoção de lançamento já expirou para o
+// visitante. Opcional: sem ele, todo checkout sai pelo preço promocional —
+// que é o comportamento anterior e o lado seguro do erro.
+const stripeFullPriceId = Deno.env.get("STRIPE_PRICE_ID_FULL");
+if (!stripeFullPriceId) {
+  console.warn("STRIPE_PRICE_ID_FULL not set; every checkout uses the promo price");
+}
+
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 if (!supabaseUrl || !supabaseServiceKey) {
@@ -122,6 +130,17 @@ Deno.serve(async (req) => {
     // CRITICAL CHANGE: generate case_id server-side for control, uniqueness, traceability
     // Format: CASO_<uuid> to match the database constraint (case_id ~ '^CASO_')
     const case_id = `CASO_${crypto.randomUUID()}`;
+
+    // Qual preço cobrar. Quem informa é o navegador (`pricing: "full"`), porque
+    // o cronômetro da promoção vive no sessionStorage do visitante — ou seja,
+    // NÃO é uma regra que o servidor consiga verificar: quem limpar a sessão
+    // volta ao preço promocional. Decisão consciente; a alternativa seria um
+    // prazo global de campanha, verificável aqui.
+    // Só o valor literal "full" promove o preço, e só se o preço cheio existir:
+    // qualquer outra coisa cai no promocional.
+    const wantsFullPrice = body.pricing === "full";
+    const usingFullPrice = wantsFullPrice && Boolean(stripeFullPriceId);
+    const priceId = usingFullPrice ? stripeFullPriceId! : stripePriceId;
     // Use explicit frontend origin when provided to avoid redirecting to the Supabase domain.
     // Normalize to avoid trailing slashes that would generate "//cancel".
     const frontendUrl = Deno.env.get("FRONTEND_URL");
@@ -135,12 +154,15 @@ Deno.serve(async (req) => {
       customer_email: body.email,
       line_items: [
         {
-          price: stripePriceId,
+          price: priceId,
           quantity: 1
         }
       ],
       metadata: {
-        case_id
+        case_id,
+        // Fica registrado no Stripe qual faixa de preço saiu, para suporte e
+        // conferência de receita.
+        pricing_tier: usingFullPrice ? "full" : "promo"
       },
       success_url: `${origin}/form?success=true&case_id=${encodeURIComponent(case_id)}`,
       cancel_url: `${origin}/cancel?case_id=${encodeURIComponent(case_id)}`

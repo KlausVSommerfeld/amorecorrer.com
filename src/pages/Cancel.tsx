@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { getCaseIdFromUrl } from "@/lib/caseId";
+import PageShell from "../components/PageShell";
 
 type AnalyticsPayload = Record<string, unknown>;
 
@@ -56,36 +57,38 @@ const Cancel = () => {
   }, [navigate]);
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-accent/20 px-4">
+    <PageShell>
       <div className="container">
-        <div className="max-w-2xl mx-auto bg-card text-foreground rounded-2xl shadow-lg border border-border p-10 text-center space-y-4">
-          <div className="w-14 h-14 mx-auto rounded-full bg-destructive/10 text-destructive flex items-center justify-center text-2xl font-bold">
-            !
-          </div>
-          <h1 className="text-3xl font-bold">Pagamento cancelado</h1>
-          <p className="text-muted-foreground">
-            Nenhuma cobranca foi realizada. Voce sera redirecionado para a pagina inicial em instantes.
+        <div className="page__head">
+          <span className="eyebrow">Checkout interrompido</span>
+          <h1 className="page__title">Pagamento cancelado.</h1>
+          <p className="max-w-[56ch] text-muted-foreground">
+            Nenhuma cobrança foi feita. Você volta para a página inicial em
+            instantes — ou agora, pelo botão abaixo.
           </p>
-          {caseIdFromParams ? (
-            <p className="text-sm text-muted-foreground">
-              ID do caso: <span className="font-semibold text-foreground">{caseIdFromParams}</span>
-            </p>
-          ) : null}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <button
-              type="button"
-              onClick={() => navigate("/")}
-              className="btn-primary px-6 py-3"
-            >
-              Voltar agora
-            </button>
-            <div className="text-sm text-muted-foreground">
-              Redirecionando em 3s...
+        </div>
+
+        {caseIdFromParams ? (
+          <dl className="mb-8 max-w-md">
+            <div className="field border-y border-rule">
+              <dt className="field__label">Número do caso</dt>
+              <dd className="field__value break-all">{caseIdFromParams}</dd>
             </div>
-          </div>
+          </dl>
+        ) : null}
+
+        <div className="flex flex-wrap items-center gap-5">
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="btn btn--solid"
+          >
+            Voltar agora
+          </button>
+          <span className="note">Redirecionando em 3 segundos</span>
         </div>
       </div>
-    </main>
+    </PageShell>
   );
 };
 

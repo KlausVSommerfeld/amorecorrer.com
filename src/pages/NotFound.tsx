@@ -1,5 +1,6 @@
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import PageShell from "../components/PageShell";
 
 const NotFound = () => {
   const location = useLocation();
@@ -12,15 +13,23 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
-        </a>
+    <PageShell>
+      <div className="container">
+        <div className="page__head">
+          <span className="eyebrow">Erro 404</span>
+          <h1 className="page__title">Esta página não existe.</h1>
+          <p className="max-w-[56ch] text-muted-foreground">
+            O endereço <span className="font-mono text-foreground">{location.pathname}</span>{' '}
+            não corresponde a nenhuma página do site. Se você veio de um link
+            nosso, ele está desatualizado.
+          </p>
+        </div>
+
+        <Link to="/" className="btn btn--solid">
+          Ir para o início
+        </Link>
       </div>
-    </div>
+    </PageShell>
   );
 };
 

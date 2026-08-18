@@ -35,3 +35,8 @@ __pycache__/
 *.py[cod]
 supabase/.branches/
 supabase/.temp/
+
+secrets.json
+
+# Saída de screenshots/snapshots do Playwright MCP
+.playwright-mcp/

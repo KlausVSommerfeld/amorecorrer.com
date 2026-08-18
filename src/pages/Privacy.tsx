@@ -1,21 +1,20 @@
 import { Link } from 'react-router-dom';
+import PageShell from '../components/PageShell';
 
 const Privacy = () => {
   return (
-    <div className="min-h-screen py-12 bg-background">
-      <div className="container max-w-4xl mx-auto">
-        <div className="bg-card rounded-lg shadow-lg p-8">
-          <div className="mb-8">
-            <Link to="/" className="text-primary hover:text-primary-dark transition-colors">
-              ← Voltar ao início
-            </Link>
+    <PageShell>
+      <div className="container">
+        <div className="legal">
+
+          <div className="page__head">
+            <span className="eyebrow">Documento</span>
+            <h1 className="page__title">Política de Privacidade</h1>
           </div>
 
-          <h1 className="text-3xl md:text-4xl font-bold mb-8">Política de Privacidade</h1>
-
-          <div className="prose prose-gray max-w-none space-y-6">
+          <div className="space-y-2">
             <section>
-              <h2 className="text-2xl font-semibold mb-4">1. Informações Gerais</h2>
+              <h2 className="legal__h2">1. Informações Gerais</h2>
               <p>
                 Esta Política de Privacidade descreve como a Amo Recorrer coleta, 
                 utiliza e protege suas informações pessoais em conformidade com a 
@@ -24,27 +23,27 @@ const Privacy = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">2. Dados Coletados</h2>
+              <h2 className="legal__h2">2. Dados Coletados</h2>
               <p>Coletamos os seguintes tipos de informações:</p>
               
-              <h3 className="text-lg font-semibold mt-6 mb-3">2.1 Dados Pessoais</h3>
-              <ul className="list-disc list-inside space-y-2">
+              <h3 className="legal__h3">2.1 Dados Pessoais</h3>
+              <ul className="legal__list">
                 <li>Nome completo</li>
                 <li>CPF e CNH</li>
                 <li>E-mail e telefone</li>
                 <li>Endereço completo</li>
               </ul>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">2.2 Dados do Veículo e Infração</h3>
-              <ul className="list-disc list-inside space-y-2">
+              <h3 className="legal__h3">2.2 Dados do Veículo e Infração</h3>
+              <ul className="legal__list">
                 <li>Placa do veículo</li>
                 <li>Dados do auto de infração</li>
                 <li>Informações sobre a penalidade</li>
                 <li>Justificativa do recurso</li>
               </ul>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">2.3 Dados Técnicos</h3>
-              <ul className="list-disc list-inside space-y-2">
+              <h3 className="legal__h3">2.3 Dados Técnicos</h3>
+              <ul className="legal__list">
                 <li>Endereço IP</li>
                 <li>Dados de navegação</li>
                 <li>Cookies técnicos</li>
@@ -53,9 +52,9 @@ const Privacy = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">3. Finalidade do Tratamento</h2>
+              <h2 className="legal__h2">3. Finalidade do Tratamento</h2>
               <p>Utilizamos seus dados para:</p>
-              <ul className="list-disc list-inside space-y-2">
+              <ul className="legal__list">
                 <li>Gerar o documento de recurso personalizado</li>
                 <li>Processar o pagamento via Stripe</li>
                 <li>Enviar o PDF por e-mail</li>
@@ -66,9 +65,9 @@ const Privacy = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">4. Base Legal</h2>
+              <h2 className="legal__h2">4. Base Legal</h2>
               <p>O tratamento dos seus dados se baseia em:</p>
-              <ul className="list-disc list-inside space-y-2">
+              <ul className="legal__list">
                 <li><strong>Execução de contrato:</strong> Para prestação do serviço contratado</li>
                 <li><strong>Legítimo interesse:</strong> Para melhorias do serviço e segurança</li>
                 <li><strong>Cumprimento de obrigação legal:</strong> Quando exigido por lei</li>
@@ -77,9 +76,9 @@ const Privacy = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">5. Compartilhamento de Dados</h2>
+              <h2 className="legal__h2">5. Compartilhamento de Dados</h2>
               <p>Seus dados podem ser compartilhados com:</p>
-              <ul className="list-disc list-inside space-y-2">
+              <ul className="legal__list">
                 <li><strong>Stripe:</strong> Para processamento de pagamentos</li>
                 <li><strong>Provedores de e-mail:</strong> Para entrega dos documentos</li>
                 <li><strong>Serviços de hosting:</strong> Para funcionamento da plataforma</li>
@@ -91,9 +90,9 @@ const Privacy = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">6. Retenção de Dados</h2>
+              <h2 className="legal__h2">6. Retenção de Dados</h2>
               <p>Mantemos seus dados pelo período necessário para:</p>
-              <ul className="list-disc list-inside space-y-2">
+              <ul className="legal__list">
                 <li>Prestação do serviço contratado</li>
                 <li>Cumprimento de obrigações legais (até 5 anos)</li>
                 <li>Exercício de direitos em processos judiciais</li>
@@ -102,9 +101,9 @@ const Privacy = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">7. Segurança</h2>
+              <h2 className="legal__h2">7. Segurança</h2>
               <p>Implementamos medidas de segurança como:</p>
-              <ul className="list-disc list-inside space-y-2">
+              <ul className="legal__list">
                 <li>Criptografia de dados em trânsito e repouso</li>
                 <li>Controle de acesso restrito</li>
                 <li>Monitoramento de segurança</li>
@@ -114,9 +113,9 @@ const Privacy = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">8. Seus Direitos</h2>
+              <h2 className="legal__h2">8. Seus Direitos</h2>
               <p>Você tem direito a:</p>
-              <ul className="list-disc list-inside space-y-2">
+              <ul className="legal__list">
                 <li><strong>Acesso:</strong> Saber quais dados temos sobre você</li>
                 <li><strong>Retificação:</strong> Corrigir dados incorretos</li>
                 <li><strong>Eliminação:</strong> Solicitar exclusão dos dados</li>
@@ -127,7 +126,7 @@ const Privacy = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">9. Cookies</h2>
+              <h2 className="legal__h2">9. Cookies</h2>
               <p>
                 Utilizamos cookies técnicos necessários para o funcionamento do site, 
                 incluindo controle de sessão e timer promocional. Estes cookies não 
@@ -136,7 +135,7 @@ const Privacy = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">10. Alterações na Política</h2>
+              <h2 className="legal__h2">10. Alterações na Política</h2>
               <p>
                 Esta política pode ser atualizada periodicamente. Mudanças significativas 
                 serão comunicadas através do nosso site ou por e-mail.
@@ -144,26 +143,26 @@ const Privacy = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">11. Contato e Exercício de Direitos</h2>
+              <h2 className="legal__h2">11. Contato e Exercício de Direitos</h2>
               <p>
                 Para exercer seus direitos ou esclarecer dúvidas sobre esta política:
               </p>
-              <ul className="list-none space-y-2">
+              <ul className="legal__list legal__list--plain">
                 <li>📧 Email: {import.meta.env.VITE_CONTACT_EMAIL}</li>
-                <li>📱 WhatsApp: <a href={import.meta.env.VITE_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary-dark">Clique aqui</a></li>
+                <li>📱 WhatsApp: <a href={import.meta.env.VITE_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" >Clique aqui</a></li>
               </ul>
               <p className="mt-4">
                 Responderemos sua solicitação em até 15 dias úteis, conforme a LGPD.
               </p>
             </section>
 
-            <div className="text-sm text-muted-foreground mt-8 pt-8 border-t border-border">
+            <div className="mt-10 border-t border-rule pt-6 text-sm">
               <p>Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 };
 

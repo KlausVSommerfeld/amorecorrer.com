@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { getCaseIdFromUrl } from '../lib/caseId';
 import { submitForm, assertResponseOk } from '../lib/api';
+import PageShell from '../components/PageShell';
 
 type ViaCepResponse = {
   cep: string;
@@ -118,6 +120,8 @@ const Form = () => {
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  // Enviado com sucesso: o formulário sai de cena e entra o recibo.
+  const [recibo, setRecibo] = useState<{ caseId: string; email: string } | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // ViaCEP lookup controls (no UI required; used to avoid repeated lookups / races)
@@ -215,6 +219,14 @@ const Form = () => {
     };
   }, [formData.cep]);
 
+  // Ordem dos campos na tela, para levar o foco ao primeiro erro de cima para
+  // baixo — num formulário deste tamanho, avisar sem apontar não ajuda.
+  const FIELD_ORDER = [
+    'nomeCompleto', 'cpf', 'email', 'telefone', 'cep', 'endereco',
+    'placa', 'renainf', 'orgaoAutuador', 'autoInfracao',
+    'notificacaoPenalidade', 'dataHora', 'localSentido', 'justificativa'
+  ];
+
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -263,6 +275,10 @@ const Form = () => {
     }
 
     setErrors(newErrors);
+
+    const primeiro = FIELD_ORDER.find(campo => newErrors[campo]);
+    if (primeiro) document.getElementById(primeiro)?.focus();
+
     return Object.keys(newErrors).length === 0;
   };
 
@@ -348,10 +364,8 @@ const Form = () => {
       const response = await submitForm(normalizedData);
       await assertResponseOk(response);
 
-      setMessage({
-        type: 'success',
-        text: 'Recebemos seus dados. Se o pagamento ja foi concluido, sua peticao sera gerada e enviada por e-mail. Caso ainda nao tenha pago, finalize o pagamento para liberar a geracao.'
-      });
+      setRecibo({ caseId, email: normalizedData.email });
+      window.scrollTo({ top: 0 });
 
       setFormData(prev => ({
         ...INITIAL_FORM,
@@ -406,395 +420,569 @@ const Form = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  if (recibo) {
+    return (
+      <PageShell>
+        <div className="container">
+          <div className="recibo">
+            <span className="eyebrow block">Protocolo interno</span>
+            <h1 className="page__title mt-2">Recebemos seus dados.</h1>
+
+            <p className="mt-4 max-w-[60ch] text-muted-foreground">
+              A peça está sendo redigida agora. Quando ficar pronta, o PDF sai
+              para o seu e-mail — não é preciso deixar esta página aberta.
+            </p>
+
+            <dl className="mt-8">
+              <div className="field border-t border-rule">
+                <dt className="field__label">Número do caso</dt>
+                <dd className="recibo__protocolo">{recibo.caseId}</dd>
+              </div>
+              <div className="field border-t border-rule">
+                <dt className="field__label">Vai chegar em</dt>
+                <dd className="field__value break-all">{recibo.email}</dd>
+              </div>
+              <div className="field border-y border-rule">
+                <dt className="field__label">Prazo</dt>
+                <dd className="field__value">Alguns minutos</dd>
+              </div>
+            </dl>
+
+            <p className="mt-6 max-w-[60ch] text-sm text-muted-foreground">
+              Não chegou? Confira a caixa de spam e a lixeira antes de falar com
+              a gente — e tenha o número do caso à mão, é por ele que
+              encontramos o seu pedido.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link to="/" className="btn btn--solid">
+                Voltar ao início
+              </Link>
+            </div>
+          </div>
+        </div>
+      </PageShell>
+    );
+  }
+
   return (
-    <div className="min-h-screen py-12 bg-background">
-      <div className="container max-w-4xl mx-auto">
-        <div className="bg-card rounded-lg shadow-lg p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">Formulário de Recurso</h1>
-            <p className="text-muted-foreground">Preencha todos os dados para gerar seu recurso de multa</p>
+    <PageShell bottomSpacer>
+      <div className="container">
+        <div className="max-w-4xl">
+        <div className="page__head">
+          <div className="progress">
+            <span>Passo 2 de 2</span>
+            <span className="progress__bar" aria-hidden="true">
+              <span className="progress__fill" style={{ width: '50%' }} />
+            </span>
+            <span className="progress__done">Pagamento confirmado</span>
           </div>
 
-          {message && (
-            <div
-              className={`mb-6 ${message.type === 'success' ? 'success-message' : 'error-message'}`}
-              role="alert"
-              aria-live="polite"
-            >
-              {message.text}
-            </div>
+          <h1 className="page__title">Os dados do auto</h1>
+          <p className="max-w-[58ch] text-muted-foreground">
+            Copie do papel, de cima para baixo. Os blocos abaixo seguem a mesma
+            ordem da notificação de autuação. Campos com{' '}
+            <span className="text-destructive">*</span> são obrigatórios.
+          </p>
+
+          {formData.case_id && (
+            <p className="font-mono text-[11px] tracking-[0.08em] text-muted-foreground">
+              Nº do caso <span className="text-foreground">{formData.case_id}</span>
+            </p>
           )}
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Dados Pessoais */}
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-primary">Dados Pessoais</h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="form-label" htmlFor="nomeCompleto">
-                    Nome Completo *
-                  </label>
-                  <input
-                    type="text"
-                    id="nomeCompleto"
-                    name="nomeCompleto"
-                    value={formData.nomeCompleto}
-                    onChange={handleInputChange}
-                    className={`form-input ${errors.nomeCompleto ? 'border-destructive' : ''}`}
-                    required
-                    maxLength={40}
-                  />
-                  {errors.nomeCompleto && <p className="text-destructive text-sm mt-1">{errors.nomeCompleto}</p>}
-                </div>
+        {message && (
+          <div
+            className={`mb-6 ${message.type === 'success' ? 'success-message' : 'error-message'}`}
+            role="alert"
+            aria-live="polite"
+          >
+            {message.text}
+          </div>
+        )}
 
-                <div>
-                  <label className="form-label" htmlFor="email">
-                    Email *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className={`form-input ${errors.email ? 'border-destructive' : ''}`}
-                    required
-                  />
-                  {errors.email && <p className="text-destructive text-sm mt-1">{errors.email}</p>}
-                </div>
+        <form onSubmit={handleSubmit} noValidate>
+          {/* ---- Identificação ---- */}
+          <fieldset className="fieldset">
+            <legend className="fieldset__legend">
+              <span className="fieldset__name">Identificação</span>
+              <span className="fieldset__rule" aria-hidden="true" />
+            </legend>
 
-                <div>
-                  <label className="form-label" htmlFor="telefone">
-                    Telefone *
-                  </label>
-                  <input
-                    type="tel"
-                    id="telefone"
-                    name="telefone"
-                    value={formatTelefone(formData.telefone)}
-                    onChange={handleInputChange}
-                    placeholder="(11) 99999-9999"
-                    className={`form-input ${errors.telefone ? 'border-destructive' : ''}`}
-                    required
-                  />
-                  {errors.telefone && <p className="text-destructive text-sm mt-1">{errors.telefone}</p>}
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="cpf">
-                    CPF *
-                  </label>
-                  <input
-                    type="text"
-                    id="cpf"
-                    name="cpf"
-                    value={formatCPF(formData.cpf)}
-                    onChange={handleInputChange}
-                    placeholder="000.000.000-00"
-                    className={`form-input ${errors.cpf ? 'border-destructive' : ''}`}
-                    required
-                  />
-                  {errors.cpf && <p className="text-destructive text-sm mt-1">{errors.cpf}</p>}
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="cnh">
-                    CNH
-                  </label>
-                  <input
-                    type="text"
-                    id="cnh"
-                    name="cnh"
-                    value={formData.cnh}
-                    onChange={handleInputChange}
-                    className="form-input"
-                  />
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="cep">
-                    CEP *
-                  </label>
-                  <input
-                    type="text"
-                    id="cep"
-                    name="cep"
-                    value={formatCEP(formData.cep)}
-                    onChange={handleInputChange}
-                    placeholder="00000-000"
-                    className={`form-input ${errors.cep ? 'border-destructive' : ''}`}
-                    required
-                    inputMode="numeric"
-                  />
-                  {errors.cep && <p className="text-destructive text-sm mt-1">{errors.cep}</p>}
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="form-label" htmlFor="endereco">
-                    Endereço Completo *
-                  </label>
-                  <input
-                    type="text"
-                    id="endereco"
-                    name="endereco"
-                    value={formData.endereco}
-                    onChange={handleInputChange}
-                    className={`form-input ${errors.endereco ? 'border-destructive' : ''}`}
-                    required
-                  />
-                  {errors.endereco && <p className="text-destructive text-sm mt-1">{errors.endereco}</p>}
-                </div>
+            <div className="form-grid">
+              <div className="form-field--wide">
+                <label className="form-label" htmlFor="nomeCompleto">
+                  Nome completo *
+                </label>
+                <input
+                  type="text"
+                  id="nomeCompleto"
+                  name="nomeCompleto"
+                  value={formData.nomeCompleto}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  autoComplete="name"
+                  maxLength={40}
+                  required
+                  aria-invalid={Boolean(errors.nomeCompleto)}
+                  aria-describedby={errors.nomeCompleto ? 'err-nomeCompleto' : undefined}
+                />
+                {errors.nomeCompleto && (
+                  <p className="form-error" id="err-nomeCompleto">{errors.nomeCompleto}</p>
+                )}
               </div>
-            </section>
 
-            {/* Dados do Auto de Infração */}
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-primary">Dados do Auto de Infração</h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="form-label" htmlFor="orgaoAutuador">
-                    Órgão Autuador *
-                  </label>
-                  <input
-                    type="text"
-                    id="orgaoAutuador"
-                    name="orgaoAutuador"
-                    value={formData.orgaoAutuador}
-                    onChange={handleInputChange}
-                    className={`form-input ${errors.orgaoAutuador ? 'border-destructive' : ''}`}
-                    required
-                  />
-                  {errors.orgaoAutuador && <p className="text-destructive text-sm mt-1">{errors.orgaoAutuador}</p>}
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="placa">
-                    Placa do Veículo *
-                  </label>
-                  <input
-                    type="text"
-                    id="placa"
-                    name="placa"
-                    value={formData.placa}
-                    onChange={handleInputChange}
-                    placeholder="ABC1D23"
-                    className={`form-input ${errors.placa ? 'border-destructive' : ''}`}
-                    required
-                  />
-                  {errors.placa && <p className="text-destructive text-sm mt-1">{errors.placa}</p>}
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="autoInfracao">
-                    Nº do Auto de Infração *
-                  </label>
-                  <input
-                    type="text"
-                    id="autoInfracao"
-                    name="autoInfracao"
-                    value={formData.autoInfracao}
-                    onChange={handleInputChange}
-                    className={`form-input ${errors.autoInfracao ? 'border-destructive' : ''}`}
-                  />
-                  {errors.autoInfracao && <p className="text-destructive text-sm mt-1">{errors.autoInfracao}</p>}
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="renainf">
-                    Código RENAINF
-                  </label>
-                  <input
-                    type="text"
-                    id="renainf"
-                    name="renainf"
-                    value={formData.renainf}
-                    onChange={handleInputChange}
-                    className={`form-input ${errors.renainf ? 'border-destructive' : ''}`}
-                  />
-                  {errors.renainf && <p className="text-destructive text-sm mt-1">{errors.renainf}</p>}
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="notificacaoPenalidade">
-                    Nº da Notificação de Penalidade
-                  </label>
-                  <input
-                    type="text"
-                    id="notificacaoPenalidade"
-                    name="notificacaoPenalidade"
-                    value={formData.notificacaoPenalidade}
-                    onChange={handleInputChange}
-                    className={`form-input ${errors.notificacaoPenalidade ? 'border-destructive' : ''}`}
-                  />
-                  {errors.notificacaoPenalidade && (
-                    <p className="text-destructive text-sm mt-1">{errors.notificacaoPenalidade}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="dataHora">
-                    Data e Hora da Infração *
-                  </label>
-                  <input
-                    type="datetime-local"
-                    id="dataHora"
-                    name="dataHora"
-                    value={formData.dataHora}
-                    onChange={handleInputChange}
-                    className={`form-input ${errors.dataHora ? 'border-destructive' : ''}`}
-                    required
-                  />
-                  {errors.dataHora && <p className="text-destructive text-sm mt-1">{errors.dataHora}</p>}
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="form-label" htmlFor="localSentido">
-                    Local da Infração / Sentido da Via *
-                  </label>
-                  <input
-                    type="text"
-                    id="localSentido"
-                    name="localSentido"
-                    value={formData.localSentido}
-                    onChange={handleInputChange}
-                    className={`form-input ${errors.localSentido ? 'border-destructive' : ''}`}
-                    required
-                  />
-                  {errors.localSentido && <p className="text-destructive text-sm mt-1">{errors.localSentido}</p>}
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="marcaModeloEspecie">
-                    Marca/Modelo/Espécie
-                  </label>
-                  <input
-                    type="text"
-                    id="marcaModeloEspecie"
-                    name="marcaModeloEspecie"
-                    value={formData.marcaModeloEspecie}
-                    onChange={handleInputChange}
-                    className="form-input"
-                  />
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="especieDocumento">
-                    Espécie do Documento
-                  </label>
-                  <input
-                    type="text"
-                    id="especieDocumento"
-                    name="especieDocumento"
-                    value={formData.especieDocumento}
-                    onChange={handleInputChange}
-                    className="form-input"
-                  />
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="expedidaEm">
-                    NA ou NP Expedida em
-                  </label>
-                  <input
-                    type="text"
-                    id="expedidaEm"
-                    name="expedidaEm"
-                    value={formData.expedidaEm}
-                    onChange={handleInputChange}
-                    className="form-input"
-                  />
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="descricaoInfracao">
-                    Descrição da Infração
-                  </label>
-                  <input
-                    type="text"
-                    id="descricaoInfracao"
-                    name="descricaoInfracao"
-                    value={formData.descricaoInfracao}
-                    onChange={handleInputChange}
-                    className="form-input"
-                  />
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="velocidade_permitida">
-                    Velocidade Permitida (km/h)
-                  </label>
-                  <input
-                    type="number"
-                    id="velocidade_permitida"
-                    name="velocidade_permitida"
-                    value={formData.velocidade_permitida}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    min="0"
-                  />
-                </div>
-
-                <div>
-                  <label className="form-label" htmlFor="velocidade_aferida">
-                    Velocidade Aferida (km/h)
-                  </label>
-                  <input
-                    type="number"
-                    id="velocidade_aferida"
-                    name="velocidade_aferida"
-                    value={formData.velocidade_aferida}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    min="0"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="form-label" htmlFor="amparoLegal">
-                    Amparo Legal para Aplicação da Autuação
-                  </label>
-                  <input
-                    type="text"
-                    id="amparoLegal"
-                    name="amparoLegal"
-                    value={formData.amparoLegal}
-                    onChange={handleInputChange}
-                    className="form-input"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="form-label" htmlFor="justificativa">
-                    Justificativa *
-                  </label>
-                  <textarea
-                    id="justificativa"
-                    name="justificativa"
-                    value={formData.justificativa}
-                    onChange={handleInputChange}
-                    rows={4}
-                    className={`form-input ${errors.justificativa ? 'border-destructive' : ''}`}
-                    placeholder="Descreva os motivos pelos quais você acredita que a multa deve ser cancelada..."
-                    required
-                  />
-                  {errors.justificativa && <p className="text-destructive text-sm mt-1">{errors.justificativa}</p>}
-                </div>
+              <div>
+                <label className="form-label" htmlFor="cpf">
+                  CPF *
+                </label>
+                <input
+                  type="text"
+                  id="cpf"
+                  name="cpf"
+                  value={formatCPF(formData.cpf)}
+                  onChange={handleInputChange}
+                  placeholder="000.000.000-00"
+                  className="form-input form-input--code"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  required
+                  aria-invalid={Boolean(errors.cpf)}
+                  aria-describedby={errors.cpf ? 'err-cpf' : undefined}
+                />
+                {errors.cpf && <p className="form-error" id="err-cpf">{errors.cpf}</p>}
               </div>
-            </section>
 
-            <div className="text-center pt-6">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`${isSubmitting ? 'btn-disabled' : 'btn-primary'} text-lg px-8 py-4`}
-              >
-                {isSubmitting ? 'Enviando...' : '📤 Enviar Dados e Gerar Recurso'}
-              </button>
+              <div>
+                <label className="form-label" htmlFor="cnh">
+                  CNH
+                </label>
+                <input
+                  type="text"
+                  id="cnh"
+                  name="cnh"
+                  value={formData.cnh}
+                  onChange={handleInputChange}
+                  className="form-input form-input--code"
+                  inputMode="numeric"
+                />
+              </div>
+
+              <div>
+                <label className="form-label" htmlFor="email">
+                  E-mail *
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  inputMode="email"
+                  autoComplete="email"
+                  required
+                  aria-invalid={Boolean(errors.email)}
+                  aria-describedby={errors.email ? 'err-email' : 'hint-email'}
+                />
+                {errors.email ? (
+                  <p className="form-error" id="err-email">{errors.email}</p>
+                ) : (
+                  <p className="form-hint" id="hint-email">É para cá que o PDF vai.</p>
+                )}
+              </div>
+
+              <div>
+                <label className="form-label" htmlFor="telefone">
+                  Telefone *
+                </label>
+                <input
+                  type="tel"
+                  id="telefone"
+                  name="telefone"
+                  value={formatTelefone(formData.telefone)}
+                  onChange={handleInputChange}
+                  placeholder="(11) 99999-9999"
+                  className="form-input form-input--code"
+                  inputMode="numeric"
+                  autoComplete="tel"
+                  required
+                  aria-invalid={Boolean(errors.telefone)}
+                  aria-describedby={errors.telefone ? 'err-telefone' : undefined}
+                />
+                {errors.telefone && (
+                  <p className="form-error" id="err-telefone">{errors.telefone}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="form-label" htmlFor="cep">
+                  CEP *
+                </label>
+                <input
+                  type="text"
+                  id="cep"
+                  name="cep"
+                  value={formatCEP(formData.cep)}
+                  onChange={handleInputChange}
+                  placeholder="00000-000"
+                  className="form-input form-input--code"
+                  inputMode="numeric"
+                  autoComplete="postal-code"
+                  required
+                  aria-invalid={Boolean(errors.cep)}
+                  aria-describedby={errors.cep ? 'err-cep' : undefined}
+                />
+                {errors.cep && <p className="form-error" id="err-cep">{errors.cep}</p>}
+              </div>
+
+              <div>
+                <span className="form-label">Cidade / UF</span>
+                <p className="form-readonly" aria-live="polite">
+                  {formData.cidade
+                    ? `${formData.cidade} · ${formData.estado}`
+                    : 'Preenchido pelo CEP'}
+                </p>
+              </div>
+
+              <div className="form-field--wide">
+                <label className="form-label" htmlFor="endereco">
+                  Endereço completo *
+                </label>
+                <input
+                  type="text"
+                  id="endereco"
+                  name="endereco"
+                  value={formData.endereco}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  autoComplete="street-address"
+                  required
+                  aria-invalid={Boolean(errors.endereco)}
+                  aria-describedby={errors.endereco ? 'err-endereco' : undefined}
+                />
+                {errors.endereco && (
+                  <p className="form-error" id="err-endereco">{errors.endereco}</p>
+                )}
+              </div>
             </div>
-          </form>
+          </fieldset>
+
+          {/* ---- Veículo ---- */}
+          <fieldset className="fieldset">
+            <legend className="fieldset__legend">
+              <span className="fieldset__name">Veículo</span>
+              <span className="fieldset__rule" aria-hidden="true" />
+            </legend>
+
+            <div className="form-grid">
+              <div>
+                <label className="form-label" htmlFor="placa">
+                  Placa *
+                </label>
+                <input
+                  type="text"
+                  id="placa"
+                  name="placa"
+                  value={formData.placa}
+                  onChange={handleInputChange}
+                  placeholder="ABC1D23"
+                  className="form-input form-input--code uppercase"
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  maxLength={7}
+                  required
+                  aria-invalid={Boolean(errors.placa)}
+                  aria-describedby={errors.placa ? 'err-placa' : undefined}
+                />
+                {errors.placa && <p className="form-error" id="err-placa">{errors.placa}</p>}
+              </div>
+
+              <div>
+                <label className="form-label" htmlFor="renainf">
+                  Código RENAINF
+                </label>
+                <input
+                  type="text"
+                  id="renainf"
+                  name="renainf"
+                  value={formData.renainf}
+                  onChange={handleInputChange}
+                  className="form-input form-input--code"
+                  aria-invalid={Boolean(errors.renainf)}
+                  aria-describedby={errors.renainf ? 'err-renainf' : undefined}
+                />
+                {errors.renainf && <p className="form-error" id="err-renainf">{errors.renainf}</p>}
+              </div>
+
+              <div className="form-field--wide">
+                <label className="form-label" htmlFor="marcaModeloEspecie">
+                  Marca / modelo / espécie
+                </label>
+                <input
+                  type="text"
+                  id="marcaModeloEspecie"
+                  name="marcaModeloEspecie"
+                  value={formData.marcaModeloEspecie}
+                  onChange={handleInputChange}
+                  className="form-input"
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          {/* ---- Autuação ---- */}
+          <fieldset className="fieldset">
+            <legend className="fieldset__legend">
+              <span className="fieldset__name">Autuação</span>
+              <span className="fieldset__rule" aria-hidden="true" />
+            </legend>
+
+            <div className="form-grid">
+              <div className="form-field--wide">
+                <label className="form-label" htmlFor="orgaoAutuador">
+                  Órgão autuador *
+                </label>
+                <input
+                  type="text"
+                  id="orgaoAutuador"
+                  name="orgaoAutuador"
+                  value={formData.orgaoAutuador}
+                  onChange={handleInputChange}
+                  placeholder="DETRAN · RJ"
+                  className="form-input"
+                  required
+                  aria-invalid={Boolean(errors.orgaoAutuador)}
+                  aria-describedby={errors.orgaoAutuador ? 'err-orgaoAutuador' : undefined}
+                />
+                {errors.orgaoAutuador && (
+                  <p className="form-error" id="err-orgaoAutuador">{errors.orgaoAutuador}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="form-label" htmlFor="autoInfracao">
+                  Nº do auto de infração
+                </label>
+                <input
+                  type="text"
+                  id="autoInfracao"
+                  name="autoInfracao"
+                  value={formData.autoInfracao}
+                  onChange={handleInputChange}
+                  className="form-input form-input--code"
+                  aria-invalid={Boolean(errors.autoInfracao)}
+                  aria-describedby="hint-identificadores"
+                />
+              </div>
+
+              <div>
+                <label className="form-label" htmlFor="notificacaoPenalidade">
+                  Nº da notificação de penalidade
+                </label>
+                <input
+                  type="text"
+                  id="notificacaoPenalidade"
+                  name="notificacaoPenalidade"
+                  value={formData.notificacaoPenalidade}
+                  onChange={handleInputChange}
+                  className="form-input form-input--code"
+                  aria-invalid={Boolean(errors.notificacaoPenalidade)}
+                  aria-describedby="hint-identificadores"
+                />
+              </div>
+
+              <p
+                className={`form-field--wide ${errors.autoInfracao ? 'form-error' : 'form-hint'}`}
+                id="hint-identificadores"
+              >
+                {errors.autoInfracao
+                  ? errors.autoInfracao
+                  : 'Preencha ao menos um destes três: nº do auto, nº da notificação ou o RENAINF do bloco anterior.'}
+              </p>
+
+              <div>
+                <label className="form-label" htmlFor="dataHora">
+                  Data e hora da infração *
+                </label>
+                <input
+                  type="datetime-local"
+                  id="dataHora"
+                  name="dataHora"
+                  value={formData.dataHora}
+                  onChange={handleInputChange}
+                  className="form-input form-input--code"
+                  required
+                  aria-invalid={Boolean(errors.dataHora)}
+                  aria-describedby={errors.dataHora ? 'err-dataHora' : undefined}
+                />
+                {errors.dataHora && (
+                  <p className="form-error" id="err-dataHora">{errors.dataHora}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="form-label" htmlFor="expedidaEm">
+                  NA ou NP expedida em
+                </label>
+                <input
+                  type="text"
+                  id="expedidaEm"
+                  name="expedidaEm"
+                  value={formData.expedidaEm}
+                  onChange={handleInputChange}
+                  className="form-input"
+                />
+              </div>
+
+              <div className="form-field--wide">
+                <label className="form-label" htmlFor="localSentido">
+                  Local e sentido da via *
+                </label>
+                <input
+                  type="text"
+                  id="localSentido"
+                  name="localSentido"
+                  value={formData.localSentido}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  required
+                  aria-invalid={Boolean(errors.localSentido)}
+                  aria-describedby={errors.localSentido ? 'err-localSentido' : undefined}
+                />
+                {errors.localSentido && (
+                  <p className="form-error" id="err-localSentido">{errors.localSentido}</p>
+                )}
+              </div>
+
+              <div className="form-field--wide">
+                <label className="form-label" htmlFor="descricaoInfracao">
+                  Descrição da infração
+                </label>
+                <input
+                  type="text"
+                  id="descricaoInfracao"
+                  name="descricaoInfracao"
+                  value={formData.descricaoInfracao}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  aria-describedby="hint-descricao"
+                />
+                <p className="form-hint" id="hint-descricao">
+                  Copie como está escrito no papel.
+                </p>
+              </div>
+
+              <div>
+                <label className="form-label" htmlFor="especieDocumento">
+                  Espécie do documento
+                </label>
+                <input
+                  type="text"
+                  id="especieDocumento"
+                  name="especieDocumento"
+                  value={formData.especieDocumento}
+                  onChange={handleInputChange}
+                  className="form-input"
+                />
+              </div>
+
+              <div>
+                <label className="form-label" htmlFor="amparoLegal">
+                  Amparo legal da autuação
+                </label>
+                <input
+                  type="text"
+                  id="amparoLegal"
+                  name="amparoLegal"
+                  value={formData.amparoLegal}
+                  onChange={handleInputChange}
+                  placeholder="Art. 218, II, do CTB"
+                  className="form-input"
+                />
+              </div>
+
+              <div>
+                <label className="form-label" htmlFor="velocidade_permitida">
+                  Velocidade permitida (km/h)
+                </label>
+                <input
+                  type="number"
+                  id="velocidade_permitida"
+                  name="velocidade_permitida"
+                  value={formData.velocidade_permitida}
+                  onChange={handleInputChange}
+                  className="form-input form-input--code"
+                  inputMode="numeric"
+                  min="0"
+                />
+              </div>
+
+              <div>
+                <label className="form-label" htmlFor="velocidade_aferida">
+                  Velocidade aferida (km/h)
+                </label>
+                <input
+                  type="number"
+                  id="velocidade_aferida"
+                  name="velocidade_aferida"
+                  value={formData.velocidade_aferida}
+                  onChange={handleInputChange}
+                  className="form-input form-input--code"
+                  inputMode="numeric"
+                  min="0"
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          {/* ---- Sua versão ---- */}
+          <fieldset className="fieldset">
+            <legend className="fieldset__legend">
+              <span className="fieldset__name">Sua versão</span>
+              <span className="fieldset__rule" aria-hidden="true" />
+            </legend>
+
+            <label className="form-label" htmlFor="justificativa">
+              O que aconteceu? *
+            </label>
+            <textarea
+              id="justificativa"
+              name="justificativa"
+              value={formData.justificativa}
+              onChange={handleInputChange}
+              rows={5}
+              className="form-input"
+              placeholder="Conte com suas palavras. Quanto mais concreto, melhor a peça — datas, distâncias, sinalização, o que você viu."
+              required
+              aria-invalid={Boolean(errors.justificativa)}
+              aria-describedby={errors.justificativa ? 'err-justificativa' : 'hint-justificativa'}
+            />
+            {errors.justificativa ? (
+              <p className="form-error" id="err-justificativa">{errors.justificativa}</p>
+            ) : (
+              <p className="form-hint" id="hint-justificativa">
+                É este texto que a IA usa para montar a defesa.
+              </p>
+            )}
+          </fieldset>
+
+          <div className="form-actions">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`btn ${isSubmitting ? 'btn--disabled' : 'btn--solid'} px-8 py-4 text-lg`}
+            >
+              {isSubmitting ? 'Enviando…' : 'Enviar e gerar recurso'}
+            </button>
+            <p className="note">Você recebe o PDF por e-mail</p>
+          </div>
+        </form>
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 };
 
