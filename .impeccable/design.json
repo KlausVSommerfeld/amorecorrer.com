@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-18T00:00:00.000Z",
+  "generatedAt": "2026-08-27T10:00:00.000Z",
   "title": "Design System: Amo Recorrer",
   "extensions": {
     "colorMeta": {
@@ -8,117 +8,466 @@
         "role": "primary",
         "displayName": "Verde Autuação",
         "canonical": "hsl(160 60% 23.5%)",
-        "tonalRamp": ["oklch(15% 0.030 163)", "oklch(25% 0.050 163)", "oklch(33% 0.065 163)", "oklch(41% 0.077 163)", "oklch(55% 0.080 163)", "oklch(68% 0.070 163)", "oklch(82% 0.045 163)", "oklch(94% 0.020 163)"]
+        "tonalRamp": [
+          "oklch(15% 0.030 163)",
+          "oklch(25% 0.050 163)",
+          "oklch(33% 0.065 163)",
+          "oklch(41% 0.077 163)",
+          "oklch(55% 0.080 163)",
+          "oklch(68% 0.070 163)",
+          "oklch(82% 0.045 163)",
+          "oklch(94% 0.020 163)"
+        ]
       },
       "verde-autuacao-fundo": {
         "role": "primary",
         "displayName": "Verde Autuação Fundo",
         "canonical": "hsl(160 60% 18.8%)",
-        "tonalRamp": ["oklch(15% 0.030 163)", "oklch(22% 0.045 163)", "oklch(30% 0.060 163)", "oklch(36% 0.068 163)", "oklch(50% 0.075 163)", "oklch(65% 0.065 163)", "oklch(80% 0.045 163)", "oklch(93% 0.020 163)"]
+        "tonalRamp": [
+          "oklch(15% 0.030 163)",
+          "oklch(22% 0.045 163)",
+          "oklch(30% 0.060 163)",
+          "oklch(36% 0.068 163)",
+          "oklch(50% 0.075 163)",
+          "oklch(65% 0.065 163)",
+          "oklch(80% 0.045 163)",
+          "oklch(93% 0.020 163)"
+        ]
       },
       "verde-protocolo": {
         "role": "primary",
         "displayName": "Verde Protocolo",
         "canonical": "hsl(150 100% 18.8%)",
-        "tonalRamp": ["oklch(15% 0.045 152)", "oklch(24% 0.070 152)", "oklch(32% 0.090 152)", "oklch(40% 0.100 152)", "oklch(54% 0.105 152)", "oklch(68% 0.090 152)", "oklch(82% 0.055 152)", "oklch(94% 0.022 152)"]
+        "tonalRamp": [
+          "oklch(15% 0.045 152)",
+          "oklch(24% 0.070 152)",
+          "oklch(32% 0.090 152)",
+          "oklch(40% 0.100 152)",
+          "oklch(54% 0.105 152)",
+          "oklch(68% 0.090 152)",
+          "oklch(82% 0.055 152)",
+          "oklch(94% 0.022 152)"
+        ]
       },
       "tinta-carimbo": {
         "role": "primary",
         "displayName": "Tinta de Carimbo",
         "canonical": "hsl(160 60% 21%)",
-        "tonalRamp": ["oklch(15% 0.028 163)", "oklch(23% 0.048 163)", "oklch(31% 0.062 163)", "oklch(38% 0.072 163)", "oklch(52% 0.078 163)", "oklch(67% 0.068 163)", "oklch(81% 0.045 163)", "oklch(94% 0.020 163)"]
+        "tonalRamp": [
+          "oklch(15% 0.028 163)",
+          "oklch(23% 0.048 163)",
+          "oklch(31% 0.062 163)",
+          "oklch(38% 0.072 163)",
+          "oklch(52% 0.078 163)",
+          "oklch(67% 0.068 163)",
+          "oklch(81% 0.045 163)",
+          "oklch(94% 0.020 163)"
+        ]
       },
       "salvia-margem": {
         "role": "secondary",
         "displayName": "Sálvia de Margem",
         "canonical": "hsl(150 20% 47.1%)",
-        "tonalRamp": ["oklch(15% 0.020 158)", "oklch(25% 0.030 158)", "oklch(36% 0.040 158)", "oklch(47% 0.048 158)", "oklch(58% 0.050 158)", "oklch(70% 0.042 158)", "oklch(83% 0.028 158)", "oklch(95% 0.012 158)"]
+        "tonalRamp": [
+          "oklch(15% 0.020 158)",
+          "oklch(25% 0.030 158)",
+          "oklch(36% 0.040 158)",
+          "oklch(47% 0.048 158)",
+          "oklch(58% 0.050 158)",
+          "oklch(70% 0.042 158)",
+          "oklch(83% 0.028 158)",
+          "oklch(95% 0.012 158)"
+        ]
       },
       "salvia-clara": {
         "role": "secondary",
         "displayName": "Sálvia Clara",
         "canonical": "hsl(120 16% 70.6%)",
-        "tonalRamp": ["oklch(15% 0.015 145)", "oklch(26% 0.022 145)", "oklch(38% 0.028 145)", "oklch(50% 0.032 145)", "oklch(63% 0.034 145)", "oklch(76% 0.033 145)", "oklch(87% 0.022 145)", "oklch(95% 0.010 145)"]
+        "tonalRamp": [
+          "oklch(15% 0.015 145)",
+          "oklch(26% 0.022 145)",
+          "oklch(38% 0.028 145)",
+          "oklch(50% 0.032 145)",
+          "oklch(63% 0.034 145)",
+          "oklch(76% 0.033 145)",
+          "oklch(87% 0.022 145)",
+          "oklch(95% 0.010 145)"
+        ]
       },
       "papel-talao": {
         "role": "neutral",
         "displayName": "Papel do Talão",
         "canonical": "hsl(60 44.4% 89.4%)",
-        "tonalRamp": ["oklch(15% 0.014 105)", "oklch(27% 0.020 105)", "oklch(40% 0.026 105)", "oklch(53% 0.030 105)", "oklch(66% 0.032 105)", "oklch(79% 0.034 105)", "oklch(88% 0.033 105)", "oklch(95% 0.032 105)"]
+        "tonalRamp": [
+          "oklch(15% 0.014 105)",
+          "oklch(27% 0.020 105)",
+          "oklch(40% 0.026 105)",
+          "oklch(53% 0.030 105)",
+          "oklch(66% 0.032 105)",
+          "oklch(79% 0.034 105)",
+          "oklch(88% 0.033 105)",
+          "oklch(95% 0.032 105)"
+        ]
       },
       "vermelho-infracao": {
         "role": "tertiary",
         "displayName": "Vermelho Infração",
         "canonical": "hsl(0 68.3% 51.8%)",
-        "tonalRamp": ["oklch(18% 0.070 27)", "oklch(28% 0.110 27)", "oklch(38% 0.150 27)", "oklch(47% 0.180 27)", "oklch(57% 0.200 27)", "oklch(70% 0.160 27)", "oklch(83% 0.095 27)", "oklch(94% 0.035 27)"]
+        "tonalRamp": [
+          "oklch(18% 0.070 27)",
+          "oklch(28% 0.110 27)",
+          "oklch(38% 0.150 27)",
+          "oklch(47% 0.180 27)",
+          "oklch(57% 0.200 27)",
+          "oklch(70% 0.160 27)",
+          "oklch(83% 0.095 27)",
+          "oklch(94% 0.035 27)"
+        ]
       },
       "vermelho-prazo": {
         "role": "tertiary",
         "displayName": "Vermelho Prazo",
         "canonical": "hsl(0 62% 45%)",
-        "tonalRamp": ["oklch(18% 0.065 27)", "oklch(27% 0.100 27)", "oklch(36% 0.140 27)", "oklch(44% 0.170 27)", "oklch(51% 0.180 27)", "oklch(66% 0.150 27)", "oklch(81% 0.090 27)", "oklch(93% 0.033 27)"]
+        "tonalRamp": [
+          "oklch(18% 0.065 27)",
+          "oklch(27% 0.100 27)",
+          "oklch(36% 0.140 27)",
+          "oklch(44% 0.170 27)",
+          "oklch(51% 0.180 27)",
+          "oklch(66% 0.150 27)",
+          "oklch(81% 0.090 27)",
+          "oklch(93% 0.033 27)"
+        ]
       },
       "grafite-texto": {
         "role": "neutral",
         "displayName": "Grafite",
         "canonical": "hsl(0 0% 13.3%)",
-        "tonalRamp": ["oklch(15% 0 0)", "oklch(26% 0 0)", "oklch(37% 0 0)", "oklch(48% 0 0)", "oklch(60% 0 0)", "oklch(72% 0 0)", "oklch(84% 0 0)", "oklch(95% 0 0)"]
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
       },
       "verde-secundario-texto": {
         "role": "neutral",
         "displayName": "Verde Secundário de Texto",
         "canonical": "hsl(150 20% 30%)",
-        "tonalRamp": ["oklch(15% 0.018 158)", "oklch(24% 0.028 158)", "oklch(33% 0.036 158)", "oklch(42% 0.042 158)", "oklch(55% 0.046 158)", "oklch(69% 0.040 158)", "oklch(83% 0.026 158)", "oklch(95% 0.012 158)"]
+        "tonalRamp": [
+          "oklch(15% 0.018 158)",
+          "oklch(24% 0.028 158)",
+          "oklch(33% 0.036 158)",
+          "oklch(42% 0.042 158)",
+          "oklch(55% 0.046 158)",
+          "oklch(69% 0.040 158)",
+          "oklch(83% 0.026 158)",
+          "oklch(95% 0.012 158)"
+        ]
       },
       "filete": {
         "role": "neutral",
         "displayName": "Filete",
         "canonical": "hsl(150 18% 84%)",
-        "tonalRamp": ["oklch(15% 0.010 160)", "oklch(27% 0.014 160)", "oklch(40% 0.018 160)", "oklch(52% 0.020 160)", "oklch(65% 0.020 160)", "oklch(77% 0.018 160)", "oklch(88% 0.015 160)", "oklch(96% 0.008 160)"]
+        "tonalRamp": [
+          "oklch(15% 0.010 160)",
+          "oklch(27% 0.014 160)",
+          "oklch(40% 0.018 160)",
+          "oklch(52% 0.020 160)",
+          "oklch(65% 0.020 160)",
+          "oklch(77% 0.018 160)",
+          "oklch(88% 0.015 160)",
+          "oklch(96% 0.008 160)"
+        ]
       },
       "contorno-campo": {
         "role": "neutral",
         "displayName": "Contorno de Campo",
-        "canonical": "hsl(150 14% 86%)",
-        "tonalRamp": ["oklch(15% 0.008 160)", "oklch(27% 0.012 160)", "oklch(40% 0.014 160)", "oklch(52% 0.016 160)", "oklch(65% 0.016 160)", "oklch(78% 0.014 160)", "oklch(89% 0.012 160)", "oklch(96% 0.006 160)"]
+        "canonical": "hsl(150 20% 47.1%)",
+        "tonalRamp": [
+          "oklch(15% 0.020 160)",
+          "oklch(25% 0.032 160)",
+          "oklch(35% 0.042 160)",
+          "oklch(45% 0.050 160)",
+          "oklch(60% 0.052 160)",
+          "oklch(75% 0.044 160)",
+          "oklch(88% 0.028 160)",
+          "oklch(96% 0.014 160)"
+        ]
       },
       "branco-folha": {
         "role": "neutral",
         "displayName": "Branco Folha",
         "canonical": "hsl(0 0% 100%)",
-        "tonalRamp": ["oklch(15% 0 0)", "oklch(27% 0 0)", "oklch(39% 0 0)", "oklch(51% 0 0)", "oklch(63% 0 0)", "oklch(75% 0 0)", "oklch(88% 0 0)", "oklch(100% 0 0)"]
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(39% 0 0)",
+          "oklch(51% 0 0)",
+          "oklch(63% 0 0)",
+          "oklch(75% 0 0)",
+          "oklch(88% 0 0)",
+          "oklch(100% 0 0)"
+        ]
+      },
+      "faixa-verde": {
+        "role": "primary",
+        "displayName": "Faixa Verde",
+        "canonical": "hsl(160 60% 23.5%)",
+        "tonalRamp": [
+          "oklch(15% 0.030 163)",
+          "oklch(25% 0.050 163)",
+          "oklch(33% 0.065 163)",
+          "oklch(41% 0.077 163)",
+          "oklch(55% 0.080 163)",
+          "oklch(68% 0.070 163)",
+          "oklch(82% 0.045 163)",
+          "oklch(94% 0.020 163)"
+        ]
+      },
+      "faixa-verde-fundo": {
+        "role": "primary",
+        "displayName": "Faixa Verde Fundo",
+        "canonical": "hsl(160 60% 18.8%)",
+        "tonalRamp": [
+          "oklch(15% 0.028 163)",
+          "oklch(24% 0.048 163)",
+          "oklch(32% 0.062 163)",
+          "oklch(40% 0.072 163)",
+          "oklch(54% 0.075 163)",
+          "oklch(67% 0.066 163)",
+          "oklch(81% 0.042 163)",
+          "oklch(94% 0.018 163)"
+        ]
+      },
+      "faixa-tinta": {
+        "role": "neutral",
+        "displayName": "Tinta da Faixa",
+        "canonical": "hsl(0 0% 100%)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(45% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(75% 0 0)",
+          "oklch(88% 0 0)",
+          "oklch(97% 0 0)"
+        ]
+      },
+      "faixa-papel": {
+        "role": "neutral",
+        "displayName": "Papel da Faixa",
+        "canonical": "hsl(60 44.4% 89.4%)",
+        "tonalRamp": [
+          "oklch(15% 0.018 105)",
+          "oklch(25% 0.028 105)",
+          "oklch(35% 0.036 105)",
+          "oklch(45% 0.042 105)",
+          "oklch(60% 0.046 105)",
+          "oklch(75% 0.044 105)",
+          "oklch(88% 0.036 105)",
+          "oklch(96% 0.022 105)"
+        ]
+      },
+      "tinta-de-sombra": {
+        "role": "neutral",
+        "displayName": "Tinta de Sombra",
+        "canonical": "hsl(160 60% 23.5%)",
+        "tonalRamp": [
+          "oklch(12% 0.024 163)",
+          "oklch(20% 0.042 163)",
+          "oklch(30% 0.060 163)",
+          "oklch(41% 0.077 163)",
+          "oklch(55% 0.080 163)",
+          "oklch(68% 0.070 163)",
+          "oklch(82% 0.045 163)",
+          "oklch(94% 0.020 163)"
+        ]
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Só o título do hero. Uma ocorrência por site." },
-      "headline": { "displayName": "Headline", "purpose": "Título de seção, título de página interna e faixa de fechamento — os três com o mesmo valor." },
-      "title": { "displayName": "Title", "purpose": "Etapa da trilha, pergunta do FAQ, subtítulo de página legal." },
-      "lead": { "displayName": "Lead", "purpose": "Parágrafo de abertura sob o título do hero, teto de 44ch." },
-      "body": { "displayName": "Body", "purpose": "Texto corrido, com teto de leitura entre 54ch e 72ch." },
-      "label": { "displayName": "Label", "purpose": "O átomo do sistema: rótulo de campo, sobretítulo, aviso sob CTA, navegação, rodapé." },
-      "data": { "displayName": "Data", "purpose": "Preço, cronômetro, placa, CPF, nº do auto e case_id. Sempre tabular-nums." },
-      "document": { "displayName": "Document", "purpose": "Só o interior do documento gerado e citações do CTB. Nunca em cromo de página." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Só o título do hero. Uma ocorrência por site."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Título de seção, título de página interna e faixa de fechamento — os três com o mesmo valor."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Etapa da trilha, pergunta do FAQ, subtítulo de página legal."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Parágrafo de abertura sob o título do hero, teto de 44ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto corrido, com teto de leitura entre 54ch e 72ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "O átomo do sistema: rótulo de campo, sobretítulo, aviso sob CTA, navegação, rodapé."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "Preço, cronômetro, placa, CPF, nº do auto e case_id. Sempre tabular-nums."
+      },
+      "document": {
+        "displayName": "Document",
+        "purpose": "Só o interior do documento gerado e citações do CTB. Nunca em cromo de página."
+      }
     },
     "shadows": [
-      { "name": "papel-assentado", "value": "0 1px 2px hsl(var(--primary) / 0.08), 0 18px 36px -24px hsl(var(--primary) / 0.45)", "purpose": "A réplica do auto de infração: um contato duro de 1px e uma difusão longa de folha sobre mesa." },
-      { "name": "papel-pousando", "value": "0 -1px 3px hsl(var(--primary) / 0.06), 0 24px 44px -28px hsl(var(--primary) / 0.7)", "purpose": "A folha do recurso pousada sobre a autuação. Mais funda, com um fio de luz para cima porque está sobre outra folha." },
-      { "name": "documento-em-repouso", "value": "0 1px 2px hsl(var(--primary) / 0.08), 0 20px 40px -28px hsl(var(--primary) / 0.5)", "purpose": "Prévia do PDF e recibo do envio." },
-      { "name": "barra-sobreposta", "value": "0 -10px 28px -22px hsl(var(--primary) / 0.9)", "purpose": "Projeta para cima, sob a barra fixa de CTA." },
-      { "name": "contato-de-botao", "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)", "purpose": "O único preto do sistema e a única sombra que não representa papel. Variantes sólida e invertida do botão." }
+      {
+        "name": "papel-assentado",
+        "value": "0 1px 2px hsl(var(--shadow) / 0.08), 0 18px 36px -24px hsl(var(--shadow) / 0.45)",
+        "purpose": "A réplica do auto de infração: um contato duro de 1px e uma difusão longa de folha sobre mesa."
+      },
+      {
+        "name": "papel-pousando",
+        "value": "0 -1px 3px hsl(var(--shadow) / 0.06), 0 24px 44px -28px hsl(var(--shadow) / 0.7)",
+        "purpose": "A folha do recurso pousada sobre a autuação. Mais funda, com um fio de luz para cima porque está sobre outra folha."
+      },
+      {
+        "name": "documento-em-repouso",
+        "value": "0 1px 2px hsl(var(--shadow) / 0.08), 0 20px 40px -28px hsl(var(--shadow) / 0.5)",
+        "purpose": "Prévia do PDF e recibo do envio."
+      },
+      {
+        "name": "barra-sobreposta",
+        "value": "0 -10px 28px -22px hsl(var(--shadow) / 0.9)",
+        "purpose": "Projeta para cima, sob a barra fixa de CTA."
+      },
+      {
+        "name": "contato-de-botao",
+        "value": "0 1px 2px hsl(var(--shadow) / 0.18)",
+        "purpose": "O único caso em que a sombra não representa papel: um contato mínimo sob as variantes sólida e invertida do botão. Era o `shadow-sm` preto do Tailwind — a última sombra preta do sistema."
+      }
     ],
     "motion": [
-      { "name": "transicao-de-cor", "value": "200ms", "purpose": "Única transição do sistema: cor, em botões, links e campos. Sem movimento." },
-      { "name": "notice-settle", "value": "notice-settle 180ms ease-out both", "purpose": "Primeiro passo da sequência do hero: a notificação assenta." },
-      { "name": "sheet-slide", "value": "sheet-slide 240ms cubic-bezier(.2,.7,.3,1) 180ms both", "purpose": "Segundo passo: a folha do recurso desliza por cima." },
-      { "name": "stamp-drop", "value": "stamp-drop 200ms cubic-bezier(.3,1.4,.5,1) 420ms both", "purpose": "Terceiro passo: o carimbo cai, com leve overshoot. Encerra a única animação do site." },
-      { "name": "reduced-motion-guard", "value": "animation-duration: 0.01ms; animation-delay: -1ms; transition-duration: 0.01ms", "purpose": "Sob prefers-reduced-motion zera duração E atraso — sem o atraso negativo, o usuário esperaria a sequência sem vê-la." }
+      {
+        "name": "transicao-de-cor",
+        "value": "200ms",
+        "purpose": "Única transição do sistema: cor, em botões, links e campos. Sem movimento."
+      },
+      {
+        "name": "notice-settle",
+        "value": "notice-settle 180ms ease-out both",
+        "purpose": "Primeiro passo da sequência do hero: a notificação assenta."
+      },
+      {
+        "name": "sheet-slide",
+        "value": "sheet-slide 240ms cubic-bezier(.2,.7,.3,1) 180ms both",
+        "purpose": "Segundo passo: a folha do recurso desliza por cima."
+      },
+      {
+        "name": "stamp-drop",
+        "value": "stamp-drop 200ms linear 420ms both (easing por keyframe: cubic-bezier(0.16,1,0.3,1) na queda, cubic-bezier(0.33,1,0.68,1) na recuperação)",
+        "purpose": "Terceiro passo: o carimbo cai. A compressão é geométrica (keyframes 1.6 → 0.96 → 1.0, sem ultrapassar o alvo), não da curva. Encerra a sequência do hero."
+      },
+      {
+        "name": "reduced-motion-guard",
+        "value": "animation-duration: 0.01ms; animation-delay: -1ms; transition-duration: 0.01ms",
+        "purpose": "Sob prefers-reduced-motion zera duração E atraso — sem o atraso negativo, o usuário esperaria a sequência sem vê-la."
+      }
     ],
     "breakpoints": [
-      { "name": "sm", "value": "640px" },
-      { "name": "md", "value": "768px" },
-      { "name": "lg", "value": "1024px" },
-      { "name": "container", "value": "72rem" }
-    ]
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "tablet-estreito",
+        "value": "(min-width: 768px) and (max-width: 1023px)"
+      },
+      {
+        "name": "viewport-baixa",
+        "value": "(max-height: 560px)"
+      },
+      {
+        "name": "container",
+        "value": "72rem"
+      }
+    ],
+    "themes": {
+      "default": "light",
+      "strategy": "Classe `.dark` na raiz, decidida por script inline no index.html antes da primeira pintura; `color-scheme` acompanha. O escuro é a via carbonada do impresso, não a inversão dele.",
+      "dark": {
+        "background": "hsl(160 26% 5%)",
+        "foreground": "hsl(60 26% 90%)",
+        "card": "hsl(160 20% 10%)",
+        "primary": "hsl(120 20% 72%)",
+        "primary-foreground": "hsl(160 50% 9%)",
+        "primary-dark": "hsl(120 24% 84%)",
+        "paper": "hsl(150 16% 13%)",
+        "muted": "hsl(150 16% 12%)",
+        "muted-foreground": "hsl(120 12% 70%)",
+        "destructive": "hsl(0 70% 66%)",
+        "warning": "hsl(0 70% 68%)",
+        "stamp": "hsl(120 22% 74%)",
+        "success": "hsl(150 45% 60%)",
+        "rule": "hsl(150 12% 22%)",
+        "input": "hsl(150 14% 42%)",
+        "ring": "hsl(120 20% 72%)",
+        "band": "hsl(160 48% 20%)",
+        "band-deep": "hsl(160 48% 14%)",
+        "band-ink": "hsl(60 26% 92%)",
+        "band-paper": "hsl(60 28% 86%)",
+        "shadow": "hsl(160 60% 2%)"
+      }
+    },
+    "pointer": {
+      "strategy": "O tamanho do alvo sai do ponteiro, não da largura da tela.",
+      "coarse": "Alvos abaixo de 44px sobem para 44px. No cabeçalho a área cresce por pseudo-elemento (`inset: -8px -6px`) para não custar dobra; no rodapé e no link de pulo a altura sobe de verdade.",
+      "noHover": "Todo `:hover` volta ao repouso sob `hover: none` — no toque ele gruda. A seleção continua saindo de `:has(:checked)`."
+    },
+    "colorVision": {
+      "method": "Viénot, Brettel & Mollon (1999), severidade total",
+      "finding": "O eixo vermelho×verde colapsa para dicromatas: Vermelho Prazo #BA2C2C e Verde Protocolo #006030 ficam a 1,04:1 sob protanopia e 1,73:1 sob deuteranopia.",
+      "consequence": "Nenhum estado é comunicado só por matiz; todo sinal vermelho ou verde carrega palavra ou glifo. Verificado em toda a superfície.",
+      "simulated": {
+        "vermelho-infracao": {
+          "normal": "#D83030",
+          "protanopia": "#69692D",
+          "deuteranopia": "#88881B"
+        },
+        "vermelho-prazo": {
+          "normal": "#BA2C2C",
+          "protanopia": "#5B5B2A",
+          "deuteranopia": "#75751D"
+        },
+        "verde-autuacao": {
+          "normal": "#186048",
+          "protanopia": "#585848",
+          "deuteranopia": "#51514A"
+        },
+        "verde-protocolo": {
+          "normal": "#006030",
+          "protanopia": "#585830",
+          "deuteranopia": "#4F4F33"
+        }
+      }
+    },
+    "forcedColors": {
+      "strategy": "Todo controle declara a própria borda em @media (forced-colors: active), com cor de sistema.",
+      "finding": "Sem isso o botão principal perdia a forma por completo no alto contraste: fundo e cor são substituídos pelo sistema e a única coisa que dava corpo ao botão era o preenchimento.",
+      "rule": ".btn { border: 1px solid ButtonBorder }"
+    }
   },
   "components": [
     {
@@ -127,15 +476,15 @@
       "refersTo": "button-solid",
       "description": "CTA principal sobre fundo claro. A variante resolve a cor sozinha — nunca empilhar utilitário de cor por cima.",
       "html": "<button class=\"ds-btn ds-btn-solid\">Gerar meu recurso</button>",
-      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 4px; font-family: 'Archivo Variable', system-ui, sans-serif; font-weight: 600; font-size: 1rem; padding: 12px 24px; cursor: pointer; user-select: none; transition: background-color 200ms, color 200ms; } .ds-btn-solid { background: hsl(var(--primary, 160 60% 23.5%)); color: hsl(var(--primary-foreground, 0 0% 100%)); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); } .ds-btn-solid:hover { background: hsl(var(--primary-dark, 160 60% 18.8%)); } .ds-btn-solid:focus-visible { outline: 2px solid hsl(var(--ring, 160 60% 23.5%)); outline-offset: 2px; }"
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 4px; font-family: 'Archivo Variable', system-ui, sans-serif; font-weight: 600; font-size: 1rem; padding: 12px 24px; cursor: pointer; user-select: none; transition: background-color 200ms, color 200ms; } .ds-btn-solid { background: hsl(var(--primary, 160 60% 23.5%)); color: hsl(var(--primary-foreground, 0 0% 100%)); box-shadow: 0 1px 2px hsl(var(--shadow, 160 60% 23.5%) / 0.18); } .ds-btn-solid:hover { background: hsl(var(--primary-dark, 160 60% 18.8%)); } .ds-btn-solid:focus-visible { outline: 2px solid hsl(var(--ring, 160 60% 23.5%)); outline-offset: 2px; }"
     },
     {
       "name": "Botão Invertido sobre Verde",
       "kind": "button",
       "refersTo": "button-inverse",
-      "description": "Para uso sobre fundo verde: o papel do talão vira o botão. O contorno de foco troca para creme, senão o anel verde some no fundo verde.",
+      "description": "O papel do talão vira o botão, para uso sobre a faixa verde. Usa os tokens da faixa (`band-*`), não os da página: ele pertence à faixa e acompanha o tema junto com ela.",
       "html": "<div class=\"ds-green-ground\"><button class=\"ds-btn ds-btn-inverse\">Gerar meu recurso</button></div>",
-      "css": ".ds-green-ground { background: linear-gradient(135deg, hsl(var(--primary, 160 60% 23.5%)) 0%, hsl(var(--primary-dark, 160 60% 18.8%)) 100%); padding: 24px; border-radius: 4px; } .ds-btn-inverse { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 4px; font-family: 'Archivo Variable', system-ui, sans-serif; font-weight: 600; font-size: 1rem; padding: 12px 24px; cursor: pointer; background: hsl(var(--paper, 60 44.4% 89.4%)); color: hsl(var(--primary, 160 60% 23.5%)); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: background-color 200ms; } .ds-btn-inverse:hover { background: hsl(var(--secondary-light, 120 16% 70.6%)); } .ds-btn-inverse:focus-visible { outline: 2px solid hsl(var(--paper, 60 44.4% 89.4%)); outline-offset: 2px; }"
+      "css": ".ds-green-ground { background: linear-gradient(135deg, hsl(var(--band, 160 60% 23.5%)) 0%, hsl(var(--band-deep, 160 60% 18.8%)) 100%); padding: 24px; border-radius: 4px; } .ds-btn-inverse { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 4px; font-family: 'Archivo Variable', system-ui, sans-serif; font-weight: 600; font-size: 1rem; padding: 12px 24px; cursor: pointer; background: hsl(var(--band-paper, 60 44.4% 89.4%)); color: hsl(var(--band, 160 60% 23.5%)); box-shadow: 0 1px 2px hsl(var(--shadow, 160 60% 23.5%) / 0.18); transition: background-color 200ms; } .ds-btn-inverse:hover { background: hsl(var(--secondary-light, 120 16% 70.6%)); } .ds-btn-inverse:focus-visible { outline: 2px solid hsl(var(--band-paper, 60 44.4% 89.4%)); outline-offset: 2px; }"
     },
     {
       "name": "Botão Fantasma",
@@ -151,7 +500,15 @@
       "refersTo": "input",
       "description": "Rótulo mono em caixa alta acima do campo. A variante de código serve placa, CPF, CEP e nº do auto. O estado de erro sai de aria-invalid, não de classe.",
       "html": "<div class=\"ds-form-row\"><label class=\"ds-form-label\" for=\"ds-placa\">Placa do veículo</label><input class=\"ds-form-input ds-form-input-code\" id=\"ds-placa\" value=\"BRA2E19\" /><p class=\"ds-form-hint\">Formato Mercosul ou antigo.</p></div>",
-      "css": ".ds-form-row { max-width: 320px; } .ds-form-label { display: block; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: hsl(var(--muted-foreground, 150 20% 30%)); margin-bottom: 8px; } .ds-form-input { width: 100%; padding: 12px 16px; background: hsl(var(--background, 0 0% 100%)); border: 1px solid hsl(var(--input, 150 14% 86%)); border-radius: 4px; font-family: 'Archivo Variable', system-ui, sans-serif; font-size: 1rem; color: hsl(var(--foreground, 0 0% 13.3%)); transition: border-color 200ms; } .ds-form-input-code { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; letter-spacing: 0.025em; } .ds-form-input:focus { outline: none; border-color: hsl(var(--primary, 160 60% 23.5%)); box-shadow: 0 0 0 1px hsl(var(--background, 0 0% 100%)), 0 0 0 3px hsl(var(--ring, 160 60% 23.5%)); } .ds-form-input[aria-invalid='true'] { border-color: hsl(var(--destructive, 0 68.3% 51.8%)); } .ds-form-hint { margin-top: 4px; font-family: 'Archivo Variable', system-ui, sans-serif; font-size: 12px; line-height: 1.375; color: hsl(var(--muted-foreground, 150 20% 30%)); }"
+      "css": ".ds-form-row { max-width: 320px; } .ds-form-label { display: block; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: hsl(var(--muted-foreground, 150 20% 30%)); margin-bottom: 8px; } .ds-form-input { width: 100%; padding: 12px 16px; background: hsl(var(--card, 0 0% 100%)); border: 1px solid hsl(var(--input, 150 20% 47.1%)); border-radius: 4px; font-family: 'Archivo Variable', system-ui, sans-serif; font-size: 1rem; color: hsl(var(--foreground, 0 0% 13.3%)); transition: border-color 200ms; } .ds-form-input-code { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; letter-spacing: 0.025em; } .ds-form-input:focus { outline: none; border-color: hsl(var(--primary, 160 60% 23.5%)); box-shadow: 0 0 0 1px hsl(var(--card, 0 0% 100%)), 0 0 0 3px hsl(var(--ring, 160 60% 23.5%)); } .ds-form-input[aria-invalid='true'] { border-color: hsl(var(--destructive, 0 68.3% 51.8%)); } .ds-form-hint { margin-top: 4px; font-family: 'Archivo Variable', system-ui, sans-serif; font-size: 12px; line-height: 1.375; color: hsl(var(--muted-foreground, 150 20% 30%)); }"
+    },
+    {
+      "name": "A Opção (.choice)",
+      "kind": "custom",
+      "refersTo": "choice",
+      "description": "Decisão de caminho que não cabe num campo de texto. O rótulo inteiro é o alvo; escolhido, troca a cor da borda e preenche com papel creme — sem engrossar traço.",
+      "html": "<div class=\"ds-choice-group\"><label class=\"ds-choice\"><input class=\"ds-choice-input\" type=\"radio\" name=\"ds-estagio\" checked><span><span class=\"ds-choice-name\">Defesa da autuação</span><span class=\"ds-choice-desc\">O papel diz “notificação de autuação”. A peça vai para o próprio órgão autuador.</span></span></label><label class=\"ds-choice\"><input class=\"ds-choice-input\" type=\"radio\" name=\"ds-estagio\"><span><span class=\"ds-choice-name\">Recurso à JARI</span><span class=\"ds-choice-desc\">O papel diz “notificação de penalidade” e traz o valor a pagar.</span></span></label></div>",
+      "css": ".ds-choice-group { display: grid; gap: 12px; font-family: 'Archivo Variable', system-ui, sans-serif; } @media (min-width: 768px) { .ds-choice-group { grid-template-columns: 1fr 1fr; } } .ds-choice { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-radius: 4px; border: 1px solid hsl(var(--input, 150 20% 47.1%)); background: hsl(var(--background, 0 0% 100%)); cursor: pointer; transition: background-color 200ms, border-color 200ms; } .ds-choice:hover { border-color: hsl(var(--primary, 160 60% 23.5%)); } .ds-choice:has(.ds-choice-input:checked) { border-color: hsl(var(--primary, 160 60% 23.5%)); background: hsl(var(--muted, 60 44.4% 89.4%)); } .ds-choice:has(.ds-choice-input:focus-visible) { outline: 2px solid hsl(var(--ring, 160 60% 23.5%)); outline-offset: 1px; } .ds-choice-input { margin-top: 4px; width: 16px; height: 16px; flex-shrink: 0; accent-color: hsl(var(--primary, 160 60% 23.5%)); } .ds-choice-name { display: block; font-weight: 700; font-size: 1rem; line-height: 1.25; color: hsl(var(--foreground, 0 0% 13.3%)); } .ds-choice-desc { display: block; margin-top: 4px; font-size: 12px; line-height: 1.375; color: hsl(var(--muted-foreground, 150 20% 30%)); }"
     },
     {
       "name": "O Campo (.field)",
@@ -165,86 +522,248 @@
       "name": "Carimbo",
       "kind": "chip",
       "refersTo": "stamp",
-      "description": "Componente-assinatura. Aresta viva (rounded-sm resolve para 0px neste projeto), borda de 2px, tinta verde. Um por tela, nunca preenchido, nunca vermelho.",
-      "html": "<span class=\"ds-stamp\">Recurso protocolado</span>",
+      "description": "Marca o que foi protocolado. Aresta viva, borda de 2px, tinta de carimbo. Um por tela; nunca vermelho, nunca preenchido.",
+      "html": "<span class=\"ds-stamp\">Protocolado</span>",
       "css": ".ds-stamp { display: inline-block; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 600; padding: 6px 12px; border-radius: 0; color: hsl(var(--stamp, 160 60% 21%)); border: 2px solid hsl(var(--stamp, 160 60% 21%)); background: transparent; }"
     },
     {
-      "name": "Bloco do Formulário",
-      "kind": "card",
-      "refersTo": "card",
-      "description": "Agrupa os campos na ordem da notificação. A legenda é o nome do bloco em mono verde com um filete atravessando até a borda — a tarja que separa as seções do documento.",
-      "html": "<fieldset class=\"ds-fieldset\"><legend class=\"ds-fieldset-legend\"><span class=\"ds-fieldset-name\">Dados da autuação</span><span class=\"ds-fieldset-rule\"></span></legend><div class=\"ds-field\"><span class=\"ds-field-label\">Local da infração</span><span class=\"ds-field-value\">Av. Paulista, 1000</span></div></fieldset>",
-      "css": ".ds-fieldset { border: 1px solid hsl(var(--rule, 150 18% 84%)); border-radius: 4px; background: hsl(var(--background, 0 0% 100%)); padding: 20px; max-width: 380px; } .ds-fieldset-legend { display: flex; width: 100%; align-items: center; gap: 12px; margin-bottom: 20px; padding: 0; } .ds-fieldset-name { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: hsl(var(--primary, 160 60% 23.5%)); white-space: nowrap; } .ds-fieldset-rule { height: 1px; flex: 1; background: hsl(var(--rule, 150 18% 84%)); }"
+      "name": "Bloco de Alerta",
+      "kind": "custom",
+      "refersTo": "alert-error",
+      "description": "A falha nomeada em peso 600, a explicação em grafite e a recuperação na mesma caixa. Fundo branco opaco: a 10% de opacidade o bloco some sobre a faixa verde.",
+      "html": "<div class=\"ds-alert\" role=\"alert\"><p class=\"ds-alert-title\">Não conseguimos enviar.</p><p class=\"ds-alert-body\">Nossos servidores não responderam agora. Seus dados continuam aqui — tente de novo.</p><a class=\"ds-alert-action\" href=\"#\">Falar com a gente</a></div>",
+      "css": ".ds-alert { font-family: 'Archivo Variable', system-ui, sans-serif; padding: 16px; border-radius: 4px; border: 1px solid hsl(var(--destructive, 0 68.3% 51.8%)); background: hsl(var(--background, 0 0% 100%)); color: hsl(var(--destructive, 0 68.3% 51.8%)); max-width: 28rem; } .ds-alert-title { margin: 0; font-weight: 600; } .ds-alert-body { margin: 4px 0 0; font-size: 0.875rem; line-height: 1.375; color: hsl(var(--foreground, 0 0% 13.3%)); } .ds-alert-action { display: inline-block; margin-top: 12px; font-size: 0.875rem; color: hsl(var(--foreground, 0 0% 13.3%)); text-decoration: underline; text-underline-offset: 2px; } .ds-alert-action:focus-visible { outline: 2px solid hsl(var(--ring, 160 60% 23.5%)); outline-offset: 2px; }"
     },
     {
       "name": "Cabeçalho",
       "kind": "nav",
       "refersTo": null,
-      "description": "O topo da notificação: quem emite à esquerda em grotesca 800 caixa alta, os avisos à direita em mono 11px. Separado do conteúdo por filete, sem hambúrguer.",
-      "html": "<header class=\"ds-masthead\"><a class=\"ds-masthead-brand\" href=\"#\">Amo Recorrer</a><nav class=\"ds-masthead-links\"><a href=\"#\">Como funciona</a><a href=\"#\">Dúvidas</a><a href=\"#\">Termos</a></nav></header>",
-      "css": ".ds-masthead { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 0; border-bottom: 1px solid hsl(var(--rule, 150 18% 84%)); } .ds-masthead-brand { font-family: 'Archivo Variable', system-ui, sans-serif; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.14em; color: hsl(var(--primary, 160 60% 23.5%)); text-decoration: none; } .ds-masthead-links { display: flex; align-items: center; gap: 20px; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; } .ds-masthead-links a { color: hsl(var(--muted-foreground, 150 20% 30%)); text-decoration: none; transition: color 200ms; } .ds-masthead-links a:hover { color: hsl(var(--primary, 160 60% 23.5%)); } .ds-masthead-links a:focus-visible { outline: 2px solid hsl(var(--ring, 160 60% 23.5%)); outline-offset: 2px; }"
+      "description": "O topo da notificação: quem emite à esquerda, os avisos e a alternância de tema à direita. Uma linha só, separada do conteúdo por filete, sem menu hambúrguer.",
+      "html": "<header class=\"ds-masthead\"><a class=\"ds-masthead-brand\" href=\"#\">Amo Recorrer</a><nav class=\"ds-masthead-links\"><a href=\"#\">Termos</a><a href=\"#\">Privacidade</a><button class=\"ds-theme-toggle\" type=\"button\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z\"/></svg>Escuro</button></nav></header>",
+      "css": ".ds-masthead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; padding: 16px 0; border-bottom: 1px solid hsl(var(--rule, 150 18% 84%)); } .ds-masthead-brand { display: inline-block; white-space: nowrap; padding: 6px 0; font-family: 'Archivo Variable', system-ui, sans-serif; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.14em; color: hsl(var(--primary, 160 60% 23.5%)); text-decoration: none; } .ds-masthead-links { display: flex; align-items: center; gap: 20px; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; } .ds-masthead-links a { display: inline-block; padding: 6px 0; color: hsl(var(--muted-foreground, 150 20% 30%)); text-decoration: none; transition: color 200ms; } .ds-masthead-links a:hover { color: hsl(var(--primary, 160 60% 23.5%)); } .ds-theme-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 24px; min-height: 24px; padding: 6px 0; border: none; background: none; cursor: pointer; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: hsl(var(--muted-foreground, 150 20% 30%)); transition: color 200ms; } .ds-theme-toggle:hover { color: hsl(var(--primary, 160 60% 23.5%)); } .ds-masthead-links a:focus-visible, .ds-theme-toggle:focus-visible { outline: 2px solid hsl(var(--ring, 160 60% 23.5%)); outline-offset: 2px; }"
     },
     {
-      "name": "Faixa da Oferta",
-      "kind": "custom",
-      "refersTo": null,
-      "description": "Dois campos do documento lado a lado, separados por filete: o preço e o prazo. Empilha no celular. Os números usam tabular-nums e o cronômetro não pulsa.",
-      "html": "<div class=\"ds-offer\"><div class=\"ds-offer-cell\"><span class=\"ds-field-label\">Pagamento único</span><div class=\"ds-price\"><span class=\"ds-price-from\">R$ 39,99</span>R$ 19,99</div></div><div class=\"ds-offer-cell\"><span class=\"ds-field-label\">Prazo da promoção</span><div class=\"ds-countdown\">29:41</div></div></div>",
-      "css": ".ds-offer { display: inline-flex; flex-direction: row; border: 1px solid hsl(var(--rule, 150 18% 84%)); border-radius: 4px; background: hsl(var(--background, 0 0% 100%)); } .ds-offer-cell { padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; } .ds-offer-cell + .ds-offer-cell { border-left: 1px solid hsl(var(--rule, 150 18% 84%)); } .ds-price { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 1.5rem; font-weight: 700; line-height: 1; color: hsl(var(--foreground, 0 0% 13.3%)); font-variant-numeric: tabular-nums; } .ds-price-from { margin-right: 8px; font-size: 14px; font-weight: 400; text-decoration: line-through; color: hsl(var(--muted-foreground, 150 20% 30%)); } .ds-countdown { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 1.5rem; font-weight: 700; line-height: 1; color: hsl(var(--warning, 0 62% 45%)); font-variant-numeric: tabular-nums; }"
+      "name": "Link de Pulo",
+      "kind": "nav",
+      "refersTo": "skip-link",
+      "description": "Primeira parada da tabulação, fora da tela até receber foco. Abre a ordem de tabulação de toda página e leva ao `<main>`.",
+      "html": "<div class=\"ds-skip-demo\"><a class=\"ds-skip\" href=\"#conteudo\">Pular para o conteúdo</a><p class=\"ds-skip-hint\">Tabule até aqui para vê-lo entrar.</p></div>",
+      "css": ".ds-skip-demo { position: relative; overflow: hidden; padding: 56px 16px 16px; border: 1px solid hsl(var(--rule, 150 18% 84%)); border-radius: 4px; } .ds-skip { position: absolute; left: 16px; top: 16px; transform: translateY(-96px); border: 1px solid hsl(var(--rule, 150 18% 84%)); border-radius: 4px; background: hsl(var(--card, 0 0% 100%)); padding: 8px 16px; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: hsl(var(--primary, 160 60% 23.5%)); text-decoration: none; transition: transform 150ms; } .ds-skip:focus { transform: translateY(0); outline: 2px solid hsl(var(--ring, 160 60% 23.5%)); outline-offset: 2px; } .ds-skip-hint { margin: 0; font-family: 'Archivo Variable', system-ui, sans-serif; font-size: 14px; color: hsl(var(--muted-foreground, 150 20% 30%)); }"
     }
   ],
   "narrative": {
     "northStar": "Notificação e Resposta",
-    "overview": "O sistema não ilustra o problema — ele o cita. A página é construída com o vocabulário visual do documento que o usuário tem na mão: campo rotulado em mono minúsculo, filete de 1px separando linhas, código monoespaçado, papel creme, carimbo. Quem chega já passou os últimos minutos lendo uma notificação de autuação; a interface fala a mesma língua, e é por isso que ela é lida como legítima antes de ser lida como site.\n\nO caráter é calmo sob pressão. O usuário está com prazo, irritado e frequentemente no celular. Nada aqui encena a urgência que ele já sente: o cronômetro não pulsa, o vermelho aparece em três lugares e some, os botões não se mexem. A firmeza vem da estrutura — filete, rótulo, alinhamento — e não do volume. A segunda metade do caráter é material e tátil: os objetos que representam papel se comportam como papel. A réplica do auto tem rotação e sombra longa, a folha do recurso pousa por cima dela, o carimbo cai por último. Esses três momentos concentram toda a ousadia do sistema; o restante é filete, campo e tipografia.\n\nA semântica de cor é o eixo moral da direção e não se negocia: vermelho é a multa e o prazo; verde é o recurso e o protocolado. Nada que o produto entrega aparece em vermelho, e nada que o órgão autuador cobra aparece em verde.",
+    "overview": "O sistema não ilustra o problema — ele o cita. A página é construída com o vocabulário visual do documento que o usuário tem na mão: campo rotulado em mono minúsculo, filete de 1px separando linhas, código monoespaçado, papel creme, carimbo. Quem chega já passou os últimos minutos lendo uma notificação de autuação; a interface fala a mesma língua, e é por isso que ela é lida como legítima antes de ser lida como site.\n\nO caráter é **calmo sob pressão**. O usuário está com prazo, irritado e frequentemente no celular. Nada aqui encena a urgência que ele já sente: o cronômetro não pulsa, o vermelho aparece em três lugares e some, os botões não se mexem. A firmeza vem da estrutura — filete, rótulo, alinhamento — e não do volume. A segunda metade do caráter é **material e tátil**: os objetos que representam papel se comportam como papel. A réplica do auto tem rotação e sombra longa, a folha do recurso pousa por cima dela, o carimbo cai por último. Esses três momentos concentram toda a ousadia do sistema; o restante é filete, campo e tipografia.\n\nA semântica de cor é o eixo moral da direção e não se negocia: **vermelho é a multa e o prazo; verde é o recurso e o protocolado**. Nada que o produto entrega aparece em vermelho, e nada que o órgão autuador cobra aparece em verde.\n\nO sistema tem **dois temas**, e o escuro não é uma inversão: é a **segunda via**. O papel creme do talão vira via carbonada, o creme reaparece como tinta, e a faixa verde continua verde. A metáfora do impresso sobrevive à troca porque ela nunca dependeu de a página ser branca.",
     "keyCharacteristics": [
       "O documento como material: papel creme, filete, carimbo, sombra tingida de verde.",
       "Três famílias com fronteiras rígidas — grotesca institucional, mono para dado, serifa só dentro da peça.",
       "Rótulo mono em caixa alta como átomo repetido, copiado da notificação.",
       "Cantos de 4px ou nenhum; nenhuma bolha.",
       "Movimento reservado a uma única sequência, uma única vez, no load.",
-      "Contraste AA verificado numericamente como condição de commit."
+      "Dois temas construídos da mesma paleta fechada — o claro é o impresso, o escuro é a via carbonada.",
+      "Contraste AA verificado numericamente **nos dois temas** como condição de commit."
     ],
     "rules": [
-      { "name": "A Regra dos Dois Lados", "body": "Vermelho pertence ao órgão autuador — a multa, o prazo, o erro. Verde pertence ao usuário — o recurso, o protocolo, o sucesso. Um elemento nunca troca de lado para chamar atenção.", "section": "colors" },
-      { "name": "A Regra do Matiz Fechado", "body": "A paleta está encerrada nos oito matizes do favicon. Uma necessidade nova se resolve com um papel novo ou uma luminosidade nova, nunca com um matiz novo.", "section": "colors" },
-      { "name": "A Regra do Neutro Enviesado", "body": "Não existe cinza neutro neste sistema. Todo neutro é puxado para o verde da marca (matiz 150–160), inclusive bordas e texto secundário.", "section": "colors" },
-      { "name": "A Regra do Par Verificado", "body": "Toda combinação nova de texto sobre fundo passa por cálculo de contraste antes do commit. Duas falhas reais já existiram aqui e nenhuma foi visível a olho nu.", "section": "colors" },
-      { "name": "A Regra das Três Fronteiras", "body": "Mono é para o que se confere: código, placa, número, dinheiro, tempo, rótulo. Serifa é para o que se protocola: só dentro do documento gerado e em citação do CTB. Grotesca é todo o resto.", "section": "typography" },
-      { "name": "A Regra do Dígito Estável", "body": "Qualquer número que muda sozinho na tela usa tabular-nums. Um cronômetro que reflui a linha a cada segundo é defeito, não detalhe.", "section": "typography" },
-      { "name": "A Regra do Rótulo Pequeno", "body": "O rótulo mono é minúsculo (11px), em caixa alta e muito espaçado. Ele não compete com o valor que anuncia — ele o classifica.", "section": "typography" },
-      { "name": "A Regra do Filete Contínuo", "body": "A trilha do como funciona é uma sequência, não cinco ilhas: um filete de 1px atravessa as cinco etapas inteiras. Por isso a trilha usa gap zero e tira o espaço do padding interno — qualquer calha no grid parte o filete.", "section": "layout" },
-      { "name": "A Regra da Medida", "body": "Todo texto corrido tem teto de largura declarado (44ch no lead, 54ch na abertura de seção, 68ch na resposta do FAQ, 70–72ch nas páginas legais).", "section": "layout" },
-      { "name": "A Regra da Área Segura", "body": "Qualquer barra grudada no fundo da viewport soma env(safe-area-inset-bottom) ao seu padding.", "section": "layout" },
-      { "name": "A Regra do Papel", "body": "Se o elemento não representa uma folha, ele não tem sombra. Separação é trabalho do filete.", "section": "elevation" },
-      { "name": "A Regra da Sombra Verde", "body": "Sombra preta não existe neste sistema, exceto o contato de 1px do botão. A luz da página é verde porque a marca é verde.", "section": "elevation" },
-      { "name": "A Regra do Canto Duro", "body": "Documento tem canto, não bolha. Nada passa de 4px, exceto o marcador circular da trilha.", "section": "shapes" },
-      { "name": "A Regra da Espessura Significante", "body": "1px separa; 2–3px significa. Se uma borda ficou mais grossa sem carregar sentido, ela está errada.", "section": "shapes" },
-      { "name": "A Regra da Variante Única", "body": "Um botão resolve sua cor inteiramente na variante. Empilhar utilitário de cor sobre .btn--* está proibido: foi essa colisão que a refatoração eliminou.", "section": "components" },
-      { "name": "A Regra do Estado Anunciado", "body": "O estado visual sai do atributo de acessibilidade, não o contrário. Erro vem de aria-invalid, expansão vem do Accordion do Radix.", "section": "components" },
-      { "name": "A Regra do Movimento Único", "body": "Existe uma animação no site: a sequência do hero, uma vez, no load. Sob prefers-reduced-motion, duração vai a 0.01ms e o atraso a -1ms.", "section": "components" }
+      {
+        "name": "A Regra da Via Carbonada",
+        "body": "O tema escuro é uma segunda via do mesmo documento, não a foto em negativo dele. Cada token escuro se justifica pelo papel que exerce — carbono, tinta, faixa — e não por ser o complemento aritmético do claro. Se um valor escuro só puder ser explicado como \"o inverso do claro\", ele está errado.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra da Faixa",
+        "body": "A faixa verde tem tokens próprios (`--band`, `--band-deep`, `--band-ink`, `--band-paper`) e nunca é pintada com `--primary`. Os dois papéis divergem: no escuro a faixa continua verde e o botão clareia. Pelo mesmo motivo, texto sobre a faixa usa `band-paper` e nunca o `paper` da página — este escurece junto com o tema e sumiria de cima do verde.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra dos Dois Lados",
+        "body": "Vermelho pertence ao órgão autuador — a multa, o prazo, o erro. Verde pertence ao usuário — o recurso, o protocolo, o sucesso. Um elemento nunca troca de lado para chamar atenção.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra do Eixo Invisível",
+        "body": "O eixo vermelho×verde **não existe** para quem tem daltonismo vermelho-verde, e é justamente o eixo moral desta direção. Medido por simulação dicromática: sob protanopia, o Vermelho Prazo e o Verde Protocolo caem em #5B5B2A e #585830 — **1,04:1 um do outro**, a mesma cor para todos os efeitos; sob deuteranopia, 1,73:1. Consequência: **nenhum estado deste sistema pode ser comunicado só pelo matiz.** Todo sinal vermelho ou verde carrega junto uma palavra ou um glifo — o asterisco no rótulo obrigatório, a frase sob o campo inválido, o \"Pagamento confirmado\" no trilho, o `:checked` no cartão de opção, o texto do carimbo. A semântica de cor é para quem a enxerga; para os outros, o texto tem de bastar sozinho.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra do Matiz Fechado",
+        "body": "A paleta está encerrada nos oito matizes do favicon. Uma necessidade nova se resolve com um papel novo ou uma luminosidade nova, nunca com um matiz novo. Um laranja e um cinza azulado já entraram por descuido e já foram removidos.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra do Neutro Enviesado",
+        "body": "Não existe cinza neutro neste sistema. Todo neutro é puxado para o verde da marca (matiz 150–160), inclusive bordas e texto secundário. Um `#E5E7EB` de biblioteca destoa visivelmente.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra do Par Verificado",
+        "body": "Toda combinação nova de texto sobre fundo passa por cálculo de contraste antes do commit. Duas falhas reais já existiram aqui e nenhuma foi visível a olho nu.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra do Alerta Opaco",
+        "body": "Uma superfície de erro a 10% de opacidade funciona sobre papel e desaparece sobre a faixa verde. Todo bloco de alerta que possa cair sobre fundo colorido fecha o fundo para branco (`.error-message--surface`) em vez de confiar na transparência. A regra vale para qualquer superfície sobre a faixa, não só para alertas: a faixa da oferta era uma moldura vazada, e com isso o preço riscado e o preço atual ficavam a 1,16:1 **um do outro** — ambos legíveis contra o verde, indistinguíveis entre si, justamente onde a diferença entre os dois é a informação. Fechada em papel, a distância volta aos 2,15:1 que o hero sempre teve.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra das Três Fronteiras",
+        "body": "Mono é para o que se confere: código, placa, número, dinheiro, tempo, rótulo. Serifa é para o que se protocola: só dentro do documento gerado e em citação do CTB. Grotesca é todo o resto. Serifa em cromo de página é erro.",
+        "section": "typography"
+      },
+      {
+        "name": "A Regra do Dígito Estável",
+        "body": "Qualquer número que muda sozinho na tela usa `tabular-nums`. Um cronômetro que reflui a linha a cada segundo é defeito, não detalhe.",
+        "section": "typography"
+      },
+      {
+        "name": "A Regra do Rótulo Pequeno",
+        "body": "O rótulo mono é minúsculo (11px), em caixa alta e muito espaçado. Ele não compete com o valor que anuncia — ele o classifica. **11px é piso, não sugestão:** a legenda da folha era a única exceção do sistema, a 10px, e não havia razão para ela ser menor que todos os outros rótulos. Não existe mais exceção.",
+        "section": "typography"
+      },
+      {
+        "name": "A Regra do Justificado Hifenizado",
+        "body": "Texto justificado sem hifenização é rio. A peça corre a 13,5px numa caixa de ~42ch no celular, e o português tem palavra longa demais para isso: \"atribuindo-se-lhe a condução do veículo acima em\" esticava a linha inteira. Todo bloco justificado do sistema declara `hyphens: auto` e conta com o `lang=\"pt-BR\"` que o documento já traz. Se a hifenização não for aceitável num contexto, o que sai é a justificação — não o contrário.",
+        "section": "typography"
+      },
+      {
+        "name": "A Regra do Eco em Mono",
+        "body": "Todo dado que um controle nativo desenha no locale do navegador — data, hora, número — é devolvido logo abaixo em mono, escrito por extenso em pt-BR. O `datetime-local` num aparelho em inglês pede `mm/dd/yyyy` sob uma página `lang=\"pt-BR\"`, e o erro de quem digita o dia no lugar do mês é invisível até chegar impresso na peça.",
+        "section": "typography"
+      },
+      {
+        "name": "A Regra do Filete Contínuo",
+        "body": "A trilha do \"como funciona\" é uma sequência, não cinco ilhas: um filete de 1px atravessa as cinco etapas inteiras — vertical no celular, horizontal no desktop — nascendo no centro do primeiro marcador e morrendo no do último. Por isso a trilha usa `gap: 0` e tira o espaço do padding interno: qualquer calha no grid parte o filete.",
+        "section": "layout"
+      },
+      {
+        "name": "A Regra da Medida",
+        "body": "Todo texto corrido tem teto de largura declarado (44ch no lead, 46ch no aviso de compra, 54ch na abertura de seção, 68ch na resposta do FAQ, 70–72ch nas páginas legais). Nenhuma linha atravessa o container inteiro.",
+        "section": "layout"
+      },
+      {
+        "name": "A Regra da Área Segura",
+        "body": "Qualquer barra grudada no fundo da viewport soma `env(safe-area-inset-bottom)` ao seu padding, e o `index.html` declara `viewport-fit=cover` — sem ele o `env()` devolve 0 e a barra fica sob o indicador de home. Vale para o CTA da home e para as ações do formulário.",
+        "section": "layout"
+      },
+      {
+        "name": "A Regra da Guarda por Altura",
+        "body": "Uma guarda de viewport baixa se declara por `max-height` sozinha. Prendê-la a `max-width` é o erro que já aconteceu aqui: o celular deitado tem largura de tablet, e a guarda nunca disparava. A guarda em CSS, porém, só abre a possibilidade: quem acende a barra é o JavaScript, e ele precisa cobrir **os dois lados da dobra** — o CTA do hero pode ter subido e saído por cima, ou pode nascer abaixo da tela e nunca ter sido visto. Cobrindo só o primeiro caso, o usuário deitado rolava por cima de um botão que nunca viu, sem nenhum CTA em tela no caminho.",
+        "section": "layout"
+      },
+      {
+        "name": "A Regra do Alvo Invisível",
+        "body": "O tamanho do alvo se decide pelo ponteiro, não pela largura da tela — um laptop com tela sensível erra o alvo de 29px tanto quanto um celular. Sob `pointer: coarse`, os alvos pequenos sobem para 44px; onde isso custaria dobra, a área cresce por um pseudo-elemento e o layout fica onde estava. Medido: subir a altura de verdade no cabeçalho levava o masthead de 65px para 125px em todo celular — sessenta pixels da primeira dobra pagos por dois links secundários. No rodapé, onde não há dobra a proteger, a altura sobe de verdade.",
+        "section": "layout"
+      },
+      {
+        "name": "A Regra do Conteúdo Nomeado",
+        "body": "Todo conteúdo mora dentro de um marco, e todo marco tem nome. Uma seção sem `aria-labelledby` não aparece na lista de regiões do leitor de tela; três botões com o mesmo rótulo em seções sem nome são três linhas idênticas na lista de controles. Nomear a seção resolve os dois de uma vez — é mais barato que reescrever o rótulo do botão.",
+        "section": "layout"
+      },
+      {
+        "name": "A Regra do Papel",
+        "body": "Se o elemento não representa uma folha, ele não tem sombra. Separação é trabalho do filete.",
+        "section": "elevation"
+      },
+      {
+        "name": "A Regra da Sombra Tingida",
+        "body": "Sombra preta não existe neste sistema — não há mais exceção. Toda sombra sai de `--shadow`, e nenhuma se prende a um token que exista para outra coisa: um token de sombra acompanha a mesa, um token de marca acompanha a marca, e no dia em que a mesa escurece os dois precisam poder discordar.",
+        "section": "elevation"
+      },
+      {
+        "name": "A Regra do Canto Duro",
+        "body": "Documento tem canto, não bolha. Nada passa de 4px, exceto o marcador circular da trilha. `rounded-xl`, `rounded-2xl` e `rounded-full` em cartão ou botão estão fora.",
+        "section": "shapes"
+      },
+      {
+        "name": "A Regra da Espessura Significante",
+        "body": "1px separa; 2–3px significa. Se uma borda ficou mais grossa sem carregar sentido, ela está errada. Uma consequência prática: seleção não engrossa borda — ela troca a cor da borda e preenche o fundo com papel creme.",
+        "section": "shapes"
+      },
+      {
+        "name": "A Regra do Traço de Origem",
+        "body": "Borda tracejada quer dizer \"isto veio do sistema, não de você\". É o único traçado do projeto e não deve ser reaproveitado como decoração ou como estado desabilitado.",
+        "section": "shapes"
+      },
+      {
+        "name": "A Regra da Variante Única",
+        "body": "Um botão resolve sua cor inteiramente na variante. Empilhar utilitário de cor sobre `.btn--*` está proibido: foi exatamente essa colisão — dois valores da mesma propriedade decididos pela ordem de saída do Tailwind — que a refatoração eliminou.",
+        "section": "components"
+      },
+      {
+        "name": "A Regra do Estado Anunciado",
+        "body": "O estado visual sai do atributo de acessibilidade, não o contrário. Erro vem de `aria-invalid`, expansão vem do Accordion do Radix, seleção do cartão vem de `:has(:checked)` sobre o rádio nativo. Estado desenhado à mão que o leitor de tela não enxerga é regressão.",
+        "section": "components"
+      },
+      {
+        "name": "A Regra da Superfície Nativa",
+        "body": "O que o navegador desenha também é do sistema: `accent-color` no rádio, `outline` de foco, `tabular-nums` no dado, `::selection` no texto e `color-scheme` na barra de rolagem, no caret e nos controles nativos. Deixar o azul do sistema operacional no único controle nativo da página é deixar um pedaço da tela fora do projeto — e, num sistema de dois temas, `color-scheme` é o que impede uma barra de rolagem clara de aparecer colada a uma página escura.",
+        "section": "components"
+      },
+      {
+        "name": "A Regra do Hover Opcional",
+        "body": "Hover é um enfeite de quem tem ponteiro fino, nunca um requisito. Sob `hover: none` todo `:hover` volta ao repouso, porque no toque ele gruda: o cartão de opção ficava com a borda da marca depois do toque, fingindo uma seleção que não existia, até o usuário tocar em outro lugar. Quem anuncia seleção é `:has(:checked)`, e ele não depende do ponteiro.",
+        "section": "components"
+      },
+      {
+        "name": "A Regra do Propósito Declarado",
+        "body": "Todo campo que coleta um dado **do próprio usuário** declara o seu propósito em `autocomplete` — é o que o SC 1.3.5 exige, e é o que permite ao navegador preencher e ao leitor de tela anunciar o que o campo quer. Vale inclusive para o campo de conferência: `off` num \"repita o e-mail\" esconde o propósito para proteger uma checagem que não precisava de proteção — se o navegador preencheu os dois, o usuário não digitou, e não havia erro de digitação a pegar. A exceção é o dado sem token na norma (CPF, CNH): aí o propósito não é exprimível, e a ausência é honesta.",
+        "section": "components"
+      },
+      {
+        "name": "A Regra da Forma que Sobrevive",
+        "body": "No alto contraste do sistema o navegador descarta fundos, imagens de fundo e sombras, e substitui cor e texto pelos do sistema. Um elemento cuja forma depende só do preenchimento **desaparece** — medido: o botão principal virava texto solto no meio da página. Todo controle declara a própria borda em `@media (forced-colors: active)`, com cor de sistema (`ButtonBorder`), e a regra vive dentro do media query para não custar um pixel no modo normal. Cartão, campo, opção, alerta, carimbo e recibo já passam porque têm filete próprio; a checagem, ao criar uma superfície nova, é uma só — *ela ainda tem forma sem o fundo?*",
+        "section": "components"
+      },
+      {
+        "name": "A Regra da Transição Nomeada",
+        "body": "Uma transição declara **quais** propriedades anima. `transition: all` num controle interativo pega o `outline` junto: o gatilho do FAQ vinha assim do shadcn e, por 150ms depois de cada foco, o anel era um traço de 3px quase preto — uma cor que não existe na paleta — antes de assentar no verde do sistema. O anel de foco nunca anima.",
+        "section": "components"
+      },
+      {
+        "name": "A Regra do Movimento Único",
+        "body": "Existe uma animação no site: a sequência do hero, uma vez, no load. Sob `prefers-reduced-motion`, duração vai a 0.01ms **e o atraso a -1ms** — sem isso o usuário que pediu menos movimento ainda esperaria a sequência escalonada acontecer, sem vê-la.",
+        "section": "components"
+      }
     ],
     "dos": [
-      "Do manter a paleta fechada nos oito matizes do favicon; resolva necessidades novas com papel ou luminosidade, nunca com matiz novo.",
-      "Do respeitar a semântica: vermelho para a multa e o prazo, verde para o recurso e o protocolado.",
-      "Do usar o filete de 1px como separador padrão, antes de considerar caixa ou sombra.",
-      "Do enviesar todo neutro para o verde da marca (matiz 150–160) — bordas e texto secundário inclusive.",
-      "Do aplicar tabular-nums em qualquer número que se atualize sozinho.",
-      "Do calcular o contraste de todo par novo de texto sobre fundo antes de commitar; AA é piso, não meta.",
-      "Do derivar o estado visual do atributo de acessibilidade (aria-invalid, Radix), nunca o inverso.",
-      "Do usar .btn mais uma variante, deixando a variante resolver a cor sozinha.",
-      "Do declarar largura máxima de leitura em todo texto corrido."
+      "**Do** manter a paleta fechada nos oito matizes do favicon; resolva necessidades novas com papel ou luminosidade, nunca com matiz novo.",
+      "**Do** respeitar a semântica: vermelho para a multa e o prazo, verde para o recurso e o protocolado.",
+      "**Do** usar o filete de 1px como separador padrão, antes de considerar caixa ou sombra.",
+      "**Do** enviesar todo neutro para o verde da marca (matiz 150–160) — bordas e texto secundário inclusive.",
+      "**Do** aplicar `tabular-nums` em qualquer número que se atualize sozinho.",
+      "**Do** devolver em mono, por extenso e em pt-BR, todo dado que um controle nativo desenha no locale do navegador.",
+      "**Do** calcular o contraste de todo par novo de texto sobre fundo antes de commitar, **nos dois temas**; AA é piso, não meta.",
+      "**Do** tirar toda sombra de `--shadow`, e todo material sobre a faixa verde dos tokens `band-*`.",
+      "**Do** decidir a classe de tema antes da primeira pintura, por script inline — um efeito do React chega tarde demais e entrega um pisca claro a quem pediu escuro.",
+      "**Do** manter todo conteúdo dentro de um marco e dar nome a cada seção; um link de pulo abre a ordem de tabulação.",
+      "**Do** decidir o tamanho do alvo pelo ponteiro (`pointer: coarse`), e crescer a área por pseudo-elemento quando crescer a caixa custaria dobra.",
+      "**Do** dar à borda de todo controle os 3:1 do SC 1.4.11 — quando o controle não tem preenchimento próprio, é ela que diz que ele existe.",
+      "**Do** derivar o estado visual do atributo de acessibilidade (`aria-invalid`, Radix, `:has(:checked)`), nunca o inverso.",
+      "**Do** tematizar as superfícies do navegador a partir da paleta: `accent-color`, anel de foco, seleção.",
+      "**Do** usar `.btn` mais uma variante, deixando a variante resolver a cor sozinha.",
+      "**Do** declarar largura máxima de leitura em todo texto corrido.",
+      "**Do** dar a todo alerta uma recuperação na mesma caixa: a frase que nomeia a falha nunca fica sozinha."
     ],
     "donts": [
-      "Don't trazer estética SaaS genérica: gradiente roxo-azul, glassmorphism, cartão com canto de 16px e sombra difusa, ilustração 3D. O único gradiente permitido é o verde da faixa de fechamento.",
-      "Don't trazer fofura de fintech: ilustração de personagem, emoji em botão, canto arredondado grande, tom brincalhão. O assunto é uma multa.",
-      "Don't empilhar utilitário de cor sobre uma variante de botão.",
-      "Don't usar Sálvia de Margem (#609078) sobre o verde da marca — reprova em contraste a 2,05:1.",
-      "Don't pôr serifa em cromo de página; ela pertence ao interior do documento gerado.",
-      "Don't dar sombra a elemento que não representa uma folha de papel, nem usar sombra preta.",
-      "Don't passar de 4px de canto em botão ou cartão.",
-      "Don't acrescentar animação fora da sequência do hero, e nunca fazer o cronômetro pulsar.",
-      "Don't reintroduzir cinza azulado de biblioteca (#E5E7EB e parentes) — já saiu uma vez."
+      "**Don't** trazer estética SaaS genérica: gradiente roxo-azul, glassmorphism, cartão com canto de 16px e sombra difusa, ilustração 3D. O único gradiente permitido é o verde da faixa de fechamento.",
+      "**Don't** trazer fofura de fintech: ilustração de personagem, emoji em botão, canto arredondado grande, tom brincalhão. O assunto é uma multa.",
+      "**Don't** empilhar utilitário de cor sobre uma variante de botão.",
+      "**Don't** usar Sálvia de Margem (#609078) sobre o verde da marca — reprova em contraste a 2,05:1.",
+      "**Don't** pôr serifa em cromo de página; ela pertence ao interior do documento gerado.",
+      "**Don't** escrever rótulo mono abaixo de 11px; a última exceção do sistema foi eliminada e não volta.",
+      "**Don't** dar sombra a elemento que não representa uma folha de papel, nem prender sombra a um token que existe para outra coisa — `--primary` vira halo claro no tema escuro.",
+      "**Don't** pintar a faixa verde com `--primary`, nem escrever sobre ela com o `paper` da página: os dois seguem o tema e abandonam a faixa.",
+      "**Don't** escrever `transition: all` em controle interativo — ele anima o anel de foco junto.",
+      "**Don't** deixar `:hover` valer sob `hover: none`: no toque ele gruda e finge um estado que não existe.",
+      "**Don't** derivar um valor do tema escuro por inversão aritmética do claro; cada token escuro se explica pelo papel que exerce.",
+      "**Don't** passar de 4px de canto em botão ou cartão.",
+      "**Don't** engrossar borda para indicar seleção; troque a cor e preencha com papel creme.",
+      "**Don't** prender uma guarda de viewport baixa a `max-width` — o celular deitado tem largura de tablet.",
+      "**Don't** confiar em superfície translúcida para alerta que possa cair sobre fundo colorido.",
+      "**Don't** acrescentar animação fora da sequência do hero, e nunca fazer o cronômetro pulsar.",
+      "**Don't** empilhar overshoot: se os keyframes já comprimem, a curva desacelera e não volta a passar do alvo.",
+      "**Don't** criar superfície cuja forma dependa só do preenchimento — no alto contraste ela some.",
+      "**Don't** reintroduzir cinza azulado de biblioteca (`#E5E7EB` e parentes) — já saiu uma vez."
     ]
   }
 }

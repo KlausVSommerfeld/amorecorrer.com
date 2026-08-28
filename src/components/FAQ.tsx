@@ -39,11 +39,11 @@ const PERGUNTAS = [
 ];
 
 const FAQ = () => (
-  <section className="section">
+  <section className="section" aria-labelledby="faq-titulo">
     <div className="container">
       <div className="section__head mx-auto max-w-3xl">
         <span className="eyebrow">Antes de pagar</span>
-        <h2 className="section__title">Perguntas frequentes</h2>
+        <h2 id="faq-titulo" className="section__title">Perguntas frequentes</h2>
       </div>
 
       <Accordion type="single" collapsible className="faq">

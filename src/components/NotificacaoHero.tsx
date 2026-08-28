@@ -9,6 +9,13 @@
  * `src/index.css` entrega o estado final sem movimento.
  *
  * Os dados são um exemplo. Nenhum deles vem do usuário.
+ *
+ * A folha por cima é a **defesa da autuação** (art. 281 do CTB), porque é a
+ * resposta ao documento que está embaixo dela — uma notificação de autuação com
+ * prazo de defesa. Antes ela citava a JARI e o mesmo art. 281, parando dois
+ * estágios processuais lado a lado: a JARI é o estágio seguinte (art. 285),
+ * contra a penalidade já aplicada. O recurso à JARI é exemplificado na seção
+ * "O que você recebe", que mostra a outra peça.
  */
 
 type NotificacaoHeroProps = {
@@ -19,8 +26,8 @@ const NotificacaoHero = ({ className = '' }: NotificacaoHeroProps) => (
   <figure className={`notice ${className}`}>
     <figcaption className="sr-only">
       Exemplo: uma notificação de autuação por excesso de velocidade, no valor de
-      R$ 293,47, coberta pela primeira página do recurso gerado e pelo carimbo
-      &ldquo;recurso protocolado&rdquo;.
+      R$ 293,47, coberta pela primeira página da defesa gerada e pelo carimbo
+      &ldquo;protocolado&rdquo;.
     </figcaption>
 
     <div className="notice__auto animate-notice-settle">
@@ -80,16 +87,16 @@ const NotificacaoHero = ({ className = '' }: NotificacaoHeroProps) => (
     </div>
 
     <div className="notice__resposta animate-sheet-slide">
-      <span className="eyebrow block text-primary">Recurso administrativo</span>
+      <span className="eyebrow block text-primary">Defesa da autuação</span>
 
       <p className="notice__peca mt-2 pb-2">
-        Ilustríssimo Senhor Presidente da JARI — o requerente, já qualificado,
-        vem apresentar recurso contra a autuação em epígrafe, com fundamento no
+        Ilustríssimo Senhor Diretor do DETRAN/RJ — o requerente, já qualificado,
+        vem apresentar defesa contra a autuação em epígrafe, com fundamento no
         art. 281 do Código de Trânsito Brasileiro…
       </p>
 
       <span className="stamp notice__stamp animate-stamp-drop" aria-hidden="true">
-        Recurso protocolado
+        Protocolado
       </span>
     </div>
   </figure>

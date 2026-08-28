@@ -7,10 +7,12 @@
  */
 
 const RecursoPreview = () => (
-  <section className="section section--paper">
+  <section className="section section--paper" aria-labelledby="recebe-titulo">
     <div className="container">
       <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,26rem)_1fr] lg:gap-16">
-        <div className="doc">
+        {/* Até 1024px a seção é de uma coluna só: sem o teto, a folha esticava
+            para 772px no tablet e deixava de parecer uma página A4. */}
+        <div className="doc mx-auto w-full max-w-[26rem] lg:max-w-none">
           <div className="doc__page">
             <p className="doc__heading">
               Excelentíssimo Senhor Presidente da Junta Administrativa de
@@ -38,16 +40,19 @@ const RecursoPreview = () => (
             </p>
           </div>
 
-          <p className="doc__caption">Exemplo — trecho de uma peça gerada</p>
+          <p className="doc__caption">Exemplo — trecho de um recurso à JARI</p>
         </div>
 
         <div>
           <div className="section__head">
             <span className="eyebrow">O que você recebe</span>
-            <h2 className="section__title">Um documento, não um resumo.</h2>
+            <h2 id="recebe-titulo" className="section__title">
+              Um documento, não um resumo.
+            </h2>
             <p className="section__lead">
-              A peça sai formatada em A4 com a fundamentação do CTB, no mesmo
-              formato que o órgão autuador espera receber no protocolo.
+              Defesa da autuação ou recurso à JARI, conforme o estágio do seu
+              caso. A peça sai formatada em A4 com a fundamentação do CTB, no
+              mesmo formato que o órgão autuador espera receber no protocolo.
             </p>
           </div>
 

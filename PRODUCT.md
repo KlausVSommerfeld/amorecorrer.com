@@ -41,6 +41,7 @@ Três razões de escolha confirmadas, contra despachante, advogado ou modelo gr�
 - **O documento adversário é a notificação de autuação:** campos rotulados, códigos, número do auto, placa, órgão autuador, artigo do CTB. É o objeto físico que o usuário tem em mãos ao chegar no site, e o vocabulário que ele já está lendo.
 - **A ordem é fixa:** paga primeiro (Stripe), preenche o formulário depois. Não há conta, login nem área do cliente; a identidade do pedido é o `case_id` (`CASO_<uuid>`), gerado no servidor no checkout.
 - **Dados exigidos no formulário:** pessoais (nome, e-mail, telefone, CPF, endereço) e do auto (órgão autuador, número do auto, placa, local, data e hora, artigo do CTB), mais a versão do usuário sobre o ocorrido.
+- **Duas peças, conforme o estágio do caso.** O produto gera tanto a **defesa prévia** (protocolada no próprio órgão autuador) quanto o **recurso à JARI** (contra a penalidade já aplicada). Consequências obrigatórias: o formulário precisa coletar o estágio, e a home precisa dizer isso explicitamente. Hoje o hero pareia os dois lado a lado (`PRAZO DE DEFESA · 30 dias` sob uma peça endereçada à JARI com fundamento no art. 281), o que pode levar o usuário a protocolar a peça errada no lugar errado e perder o prazo.
 - **A entrega é um e-mail com PDF A4**, para imprimir e protocolar. O produto termina no e-mail: protocolar é ato do usuário, e o prazo legal é responsabilidade dele.
 - O produto não acompanha o processo, não notifica prazos e não informa o resultado.
 
@@ -53,7 +54,8 @@ Três razões de escolha confirmadas, contra despachante, advogado ou modelo gr�
 - Responsabilidade contratual do usuário (Termos): veracidade dos dados e protocolo dentro do prazo.
 - LGPD: o formulário coleta CPF e endereço completo; existe página de Privacidade.
 - A fila do pipeline não é durável (`BackgroundTasks` do FastAPI): um caso pode ficar preso em `generating` sem retry automático. Não prometer SLA rígido de entrega.
-- **Indefinido, a decidir:** política de reembolso e de segunda via, canal de suporte e endereço de contato (nenhum e-mail de contato existe no site hoje).
+- **Contato:** o rodapé expõe WhatsApp e e-mail, ambos condicionados a variáveis de ambiente (`VITE_WHATSAPP_URL`, `VITE_CONTACT_EMAIL`) e ambos definidos em `.env.production` — sem a variável, o link simplesmente não renderiza.
+- **Indefinido, a decidir:** política de reembolso e de segunda via, e o nível de suporte prometido nesses canais.
 
 ## Brand Commitments
 

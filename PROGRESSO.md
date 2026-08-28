@@ -169,7 +169,7 @@ Reconstruídos do histórico de commits. Datas são do commit, não de deploy.
 | **Jan 2026** | Checkout passa a usar produto do catálogo (`STRIPE_PRICE_ID`) em vez de produto dinâmico; formulário ganha os campos do auto de infração; FKs `stripe_session_id`/`case_id` acertadas e ordem das migrations ajustada para evitar referência circular; `payment_status` migra para `stripe_sessions`; lookup de CEP via ViaCEP. |
 | **Mai 2026** | Refatoração do pipeline de `generated_documents`: contrato do `202`, trabalho pesado assíncrono e `confirm_dispatch` fechado pela API Express. |
 | **Jun 2026** | `stripe-webhook` reescrito para INSERT-se-novo / PATCH-seletivo, preservando o `id` da linha e a FK `dispatches.stripe_session_id`. |
-| **Ago 2026** | Documentação de contexto (`CLAUDE.md`) e redesenho visual, Fases 0–1. |
+| **Ago 2026** | Documentação de contexto (`CLAUDE.md`) e redesenho visual, Fases 0–1. Endurecimento do formulário, auditoria técnica da home e passada de acabamento: tema escuro, landmarks, card social e limpeza de dependências mortas. |
 
 ---
 
@@ -181,7 +181,215 @@ Ordenadas pelo custo de continuar adiando.
 2. **O preço cheio existe só no sandbox** e a regra que escolhe entre os dois é decidida pelo navegador — quem limpar o `sessionStorage` paga R$ 19,99 para sempre. Duas frentes em aberto: replicar produto e preços na conta live, e decidir se a urgência vira um prazo global de campanha (verificável no servidor) ou continua por visitante.
 3. **Autenticação bearer está desligada.** O bloco de validação está comentado em `create-checkout-session` e `form-submit`, com `verify_jwt = false`. Toda a infra existe e não é usada; hoje `form-submit` é protegida só por whitelist de origem e existência do `case_id`.
 4. **Duas assinaturas de `attempt_dispatch` convivem** (`case_id` e `p_case_id`). Consolidar exige saber qual versão está viva no projeto remoto.
-5. **Dark mode órfão.** `next-themes` instalado, nada monta a classe `.dark`. Implementar o toggle ou remover o bloco.
+5. ~~**Dark mode órfão.**~~ **Resolvido em 26/08/2026:** toggle implementado e `.dark` reescrito a partir da paleta (ver a entrada da sessão abaixo).
 6. **Sem fila durável no pipeline.** Se o processo morrer entre o `202` e o `finish`, o caso fica preso em `generating` sem retry.
 7. **O redesenho acabou; falta o merge.** Fases 0–4 entregues e nada commitado. Ver o item 1.
 8. **"HTML da peça" é oferta ou aspiração?** O card que prometia uma versão HTML saiu na Fase 3 porque o pipeline só entrega PDF. Decidir entre implementar ou deixar fora.
+
+
+---
+
+## Sessão de 26/08/2026 — `/impeccable polish` na home
+
+Passada de acabamento sobre os achados da auditoria (`/impeccable audit src/pages/Home.tsx`, mesma sessão: 14/20).
+
+**Acessibilidade**
+- `<main id="conteudo">` envolvendo as cinco seções; o `<header>` voltou a ser só o masthead, e o `<h1>` saiu de dentro do banner.
+- Link "Pular para o conteúdo", visível ao receber foco.
+- Cada seção nomeada por `aria-labelledby` — o que também desambigua os três botões "Gerar meu recurso" na lista de controles do leitor de tela.
+- `transition-all` do `AccordionTrigger` virou `transition-colors`: ele animava o `outline`, e por 150ms o anel de foco do FAQ era um traço de 3px quase preto. A seta ganhou `aria-hidden`.
+
+**Tema escuro** (pendência 5, aberta desde o redesenho)
+- `next-themes` montado em `App.tsx`; alternância em `src/components/AlternarTema.tsx` (só ícone abaixo de 640px, com o rótulo como nome acessível); script inline no `index.html` decide a classe **antes da primeira pintura**, senão quem usa o sistema no escuro veria a página clara durante o carregamento.
+- `.dark` reescrito a partir da paleta: o papel creme do talão vira **via carbonada** e o creme volta como tinta. Nenhum matiz novo — só os ângulos 160/150/120/60/0 em outras luminosidades.
+- Quatro tokens novos (`--band`, `--band-deep`, `--band-ink`, `--band-paper`) separam a faixa verde de `--primary`: no escuro a faixa precisa continuar verde enquanto o botão clareia para se destacar do fundo. `--shadow` faz o mesmo pelas sombras, que presas a `--primary` viravam halo claro no escuro. No tema claro os cinco tokens valem exatamente o que valiam antes — nenhuma mudança visual.
+- `color-scheme` e `::selection` passam a sair da paleta.
+- 29 pares de contraste medidos na página viva, nos dois temas: **zero reprovações**. O pior é `.notice__valor` a 5,21:1 (claro) / 5,30:1 (escuro).
+
+**Card social e SEO**
+- `public/og-cover.png` 1200×630 desenhado na direção e renderizado a partir do próprio design system (antes o `og:image` era o favicon de 64px sob `summary_large_image`, descartado por WhatsApp e Facebook).
+- `og:url`, `og:locale`, `og:site_name`, `og:image:width/height/alt`, `canonical`, `theme-color` por esquema; `public/sitemap.xml` e a linha `Sitemap:` no `robots.txt`.
+- A `meta description` parou de cravar R$ 19,99 (o preço vira R$ 39,99 quando a promoção expira). `twitter:site="@amorecorrer"` removida — o perfil não existe.
+
+**Peso**
+- `@tanstack/react-query`, `<Toaster />`, `<Sonner />` e `TooltipProvider` estavam montados e nunca eram usados: saíram. `src/App.css` (starter do Vite) e 2,9 MB de imagens não referenciadas em `public/` também.
+- Bundle: **538,1 → 434,9 KB** (gzip 160,2 → 128,3 KB, −20%); `dist/` de **4,4 → 1,6 MB**. O aviso de chunk acima de 500 KB sumiu.
+
+**Outros**
+- A barra fixa de CTA agora acende também quando o botão do hero nasce **abaixo** da dobra — no celular deitado (844×390) havia uma faixa inteira de rolagem sem nenhum CTA visível.
+- Sobre a faixa verde, a oferta virou um cartão de papel: o preço riscado e o atual estavam a 1,16:1 um do outro (ambos legíveis contra o verde, indistinguíveis entre si). Agora 2,15:1 no claro e 1,69:1 no escuro.
+- `hyphens: auto` na peça justificada — a 13,5px numa caixa de 42ch o português abria rios.
+
+**Fica em aberto**
+- `--input` no tema claro (`150 14% 86%`) dá **1,35:1** contra o branco: a borda dos campos do formulário não alcança os 3:1 do SC 1.4.11. No escuro já nasce em 3,59:1. Corrigir no claro escurece visivelmente todos os campos do `/form` — é decisão de desenho, não de acabamento.
+- `DESIGN.md` e `.impeccable/design.json` ficaram desatualizados: não descrevem o tema escuro nem os cinco tokens novos. Rodar `/impeccable document`.
+- Sem divisão por rota: `Form`, `Terms`, `Privacy` e `Cancel` continuam no chunk inicial da landing (`/impeccable optimize`).
+- `usePromo` mantém **três** `setInterval` de 1s vivos — um por consumidor —, e a home inteira re-renderiza a cada segundo por 30 minutos (`/impeccable optimize`).
+
+
+---
+
+## Sessão de 26/08/2026 — `/impeccable optimize`
+
+Medido antes e depois no build de produção, celular 390×844, CPU a 4×, rede a ~1,6 Mbps / 150 ms de latência, mediana de 3 passadas com contexto de navegador limpo em cada uma.
+
+| Métrica | Antes | Depois |
+|---|---|---|
+| FCP / LCP | 1460 ms | **1424 ms** |
+| **CLS** | **0,1836** | **0** |
+| TBT | 265 ms | **219 ms** |
+| Maior tarefa | 315 ms | **269 ms** |
+| JS transferido | 129 KB | **83 KB** |
+| Total transferido | 283 KB | **237 KB** |
+| Chunk principal | 434,9 KB (gzip 128,3) | **221,3 KB (gzip 73,6)** |
+| CPU em 10 s parado | 42,1 ms | **21,7 ms** |
+| — só script | 25,2 ms | **6,4 ms** |
+
+**1. O SDK do Supabase saiu do caminho crítico** — o maior item, e o menos óbvio. A análise do sourcemap mostrou 496 KB de fonte (`auth-js`, `realtime-js`, `storage-js`, `postgrest-js`) no chunk da landing, para uma coisa só: `getAuthHeaders()` aguardava `getAccessToken()`. Só que não existe `signIn` em lugar nenhum do projeto, `ensureAnonymousSession()` devolve `null` por definição, e o cabeçalho resultante era **sempre** `Bearer <anon key>` — uma variável de ambiente. `getAuthHeaders()` virou síncrona; as funções que realmente precisam de sessão (`getSession`, `refreshSession`, `signOut`, `onAuthStateChange`) importam o cliente dinamicamente e continuam disponíveis para quando a autenticação bearer for religada. **Verificado com interceptação de rede:** o checkout ainda envia `apikey`, `Authorization: Bearer <anon>` e `content-type` — os mesmos três cabeçalhos, byte por byte.
+
+**2. CLS de 0,1836 → 0.** As fontes auto-hospedadas só eram descobertas depois que o CSS baixava e era analisado; chegavam ~1,9 s depois do início e o `font-display: swap` refluía a página inteira. Um plugin de build em `vite.config.ts` injeta `<link rel="preload">` para as duas faces latinas que pintam a primeira dobra (Archivo variável e IBM Plex Mono 400). Só essas duas: pré-carregar as 25 faces trocaria um problema por outro.
+
+**3. Divisão por rota.** `Form`, `Terms`, `Privacy`, `Cancel` e `NotFound` viraram `React.lazy`. O formulário ganha um `<link rel="prefetch">` injetado no mesmo plugin — e o prefetch é obrigatório porque o usuário chega em `/form` **vindo do Stripe, já tendo pagado**, o pior momento possível para esperar download. Foi tentado antes com `import()` em `requestIdleCallback` e medido pior: `import()` baixa **e executa**, custando ~300 ms de TBT na primeira dobra. `rel="prefetch"` deixa os bytes no cache em prioridade mínima sem rodar uma linha.
+
+**4. `usePromo` com um relógio só** (pendência da auditoria). Eram três `setInterval` de 1 s — um por consumidor — e, como `Home` lia um valor derivado de `msLeft`, cada tique re-renderizava a página inteira. Agora o relógio vive fora do React e `useSyncExternalStore` corta o re-render na origem: `usePromoExpirada()` devolve um booleano que o React descarta por igualdade, então só o `Countdown` re-renderiza a cada segundo. Verificado: a virada da promoção ainda propaga para os quatro lugares (preço do hero, cronômetro, etapa 01 da trilha, preço do fechamento), **com a página aberta e sem recarregar**.
+
+**Fica em aberto**
+- `tailwind-merge` são 72,5 KB de fonte no chunk principal (11%), para o `cn()` do shadcn. Trocá-lo por `clsx` puro mexe num utilitário compartilhado por toda a pasta `components/ui/`; o ganho estimado é de ~8 KB gzip. Não foi feito: risco de regressão maior que o ganho, e a auditoria não apontou nenhum sintoma.
+- `@remix-run/router` + `react-router` + `react-router-dom` somam 308 KB de fonte e agora são o maior item do bundle. Sem alternativa sem trocar de roteador.
+
+
+---
+
+## Sessão de 26/08/2026 — `colorize` + `polish` + `adapt`
+
+Fecha os achados da re-auditoria (19/20).
+
+**Contorno de campo (P2, SC 1.4.11).** `--input` era `150 14% 86%` (#D6E0DB): **1,35:1** contra o branco, onde a norma pede 3:1 da borda de um controle — e o campo não tem preenchimento próprio para carregar essa informação no lugar dela. Testada toda a faixa da paleta: só a **Sálvia de Margem** (`150 20% 47.1%`, #609078) passa nos dois lugares onde o campo aparece — **3,65:1** sobre o branco e **3,15:1** sobre o papel creme do somente-leitura. Os intermediários (#6C9D85) passavam no branco e reprovavam no creme. Nenhum valor novo entrou: é cor já nomeada da paleta, em papel novo. No escuro o token subiu junto, para **4,08:1**. A espessura continua 1px — aqui a borda delimita, não significa. `.choice` usa o mesmo token e acompanhou.
+
+O `<p class="form-readonly">` foi conferido e **não** entra na regra: é texto, não controle, e tem preenchimento creme próprio. Segue com o traço de 1,39:1, que declara origem e não delimita controle.
+
+**Higiene (P3).**
+- `src/hooks/use-auth.tsx` apagado — estava morto e era a única porta de volta dos 496 KB do SDK do Supabase, porque importava o cliente **estaticamente**.
+- `app/cancel/page.tsx` apagado (e o diretório `app/` com ele): era um arquivo do Next.js App Router — `"use client"`, `next/navigation` — dentro de um projeto Vite, importando um pacote que nem é dependência daqui. Nunca entrou no build; aparecia no lint e confundia quem procurasse a página de cancelamento, que é `src/pages/Cancel.tsx`.
+- O comentário do `--primary-dark` dizia `/* #006030 */`; a tripla computa **#134D3A**, e #006030 é o `--success`. Corrigido.
+- `.form-input` passou de `bg-background` para `bg-card`, alinhando com `.choice`: no claro os dois são brancos, mas no escuro o campo ficava na cor da página enquanto o cartão de opção ficava um tom acima.
+
+**Adaptação ao ponteiro.** O tamanho do alvo passou a sair do **ponteiro**, não da largura da tela — um laptop com tela sensível erra o alvo de 29px tanto quanto um celular.
+- Sob `pointer: coarse`, **zero de 16 alvos** ficam abaixo de 44×44 (antes eram sete, entre 29 e 36px).
+- No cabeçalho a área cresce por pseudo-elemento (`inset: -8px -6px`), não por altura: a primeira versão subia a altura de verdade e levava o masthead de 65px para **125px** em todo celular — sessenta pixels da dobra pagos por dois links secundários. Com a expansão invisível o masthead fica nos mesmos 65px e o alvo vai a 61×45.
+- No rodapé e no link de pulo, onde não há dobra a proteger, a altura sobe de verdade.
+- Sob `hover: none`, todo `:hover` volta ao repouso. No toque ele grudava: o cartão de opção ficava com a borda da marca depois do toque, fingindo uma seleção que não existia. Verificado com toque real: o cartão tocado fica marcado (borda da marca) e o irmão volta ao contorno de campo.
+- Com ponteiro fino nada mudou: masthead em 65px, links em 49×29, hover funcionando.
+
+**Ordem no CSS.** Os dois blocos de media query nasceram no meio do arquivo e seriam **ignorados**: `.btn--solid:hover` e `.masthead__brand` têm a mesma especificidade das regras que eles sobrescrevem, e nesse empate quem decide é a ordem. Foram movidos para o fim da camada `components`, com o motivo escrito no lugar.
+
+**Verificação final:** 296 medições de contraste (home e formulário × claro e escuro), **zero falhas**; detector limpo; zero erro de console; `prefers-reduced-motion` intacto; lint sem problema nos arquivos tocados.
+
+`DESIGN.md` e o sidecar foram atualizados junto: o Contorno de Campo virou #609078, a "exceção conhecida" saiu, e entraram duas regras novas — **A Regra do Alvo Invisível** e **A Regra do Hover Opcional** (29 no total).
+
+
+---
+
+## Sessão de 26/08/2026 (tarde) — `colorize` + `clarify` + `polish`
+
+**Simulação de daltonismo (colorize).** O eixo semântico desta direção é vermelho contra verde, e ele nunca tinha sido testado. Simulação dicromática (Viénot, Brettel & Mollon 1999, severidade total) sobre a paleta:
+
+| Par | Normal | Protanopia | Deuteranopia |
+|---|---|---|---|
+| Vermelho Prazo × Verde Protocolo | 1,28:1 | **1,04:1** | 1,73:1 |
+| Vermelho Infração × Verde Autuação | 1,56:1 | 1,26:1 | 2,13:1 |
+
+Sob protanopia a multa e o protocolado ficam em #5B5B2A e #585830 — **a mesma cor, para todos os efeitos**. Auditadas todas as ocorrências: **nenhum estado do sistema depende só do matiz**. O asterisco é glifo, o campo inválido traz frase, o trilho diz "Pagamento confirmado" por escrito, o cartão de opção anuncia por `:checked`, o carimbo tem texto. Nada a corrigir no código; o achado virou **A Regra do Eixo Invisível** no DESIGN.md, com os números, para que ninguém introduza um sinal só-cor no futuro. Confirmado de passagem que `--success` **não** é órfão (usado em `Form.tsx:922`).
+
+**Copy de validação (clarify).** Dezesseis mensagens reescritas. As de campo vazio diziam "X é obrigatório" — repetiam o rótulo, que já traz o asterisco, e o cabeçalho, que já explica o asterisco; gastavam a única linha disponível para não informar nada. Agora cada uma diz **o que fazer** e, nos campos do auto, **de onde copiar**, que é a informação que o usuário de fato não tem:
+
+- `Nome completo é obrigatório` → `Escreva seu nome completo, sem abreviar.`
+- `E-mail inválido` → `Confira o e-mail: parece faltar o @ ou o domínio.`
+- `CPF deve ter 11 dígitos` → `O CPF tem 11 dígitos. Confira se não faltou nenhum.`
+- `Órgão autuador é obrigatório` → `Copie o órgão autuador do topo da notificação.`
+- `Justificativa é obrigatória` → `Conte o que aconteceu: é esta parte que a peça vai defender.`
+
+Essa última corrigiu também uma **inconsistência de vocabulário**: o rótulo na tela é "O que aconteceu?", e o erro falava de "justificativa" — palavra que não existe em lugar nenhum da interface.
+
+**A regra dos três identificadores aparecia duas vezes.** O bloco do auto já tinha um parágrafo único que troca de dica para erro, mas o campo RENAINF, que vive no bloco anterior, imprimia a mesma frase por conta própria — e as duas versões estavam redigidas de formas diferentes. Agora existe uma constante `REGRA_IDENTIFICADORES`, a frase aparece **uma vez** na tela, e o RENAINF aponta para ela por `aria-describedby`. O que muda no erro é a cor, o `aria-invalid` e o foco — não o texto.
+
+**Verificação.** 310 medições de contraste (home e formulário × claro e escuro), **zero falhas** — incluindo um estado nunca medido antes, o formulário **com os erros na tela**: 4,79:1 no claro e 6,13:1 no escuro. As 14 mensagens renderizam, o foco vai para o primeiro campo inválido, nada transborda a 390px e a mais longa ocupa duas linhas. Detector limpo, zero erro de console, lint limpo nos arquivos tocados.
+
+**Não mexido, com o motivo.** O `textarea` tem `maxLength`, então o ramo "texto acima do limite" só é alcançável por rascunho restaurado — a mensagem foi melhorada (diz quantos caracteres cortar) mas continua sendo defesa em profundidade. E o campo Telefone não valida comprimento: a máscara guia, mas `(11) 9` passa. É lacuna de `harden`, não de `clarify`.
+
+
+---
+
+## Sessão de 26/08/2026 (noite) — `/impeccable harden`
+
+**Tela em branco no caminho de quem pagou.** Defeito que eu mesmo abri na divisão por rota: sem `ErrorBoundary`, um `import()` que falha derruba a árvore inteira. Medido antes da correção em `/form`: **1 nó no `<body>`, texto vazio, nada clicável**. O gatilho não é hipotético — basta um deploy enquanto o usuário está no Stripe para o `index.html` em cache apontar para um chunk que já foi apagado.
+
+Duas camadas de correção:
+- `lazyComRetentativa()` em `App.tsx`: uma retentativa após 400ms cobre oscilação de rede (verificado: com uma falha, o formulário carrega e o usuário não vê nada). Se a segunda também falhar, recarrega **uma vez** — que é a única coisa que resolve o caso do deploy, porque só assim vem um `index.html` novo. A marca em `sessionStorage` impede o laço de recarga infinito; sem armazenamento, não recarrega (assume que já tentou).
+- `src/components/FalhaDeRota.tsx`: um `ErrorBoundary` que renderiza dentro do `PageShell`, com `role="alert"`, o botão de recarregar, o link de suporte e — o mais importante — **o número do caso lido direto da URL**, porque nessa tela o usuário já pagou e esse número é o que permite achar o pedido dele. Nenhuma causa é afirmada: a rede pega tanto o chunk ausente quanto qualquer erro de renderização.
+
+**Armazenamento bloqueado derrubava o site inteiro.** Descoberto por este mesmo passe, ao simular cookies/dados de site bloqueados (política corporativa, aba privada agressiva): nesse modo o **acesso** a `localStorage` lança, não só a gravação.
+- `src/lib/caseId.ts` gravava o `case_id` sem guarda — e derrubava a **home**, uma página que não precisa de armazenamento para nada. Reescrito com leitura e escrita protegidas.
+- `Form.tsx` lia `form_token` e `stripe_session_id` sem guarda — derrubava a **página de quem pagou**. Agora, sem armazenamento, o token vale só para esta sessão de página: o envio funciona igual, apenas a deduplicação entre recargas deixa de existir.
+- Verificado depois: home e formulário renderizam, cronômetro corre, validação funciona, zero erro de página.
+
+**Validações que faltavam.**
+- **Telefone**: só havia `.trim()`, então `(11) 9` passava e ia gravado. É o único canal de contato quando o e-mail digitado errado devolve a mensagem. Agora exige 10 ou 11 dígitos com DDD.
+- **Velocidades**: campos livres sem teto — "999" ia inteiro para a peça. Agora `maxLength=3` e recusa acima de 400 km/h. Os dois campos não tinham `aria-invalid` nem parágrafo de erro e não estavam em `FIELD_ORDER`: o erro seria definido e nunca mostrado. Corrigido.
+
+**Não mexido, com o motivo.** `expedidaEm` é texto livre ("NA ou NP expedida em") e aceita "março de 2026" tanto quanto "12/03/2026" — transformá-lo em campo de data é decisão de produto, não de robustez, e eu não sei o tipo da coluna. `cnh` segue sem formato: é opcional e não sustenta nenhuma parte da peça.
+
+**Verificação:** quatro cenários adversos (chunk ausente, oscilação de rede, armazenamento bloqueado na home e no formulário), layout da tela de falha conferido em 1280 e 390 — cartão alinhado ao masthead, sem rolagem horizontal. Detector limpo, lint limpo, `tsc` limpo. Bundle: 223,2 KB (gzip 74,1), +2 KB pela rede de segurança.
+
+`DESIGN.md` não mudou: a tela de falha é feita inteira de componentes que já existiam (`.error-message--surface`, `.field`, `.btn--solid`).
+
+
+---
+
+## Sessão de 26/08/2026 (madrugada) — `polish` + `animate`
+
+Fecha os dois achados da terceira auditoria (20/20).
+
+**O CTA sumia no alto contraste do sistema (P2).** Verificado com `forced-colors: active`: "Gerar meu recurso" virava **texto solto no meio da página**, sem forma, sem borda, sem nada que dissesse que era um botão. A causa é do modo: o navegador substitui fundo e cor pelos do sistema e descarta sombras e imagens de fundo — um botão que dependia só do preenchimento perdia o corpo.
+
+```css
+@media (forced-colors: active) {
+  .btn { border: 1px solid ButtonBorder; }
+}
+```
+
+`ButtonBorder` é cor de sistema e sobrevive ao modo forçado. Como a regra vive dentro do media query, **não custa um pixel no modo normal** — medido: botão em 218×60 com borda 0px antes e depois; no alto contraste vai a 220×62, onde os 2px não importam. O anel de foco também sobrevive (`2px solid` na cor de destaque do sistema). Conferido que cartão, campo, opção, alerta, carimbo, recibo e barra de CTA já passavam: todos têm filete próprio.
+
+**O carimbo tinha dois overshoots empilhados (P3).** O detector apontou `cubic-bezier(.3, 1.4, .5, 1)` como bounce easing, e ele estava certo pela metade: os keyframes **já** codificam a física do impacto (1,6 → 0,96 → 1,0 — cai grande, comprime abaixo do tamanho final, assenta), e o `y1 = 1,4` da curva somava uma segunda mola por cima. O gesto ficou onde deveria estar, na geometria, e cada trecho ganhou desaceleração exponencial própria: `cubic-bezier(0.16, 1, 0.3, 1)` na queda, `cubic-bezier(0.33, 1, 0.68, 1)` na recuperação.
+
+Medido com o relógio da animação pausado e `currentTime` controlado:
+
+| ms desde o início | escala |
+|---|---|
+| 0 | 1,6000 |
+| +20 | 1,1981 |
+| +40 | 1,0469 |
+| +60 | 0,9912 |
+| +110 | 0,9609 |
+| +140 (fim da queda) | 0,9600 |
+| +170 | 0,9949 |
+| +200 (fim) | 1,0000 |
+
+**63% da queda acontece nos primeiros 20 dos 140 ms** — chega rápido e freia no contato. A escala nunca passa de 1,6 nem cai abaixo de 0,96, e **nunca ultrapassa 1,0**: a compressão é geométrica, não elástica. Detector limpo depois da mudança.
+
+`prefers-reduced-motion` segue entregando o estado final instantaneamente. `DESIGN.md` ganhou **A Regra da Forma que Sobrevive** e a descrição precisa da curva do carimbo (31 regras, 19 donts); o sidecar carrega a curva por keyframe e a extensão `forcedColors`.
+
+
+---
+
+## Sessão de 27/08/2026 — `polish`: SC 1.3.5
+
+Uma linha, fechando o único achado da quarta auditoria.
+
+`emailConfirma` tinha `autoComplete="off"`. O campo coleta o e-mail **do próprio usuário**, e o SC 1.3.5 (Identify Input Purpose, nível AA) exige que esse propósito seja legível por máquina — `off` é exatamente o que o esconde. Agora declara `email`, como o campo principal.
+
+O `off` estava lá para impedir que o autopreenchimento "esvaziasse" a conferência, e o argumento não se sustenta: se o navegador preenche os dois campos com o mesmo endereço guardado, o usuário não digitou nada e não havia erro de digitação a pegar. A conferência existe para proteger quem digita, e para esse continua valendo inteira.
+
+**Verificado:** os seis campos pessoais renderizados declaram o token certo (`name`, `email`, `email`, `tel`, `postal-code`, `street-address`); `cidade`/`estado` só aparecem como input no caminho de fallback do ViaCEP e já traziam `address-level2/1`. CPF e CNH seguem isentos — não existe token na norma para documento nacional, e a ausência ali é honesta, não descuido. A conferência de e-mail continua funcionando nos três estados: divergente acusa, igual passa, vazio cobra. Zero erro de página, `tsc` e build limpos.
+
+`DESIGN.md` ganhou **A Regra do Propósito Declarado** (32 regras).

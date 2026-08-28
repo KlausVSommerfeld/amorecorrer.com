@@ -4,10 +4,13 @@
  * justifica porque a ordem é informação — não é enfeite.
  */
 
-const ETAPAS = [
+import { precoVigente } from '../lib/preco';
+import { usePromoExpirada } from '../hooks/use-promo';
+
+const etapas = (preco: string) => [
   {
     titulo: 'Pagamento',
-    descricao: 'Você paga R$ 19,99 no Stripe e volta direto para o formulário.',
+    descricao: `Você paga ${preco} no Stripe e volta direto para o formulário.`,
   },
   {
     titulo: 'Formulário',
@@ -27,12 +30,18 @@ const ETAPAS = [
   },
 ];
 
-const ComoFunciona = () => (
-  <section className="section">
+const ComoFunciona = () => {
+  // O preço da etapa 01 acompanha a oferta. Cravado em texto fixo, ele
+  // continuava anunciando o promocional depois de a promoção expirar.
+  const isExpired = usePromoExpirada();
+  const ETAPAS = etapas(precoVigente(isExpired));
+
+  return (
+  <section className="section" aria-labelledby="como-funciona-titulo">
     <div className="container">
       <div className="section__head">
         <span className="eyebrow">Do pagamento ao protocolo</span>
-        <h2 className="section__title">Como funciona</h2>
+        <h2 id="como-funciona-titulo" className="section__title">Como funciona</h2>
         <p className="section__lead">
           Cinco etapas, sem cadastro e sem conversa. A única parte que depende de
           você é o formulário.
@@ -54,6 +63,7 @@ const ComoFunciona = () => (
       </ol>
     </div>
   </section>
-);
+  );
+};
 
 export default ComoFunciona;

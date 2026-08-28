@@ -2,10 +2,28 @@
  * Authentication utilities for managing Supabase sessions and bearer tokens
  * This module provides functions to handle session management, token refresh,
  * and bearer token extraction for API requests.
+ *
+ * **O cliente do Supabase é carregado sob demanda, nunca no load.** Ele custa
+ * ~496 KB de fonte (auth-js, realtime-js, storage-js, postgrest-js) e a landing
+ * não usa nada disso: não existe `signIn` em lugar nenhum do projeto,
+ * `ensureAnonymousSession()` devolve `null` por definição, e o cabeçalho que
+ * sai para as Edge Functions é sempre `Bearer <anon key>` — uma variável de
+ * ambiente. Enquanto a autenticação bearer estiver desligada (ver `CLAUDE.md`),
+ * as funções abaixo que precisam de sessão importam o cliente dinamicamente, e
+ * o Vite as separa num chunk que nunca é baixado.
+ *
+ * Para religar o token de usuário: `getAuthHeaders()` volta a ser assíncrona e
+ * consulta `getAccessToken()` — o que traz o cliente de volta ao caminho
+ * crítico, então vale medir de novo antes.
  */
 
-import { supabase } from '@/integrations/supabase/client';
-import type { Session } from '@supabase/supabase-js';
+import type { Session, SupabaseClient } from '@supabase/supabase-js';
+
+/** Importa o cliente só quando alguma função realmente precisa de sessão. */
+async function clienteSupabase(): Promise<SupabaseClient> {
+  const { supabase } = await import('@/integrations/supabase/client');
+  return supabase as unknown as SupabaseClient;
+}
 
 /**
  * Get the current Supabase session
@@ -13,6 +31,7 @@ import type { Session } from '@supabase/supabase-js';
  */
 export async function getSession(): Promise<Session | null> {
   try {
+    const supabase = await clienteSupabase();
     const { data, error } = await supabase.auth.getSession();
     
     if (error) {
@@ -67,6 +86,7 @@ export async function ensureAnonymousSession(): Promise<Session | null> {
  */
 export async function refreshSession(): Promise<Session | null> {
   try {
+    const supabase = await clienteSupabase();
     const { data, error } = await supabase.auth.refreshSession();
     
     if (error) {
@@ -87,6 +107,7 @@ export async function refreshSession(): Promise<Session | null> {
  */
 export async function signOut(): Promise<void> {
   try {
+    const supabase = await clienteSupabase();
     const { error } = await supabase.auth.signOut();
     
     if (error) {
@@ -98,33 +119,27 @@ export async function signOut(): Promise<void> {
 }
 
 /**
- * Get authorization headers with bearer token
- * Falls back to just anon key if no session exists
- * @returns Promise<Record<string, string>>
+ * Cabeçalhos das chamadas às Edge Functions.
+ *
+ * Síncrona de propósito: sem `signIn` em lugar nenhum, `getAccessToken()`
+ * devolvia `null` em 100% das chamadas e o resultado era sempre
+ * `Bearer <anon key>` — mas o `await` obrigava a carregar o cliente do Supabase
+ * antes de qualquer requisição, inclusive no primeiro clique do checkout. Os
+ * bytes que saem na rede são exatamente os mesmos de antes.
  */
-export async function getAuthHeaders(): Promise<Record<string, string>> {
+export function getAuthHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
-  
-  // Add Supabase anon key (required)
+
   const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  if (anonKey) {
-    headers['apikey'] = anonKey;
-    
-    // Try to get access token for Authorization header
-    const token = await getAccessToken();
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    } else {
-      // If no session token, use anon key as bearer token
-      // This allows the Edge Functions to work without auth
-      headers['Authorization'] = `Bearer ${anonKey}`;
-    }
-  } else {
+  if (!anonKey) {
     console.error('VITE_SUPABASE_ANON_KEY not configured');
+    return headers;
   }
-  
+
+  headers['apikey'] = anonKey;
+  headers['Authorization'] = `Bearer ${anonKey}`;
   return headers;
 }
 
@@ -136,14 +151,22 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
 export function onAuthStateChange(
   callback: (session: Session | null) => void
 ): () => void {
-  const { data: { subscription } } = supabase.auth.onAuthStateChange(
-    (_event, session) => {
-      callback(session);
-    }
-  );
-  
+  let cancelar: (() => void) | null = null;
+  let cancelado = false;
+
+  void clienteSupabase().then((supabase) => {
+    if (cancelado) return;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        callback(session);
+      }
+    );
+    cancelar = () => subscription.unsubscribe();
+  });
+
   return () => {
-    subscription.unsubscribe();
+    cancelado = true;
+    cancelar?.();
   };
 }
 

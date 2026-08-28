@@ -5,7 +5,8 @@ import { Mail, MessageCircle } from 'lucide-react';
  * Rodapé enxuto. Os contatos só aparecem se a variável de ambiente existir —
  * antes, sem `VITE_WHATSAPP_URL`, o link ia para a string "undefined".
  * O aviso legal saiu do cinza a 70% de opacidade para o papel do talão, que
- * passa AA sobre o verde.
+ * passa AA sobre o verde (`band-paper`: o creme pertence à faixa, não à página,
+ * e por isso não escurece junto com o papel no tema escuro).
  */
 const Rodape = () => {
   const whatsapp = import.meta.env.VITE_WHATSAPP_URL;
@@ -17,14 +18,14 @@ const Rodape = () => {
         <div className="footer__grid">
           <div className="flex flex-col gap-4">
             <span className="footer__brand">Amo Recorrer</span>
-            <p className="max-w-[46ch] text-paper">
+            <p className="max-w-[46ch] text-band-paper">
               Recursos de multa redigidos por IA e entregues em PDF, sem cadastro
               e com pagamento único.
             </p>
           </div>
 
           <div className="flex flex-col gap-4">
-            <span className="eyebrow text-paper">Contato</span>
+            <span className="eyebrow text-band-paper">Contato</span>
             {whatsapp && (
               <a
                 href={whatsapp}

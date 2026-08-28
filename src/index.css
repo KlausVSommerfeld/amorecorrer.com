@@ -28,7 +28,7 @@
     --primary: 160 60% 23.5%;        /* #186048 */
     --primary-foreground: 0 0% 100%;
     --primary-light: 150 20% 47.1%;  /* #609078 — só sobre fundo claro */
-    --primary-dark: 160 60% 18.8%;   /* #006030 */
+    --primary-dark: 160 60% 18.8%;   /* #134D3A — o #006030 é o --success */
 
     /* Sálvia */
     --secondary: 150 20% 47.1%;      /* #609078 */
@@ -39,6 +39,21 @@
     /* Papel — o creme do talão. Fundo de documento e texto sobre o verde. */
     --paper: 60 44.4% 89.4%;         /* #F0F0D8 */
     --paper-foreground: 160 60% 23.5%;
+
+    /* A faixa verde — fechamento e rodapé. Token próprio, e não `--primary`,
+       porque no escuro ela precisa continuar sendo a faixa verde enquanto o
+       botão clareia para se destacar do fundo: presos ao mesmo token, os dois
+       papéis andariam juntos e um dos dois quebraria. `--band-paper` é o creme
+       do talão sobre ela (fundo do botão invertido e rótulos); `--band-ink`, o
+       texto principal. No claro os quatro valores são idênticos aos de hoje. */
+    --band: 160 60% 23.5%;           /* #186048 */
+    --band-deep: 160 60% 18.8%;      /* #134D3A — fim do gradiente */
+    --band-ink: 0 0% 100%;
+    --band-paper: 60 44.4% 89.4%;    /* #F0F0D8 */
+
+    /* Cor de toda sombra do site: o verde da marca aprofundado, nunca preto.
+       Presa a `--primary`, ela viraria um halo claro no tema escuro. */
+    --shadow: 160 60% 23.5%;
 
     --muted: 60 44.4% 89.4%;
     --muted-foreground: 150 20% 30%; /* escurecido: 47% reprovava sobre papel */
@@ -64,7 +79,15 @@
 
     /* Neutros enviesados para o verde da marca (antes: 214.3 31.8% 91.4%, azulado) */
     --border: 150 14% 89%;
-    --input: 150 14% 86%;
+    /* Contorno de campo = Sálvia de Margem. Era 150 14% 86% (#D6E0DB), que dá
+       1,35:1 contra o branco — abaixo dos 3:1 que o SC 1.4.11 exige da borda de
+       um controle, e o campo não tem preenchimento próprio para carregar essa
+       informação no lugar dela. De toda a faixa, só este valor passa também
+       sobre o papel creme do campo somente-leitura (3,15:1); os intermediários
+       passavam no branco e reprovavam no creme. É cor já nomeada da paleta,
+       então nenhum matiz novo entra. A espessura continua 1px: aqui a borda
+       delimita, não significa. */
+    --input: 150 20% 47.1%;          /* #609078 — 3,65:1 sobre branco */
     --rule: 150 18% 84%;             /* filete do documento */
     --ring: 160 60% 23.5%;
 
@@ -80,61 +103,74 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  /* NOTA: nada monta a classe .dark hoje — next-themes está instalado e não é
-     usado. Mantido em espera; decidir entre implementar o toggle ou remover. */
+  /* ---- Tema escuro --------------------------------------------------------
+     Não é uma inversão: é a **segunda via**. O papel creme do talão vira a via
+     carbonada, e o creme reaparece como tinta. Nenhum matiz novo — só os
+     mesmos ângulos da paleta (160/150/120/60/0) em outras luminosidades.
+     Todos os pares foram medidos; o pior texto está em 5,30:1. */
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 160 26% 5%;        /* #09100E — verde da marca no fundo do poço */
+    --foreground: 60 26% 90%;        /* #ECECDF — o creme do talão vira tinta */
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 160 20% 10%;             /* #141F1B — a folha sobre a mesa escura */
+    --card-foreground: 60 26% 90%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 160 20% 10%;
+    --popover-foreground: 60 26% 90%;
 
-    --primary: 120 16% 70.6%;
-    --primary-foreground: 160 60% 23.5%;
-    --primary-light: 120 16% 70.6%;
-    --primary-dark: 150 20% 47.1%;
+    /* Sobre o escuro, a ação é a sálvia clara: o verde da marca não se separa
+       o bastante do fundo para virar botão (1,3:1). */
+    --primary: 120 20% 72%;          /* #A9C6A9 */
+    --primary-foreground: 160 50% 9%;
+    --primary-light: 150 20% 60%;
+    --primary-dark: 120 24% 84%;     /* hover clareia, porque o fundo é escuro */
 
-    --secondary: 150 20% 47.1%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 150 20% 60%;
+    --secondary-foreground: 160 50% 9%;
     --secondary-light: 120 16% 70.6%;
-    --secondary-dark: 150 20% 23.5%;
+    --secondary-dark: 150 20% 30%;
 
-    --paper: 150 12% 14%;
-    --paper-foreground: 120 16% 70.6%;
+    /* A via carbono: o papel do talão copiado em carbono, não apagado. */
+    --paper: 150 16% 13%;            /* #1C2621 */
+    --paper-foreground: 60 26% 90%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 150 16% 12%;
+    --muted-foreground: 120 12% 70%; /* #A9BCA9 */
 
-    --accent: 150 20% 47.1%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 150 16% 16%;
+    --accent-foreground: 60 26% 90%;
 
-    --destructive: 0 62.8% 45%;
-    --destructive-foreground: 210 40% 98%;
+    /* Vermelho da paleta clareado até passar sobre o escuro (6,13:1). */
+    --destructive: 0 70% 66%;
+    --destructive-foreground: 160 50% 9%;
 
-    --stamp: 120 16% 70.6%;
+    --stamp: 120 22% 74%;
+    --success: 150 45% 60%;
+    --success-foreground: 160 50% 9%;
+    --warning: 0 70% 68%;
+    --warning-foreground: 160 50% 9%;
 
-    --success: 150 30% 45%;
-    --success-foreground: 210 40% 98%;
+    --border: 150 12% 20%;
+    --input: 150 14% 42%;            /* 3,59:1 sobre o card — SC 1.4.11 */
+    --rule: 150 12% 22%;
+    --ring: 120 20% 72%;
 
-    --warning: 0 62.8% 45%;
-    --warning-foreground: 210 40% 98%;
+    /* A faixa continua verde e continua sendo o bloco mais claro da página. */
+    --band: 160 48% 20%;             /* #1B4B3B */
+    --band-deep: 160 48% 14%;
+    --band-ink: 60 26% 92%;
+    --band-paper: 60 28% 86%;
 
-    --border: 150 10% 22%;
-    --input: 150 10% 22%;
-    --rule: 150 10% 26%;
-    --ring: 120 16% 70.6%;
+    --shadow: 160 60% 2%;
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 160 20% 10%;
+    --sidebar-foreground: 60 26% 90%;
+    --sidebar-primary: 120 20% 72%;
+    --sidebar-primary-foreground: 160 50% 9%;
+    --sidebar-accent: 150 16% 16%;
+    --sidebar-accent-foreground: 60 26% 90%;
+    --sidebar-border: 150 12% 20%;
+    --sidebar-ring: 120 20% 72%;
   }
 }
 
@@ -143,10 +179,26 @@
     @apply border-border;
   }
 
+  /* Faz o navegador desenhar barra de rolagem, caret e controles nativos no
+     tema certo — sem isto, o tema escuro fica com barra de rolagem clara. */
+  :root {
+    color-scheme: light;
+  }
+  .dark {
+    color-scheme: dark;
+  }
+
   body {
     @apply bg-background text-foreground font-sans;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+  }
+
+  /* A seleção também é do projeto: o azul do sistema é a única cor da tela que
+     ninguém escolheu. */
+  ::selection {
+    background: hsl(var(--primary) / 0.22);
+    color: hsl(var(--foreground));
   }
 
   h1, h2, h3 {
@@ -198,21 +250,25 @@
   }
 
   .btn--solid {
-    @apply bg-primary text-primary-foreground shadow-sm;
+    @apply bg-primary text-primary-foreground;
+    box-shadow: 0 1px 2px hsl(var(--shadow) / 0.18);
   }
   .btn--solid:hover {
     @apply bg-primary-dark;
   }
 
-  /* Para uso sobre fundo verde: o papel do talão vira o botão. */
+  /* Para uso sobre a faixa verde: o papel do talão vira o botão. Ele pertence
+     à faixa, não à página — daí `band-paper`/`band` em vez de `paper`/`primary`,
+     que no escuro seguem o fundo da página e apagariam o botão. */
   .btn--inverse {
-    @apply bg-paper text-primary shadow-sm;
+    @apply bg-band-paper text-band;
+    box-shadow: 0 1px 2px hsl(var(--shadow) / 0.18);
   }
   .btn--inverse:hover {
     @apply bg-secondary-light;
   }
   .btn--inverse:focus-visible {
-    outline-color: hsl(var(--paper));
+    outline-color: hsl(var(--band-paper));
   }
 
   .btn--ghost {
@@ -254,19 +310,59 @@
     border: 2px solid hsl(var(--stamp));
   }
 
+  /* ---- Pular para o conteúdo ----------------------------------------------
+     Fica fora da tela até receber foco. Não usamos `sr-only` porque ele precisa
+     voltar a ocupar espaço ao aparecer; e não usamos `display:none`, que o
+     tiraria da ordem de tabulação. */
+  .skip {
+    @apply absolute left-4 top-4 z-50 -translate-y-24 rounded border border-rule
+           bg-card px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em]
+           text-primary transition-transform;
+  }
+  .skip:focus {
+    @apply translate-y-0;
+  }
+
+  /* ---- Alternância de tema ------------------------------------------------
+     Um botão, não um menu: só há dois estados a oferecer. O rótulo nomeia o
+     destino ("Escuro"/"Claro"), não o estado atual. */
+  /* `min-w-6`/`min-h-6` seguram o piso de 24px do SC 2.5.8 quando o rótulo sai
+     de cena no celular e sobra só o ícone de 14px. */
+  .theme-toggle {
+    @apply inline-flex min-h-6 min-w-6 items-center justify-center gap-0 py-1.5
+           font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground
+           transition-colors sm:gap-1.5;
+  }
+  .theme-toggle:hover {
+    @apply text-primary;
+  }
+
   /* ---- Cabeçalho da página ------------------------------------------------
      O topo da notificação: quem emite, à esquerda; os avisos, à direita. */
+  /* `flex-wrap` para 320px: com a marca proibida de quebrar, são os links que
+     descem para uma segunda linha em vez de partir "Amo Recorrer" ao meio. */
   .masthead {
-    @apply flex items-center justify-between gap-4 py-4 border-b border-rule;
+    @apply flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-4
+           border-b border-rule;
   }
 
+  /* O `py-1.5` daqui e dos links do rodapé é área de toque, não respiro: medidos
+     em 390px, esses alvos tinham 17 a 20px de altura, abaixo do piso de 24px do
+     SC 2.5.8. Vale em qualquer ponteiro — laptop com tela sensível também erra
+     o alvo de 17px. */
   .masthead__brand {
-    @apply font-display text-sm font-extrabold uppercase tracking-[0.14em] text-primary;
+    @apply inline-block whitespace-nowrap py-1.5 font-display text-sm font-extrabold
+           uppercase tracking-[0.14em] text-primary;
   }
 
+  /* `gap-4` no celular: com o botão de tema na linha, os 20px de respiro
+     empurravam os links para uma segunda linha a 390px. */
   .masthead__links {
-    @apply flex items-center gap-5 font-mono text-[11px] uppercase tracking-[0.14em]
-           text-muted-foreground;
+    @apply flex items-center gap-4 font-mono text-[11px] uppercase tracking-[0.14em]
+           text-muted-foreground sm:gap-5;
+  }
+  .masthead__links a {
+    @apply inline-block py-1.5;
   }
   .masthead__links a:hover {
     @apply text-primary;
@@ -279,27 +375,52 @@
     @apply bg-background border-b border-rule;
   }
 
-  /* No mobile as três faixas empilham na ordem título → réplica → oferta: a
-     assinatura aparece cedo, mas nunca empurra o título para fora da dobra.
-     No desktop a réplica ocupa a coluna direita inteira. */
+  /* O masthead vive num `<header>` separado do hero, para que o `<h1>` não fique
+     dentro do banner. O filete que separa o topo já vem do próprio masthead. */
+  .hero__top {
+    @apply bg-background;
+  }
+
+  /* No mobile a ordem é título → oferta e CTA → réplica. A réplica tem 521px
+     de altura: com ela no meio, o preço caía 40px abaixo da dobra de um 390×844
+     e o botão 200px — a assinatura estava sendo paga com a conversão. Agora ela
+     é a recompensa da primeira rolagem e ainda espia no rodapé da dobra.
+     De 768px em diante o desenho vira duas colunas e a réplica volta a dividir
+     a tela com o texto, sem ninguém abaixo da linha. */
   .hero__grid {
     @apply grid items-center gap-y-8 py-10 md:py-16
-           lg:grid-cols-[1.05fr_minmax(0,25rem)] lg:gap-x-16 lg:gap-y-6;
+           md:grid-cols-[1.05fr_minmax(0,20rem)] md:gap-x-10 md:gap-y-6
+           lg:grid-cols-[1.05fr_minmax(0,25rem)] lg:gap-x-16;
   }
 
   /* self-end/self-start colam as duas faixas de texto no meio da coluna: sem
      isso, a altura sobrando da réplica abre um vão entre o título e a oferta. */
   .hero__head {
-    @apply order-1 flex flex-col gap-4 lg:col-start-1 lg:row-start-1 lg:self-end;
+    @apply order-1 flex flex-col gap-4 md:col-start-1 md:row-start-1 md:self-end;
   }
 
   .hero__body {
-    @apply order-3 flex flex-col items-start gap-6
-           lg:col-start-1 lg:row-start-2 lg:self-start;
+    @apply order-2 flex flex-col items-start gap-6
+           md:col-start-1 md:row-start-2 md:self-start;
   }
 
   .hero__figure {
-    @apply order-2 lg:col-start-2 lg:row-span-2 lg:row-start-1;
+    @apply order-3 md:col-start-2 md:row-span-2 md:row-start-1;
+  }
+
+  /* Viewport baixa — na prática, celular deitado. A condição é só de altura:
+     um iPhone deitado tem 844px de LARGURA, entra pelo desenho de tablet e
+     escaparia de qualquer guarda presa a `max-width`. */
+  /* Entre 768 e 1023 o hero já é de duas colunas, e a coluna de texto tem ~360px:
+     as duas células da oferta lado a lado quebravam o preço em "R$" / "19,99".
+     Aqui ela volta a empilhar, como no celular. */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .hero__body .offer {
+      @apply flex w-full flex-col;
+    }
+    .hero__body .offer__cell + .offer__cell {
+      @apply border-l-0 border-t;
+    }
   }
 
   .hero__title {
@@ -316,15 +437,50 @@
     max-width: 44ch;
   }
 
+  /* Viewport baixa (celular deitado). Precisa vir DEPOIS de `.hero__title` e
+     `.hero__lead`: mesma camada e mesma especificidade se decidem pela ordem do
+     arquivo, e declarado antes o override era simplesmente ignorado. */
+  @media (max-height: 560px) {
+    .hero__grid {
+      @apply gap-y-5 py-6;
+    }
+    /* 52px de título consomem um quarto de uma tela de 390px de altura. */
+    .hero__title {
+      font-size: clamp(1.75rem, 4.4vw, 2.5rem);
+      line-height: 1.02;
+    }
+    .hero__lead {
+      @apply text-base;
+    }
+  }
+
   /* Linha de apoio em mono, usada sob CTAs e em avisos curtos. */
   .note {
     @apply font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground;
   }
 
+  /* ---- Aviso de compra --------------------------------------------------
+     O que o usuário precisa saber antes de pagar. Estava em mono de 11px em
+     caixa alta — a configuração mais lenta de ler do sistema — justamente na
+     informação que decide a compra. Aqui vira texto de leitura.
+     Sem classe de cor: no hero herda o grafite do corpo, sobre a faixa verde
+     herda o branco do `.closer`. */
+  .cta-aviso {
+    @apply max-w-[46ch] text-sm font-semibold leading-snug;
+  }
+
+  .cta-nota {
+    @apply max-w-[52ch] text-sm leading-snug text-muted-foreground;
+  }
+
+  .on-green .cta-nota {
+    @apply text-band-paper;
+  }
+
   /* ---- Faixa da oferta ----------------------------------------------------
      Dois campos do documento lado a lado, separados por filete. */
   .offer {
-    @apply flex w-full flex-col rounded border border-rule bg-background
+    @apply flex w-full flex-col rounded border border-rule bg-card
            sm:inline-flex sm:w-auto sm:flex-row;
   }
 
@@ -361,8 +517,8 @@
     @apply relative rounded border border-rule bg-paper p-4 pb-24 text-foreground
            sm:p-5 sm:pb-32;
     box-shadow:
-      0 1px 2px hsl(var(--primary) / 0.08),
-      0 18px 36px -24px hsl(var(--primary) / 0.45);
+      0 1px 2px hsl(var(--shadow) / 0.08),
+      0 18px 36px -24px hsl(var(--shadow) / 0.45);
   }
 
   /* O filete vermelho do talão. */
@@ -396,11 +552,11 @@
 
   /* A resposta: a folha do recurso pousa sobre a autuação. */
   .notice__resposta {
-    @apply absolute -bottom-4 right-0 w-[86%] rounded border border-rule bg-background p-4;
+    @apply absolute -bottom-4 right-0 w-[86%] rounded border border-rule bg-card p-4;
     border-top: 3px solid hsl(var(--primary));
     box-shadow:
-      0 -1px 3px hsl(var(--primary) / 0.06),
-      0 24px 44px -28px hsl(var(--primary) / 0.7);
+      0 -1px 3px hsl(var(--shadow) / 0.06),
+      0 24px 44px -28px hsl(var(--shadow) / 0.7);
   }
 
   /* Serifa só aqui dentro: é o interior do documento gerado. */
@@ -410,15 +566,39 @@
 
   /* O carimbo cai por último, no pé da peça — como num protocolo de verdade. */
   .notice__stamp {
-    @apply absolute -bottom-4 right-3 bg-background;
+    @apply absolute -bottom-4 right-3 bg-card;
   }
 
   /* ---- CTA fixo no rodapé (mobile) --------------------------------------- */
   .cta-bar {
     @apply fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3
-           border-t border-rule bg-background px-4 py-3;
+           border-t border-rule bg-card px-4 py-3;
     padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
-    box-shadow: 0 -10px 28px -22px hsl(var(--primary) / 0.9);
+    box-shadow: 0 -10px 28px -22px hsl(var(--shadow) / 0.9);
+  }
+
+  /* Reserva a altura da barra para que ela não cubra o rodapé. */
+  .cta-bar__espacador {
+    @apply h-20;
+  }
+
+  /* No desktop a barra sai: o CTA da faixa de fechamento dá conta. Mas ela
+     volta em qualquer viewport baixa — o celular deitado tem largura de tablet
+     e altura de nada, e lá o botão do hero fica fora da dobra. */
+  @media (min-width: 768px) {
+    .cta-bar,
+    .cta-bar__espacador {
+      @apply hidden;
+    }
+  }
+
+  @media (min-width: 768px) and (max-height: 560px) {
+    .cta-bar {
+      @apply flex;
+    }
+    .cta-bar__espacador {
+      @apply block;
+    }
   }
 
   /* ---- Seções -------------------------------------------------------------
@@ -504,7 +684,7 @@
 
   .track__marker {
     @apply relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full
-           border border-rule bg-background font-mono text-[11px] font-semibold text-primary;
+           border border-rule bg-card font-mono text-[11px] font-semibold text-primary;
   }
 
   .track__body {
@@ -523,10 +703,10 @@
      Descrever o PDF é mais fraco do que mostrá-lo. A página é cortada no meio
      por máscara: o que interessa é o começo da peça, legível. */
   .doc {
-    @apply relative overflow-hidden rounded border border-rule bg-background;
+    @apply relative overflow-hidden rounded border border-rule bg-card;
     box-shadow:
-      0 1px 2px hsl(var(--primary) / 0.08),
-      0 20px 40px -28px hsl(var(--primary) / 0.5);
+      0 1px 2px hsl(var(--shadow) / 0.08),
+      0 20px 40px -28px hsl(var(--shadow) / 0.5);
   }
 
   .doc__page {
@@ -548,14 +728,21 @@
     @apply mt-5 font-serif text-[13px] font-semibold uppercase tracking-wide;
   }
 
+  /* Justificado a 13,5px numa caixa de ~42ch, o português abre rios: medido em
+     390px, "atribuindo-se-lhe a condução do veículo acima em" esticava a linha
+     inteira. A hifenização usa o `lang="pt-BR"` que o documento já declara. */
   .doc__body {
     @apply mt-2 font-serif text-[13.5px] leading-relaxed;
     text-align: justify;
+    hyphens: auto;
+    -webkit-hyphens: auto;
   }
 
+  /* 11px é o piso do rótulo mono no sistema; esta legenda era a única exceção,
+     a 10px, e não havia razão para ela ser menor que todos os outros rótulos. */
   .doc__caption {
-    @apply absolute inset-x-0 bottom-0 border-t border-rule bg-background px-4 py-2
-           text-center font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground;
+    @apply absolute inset-x-0 bottom-0 border-t border-rule bg-card px-4 py-2
+           text-center font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground;
   }
 
   /* ---- FAQ ---------------------------------------------------------------- */
@@ -579,8 +766,8 @@
 
   /* ---- Faixa de fechamento ------------------------------------------------ */
   .closer {
-    @apply py-16 text-primary-foreground md:py-20;
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-dark)) 100%);
+    @apply py-16 text-band-ink md:py-20;
+    background: linear-gradient(135deg, hsl(var(--band)) 0%, hsl(var(--band-deep)) 100%);
   }
 
   .closer__title {
@@ -593,25 +780,30 @@
   /* Rótulos e filetes sobre o verde: o papel do talão substitui o cinza. */
   .on-green .eyebrow,
   .on-green .field__label {
-    @apply text-paper;
+    @apply text-band-paper;
   }
 
+  /* A faixa da oferta sobre o verde é papel de verdade, não uma moldura vazada.
+     Vazada, o preço riscado (creme) e o preço atual (branco) ficavam a 1,16:1
+     um do outro: os dois legíveis contra o verde, e indistinguíveis entre si —
+     e é justamente a diferença entre eles que informa qual é o preço velho.
+     Sobre papel, os dois voltam ao par grafite/verde do hero, a 2,15:1. Mesma
+     regra do alerta: não confiar em superfície vazada sobre fundo colorido. */
   .on-green .offer {
-    @apply border-paper/40 bg-transparent;
+    @apply border-rule bg-card;
   }
-  .on-green .offer__cell + .offer__cell {
-    @apply border-paper/40;
+  .on-green .offer .eyebrow,
+  .on-green .offer .field__label,
+  .on-green .offer .price__from {
+    @apply text-muted-foreground;
   }
-  .on-green .price {
-    @apply text-primary-foreground;
-  }
-  .on-green .price__from {
-    @apply text-paper;
+  .on-green .offer .price {
+    @apply text-foreground;
   }
 
   /* ---- Rodapé ------------------------------------------------------------- */
   .footer {
-    @apply bg-primary py-14 text-primary-foreground;
+    @apply bg-band py-14 text-band-ink;
   }
 
   .footer__grid {
@@ -623,23 +815,26 @@
   }
 
   .footer__link {
-    @apply inline-flex items-center gap-2 text-paper transition-colors;
+    @apply inline-flex items-center gap-2 py-1.5 text-band-paper transition-colors;
   }
   .footer__link:hover {
-    @apply text-primary-foreground;
+    @apply text-band-ink;
   }
   .footer__link:focus-visible {
-    outline-color: hsl(var(--paper));
+    outline-color: hsl(var(--band-paper));
   }
 
   .footer__legal {
-    @apply max-w-[70ch] text-sm leading-relaxed text-paper;
+    @apply max-w-[70ch] text-sm leading-relaxed text-band-paper;
   }
 
   .footer__bottom {
-    @apply mt-12 flex flex-col gap-3 border-t border-paper/30 pt-6
-           font-mono text-[11px] uppercase tracking-[0.14em] text-paper
+    @apply mt-12 flex flex-col gap-3 border-t border-band-paper/30 pt-6
+           font-mono text-[11px] uppercase tracking-[0.14em] text-band-paper
            sm:flex-row sm:items-center sm:justify-between;
+  }
+  .footer__bottom a {
+    @apply inline-block py-1.5;
   }
 
   /* ---- Casco das páginas internas -----------------------------------------
@@ -664,8 +859,11 @@
   }
 
   /* ---- Formulário --------------------------------------------------------- */
+  /* `bg-card`, e não `bg-background`: no tema claro os dois são brancos, mas no
+     escuro o campo ficava na cor da página enquanto o cartão de opção ficava um
+     tom acima — duas superfícies para a mesma coisa. */
   .form-input {
-    @apply w-full px-4 py-3 bg-background border border-input rounded
+    @apply w-full px-4 py-3 bg-card border border-input rounded
            transition-colors duration-200
            placeholder:text-muted-foreground/70;
   }
@@ -748,6 +946,52 @@
     @apply rounded border border-dashed border-rule bg-muted px-4 py-3 font-mono text-sm;
   }
 
+  /* Escolha do estágio processual: duas peças distintas, decisão obrigatória.
+     A seleção se anuncia por preenchimento de papel creme e borda da marca —
+     a espessura fica em 1px, porque aqui ela separa, não significa. */
+  .choice-group {
+    @apply grid gap-3 md:grid-cols-2;
+  }
+
+  .choice {
+    @apply flex cursor-pointer items-start gap-3 rounded border border-input bg-card p-4
+           transition-colors duration-200;
+  }
+  .choice:hover {
+    @apply border-primary;
+  }
+  .choice:has(.choice__input:checked) {
+    @apply border-primary bg-muted;
+  }
+  .choice:has(.choice__input:focus-visible) {
+    @apply outline-none ring-2 ring-ring ring-offset-1;
+  }
+
+  /* `accent-color` tira o azul do sistema operacional do único controle nativo
+     do formulário. */
+  .choice__input {
+    @apply mt-1 h-4 w-4 shrink-0 accent-primary;
+  }
+
+  .choice__name {
+    @apply block font-display text-base font-bold leading-tight;
+  }
+
+  .choice__desc {
+    @apply mt-1 block text-xs leading-snug text-muted-foreground;
+  }
+
+  /* Contador da justificativa: número que se atualiza sozinho, logo tabular. */
+  .form-counter {
+    @apply mt-1 shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground;
+  }
+
+  /* Aviso do rascunho local. Fica abaixo das ações: informa sem disputar com o
+     botão, e a única ação que oferece é destrutiva. */
+  .form-rascunho {
+    @apply mt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground;
+  }
+
   /* ---- Trilho de progresso ------------------------------------------------ */
   .progress {
     @apply flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[11px]
@@ -769,10 +1013,10 @@
   /* ---- Recibo do envio ----------------------------------------------------
      Substitui a tarja verde: o cliente sai com um número de protocolo. */
   .recibo {
-    @apply max-w-2xl rounded border border-rule bg-background p-6 md:p-8;
+    @apply max-w-2xl rounded border border-rule bg-card p-6 md:p-8;
     box-shadow:
-      0 1px 2px hsl(var(--primary) / 0.08),
-      0 20px 40px -28px hsl(var(--primary) / 0.5);
+      0 1px 2px hsl(var(--shadow) / 0.08),
+      0 20px 40px -28px hsl(var(--shadow) / 0.5);
   }
 
   .recibo__protocolo {
@@ -817,5 +1061,100 @@
 
   .error-message {
     @apply bg-destructive/10 border border-destructive text-destructive p-4 rounded;
+  }
+
+  /* Sobre a faixa verde o vermelho a 10% embaça e o bloco some. Esta variante
+     fecha o fundo para que a mesma falha seja legível em papel e sobre verde. */
+  .error-message--surface {
+    @apply bg-background;
+  }
+
+  /* ==========================================================================
+     Adaptação ao método de entrada — no FIM da camada de propósito.
+     Todas as regras abaixo sobrescrevem seletores de mesma especificidade
+     (`.btn--solid:hover`, `.masthead__brand`), e nesse empate quem decide é a
+     ordem do arquivo. Declaradas antes, seriam simplesmente ignoradas.
+     ========================================================================== */
+
+  /* ---- Adaptação ao ponteiro ---------------------------------------------
+     O tamanho do alvo não sai da largura da tela, sai do dedo: um laptop com
+     tela sensível erra o alvo de 29px tanto quanto um celular, e um tablet com
+     mouse não precisa de 44px. Com ponteiro grosso, os alvos pequenos do
+     cabeçalho e do rodapé sobem para o piso confortável de 44px sem inchar o
+     desenho de quem usa mouse. */
+  @media (pointer: coarse) {
+    /* No cabeçalho a área de toque cresce **sem** o layout crescer: um
+       pseudo-elemento invisível estende o alvo para além da caixa do link.
+       Subir a altura de verdade custava 60px da primeira dobra em todo celular
+       (o masthead ia de 65px para 125px) — caro demais para links secundários,
+       numa página em que a dobra é o argumento de venda. O alvo passa de 49×29
+       para 61×45; o desenho não se mexe. */
+    .masthead__brand,
+    .masthead__links a,
+    .theme-toggle {
+      position: relative;
+    }
+    .masthead__brand::after,
+    .masthead__links a::after,
+    .theme-toggle::after {
+      content: '';
+      position: absolute;
+      inset: -8px -6px;
+    }
+    /* O toggle é só ícone no celular: precisa da folga também na largura. */
+    .theme-toggle::after {
+      inset: -9px -12px;
+    }
+
+    /* No rodapé e no link de pulo não há dobra a proteger: aqui a altura sobe
+       de verdade, que é mais honesto do que um alvo invisível. */
+    .footer__link,
+    .footer__bottom a {
+      @apply min-h-11 py-3;
+    }
+    .skip {
+      @apply min-h-11 py-3;
+    }
+  }
+
+  /* Sem hover de verdade, `:hover` gruda depois do toque e o cartão fica com
+     borda da marca até o usuário tocar em outro lugar. O estado de repouso
+     volta a ser o repouso; a seleção continua saindo do `:has(:checked)`. */
+  @media (hover: none) {
+    .choice:hover:not(:has(.choice__input:checked)) {
+      @apply border-input;
+    }
+    .btn--solid:hover {
+      @apply bg-primary;
+    }
+    .btn--inverse:hover {
+      @apply bg-band-paper;
+    }
+    .btn--ghost:hover {
+      @apply bg-transparent;
+    }
+    .masthead__links a:hover,
+    .theme-toggle:hover {
+      @apply text-muted-foreground;
+    }
+    .footer__link:hover {
+      @apply text-band-paper;
+    }
+  }
+
+  /* ---- Alto contraste do sistema -----------------------------------------
+     No modo forçado o navegador substitui fundo e texto pelas cores do sistema,
+     e **descarta sombras e imagens de fundo**. Um botão que depende só do fundo
+     perde o corpo: medido, "Gerar meu recurso" virava texto solto no meio da
+     página, sem nada que dissesse que era um botão. `ButtonBorder` é cor de
+     sistema, então ela sobrevive ao modo forçado e devolve a forma — e como a
+     regra vive dentro do `@media`, não custa um pixel no modo normal.
+
+     Os demais objetos do sistema já passam: cartão, campo, opção, alerta,
+     carimbo, recibo e barra de CTA têm borda ou filete próprios. */
+  @media (forced-colors: active) {
+    .btn {
+      border: 1px solid ButtonBorder;
+    }
   }
 }

@@ -3,7 +3,7 @@
  * Provides helper functions for common API operations with automatic token handling
  */
 
-import { getAuthHeaders, ensureAnonymousSession, isSessionValid, refreshSession } from './auth';
+import { getAuthHeaders } from './auth';
 
 interface FetchOptions extends RequestInit {
   skipAuth?: boolean;
@@ -25,7 +25,7 @@ export async function authenticatedFetch(
   const { skipAuth = false, retryOnUnauthorized = true, ...fetchOptions } = options;
 
   // Get headers with bearer token (includes anon key as fallback)
-  const authHeaders = skipAuth ? {} : await getAuthHeaders();
+  const authHeaders = skipAuth ? {} : getAuthHeaders();
 
   // Merge headers
   const headers = {
@@ -85,12 +85,15 @@ export async function authenticatedGet(
  * @param formData The form data to submit
  * @returns Promise<Response>
  */
-export async function submitForm(formData: Record<string, unknown>): Promise<Response> {
+export async function submitForm(
+  formData: Record<string, unknown>,
+  options: { signal?: AbortSignal } = {}
+): Promise<Response> {
   if (!import.meta.env.VITE_FORM_SUBMIT_URL) {
     throw new Error('VITE_FORM_SUBMIT_URL is not defined in environment');
   }
 
-  return authenticatedPost(import.meta.env.VITE_FORM_SUBMIT_URL, formData);
+  return authenticatedPost(import.meta.env.VITE_FORM_SUBMIT_URL, formData, options);
 }
 
 /**
