@@ -35,14 +35,14 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 
 ## Estado atual
 
-*Atualizado em 2026-08-15.*
+*Atualizado em 2026-08-31.*
 
-- **Branch de trabalho:** `feature/env-supabase-form-submit-checkout`, sincronizada com `origin`.
-- **`main` está 34 commits atrás**, parada em `a3b2142` (2025-10-29). Todo o trabalho desde novembro de 2025 — pagamento, Edge Functions, pipeline, redesenho — vive só na feature branch. **Merge para `main` nunca aconteceu.**
-- **20 arquivos modificados e 9 novos, nada commitado** (redesenho das Fases 0–4 e o preço cheio, mais alterações anteriores em `stripe-webhook` e um snippet SQL que já estavam na árvore).
+- **Branch de trabalho:** `feat/ajuste-frontend-claudecode`, **36 commits à frente de `main`**, que segue parada em `a3b2142` (2025-10-29). Todo o produto — pagamento, Edge Functions, pipeline, redesenho — vive só na feature branch. **Merge para `main` nunca aconteceu.**
 - **O redesenho "Notificação e Resposta" está completo** — Fases 0 a 4. Todas as páginas usam o mesmo casco, a mesma tipografia e os mesmos tokens.
 - **O site não para mais de vender depois de 30 minutos.** O fim da promoção agora só tira a moldura promocional; o CTA continua ativo.
-- **Funciona ponta a ponta** em ambiente local com os 5 processos de pé (Supabase, functions serve, Vite, Express, FastAPI): checkout Stripe → webhook → formulário → pipeline → PDF no Storage → e-mail → `confirm_dispatch`.
+- **O fluxo volta a funcionar ponta a ponta em ambiente local** — verificado em 01/09/2026, não presumido: sessão real na API de teste do Stripe, evento `checkout.session.completed` assinado, formulário, dispatch, PDF no Storage com SHA-256 conferido, `document_status = completed` e `dispatches.status = sent`.
+- **Falta para produção:** endereço estável do pipeline (o `DISPATCH_PIPELINE_URL` aponta para um túnel efêmero morto) e o bucket `generated-recursos` versionado, hoje passo manual de Dashboard.
+- **Não testado ainda:** a redação em si. O perfil local não tem `DEEPSEEK_API_KEY` nem SMTP, então o PDF sai com texto de placeholder e o e-mail é pulado. O que está provado é o encanamento.
 - **Sem suíte automatizada.** A verificação é manual, via os 4 scripts PowerShell em `tests/edge-functions/`.
 
 ---
@@ -177,14 +177,21 @@ Reconstruídos do histórico de commits. Datas são do commit, não de deploy.
 
 Ordenadas pelo custo de continuar adiando.
 
-1. **`main` está 34 commits atrás.** Todo o produto vive numa feature branch há nove meses. Quanto mais tempo passa, mais caro fica o merge.
+1. **`main` está 36 commits atrás** (conferido em 31/08/2026). Todo o produto vive numa feature branch há dez meses. Quanto mais tempo passa, mais caro fica o merge.
 2. **O preço cheio existe só no sandbox** e a regra que escolhe entre os dois é decidida pelo navegador — quem limpar o `sessionStorage` paga R$ 19,99 para sempre. Duas frentes em aberto: replicar produto e preços na conta live, e decidir se a urgência vira um prazo global de campanha (verificável no servidor) ou continua por visitante.
 3. **Autenticação bearer está desligada.** O bloco de validação está comentado em `create-checkout-session` e `form-submit`, com `verify_jwt = false`. Toda a infra existe e não é usada; hoje `form-submit` é protegida só por whitelist de origem e existência do `case_id`.
 4. **Duas assinaturas de `attempt_dispatch` convivem** (`case_id` e `p_case_id`). Consolidar exige saber qual versão está viva no projeto remoto.
 5. ~~**Dark mode órfão.**~~ **Resolvido em 26/08/2026:** toggle implementado e `.dark` reescrito a partir da paleta (ver a entrada da sessão abaixo).
 6. **Sem fila durável no pipeline.** Se o processo morrer entre o `202` e o `finish`, o caso fica preso em `generating` sem retry.
-7. **O redesenho acabou; falta o merge.** Fases 0–4 entregues e nada commitado. Ver o item 1.
+7. **O redesenho acabou; falta o merge.** Fases 0–4 entregues e já commitadas na feature branch — o que continua faltando é o merge para `main`. Ver o item 1.
 8. **"HTML da peça" é oferta ou aspiração?** O card que prometia uma versão HTML saiu na Fase 3 porque o pipeline só entrega PDF. Decidir entre implementar ou deixar fora.
+9. ~~**O disco `C:` está cheio.**~~ **Resolvido em 01/09/2026** — e o alvo não era o `C:`: o que estava cheio por dentro era o `docker_data.vhdx` (33,8 GB). `docker system prune -a --volumes` liberou 8,65 GB internos e a stack voltou a subir. Ver a entrada da sessão.
+10. **O projeto Supabase da nuvem está pausado** (`tsdzvxgkokrjqayxukud`, status `INACTIVE` — projeto pausado perde o DNS). Retomar, ou assumir que o desenvolvimento segue só no conjunto local.
+11. **`DISPATCH_PIPELINE_URL` aponta para um túnel `trycloudflare` morto.** Esses endereços são efêmeros e morrem junto com o processo do túnel. Ou se sobe um túnel novo a cada sessão, ou se adota um endereço estável (Cloudflare Tunnel nomeado, ou o pipeline publicado). **É o item que falta para produção.** Em teste local, `http://host.docker.internal:8000/hooks/dispatch` resolve, porque a Edge roda em container e não enxerga o `127.0.0.1` do host.
+14. **O bucket `generated-recursos` não está versionado.** É criado à mão no Dashboard, então toda stack recriada do zero falha no upload do PDF com `Bucket not found` — aconteceu em 01/09/2026. Vale uma migration ou script de setup.
+15. **A redação por IA nunca foi testada de ponta a ponta.** O perfil local zera `DEEPSEEK_API_KEY` e `SMTP_HOST`, então o PDF sai com texto de placeholder e o e-mail é pulado. Falta uma rodada com as duas coisas configuradas.
+12. **Rotacionar a chave `service_role`.** Ela está em texto puro em `server/.env` e `pipeline/.env` (fora do git, verificado), mas foi impressa no transcript da sessão de 31/08 por um comando de inspeção mal filtrado. Nada saiu da máquina; rotacionar é barato e encerra a dúvida.
+13. **Dois conjuntos completos de `.env` convivem** — os `.env.local` (local) e os `.env` (nuvem), cada um com seu próprio segredo HMAC. Foi essa duplicação que criou a armadilha corrigida em 31/08. Enquanto os dois existirem, qualquer divergência de precedência entre serviços volta a quebrar o fluxo em silêncio. Decidir qual é o canônico e apagar ou renomear o outro.
 
 
 ---
@@ -393,3 +400,97 @@ O `off` estava lá para impedir que o autopreenchimento "esvaziasse" a conferên
 **Verificado:** os seis campos pessoais renderizados declaram o token certo (`name`, `email`, `email`, `tel`, `postal-code`, `street-address`); `cidade`/`estado` só aparecem como input no caminho de fallback do ViaCEP e já traziam `address-level2/1`. CPF e CNH seguem isentos — não existe token na norma para documento nacional, e a ausência ali é honesta, não descuido. A conferência de e-mail continua funcionando nos três estados: divergente acusa, igual passa, vazio cobra. Zero erro de página, `tsc` e build limpos.
 
 `DESIGN.md` ganhou **A Regra do Propósito Declarado** (32 regras).
+
+
+---
+
+## Sessão de 31/08/2026 — Teste do fluxo ponta a ponta: o dispatch estava morto em silêncio
+
+Sessão de diagnóstico, não de construção. Uma linha de código mudou; o resto é o mapa de onde o fluxo quebra e por quê. Relatório completo publicado como artifact: `Onde o Fluxo Quebra`.
+
+**A causa raiz é uma inversão de precedência entre dois arquivos de configuração.** Existem dois conjuntos de `.env` completos e internamente coerentes — os `.env.local` (tudo local, um segredo HMAC) e os `.env` (tudo na nuvem, outro segredo). O conteúdo dos dois está certo. O problema é que **cada serviço escolhia um conjunto diferente**, por duas regras opostas que ninguém tinha comparado lado a lado:
+
+- `server/src/index.ts:8-17` percorre `[".env.local", ".env"]` e faz `break` no primeiro que existir → Express carregava **`.env.local`**.
+- `pipeline/config.py` declarava `env_file=(".env.local", ".env")`, e o pydantic-settings dá prioridade ao **último** arquivo da tupla → o pipeline carregava **`.env`**.
+
+Resultado: Express assinava e conferia com um segredo, o pipeline com outro. Toda chamada assinada entre eles morria com 401.
+
+**O modo de falhar era o pior possível: silencioso e sem rastro.** Medido com os dois serviços no ar:
+
+```
+POST /hooks/dispatch  assinado com o segredo da Edge  -> 401
+GET  /internal/cases/CASO_…   (pipeline -> Express)   -> 401
+POST /internal/dispatch/finish                        -> 401
+```
+
+A terceira linha é a que dói: o `notify_finish` do bloco `except` também levava 401. O pipeline não conseguia nem registrar o próprio fracasso. Como `BackgroundTasks` não é fila durável (pendência 6, de novembro), o caso ficava preso em `document_status = 'generating'` para sempre — sem erro no banco, sem retry, sem sintoma visível. Um caso pago que nunca chega.
+
+**A correção é a ordem da tupla,** com o porquê no comentário para ninguém "arrumar" de volta:
+
+```python
+env_file=(".env", ".env.local"),
+```
+
+Assim `.env.local` ganha nos dois serviços. **Verificado** — o segredo efetivo do pipeline passou de `sha=6c856b06` (conjunto remoto) para `sha=1fdcd213`, idêntico ao do Express e ao da Edge; e o mesmo dispatch que dava 401 nas três chamadas agora dá **zero 401 na execução inteira**. O `GET /internal/cases` passou a responder 500 por `ECONNREFUSED 127.0.0.1:54321` — que já é o bloqueio seguinte, não mais autenticação.
+
+Conferido também que o merge dos dois arquivos continua funcionando: `deepseek_api_base`, `deepseek_model`, `mail_subject` e `smtp_port` só existem no `.env` e seguem carregando. `pipeline/.env.local` zera `DEEPSEEK_API_KEY` e `SMTP_HOST` **de propósito** — é o perfil de desenvolvimento, com `PIPELINE_ENV=development`, em que o worker devolve o texto de placeholder no lugar da IA e marca `email_skipped` no lugar do envio. Não é regressão da correção.
+
+**Três bloqueios de ambiente ficaram abertos**, todos movidos para Pendências (9 a 13) porque dependem de decisão sua: o disco `C:` cheio (1,3 GB de 237 GB) que faz o Docker gravar camadas truncadas e impede a stack local de subir; o projeto Supabase da nuvem pausado; e o túnel `trycloudflare` do `DISPATCH_PIPELINE_URL`, morto.
+
+Sobre o disco, vale registrar como foi confirmado, porque o sintoma engana: os containers acusavam `exec format error` e `libapparmor.so.1: file too short`, o que parece imagem errada de arquitetura. Não é — a máquina é amd64 e as imagens também. Removi as três imagens acusadas e baixei de novo; a imagem **recém-baixada** continuou truncada. A corrupção acontece na gravação, porque não há espaço. Re-baixar não resolve; liberar espaço resolve.
+
+**Achados menores, sem impacto no fluxo:** `confirm_dispatch` faz `RETURN QUERY SELECT success` e devolve o argumento recebido em vez de dizer se alguma linha foi atualizada — o `confirm_dispatch_ok` do Express é sempre verdadeiro (hoje não morde, porque o Express confere a existência do dispatch antes); `/form?success=true` exibe "Pagamento confirmado" só pelo parâmetro da URL, sem conferir nada no servidor (o envio segue protegido por `attempt_dispatch`, que exige `payment_status = 'paid'`, mas o selo mente para quem digitar a URL); `pipeline/.venv` é um venv de Windows e não roda a partir do WSL; e `npm run lint` acusa 7 erros cosméticos (`any` no `stripe-webhook`, `require()` no `tailwind.config.ts`, interface vazia no `textarea.tsx`).
+
+**O que está saudável, verificado e não suposto:** `npm run build`, `tsc --noEmit` e o build do `server/` passam limpos. A home renderiza sem erro de console com o cronômetro correndo. A falha de checkout é tratada bem — alerta com `role="alert"`, a frase certa para a causa ("Parece que você está sem internet. Nada foi cobrado.") e botão de repetir; testado clicando de verdade com a Edge fora do ar. O formulário valida com resumo no topo mais `aria-invalid` por campo. A construção do HMAC bate nos três serviços — mesma serialização compacta, mesma mensagem `GET:${caseId}`; **só o segredo divergia**. O Express rejeita assinatura inválida com 401 e aceita a válida. `ORIGIN_WHITELIST` inclui `localhost:8080`. E nenhum segredo real está versionado: só os `.example` e o `.env.production`, que tem apenas valores `VITE_*` públicos.
+
+**Arquivos:** `pipeline/config.py` (uma linha mais o comentário), `PROGRESSO.md`.
+
+**Ficou de fora:** as etapas 1 a 4 do fluxo — checkout, webhook, `form-submit`, `attempt_dispatch` — **não foram executadas**, só lidas no código, porque a stack local não sobe. Repetir este teste depois de liberar o disco é o que fecha o diagnóstico. Também não retomei o projeto Supabase nem rodei `prune` no Docker: são mudanças na sua infraestrutura e na sua máquina.
+
+
+---
+
+## Sessão de 01/09/2026 — O fluxo ponta a ponta voltou a fechar
+
+Continuação direta do diagnóstico de 31/08. Klaus liberou espaço em `C:` e pediu novo teste. As seis etapas rodaram e o ciclo fechou.
+
+**O disco que estava cheio não era o `C:`.** Meu diagnóstico anterior apontou o alvo errado, e vale registrar porque é um erro fácil de repetir. Depois de liberar 1,3 GB em `C:`, a corrupção continuou **idêntica**: imagem recém-baixada com `libapparmor.so.1: file too short`. O que importa é o espaço **dentro** do `docker_data.vhdx` — um arquivo de 33,8 GB que estava cheio por dentro. Liberar `C:` não ajuda: o vhdx não encolhe nem devolve espaço, e apagar imagem libera espaço interno sem mudar o tamanho do arquivo.
+
+Duas outras coisas enganaram no caminho. `exec format error` parece incompatibilidade de arquitetura — não é, máquina e imagens são amd64. E o meu teste de integridade com `--entrypoint sh` devolvia "ALIVE" porque **contornava justamente o entrypoint corrompido**; ao chamar a imagem com o entrypoint real, a corrupção que eu havia declarado ausente apareceu. Lição: para testar integridade de imagem, exercite o entrypoint, não um shell por cima dele.
+
+`docker system prune -a --volumes` (autorizado pelo Klaus, depois de eu conferir que não havia volume nenhum e que os dois containers usavam bind mounts para arquivos do host — zero risco de dado) liberou 8,65 GB internos. O `supabase start` então rebaixou tudo e subiu com **12 containers saudáveis e as 12 migrations aplicadas limpas** — inclusive a `20250101000005`, que o `CLAUDE.md` marca como quebrada: ela **aplica** bem, o defeito dela é em runtime, e migrations posteriores substituem a função.
+
+**O último bloqueio era o bucket.** Com tudo mais de pé, a primeira execução completa falhou no único passo que não vive em migration nenhuma:
+
+```
+POST /storage/v1/object/generated-recursos/…  -> 400
+StorageApiError: {'statusCode': 404, 'error': Bucket not found}
+GET /storage/v1/bucket -> []
+```
+
+O `generated-recursos` é criado à mão no Dashboard, então stack nova não o tem. Criei via API e o fluxo completou. Virou a pendência 14: isso precisa ser versionado.
+
+**Mas repare no que aconteceu depois desse erro** — é a correção de 31/08 se pagando. O `notify_finish` respondeu **200**, e o caso foi para `document_status = failed` e `dispatches.status = failed`. Antes da correção da precedência de `.env`, essa mesma falha teria deixado o caso preso em `generating`, mudo e sem retry. O pipeline agora erra alto, que é o comportamento que se quer.
+
+**A execução que fechou o ciclo.** Etapas 1 e 2 rodaram de verdade: sessão `cs_test_…` criada na API de teste do Stripe, e um evento `checkout.session.completed` assinado com o `STRIPE_WEBHOOK_SECRET` local — o webhook foi exercitado a sério, sem atalho escrevendo `paid` direto no banco. Estado final:
+
+```
+form_submissions      document_status = completed
+                      stripe_session_id = cs_test_a1FWxYBpNkpp…
+dispatches            status = sent
+generated_documents   status = email_skipped
+                      storage_path = CASO_f9145009…/c403e61d….pdf
+                      sha256 = f386899b5b7da160…
+```
+
+E o PDF é artefato real, não registro otimista: baixei do Storage — 1952 bytes, `PDF document, version 1.4, 1 page(s)`, e o **sha256 do arquivo bate com o gravado no banco**.
+
+**Duas armadilhas de ambiente que valem para a próxima vez.** A Edge roda em container e **não enxerga o `127.0.0.1` do host** — para o dispatch chegar ao pipeline local, o `DISPATCH_PIPELINE_URL` precisa ser `http://host.docker.internal:8000/hooks/dispatch`. E o `supabase functions serve --env-file` **ignora silenciosamente toda variável `SUPABASE_*`** ("Env name cannot start with SUPABASE_"); no local não morde, porque o runtime injeta as próprias, mas é bom saber antes de depender do arquivo.
+
+**Um falso positivo meu, corrigido:** cheguei a suspeitar que `form_submissions.stripe_session_id` ficasse sempre nulo, já que o webhook faz PATCH por `case_id` antes de o formulário existir e um PATCH que casa zero linhas passa em silêncio. Fui verificar: o `form-submit` persiste o campo na linha 362, a partir do que o navegador manda do `localStorage`. Meu payload de teste é que omitia. Rodada de fidelidade total confirmou o vínculo nas três tabelas. **Não é defeito.**
+
+**Arquivos:** `PROGRESSO.md`. Nenhuma mudança de código nesta sessão — a única correção do ciclo (`pipeline/config.py`) é de 31/08 e segue não commitada.
+
+**Ficou de fora:** a **redação em si**. O perfil local zera `DEEPSEEK_API_KEY` e `SMTP_HOST`, então o PDF sai com o texto de placeholder do modo sem IA e o e-mail é pulado (`email_skipped`, que é o comportamento correto em development). O que este teste prova é o encanamento, não a qualidade da peça nem a entrega por e-mail. Virou a pendência 15. Também não retomei o projeto Supabase da nuvem nem rotacionei a `service_role`.
+
+**Estado deixado na máquina:** a stack local do Supabase ficou **no ar** (`npx supabase stop` encerra), com o bucket `generated-recursos` criado e três casos de teste no banco. Vite, Express, pipeline e `functions serve` foram encerrados. O container `muninn` do Klaus seguiu intocado; a imagem `muninn-huginn` foi removida pelo prune e precisa ser reconstruída se for usada.

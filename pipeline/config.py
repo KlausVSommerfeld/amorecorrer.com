@@ -3,7 +3,12 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=(".env.local", ".env"),
+        # Order matters and is NOT cosmetic: pydantic-settings gives priority to the
+        # LAST file of the tuple, while server/src/index.ts stops at the FIRST that
+        # exists. Listing ".env" first is what makes both services agree on
+        # ".env.local" — inverted, Express reads the local set and this pipeline reads
+        # the remote one, and every signed call between them fails with 401.
+        env_file=(".env", ".env.local"),
         env_file_encoding="utf-8",
         extra="ignore",
     )
