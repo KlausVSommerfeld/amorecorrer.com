@@ -17,7 +17,7 @@ npm run build               # build de produção -> dist/
 npm run lint                # eslint
 
 npx supabase start                                              # stack local (:54321, studio :54323)
-npx supabase functions serve --env-file supabase/.env.local     # edge functions locais
+npx supabase functions serve --env-file .env.local              # edge functions locais
 npx supabase db push                                            # aplica migrations
 npx supabase functions deploy create-checkout-session           # deploy individual
 npx supabase secrets set KEY=value                              # secrets do projeto remoto
@@ -101,11 +101,20 @@ Todo par de cor em uso passa WCAG AA (verificado numericamente). Ao introduzir c
 
 ## Variáveis de ambiente
 
-| Arquivo | Consumidor | Chaves centrais |
+**Três arquivos, todos na raiz — um por perfil, não um por serviço.** Os quatro runtimes leem os mesmos arquivos; não existe mais `server/.env`, `pipeline/.env` nem `supabase/.env.local`.
+
+| Arquivo | Perfil | Aponta para |
 |---|---|---|
-| `.env.local` (raiz) | Vite | `VITE_CREATE_CHECKOUT_URL`, `VITE_FORM_SUBMIT_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` |
-| `supabase/.env.local` | Edge Functions | `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_PRICE_ID_FULL` (opcional), `STRIPE_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, `ORIGIN_WHITELIST`, `DISPATCH_PIPELINE_URL`, `DISPATCH_PIPELINE_HMAC_SECRET`, `FRONTEND_URL` |
-| `server/.env` | Express | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `PIPELINE_HMAC_SECRET`, `PORT` |
-| `pipeline/.env` | FastAPI/worker | `PIPELINE_HMAC_SECRET`, `EXPRESS_INTERNAL_URL`, `SUPABASE_*`, `STORAGE_BUCKET`, `DEEPSEEK_API_KEY`, `SMTP_*`, `MAIL_FROM`, `PIPELINE_ENV` |
+| `.env` | testes com a Supabase na **web** | projeto da nuvem |
+| `.env.local` | testes com a Supabase em **Docker** | `127.0.0.1:54321` |
+| `.env.production` | **lançamento oficial** | produção (12 valores ainda como `SUBSTITUA_`) |
+
+Nenhum dos três vai para o git; os pares versionados são `.env.example`, `.env.local.example` e `.env.production.example`.
+
+**A precedência é uma só, igual nos quatro runtimes:** carrega-se `.env` e depois `.env.local`, e **quem vem depois ganha**. Ou seja, *enquanto `.env.local` existir, o perfil ativo é o local* — para testar contra a web, renomeie o arquivo (`.env.local.off`), não adianta editar o `.env`. Vite já faz isso nativamente; `server/src/index.ts` e `pipeline/config.py` ancoram na raiz pelo caminho do próprio arquivo (não por `cwd`, já que ambos são iniciados de dentro do seu diretório) e replicam a mesma ordem. Foi a divergência dessa regra entre Express e pipeline que derrubou o dispatch inteiro em 401, em silêncio — ver `PROGRESSO.md`, sessão de 31/08/2026.
+
+Chaves por consumidor: **Vite** lê só `VITE_*` (o resto não entra no bundle); **Edge** lê `STRIPE_*`, `ORIGIN_WHITELIST`, `DISPATCH_PIPELINE_*`, `FRONTEND_URL`; **Express** lê `SUPABASE_*`, `PIPELINE_HMAC_SECRET`, `PORT`; **pipeline** lê `PIPELINE_*`, `EXPRESS_INTERNAL_URL`, `SUPABASE_*`, `STORAGE_BUCKET`, `DEEPSEEK_*`, `SMTP_*`, `MAIL_*`.
+
+`DISPATCH_PIPELINE_HMAC_SECRET` (Edge) e `PIPELINE_HMAC_SECRET` (Express e pipeline) são **o mesmo segredo com dois nomes** — num arquivo só, a invariante fica visível. No perfil local, `DISPATCH_PIPELINE_URL` precisa ser `http://host.docker.internal:8000/hooks/dispatch`: a Edge roda dentro de container e `127.0.0.1` ali é o próprio container. E atenção: `supabase functions serve --env-file` **ignora silenciosamente toda variável `SUPABASE_*`** ("Env name cannot start with SUPABASE_"); no local não morde, porque o runtime injeta as próprias.
 
 `PIPELINE_ENV=production` torna SMTP obrigatório; em development o e-mail é pulado (`email_skipped`) e o pipeline segue.

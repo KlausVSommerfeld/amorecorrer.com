@@ -1,14 +1,23 @@
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# A configuração vive em TRÊS arquivos na raiz do repositório, não dentro de
+# `pipeline/`: `.env` (Supabase na web), `.env.local` (Supabase em Docker) e
+# `.env.production`. Ancoramos pelo caminho DESTE arquivo, e não pelo diretório
+# de trabalho, porque o uvicorn é iniciado de dentro de `pipeline/`.
+REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        # Order matters and is NOT cosmetic: pydantic-settings gives priority to the
-        # LAST file of the tuple, while server/src/index.ts stops at the FIRST that
-        # exists. Listing ".env" first is what makes both services agree on
-        # ".env.local" — inverted, Express reads the local set and this pipeline reads
-        # the remote one, and every signed call between them fails with 401.
-        env_file=(".env", ".env.local"),
+        # A ORDEM NÃO É COSMÉTICA: o pydantic-settings dá prioridade ao ÚLTIMO
+        # arquivo da tupla, então `.env.local` sobrescreve `.env` — a mesma regra
+        # do Vite e do `server/src/index.ts`. Enquanto `.env.local` existir, o
+        # perfil ativo é o local; para testar contra a web, renomeie o arquivo.
+        # Foi a divergência dessa regra entre os serviços que já derrubou o
+        # dispatch inteiro em 401, silenciosamente.
+        env_file=(REPO_ROOT / ".env", REPO_ROOT / ".env.local"),
         env_file_encoding="utf-8",
         extra="ignore",
     )

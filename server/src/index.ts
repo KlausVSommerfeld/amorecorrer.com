@@ -1,18 +1,31 @@
 import crypto from "crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
 import express, { Request, Response, NextFunction } from "express";
 import { createClient } from "@supabase/supabase-js";
 
-const dotenvCandidates = [process.env.DOTENV_CONFIG_PATH, ".env.local", ".env"].filter(
-  (value): value is string => Boolean(value),
-);
-for (const candidate of dotenvCandidates) {
-  const resolved = path.resolve(process.cwd(), candidate);
+// A configuração vive em TRÊS arquivos na raiz do repositório, não aqui dentro:
+// `.env` (Supabase na web), `.env.local` (Supabase em Docker) e `.env.production`.
+//
+// Ancoramos na raiz pelo caminho DESTE arquivo, não por `process.cwd()`, porque o
+// Express é iniciado de dentro de `server/` — com cwd, ele leria um `.env` que não
+// existe mais. `src/` e `dist/` ficam ambos um nível abaixo de `server/`, então
+// `../..` chega à raiz tanto em `tsx watch` quanto no build.
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = path.resolve(HERE, "..", "..");
+
+// Carrega `.env` e DEPOIS `.env.local`, com o segundo sobrescrevendo o primeiro.
+// Esta ordem é a mesma do Vite e do pipeline (`pipeline/config.py`): enquanto
+// `.env.local` existir, o perfil ativo é o local. Foi a divergência dessa regra
+// entre os dois serviços que já derrubou o dispatch inteiro em 401.
+const override = process.env.DOTENV_CONFIG_PATH;
+const envFiles = override ? [override] : [".env", ".env.local"];
+for (const [i, candidate] of envFiles.entries()) {
+  const resolved = path.isAbsolute(candidate) ? candidate : path.resolve(REPO_ROOT, candidate);
   if (fs.existsSync(resolved)) {
-    dotenv.config({ path: resolved });
-    break;
+    dotenv.config({ path: resolved, override: i > 0 });
   }
 }
 

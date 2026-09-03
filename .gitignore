@@ -24,8 +24,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Os TRES arquivos de configuracao real. Nenhum vai para o git; os pares
+# versionados sao os .example correspondentes.
 .env
 .env.local
+.env.production
 scripts/*
 **/venv/
 .venv/
