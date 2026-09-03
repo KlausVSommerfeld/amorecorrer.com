@@ -35,14 +35,15 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 
 ## Estado atual
 
-*Atualizado em 2026-08-31.*
+*Atualizado em 2026-09-03.*
 
 - **Branch de trabalho:** `feat/ajuste-frontend-claudecode`, **36 commits à frente de `main`**, que segue parada em `a3b2142` (2025-10-29). Todo o produto — pagamento, Edge Functions, pipeline, redesenho — vive só na feature branch. **Merge para `main` nunca aconteceu.**
 - **O redesenho "Notificação e Resposta" está completo** — Fases 0 a 4. Todas as páginas usam o mesmo casco, a mesma tipografia e os mesmos tokens.
 - **O site não para mais de vender depois de 30 minutos.** O fim da promoção agora só tira a moldura promocional; o CTA continua ativo.
-- **O fluxo volta a funcionar ponta a ponta em ambiente local** — verificado em 01/09/2026, não presumido: sessão real na API de teste do Stripe, evento `checkout.session.completed` assinado, formulário, dispatch, PDF no Storage com SHA-256 conferido, `document_status = completed` e `dispatches.status = sent`.
-- **Falta para produção:** endereço estável do pipeline (o `DISPATCH_PIPELINE_URL` aponta para um túnel efêmero morto) e o bucket `generated-recursos` versionado, hoje passo manual de Dashboard.
-- **Não testado ainda:** a redação em si. O perfil local não tem `DEEPSEEK_API_KEY` nem SMTP, então o PDF sai com texto de placeholder e o e-mail é pulado. O que está provado é o encanamento.
+- **O fluxo funciona ponta a ponta em ambiente local, com a peça redigida pela IA** — verificado em 03/09/2026 por dois caminhos independentes, não presumido: um roteiro de 23 verificações via API (checkout → webhook assinado → formulário → dispatch → PDF no Storage com SHA-256 conferido → idempotência → CORS) e a jornada real no navegador, com ViaCEP, validação e recibo. `document_status = completed`, `dispatches.status = sent`.
+- **A redação por IA está provada.** Com `DEEPSEEK_API_KEY` carregada, o PDF sai com peça própria (3168 bytes contra 1957 do placeholder), citando os dados do formulário, o art. 218 I do CTB e a Resolução CONTRAN 798/2020.
+- **O e-mail é o que falta, e o bloqueio não é de código:** o Resend recusa com `550 — domínio amorecorrer.com não verificado`. Transporte, TLS e credenciais funcionam; falta verificar o domínio em resend.com/domains. Em `production`, enquanto isso, todo caso pago termina em `failed`.
+- **Falta para produção:** verificar o domínio no Resend, endereço estável do pipeline (o `DISPATCH_PIPELINE_URL` aponta para um túnel efêmero morto) e o bucket `generated-recursos` versionado, hoje passo manual de Dashboard.
 - **Sem suíte automatizada.** A verificação é manual, via os 4 scripts PowerShell em `tests/edge-functions/`.
 
 ---
@@ -189,7 +190,9 @@ Ordenadas pelo custo de continuar adiando.
 10. **O projeto Supabase da nuvem está pausado** (`tsdzvxgkokrjqayxukud`, status `INACTIVE` — projeto pausado perde o DNS). Retomar, ou assumir que o desenvolvimento segue só no conjunto local.
 11. **`DISPATCH_PIPELINE_URL` aponta para um túnel `trycloudflare` morto.** Esses endereços são efêmeros e morrem junto com o processo do túnel. Ou se sobe um túnel novo a cada sessão, ou se adota um endereço estável (Cloudflare Tunnel nomeado, ou o pipeline publicado). **É o item que falta para produção.** Em teste local, `http://host.docker.internal:8000/hooks/dispatch` resolve, porque a Edge roda em container e não enxerga o `127.0.0.1` do host.
 14. **O bucket `generated-recursos` não está versionado.** É criado à mão no Dashboard, então toda stack recriada do zero falha no upload do PDF com `Bucket not found` — aconteceu em 01/09/2026. Vale uma migration ou script de setup.
-15. **A redação por IA nunca foi testada de ponta a ponta.** O perfil local zera `DEEPSEEK_API_KEY` e `SMTP_HOST`, então o PDF sai com texto de placeholder e o e-mail é pulado. Falta uma rodada com as duas coisas configuradas.
+15. ~~**A redação por IA nunca foi testada de ponta a ponta.**~~ **Resolvida em 03/09/2026 quanto à IA:** com a chave carregada, o DeepSeek redigiu peça própria e verificável (3168 bytes contra 1957 do placeholder), citando os dados do formulário e a legislação. A outra metade — o e-mail — não passou, e virou a pendência 16.
+16. **O domínio `amorecorrer.com` não está verificado no Resend.** Descoberto em 03/09/2026: com `PIPELINE_ENV=production`, o envio é recusado no estágio DATA com `550 — The amorecorrer.com domain is not verified`, e com o remetente de teste `onboarding@resend.dev` a conta só aceita entregar em `klaus.velando@gmail.com`. Conexão, STARTTLS, AUTH e destinatário passam: **as credenciais estão certas, falta a verificação de domínio em resend.com/domains.** É bloqueio de produção — enquanto durar, todo caso pago gera o PDF, guarda no Storage e termina em `document_status = failed`.
+17. **`VITE_STRIPE_PUBLISHABLE_KEY` é uma chave `pk_live_…` órfã.** Convive com um `sk_test_…` no mesmo arquivo e não é consumida em lugar nenhum de `src/`. Inofensiva hoje só por não ter consumidor; remover ou trocar pela chave de teste encerra o risco.
 12. **Rotacionar a chave `service_role`.** Ela está em texto puro em `server/.env` e `pipeline/.env` (fora do git, verificado), mas foi impressa no transcript da sessão de 31/08 por um comando de inspeção mal filtrado. Nada saiu da máquina; rotacionar é barato e encerra a dúvida.
 13. **Dois conjuntos completos de `.env` convivem** — os `.env.local` (local) e os `.env` (nuvem), cada um com seu próprio segredo HMAC. Foi essa duplicação que criou a armadilha corrigida em 31/08. Enquanto os dois existirem, qualquer divergência de precedência entre serviços volta a quebrar o fluxo em silêncio. Decidir qual é o canônico e apagar ou renomear o outro.
 
@@ -494,3 +497,50 @@ E o PDF é artefato real, não registro otimista: baixei do Storage — 1952 byt
 **Ficou de fora:** a **redação em si**. O perfil local zera `DEEPSEEK_API_KEY` e `SMTP_HOST`, então o PDF sai com o texto de placeholder do modo sem IA e o e-mail é pulado (`email_skipped`, que é o comportamento correto em development). O que este teste prova é o encanamento, não a qualidade da peça nem a entrega por e-mail. Virou a pendência 15. Também não retomei o projeto Supabase da nuvem nem rotacionei a `service_role`.
 
 **Estado deixado na máquina:** a stack local do Supabase ficou **no ar** (`npx supabase stop` encerra), com o bucket `generated-recursos` criado e três casos de teste no banco. Vite, Express, pipeline e `functions serve` foram encerrados. O container `muninn` do Klaus seguiu intocado; a imagem `muninn-huginn` foi removida pelo prune e precisa ser reconstruída se for usada.
+
+
+---
+
+## Sessão de 03/09/2026 — A redação por IA passou; o e-mail é que não sai da conta Resend
+
+Terceira rodada seguida de teste ponta a ponta, agora fechando as duas pontas que 01/09 tinha deixado abertas (pendência 15): **a redação por IA e o envio de e-mail**. A primeira passou. A segunda encontrou um bloqueio real de produção, e não no nosso código.
+
+**A peça agora é redigida de verdade.** Com `DEEPSEEK_API_KEY` carregada, o PDF saltou de **1957 bytes** (o placeholder do modo sem IA) para **3168 bytes** de texto próprio. Extraí o conteúdo do PDF baixado do Storage para não confiar no tamanho: a peça cita o nº do auto, o órgão, a data, a placa, as velocidades permitida e aferida do formulário, invoca o art. 218, I do CTB, a Resolução CONTRAN 798/2020 e a Portaria INMETRO 544/2012, e fecha com pedido de nulidade. É documento, não resumo — o que a `PRODUCT.md` promete. **Metade da pendência 15 está encerrada.**
+
+**O e-mail não sai, e o motivo é a conta Resend.** Com `PIPELINE_ENV=production` e as credenciais SMTP do `.env`, o envio morre no estágio **DATA** — depois de conexão, STARTTLS, AUTH e destinatário terem passado:
+
+```
+aiosmtplib.errors.SMTPDataError:
+  (550, 'The amorecorrer.com domain is not verified.
+         Please, add and verify your domain on https://resend.com/domains')
+```
+
+Isolei trocando o remetente por `onboarding@resend.dev`, e a recusa veio pelo outro lado da mesma moeda: *"You can only send testing emails to your own email address (klaus.velando@gmail.com). To send emails to other recipients, please verify a domain…"*. **As credenciais estão corretas e o transporte funciona; o que falta é verificar o domínio `amorecorrer.com` no Resend.** Virou a pendência 16 — e é bloqueio de produção, não cosmético: em `production`, *todo* caso pago terminaria em `document_status = failed`.
+
+**O caminho de falha se comportou exatamente como projetado** — e isso é a correção de 31/08 se pagando pela segunda vez. Mesmo com o e-mail recusado, o PDF foi gerado, subiu ao Storage e ficou registrado; `generated_documents.status = email_failed` com o texto do erro do Resend **persistido em `error_detail`**; `notify_finish(False)` respondeu 200; `dispatches.status = failed` e `document_status = failed`. Nenhum caso preso em `generating`. O sistema erra alto e deixa rastro suficiente para o suporte responder ao cliente.
+
+**O fluxo foi exercitado por dois caminhos independentes, não um.**
+
+*Por API*, um roteiro de 23 verificações que roda em sequência e para na primeira falha: checkout → webhook assinado → `form-submit` → pipeline → conferência no banco e no Storage → idempotência → CORS e validação. Passou inteiro. Além do caminho feliz, cobriu as guardas: origem fora da whitelist → **403**; campo obrigatório ausente → **400**; `case_id` inexistente → **404**; reenvio idêntico de caso já finalizado → **409**.
+
+*Pelo navegador*, o caminho real do usuário, com Playwright: home sem erro de console (só os dois avisos de *future flag* do React Router), clique no CTA, redirecionamento efetivo ao Stripe, `case_id` e `stripe_session_id` gravados no `localStorage`, volta para `/form?success=true&case_id=…`, **ViaCEP preencheu "Rio de Janeiro · RJ"** a partir do CEP, a validação **barrou corretamente** o `estagio` não escolhido antes de deixar enviar, e o recibo "PROTOCOLO INTERNO" apareceu com o nº do caso e o e-mail de destino. O resultado no banco confirmou o que 31/08 já havia corrigido como falso positivo: **`stripe_session_id` preenchido nas três tabelas** quando o envio vem do navegador — e nulo quando vem do roteiro de API, que não o manda. Não é defeito: o campo vem do `localStorage`.
+
+**Preços conferidos na fonte, não no código:** `price_1RynCd…` = **R$ 19,99** e `price_1U4sHv…` = **R$ 39,99**, ambos `active`, ambos `livemode=false`.
+
+**Três achados menores.**
+
+`VITE_STRIPE_PUBLISHABLE_KEY` é uma chave **`pk_live_…`** convivendo com um `sk_test_…` no mesmo arquivo — e `grep` em `src/` não encontra **nenhum** consumidor dela. Hoje é inofensiva justamente por ser órfã; se alguém a ligar, o descasamento de modo aparece na hora. Ou se remove, ou se corrige para a chave de teste.
+
+No banco local, `attempt_dispatch` existe **só** com a assinatura `p_case_id`. O `form-submit` tenta `case_id` primeiro, o erro entra num array que **só é logado se nenhuma das duas tentativas devolver chave** — ou seja, no caminho feliz a falha é invisível. Reforça a pendência 4.
+
+O bucket `generated-recursos` **de novo** não existia na stack recriada, e de novo foi preciso criá-lo à mão pela API antes do primeiro upload. Terceira sessão seguida em que isso morde. Reforça a pendência 14.
+
+**Sobre o ambiente, para a próxima vez.** Nesta máquina o **encaminhamento `localhost` do Windows para o WSL não funciona** — um processo Windows não alcança `127.0.0.1:3001` de um servidor rodando no WSL, só o IP do distro. Como os `.ps1` de teste, os venvs e o `node.exe` mostram que o seu setup real é **Windows**, rodei Express e pipeline como processos Windows (que assim conversam entre si por `127.0.0.1`, sem alterar nenhuma configuração) e deixei o Vite no WSL, para o navegador do Playwright bater na origem `http://localhost:8080` que a `ORIGIN_WHITELIST` aceita. Vale registrar também que **variável de ambiente definida no bash do WSL não chega a um processo Windows** a menos que seu nome esteja em `WSLENV` — foi por isso que a primeira tentativa de ativar a IA saiu com o texto de placeholder, sem erro nenhum.
+
+**Um erro meu, e o conserto.** Ao criar um venv Linux apontei para `pipeline/.venv`, que já era um venv **Windows**, e o `virtualenv` sobrescreveu o `pyvenv.cfg` — quebrando o launcher (`Scripts/python.exe` passou a procurar o interpretador em `/usr/bin`). Restaurei usando o `.venv` da raiz como molde (`home = C:\Python314`, Python 3.14, mesma origem `uv`) e removi o que eu havia injetado (`bin/`, `Lib/python3.12/`). Conferido: `pipeline/.venv/Scripts/python.exe --version` responde **Python 3.14.0** e todas as nove dependências do `requirements.txt` importam. O venv está como estava.
+
+**Arquivos:** `PROGRESSO.md`. **Nenhuma mudança de código nesta sessão.** `npm run build` passa (2m09) e `npm run lint` acusa os **mesmos 7 erros cosméticos** de sempre — nenhum novo.
+
+**Ficou de fora:** a entrega efetiva do e-mail, que depende da verificação do domínio no Resend (pendência 16) e não de código nosso. Não enviei para `klaus.velando@gmail.com`, que é o único destino que a conta aceitaria hoje, porque o teste autorizado era para o `SMTP_TEST_TO`. Também não toquei no projeto Supabase da nuvem nem no túnel do `DISPATCH_PIPELINE_URL`.
+
+**Estado deixado na máquina:** os cinco processos ficaram **no ar** — Supabase local (12 containers), `functions serve`, Express e pipeline como processos Windows, Vite no WSL. `npx supabase stop` encerra a stack. O bucket `generated-recursos` foi criado no conjunto local e há casos de teste no banco, incluindo dois em `failed` — os do teste de e-mail, deixados de propósito como evidência. O Docker Desktop foi aberto por mim; o repositório está limpo.
