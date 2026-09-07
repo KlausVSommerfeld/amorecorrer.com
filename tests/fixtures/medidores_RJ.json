@@ -1,0 +1,1576 @@
+[
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "RIO DE JANEIRO",
+    "LocalVerificacao": "Est Rio Grande Px1096",
+    "DataUltimaVerificacao": "28/08/2026",
+    "DataValidade": "27/08/2027",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "2",
+        "NumeroInmetro": "14117709",
+        "NumeroSerie": "2000065",
+        "Sentido": "Est Tindiba",
+        "VelocidadeNominal": "40"
+      },
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "14117709",
+        "NumeroSerie": "2000065",
+        "Sentido": "Est Pau Fome",
+        "VelocidadeNominal": "40"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "13785621",
+        "NumeroEnsaio": "478",
+        "Ano": "2024",
+        "DataLaudo": "12/07/2024",
+        "DataValidade": "11/07/2025",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13780552",
+        "NumeroEnsaio": "12",
+        "Ano": "2023",
+        "DataLaudo": "03/01/2023",
+        "DataValidade": "02/01/2024",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13773206",
+        "NumeroEnsaio": "1024",
+        "Ano": "2021",
+        "DataLaudo": "20/12/2021",
+        "DataValidade": "19/12/2022",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13785998",
+        "NumeroEnsaio": "737",
+        "Ano": "2025",
+        "DataLaudo": "01/10/2025",
+        "DataValidade": "30/09/2026",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13769224",
+        "NumeroEnsaio": "872",
+        "Ano": "2019",
+        "DataLaudo": "19/09/2019",
+        "DataValidade": "18/09/2020",
+        "TipoServico": "Inicial",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13770272",
+        "NumeroEnsaio": "1435",
+        "Ano": "2020",
+        "DataLaudo": "20/07/2020",
+        "DataValidade": "19/07/2021",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13781751",
+        "NumeroEnsaio": "667",
+        "Ano": "2023",
+        "DataLaudo": "03/07/2023",
+        "DataValidade": "02/07/2024",
+        "TipoServico": "Após Reparo",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "",
+        "NumeroEnsaio": "481",
+        "Ano": "2026",
+        "DataLaudo": "28/08/2026",
+        "DataValidade": "27/08/2027",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "CONSILUX CONSULTORIA E CONSTRUÇÕES ELÉTRICAS LTDA",
+      "Municipio": "CURITIBA",
+      "Estado": "PR"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "ARARUAMA",
+    "LocalVerificacao": "RJ-124 A1, KM 7,6",
+    "DataUltimaVerificacao": "12/06/2026",
+    "DataValidade": "11/06/2027",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "",
+        "NumeroSerie": "7000015",
+        "Sentido": "RIO BONITO",
+        "VelocidadeNominal": "50"
+      }
+    ],
+    "Historico": [],
+    "Proprietario": {
+      "Nome": "CONSILUX CONSULTORIA E CONSTRUÇÕES ELÉTRICAS LTDA",
+      "Municipio": "CURITIBA",
+      "Estado": "PR"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "CACHOEIRAS DE MACACU",
+    "LocalVerificacao": "RJ 116 KM 21,5",
+    "DataUltimaVerificacao": "03/05/2024",
+    "DataValidade": "02/05/2025",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "",
+        "NumeroSerie": "1088",
+        "Sentido": "ITABORAÍ",
+        "VelocidadeNominal": "50"
+      },
+      {
+        "NumeroFaixa": "2",
+        "NumeroInmetro": "",
+        "NumeroSerie": "1088",
+        "Sentido": "SANTO ANTONIO DE PADUA",
+        "VelocidadeNominal": "50"
+      }
+    ],
+    "Historico": [],
+    "Proprietario": {
+      "Nome": "SPLICE INDUSTRIA COMERCIO E SERVIÇOS LTDA",
+      "Municipio": "VOTORANTIM",
+      "Estado": "SP"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "ARARUAMA",
+    "LocalVerificacao": "RJ106 KM 84,8",
+    "DataUltimaVerificacao": "05/06/2026",
+    "DataValidade": "",
+    "UltimoResultado": "Reparado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "",
+        "NumeroSerie": "516350971",
+        "Sentido": "NITERÓI/MACAÉ",
+        "VelocidadeNominal": "50"
+      }
+    ],
+    "Historico": [],
+    "Proprietario": {
+      "Nome": "ELISEU KOPP & CIA LTDA",
+      "Municipio": "VERA CRUZ",
+      "Estado": "RS"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "ARARUAMA",
+    "LocalVerificacao": "RJ-106 KM 86,0",
+    "DataUltimaVerificacao": "18/03/2025",
+    "DataValidade": "",
+    "UltimoResultado": "Reparado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "14766180",
+        "NumeroSerie": "122420058",
+        "Sentido": "NITERÓI / MACAÉ",
+        "VelocidadeNominal": "50"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "13784932",
+        "NumeroEnsaio": "254",
+        "Ano": "2025",
+        "DataLaudo": "18/03/2025",
+        "DataValidade": "17/03/2026",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13773891",
+        "NumeroEnsaio": "319",
+        "Ano": "2022",
+        "DataLaudo": "01/04/2022",
+        "DataValidade": "31/03/2023",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13781280",
+        "NumeroEnsaio": "443",
+        "Ano": "2023",
+        "DataLaudo": "04/04/2023",
+        "DataValidade": "03/04/2024",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13783086",
+        "NumeroEnsaio": "212",
+        "Ano": "2024",
+        "DataLaudo": "26/03/2024",
+        "DataValidade": "25/03/2025",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "ELISEU KOPP & CIA LTDA",
+      "Municipio": "VERA CRUZ",
+      "Estado": "RS"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "ARARUAMA",
+    "LocalVerificacao": "RJ106 KM 85,7",
+    "DataUltimaVerificacao": "04/06/2026",
+    "DataValidade": "",
+    "UltimoResultado": "Reparado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "2",
+        "NumeroInmetro": "",
+        "NumeroSerie": "516350921",
+        "Sentido": "MACAÉ/NITERÓI",
+        "VelocidadeNominal": "50"
+      }
+    ],
+    "Historico": [],
+    "Proprietario": {
+      "Nome": "ELISEU KOPP & CIA LTDA",
+      "Municipio": "VERA CRUZ",
+      "Estado": "RS"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "ARARUAMA",
+    "LocalVerificacao": "RJ-124A1 KM 6,3",
+    "DataUltimaVerificacao": "18/03/2025",
+    "DataValidade": "",
+    "UltimoResultado": "Reparado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "14766187",
+        "NumeroSerie": "122310309",
+        "Sentido": "ARARUAMA/RIO BONITO",
+        "VelocidadeNominal": "50"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "13784934",
+        "NumeroEnsaio": "256",
+        "Ano": "2025",
+        "DataLaudo": "18/03/2025",
+        "DataValidade": "17/03/2026",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13773978",
+        "NumeroEnsaio": "381",
+        "Ano": "2022",
+        "DataLaudo": "05/04/2022",
+        "DataValidade": "04/04/2023",
+        "TipoServico": "Após Reparo",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13781091",
+        "NumeroEnsaio": "354",
+        "Ano": "2023",
+        "DataLaudo": "08/03/2023",
+        "DataValidade": "07/03/2024",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13781281",
+        "NumeroEnsaio": "444",
+        "Ano": "2023",
+        "DataLaudo": "04/04/2023",
+        "DataValidade": "03/04/2024",
+        "TipoServico": "Após Reparo",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13783088",
+        "NumeroEnsaio": "214",
+        "Ano": "2024",
+        "DataLaudo": "26/03/2024",
+        "DataValidade": "25/03/2025",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "ELISEU KOPP & CIA LTDA",
+      "Municipio": "VERA CRUZ",
+      "Estado": "RS"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "ARARUAMA",
+    "LocalVerificacao": "RJ-124A1 KM 7,1",
+    "DataUltimaVerificacao": "18/03/2025",
+    "DataValidade": "",
+    "UltimoResultado": "Reparado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "14766162",
+        "NumeroSerie": "122310282",
+        "Sentido": "RIO BONITO/ARARUAMA",
+        "VelocidadeNominal": "50"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "13784933",
+        "NumeroEnsaio": "255",
+        "Ano": "2025",
+        "DataLaudo": "18/03/2025",
+        "DataValidade": "17/03/2026",
+        "TipoServico": "Após Reparo",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "",
+        "NumeroEnsaio": "53",
+        "Ano": "2025",
+        "DataLaudo": "29/01/2025",
+        "DataValidade": "29/01/2025",
+        "TipoServico": "Periódica",
+        "Resultado": "Reprovado"
+      },
+      {
+        "NumeroCertificado": "13773929",
+        "NumeroEnsaio": "338",
+        "Ano": "2022",
+        "DataLaudo": "29/03/2022",
+        "DataValidade": "28/03/2023",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13781090",
+        "NumeroEnsaio": "353",
+        "Ano": "2023",
+        "DataLaudo": "08/03/2023",
+        "DataValidade": "07/03/2024",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13782861",
+        "NumeroEnsaio": "105",
+        "Ano": "2024",
+        "DataLaudo": "27/02/2024",
+        "DataValidade": "26/02/2025",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "ELISEU KOPP & CIA LTDA",
+      "Municipio": "VERA CRUZ",
+      "Estado": "RS"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "SÃO GONÇALO",
+    "LocalVerificacao": "BR 101 km 316+400",
+    "DataUltimaVerificacao": "16/04/2026",
+    "DataValidade": "15/04/2027",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "2",
+        "NumeroInmetro": "14065202",
+        "NumeroSerie": "R07498",
+        "Sentido": "Sul",
+        "VelocidadeNominal": "80"
+      },
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "14065202",
+        "NumeroSerie": "R07498",
+        "Sentido": "Sul",
+        "VelocidadeNominal": "80"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "13785383",
+        "NumeroEnsaio": "487",
+        "Ano": "2025",
+        "DataLaudo": "05/06/2025",
+        "DataValidade": "04/06/2026",
+        "TipoServico": "Após Reparo",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13783366",
+        "NumeroEnsaio": "353",
+        "Ano": "2024",
+        "DataLaudo": "16/05/2024",
+        "DataValidade": "15/05/2025",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13769935",
+        "NumeroEnsaio": "1250",
+        "Ano": "2020",
+        "DataLaudo": "22/01/2020",
+        "DataValidade": "21/01/2021",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "",
+        "NumeroEnsaio": "428",
+        "Ano": "2025",
+        "DataLaudo": "08/05/2025",
+        "DataValidade": "08/05/2025",
+        "TipoServico": "Periódica",
+        "Resultado": "Pendente"
+      },
+      {
+        "NumeroCertificado": "13772253",
+        "NumeroEnsaio": "578",
+        "Ano": "2021",
+        "DataLaudo": "22/07/2021",
+        "DataValidade": "21/07/2022",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13769095",
+        "NumeroEnsaio": "794",
+        "Ano": "2019",
+        "DataLaudo": "12/09/2019",
+        "DataValidade": "11/09/2020",
+        "TipoServico": "Inicial",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13770343",
+        "NumeroEnsaio": "1515",
+        "Ano": "2020",
+        "DataLaudo": "31/07/2020",
+        "DataValidade": "30/07/2021",
+        "TipoServico": "Após Reparo",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13774429",
+        "NumeroEnsaio": "613",
+        "Ano": "2022",
+        "DataLaudo": "24/06/2022",
+        "DataValidade": "23/06/2023",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13781642",
+        "NumeroEnsaio": "597",
+        "Ano": "2023",
+        "DataLaudo": "13/06/2023",
+        "DataValidade": "12/06/2024",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13786803",
+        "NumeroEnsaio": "143",
+        "Ano": "2026",
+        "DataLaudo": "16/04/2026",
+        "DataValidade": "15/04/2027",
+        "TipoServico": "Após Reparo",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "PERKONS S/A",
+      "Municipio": "PINHAIS",
+      "Estado": "PR"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "RIO DE JANEIRO",
+    "LocalVerificacao": "071/R5 - Av Brasil km 7,6 PCentral",
+    "DataUltimaVerificacao": "09/02/2023",
+    "DataValidade": "08/02/2024",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "10649813",
+        "NumeroSerie": "321128362",
+        "Sentido": "Santa Cruz",
+        "VelocidadeNominal": "80"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "13764364",
+        "NumeroEnsaio": "759",
+        "Ano": "2018",
+        "DataLaudo": "14/11/2018",
+        "DataValidade": "13/11/2019",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13780899",
+        "NumeroEnsaio": "272",
+        "Ano": "2023",
+        "DataLaudo": "09/02/2023",
+        "DataValidade": "08/02/2024",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13773344",
+        "NumeroEnsaio": "48",
+        "Ano": "2022",
+        "DataLaudo": "24/01/2022",
+        "DataValidade": "23/01/2023",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13754695",
+        "NumeroEnsaio": "2378",
+        "Ano": "2015",
+        "DataLaudo": "22/12/2015",
+        "DataValidade": "21/12/2016",
+        "TipoServico": "Após Reparo",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "",
+        "NumeroEnsaio": "484",
+        "Ano": "2015",
+        "DataLaudo": "30/03/2015",
+        "DataValidade": "28/03/2016",
+        "TipoServico": "",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13751614",
+        "NumeroEnsaio": "170",
+        "Ano": "2015",
+        "DataLaudo": "27/01/2015",
+        "DataValidade": "26/01/2016",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "15210673",
+        "NumeroEnsaio": "332",
+        "Ano": "2014",
+        "DataLaudo": "30/01/2014",
+        "DataValidade": "29/01/2015",
+        "TipoServico": "Inicial",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13757430",
+        "NumeroEnsaio": "1647",
+        "Ano": "2016",
+        "DataLaudo": "24/11/2016",
+        "DataValidade": "23/11/2017",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13761681",
+        "NumeroEnsaio": "2640",
+        "Ano": "2017",
+        "DataLaudo": "10/11/2017",
+        "DataValidade": "09/11/2018",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13770495",
+        "NumeroEnsaio": "1637",
+        "Ano": "2020",
+        "DataLaudo": "26/08/2020",
+        "DataValidade": "25/08/2021",
+        "TipoServico": "Após Reparo",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "CLD CONSTRUTORA, LAÇOS DETETORES E ELETRÔNICA LTDA",
+      "Municipio": "RIO DE JANEIRO",
+      "Estado": "RJ"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "RIO DE JANEIRO",
+    "LocalVerificacao": "Av das Americas próx ao nº 4093 Pista Lateral",
+    "DataUltimaVerificacao": "01/08/2022",
+    "DataValidade": "",
+    "UltimoResultado": "Reparado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "12806687",
+        "NumeroSerie": "1700007",
+        "Sentido": "São Conrado",
+        "VelocidadeNominal": "70"
+      },
+      {
+        "NumeroFaixa": "2",
+        "NumeroInmetro": "12806687",
+        "NumeroSerie": "1700007",
+        "Sentido": "São Conrado",
+        "VelocidadeNominal": "70"
+      },
+      {
+        "NumeroFaixa": "3",
+        "NumeroInmetro": "12806687",
+        "NumeroSerie": "1700007",
+        "Sentido": "São Conrado",
+        "VelocidadeNominal": "70"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "13768627",
+        "NumeroEnsaio": "598",
+        "Ano": "2019",
+        "DataLaudo": "24/06/2019",
+        "DataValidade": "23/06/2020",
+        "TipoServico": "Inicial",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "",
+        "NumeroEnsaio": "398",
+        "Ano": "2021",
+        "DataLaudo": "01/06/2021",
+        "DataValidade": "31/05/2022",
+        "TipoServico": "Fiscalização",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13771981",
+        "NumeroEnsaio": "399",
+        "Ano": "2021",
+        "DataLaudo": "09/06/2021",
+        "DataValidade": "08/06/2022",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13774610",
+        "NumeroEnsaio": "707",
+        "Ano": "2022",
+        "DataLaudo": "01/08/2022",
+        "DataValidade": "31/07/2023",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "CONSILUX CONSULTORIA E CONSTRUÇÕES ELÉTRICAS LTDA",
+      "Municipio": "CURITIBA",
+      "Estado": "PR"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "RIO DE JANEIRO",
+    "LocalVerificacao": "Rodovia Presidente Dutra km 163 - Vigario Geral",
+    "DataUltimaVerificacao": "04/08/2026",
+    "DataValidade": "03/08/2027",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Estático ou Portátil",
+    "Faixas": [
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "12198364",
+        "NumeroSerie": "TC002868",
+        "Sentido": null,
+        "VelocidadeNominal": "0"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "13764294",
+        "NumeroEnsaio": "736",
+        "Ano": "2018",
+        "DataLaudo": "07/11/2018",
+        "DataValidade": "06/11/2019",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13787391",
+        "NumeroEnsaio": "399",
+        "Ano": "2026",
+        "DataLaudo": "04/08/2026",
+        "DataValidade": "03/08/2027",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13783411",
+        "NumeroEnsaio": "399",
+        "Ano": "2024",
+        "DataLaudo": "07/06/2024",
+        "DataValidade": "06/06/2025",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13761721",
+        "NumeroEnsaio": "2678",
+        "Ano": "2017",
+        "DataLaudo": "21/11/2017",
+        "DataValidade": "20/11/2018",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13769796",
+        "NumeroEnsaio": "1186",
+        "Ano": "2019",
+        "DataLaudo": "23/12/2019",
+        "DataValidade": "22/12/2020",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13772139",
+        "NumeroEnsaio": "484",
+        "Ano": "2021",
+        "DataLaudo": "25/06/2021",
+        "DataValidade": "24/06/2022",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13774404",
+        "NumeroEnsaio": "591",
+        "Ano": "2022",
+        "DataLaudo": "21/06/2022",
+        "DataValidade": "20/06/2023",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13781708",
+        "NumeroEnsaio": "641",
+        "Ano": "2023",
+        "DataLaudo": "23/06/2023",
+        "DataValidade": "22/06/2024",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "MINISTERIO DA JUSTICA E SEGURANCA PUBLICA",
+      "Municipio": "RIO DE JANEIRO",
+      "Estado": "RJ"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "SÃO JOSÉ DO NORTE",
+    "LocalVerificacao": "1'",
+    "DataUltimaVerificacao": "06/03/2024",
+    "DataValidade": "05/03/2025",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [],
+    "Historico": [],
+    "Proprietario": {
+      "Nome": "PEDRO HELCIO CORREIA DE MELLO",
+      "Municipio": "RIO DE JANEIRO",
+      "Estado": "RJ"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "ARARUAMA",
+    "LocalVerificacao": "RJ-106 KM 86,0",
+    "DataUltimaVerificacao": "12/03/2025",
+    "DataValidade": "11/03/2026",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "14766181",
+        "NumeroSerie": "122420056",
+        "Sentido": "MACAÉ / NITERÓI",
+        "VelocidadeNominal": "50"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "13784888",
+        "NumeroEnsaio": "224",
+        "Ano": "2025",
+        "DataLaudo": "12/03/2025",
+        "DataValidade": "11/03/2026",
+        "TipoServico": "Após Reparo",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13773892",
+        "NumeroEnsaio": "320",
+        "Ano": "2022",
+        "DataLaudo": "01/04/2022",
+        "DataValidade": "31/03/2023",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13781153",
+        "NumeroEnsaio": "394",
+        "Ano": "2023",
+        "DataLaudo": "15/03/2023",
+        "DataValidade": "14/03/2024",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "",
+        "NumeroEnsaio": "140",
+        "Ano": "2024",
+        "DataLaudo": "07/03/2024",
+        "DataValidade": "07/03/2024",
+        "TipoServico": "Periódica",
+        "Resultado": "Reprovado"
+      },
+      {
+        "NumeroCertificado": "13783006",
+        "NumeroEnsaio": "182",
+        "Ano": "2024",
+        "DataLaudo": "15/03/2024",
+        "DataValidade": "14/03/2025",
+        "TipoServico": "Após Reparo",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "ELISEU KOPP & CIA LTDA",
+      "Municipio": "VERA CRUZ",
+      "Estado": "RS"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "RIO DE JANEIRO",
+    "LocalVerificacao": "Rua Doutor Satamini próximo ao nº 69A",
+    "DataUltimaVerificacao": "28/05/2026",
+    "DataValidade": "27/05/2027",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "2",
+        "NumeroInmetro": "15827484",
+        "NumeroSerie": "1300333",
+        "Sentido": "PRAÇA SAENS PENA",
+        "VelocidadeNominal": "60"
+      },
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "15827484",
+        "NumeroSerie": "1300333",
+        "Sentido": "PRAÇA SAENS PENA",
+        "VelocidadeNominal": "60"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "13785489",
+        "NumeroEnsaio": "526",
+        "Ano": "2025",
+        "DataLaudo": "26/06/2025",
+        "DataValidade": "25/06/2026",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13787023",
+        "NumeroEnsaio": "247",
+        "Ano": "2026",
+        "DataLaudo": "28/05/2026",
+        "DataValidade": "27/05/2027",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "SPLICE INDUSTRIA COMERCIO E SERVIÇOS LTDA",
+      "Municipio": "VOTORANTIM",
+      "Estado": "SP"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "RIO DE JANEIRO",
+    "LocalVerificacao": "ESTRADA DE TUBIACANGA S/N - GALEÃO (RADAR ESTÁTICO)",
+    "DataUltimaVerificacao": "06/12/2024",
+    "DataValidade": "05/12/2025",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Estático ou Portátil",
+    "Faixas": [
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "66707717",
+        "NumeroSerie": "TC000507",
+        "Sentido": null,
+        "VelocidadeNominal": "0"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "13772868",
+        "NumeroEnsaio": "870",
+        "Ano": "2021",
+        "DataLaudo": "21/10/2021",
+        "DataValidade": "20/10/2022",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13757076",
+        "NumeroEnsaio": "1453",
+        "Ano": "2016",
+        "DataLaudo": "05/10/2016",
+        "DataValidade": "04/10/2017",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "14702017",
+        "NumeroEnsaio": "1455",
+        "Ano": "2013",
+        "DataLaudo": "17/10/2013",
+        "DataValidade": "16/10/2014",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13761344",
+        "NumeroEnsaio": "2533",
+        "Ano": "2017",
+        "DataLaudo": "28/09/2017",
+        "DataValidade": "27/09/2018",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13769621",
+        "NumeroEnsaio": "1101",
+        "Ano": "2019",
+        "DataLaudo": "29/11/2019",
+        "DataValidade": "28/11/2020",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13775066",
+        "NumeroEnsaio": "887",
+        "Ano": "2022",
+        "DataLaudo": "24/10/2022",
+        "DataValidade": "23/10/2023",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13780732",
+        "NumeroEnsaio": "159",
+        "Ano": "2023",
+        "DataLaudo": "18/01/2023",
+        "DataValidade": "17/01/2024",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13770912",
+        "NumeroEnsaio": "1875",
+        "Ano": "2020",
+        "DataLaudo": "06/11/2020",
+        "DataValidade": "05/11/2021",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13784421",
+        "NumeroEnsaio": "846",
+        "Ano": "2024",
+        "DataLaudo": "06/12/2024",
+        "DataValidade": "05/12/2025",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "LT COMERCIAL LTDA",
+      "Municipio": "ARAÇOIABA DA SERRA",
+      "Estado": "SP"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "RIO DE JANEIRO",
+    "LocalVerificacao": "R DOUTOR SATAMINI PX69A",
+    "DataUltimaVerificacao": "02/08/2024",
+    "DataValidade": "01/08/2025",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "2",
+        "NumeroInmetro": "",
+        "NumeroSerie": "1300333",
+        "Sentido": "PRAÇA SAENS PENA",
+        "VelocidadeNominal": "60"
+      },
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "",
+        "NumeroSerie": "1300333",
+        "Sentido": "PRAÇA SAENS PENA",
+        "VelocidadeNominal": "60"
+      }
+    ],
+    "Historico": [],
+    "Proprietario": {
+      "Nome": "CONSILUX CONSULTORIA E CONSTRUÇÕES ELÉTRICAS LTDA",
+      "Municipio": "CURITIBA",
+      "Estado": "PR"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "RIO DE JANEIRO",
+    "LocalVerificacao": "Av Embaixador Abelardo Bueno em frente ao Autodromo de Jacarepagua (RADAR ESTATICO)",
+    "DataUltimaVerificacao": "21/10/2021",
+    "DataValidade": "20/10/2022",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Estático ou Portátil",
+    "Faixas": [
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "66707717",
+        "NumeroSerie": "TC000507",
+        "Sentido": "Centro",
+        "VelocidadeNominal": "0"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "14700226",
+        "NumeroEnsaio": "1386",
+        "Ano": "2012",
+        "DataLaudo": "23/10/2012",
+        "DataValidade": "22/10/2013",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "TALENTECH TECNOLOGIA LTDA",
+      "Municipio": "SÃO PAULO",
+      "Estado": "SP"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "ANGRA DOS REIS",
+    "LocalVerificacao": "BR-101 KM 472+300",
+    "DataUltimaVerificacao": "05/08/2026",
+    "DataValidade": "04/08/2027",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "14338449",
+        "NumeroSerie": "1022000139",
+        "Sentido": "NORTE",
+        "VelocidadeNominal": "50"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "13783815",
+        "NumeroEnsaio": "577",
+        "Ano": "2024",
+        "DataLaudo": "13/08/2024",
+        "DataValidade": "12/08/2025",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13787435",
+        "NumeroEnsaio": "402",
+        "Ano": "2026",
+        "DataLaudo": "05/08/2026",
+        "DataValidade": "04/08/2027",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13786205",
+        "NumeroEnsaio": "813",
+        "Ano": "2025",
+        "DataLaudo": "05/11/2025",
+        "DataValidade": "04/11/2026",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13782042",
+        "NumeroEnsaio": "767",
+        "Ano": "2023",
+        "DataLaudo": "04/09/2023",
+        "DataValidade": "03/09/2024",
+        "TipoServico": "Inicial",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "ETT-ESTEIO TECNOLOGIA EM TRANSITO LTDA",
+      "Municipio": "CURITIBA",
+      "Estado": "PR"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "ANGRA DOS REIS",
+    "LocalVerificacao": "BR 101 km 455,22",
+    "DataUltimaVerificacao": "22/02/2022",
+    "DataValidade": "21/02/2023",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "853412",
+        "NumeroSerie": "BRI500",
+        "Sentido": "Crescente",
+        "VelocidadeNominal": "60"
+      },
+      {
+        "NumeroFaixa": "2",
+        "NumeroInmetro": "853413",
+        "NumeroSerie": "BRI500",
+        "Sentido": "Crescente",
+        "VelocidadeNominal": "60"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "13762492",
+        "NumeroEnsaio": "167",
+        "Ano": "2018",
+        "DataLaudo": "13/03/2018",
+        "DataValidade": "12/03/2019",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13755103",
+        "NumeroEnsaio": "385",
+        "Ano": "2016",
+        "DataLaudo": "28/04/2016",
+        "DataValidade": "27/04/2017",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13751758",
+        "NumeroEnsaio": "341",
+        "Ano": "2015",
+        "DataLaudo": "23/02/2015",
+        "DataValidade": "22/02/2016",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "15210596",
+        "NumeroEnsaio": "409",
+        "Ano": "2014",
+        "DataLaudo": "05/02/2014",
+        "DataValidade": "04/02/2015",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "14700720",
+        "NumeroEnsaio": "172",
+        "Ano": "2013",
+        "DataLaudo": "22/02/2013",
+        "DataValidade": "21/02/2014",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "14699000",
+        "NumeroEnsaio": "177",
+        "Ano": "2012",
+        "DataLaudo": "15/02/2012",
+        "DataValidade": "13/02/2013",
+        "TipoServico": "Inicial",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13760120",
+        "NumeroEnsaio": "2030",
+        "Ano": "2017",
+        "DataLaudo": "26/04/2017",
+        "DataValidade": "25/04/2018",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13769768",
+        "NumeroEnsaio": "1170",
+        "Ano": "2019",
+        "DataLaudo": "18/12/2019",
+        "DataValidade": "17/12/2020",
+        "TipoServico": "Após Reparo",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13771018",
+        "NumeroEnsaio": "1934",
+        "Ano": "2020",
+        "DataLaudo": "27/11/2020",
+        "DataValidade": "26/11/2021",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13773581",
+        "NumeroEnsaio": "176",
+        "Ano": "2022",
+        "DataLaudo": "22/02/2022",
+        "DataValidade": "21/02/2023",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "SITRAN SINALIZACAO DE TRANSITO INDUSTRIAL LTDA",
+      "Municipio": "BELO HORIZONTE",
+      "Estado": "MG"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "RIO DE JANEIRO",
+    "LocalVerificacao": "Rodovia Presidente Dutra km 163 - Vigario Geral",
+    "DataUltimaVerificacao": "04/08/2026",
+    "DataValidade": "03/08/2027",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Estático ou Portátil",
+    "Faixas": [
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "12198363",
+        "NumeroSerie": "TC002819",
+        "Sentido": null,
+        "VelocidadeNominal": "0"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "13764291",
+        "NumeroEnsaio": "733",
+        "Ano": "2018",
+        "DataLaudo": "07/11/2018",
+        "DataValidade": "06/11/2019",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13787390",
+        "NumeroEnsaio": "398",
+        "Ano": "2026",
+        "DataLaudo": "04/08/2026",
+        "DataValidade": "03/08/2027",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13752599",
+        "NumeroEnsaio": "1181",
+        "Ano": "2015",
+        "DataLaudo": "20/07/2015",
+        "DataValidade": "19/07/2016",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13761717",
+        "NumeroEnsaio": "2674",
+        "Ano": "2017",
+        "DataLaudo": "21/11/2017",
+        "DataValidade": "20/11/2018",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13772135",
+        "NumeroEnsaio": "480",
+        "Ano": "2021",
+        "DataLaudo": "25/06/2021",
+        "DataValidade": "24/06/2022",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13774406",
+        "NumeroEnsaio": "593",
+        "Ano": "2022",
+        "DataLaudo": "21/06/2022",
+        "DataValidade": "20/06/2023",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13781705",
+        "NumeroEnsaio": "644",
+        "Ano": "2023",
+        "DataLaudo": "23/06/2023",
+        "DataValidade": "22/06/2024",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "MINISTERIO DA JUSTICA E SEGURANCA PUBLICA",
+      "Municipio": "RIO DE JANEIRO",
+      "Estado": "RJ"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "ANGRA DOS REIS",
+    "LocalVerificacao": "BR-101 KM 470+300",
+    "DataUltimaVerificacao": "05/08/2026",
+    "DataValidade": "04/08/2027",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "14338450",
+        "NumeroSerie": "1022000137",
+        "Sentido": "NORTE",
+        "VelocidadeNominal": "60"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "13783816",
+        "NumeroEnsaio": "578",
+        "Ano": "2024",
+        "DataLaudo": "13/08/2024",
+        "DataValidade": "12/08/2025",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13785629",
+        "NumeroEnsaio": "567",
+        "Ano": "2025",
+        "DataLaudo": "25/07/2025",
+        "DataValidade": "24/07/2026",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13787436",
+        "NumeroEnsaio": "403",
+        "Ano": "2026",
+        "DataLaudo": "05/08/2026",
+        "DataValidade": "04/08/2027",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13782043",
+        "NumeroEnsaio": "768",
+        "Ano": "2023",
+        "DataLaudo": "04/09/2023",
+        "DataValidade": "03/09/2024",
+        "TipoServico": "Inicial",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "ETT-ESTEIO TECNOLOGIA EM TRANSITO LTDA",
+      "Municipio": "CURITIBA",
+      "Estado": "PR"
+    }
+  },
+  {
+    "SiglaUf": "RJ",
+    "Estado": "Rio de Janeiro",
+    "Municipio": "RIO DE JANEIRO",
+    "LocalVerificacao": "Est Cafundá Px 2125",
+    "DataUltimaVerificacao": "28/08/2026",
+    "DataValidade": "27/08/2027",
+    "UltimoResultado": "Aprovado",
+    "TipoMedidor": "Fixo",
+    "Faixas": [
+      {
+        "NumeroFaixa": "2",
+        "NumeroInmetro": "14117739",
+        "NumeroSerie": "2000067",
+        "Sentido": "Praia Bica",
+        "VelocidadeNominal": "50"
+      },
+      {
+        "NumeroFaixa": "1",
+        "NumeroInmetro": "14117739",
+        "NumeroSerie": "2000067",
+        "Sentido": "Est Galeão",
+        "VelocidadeNominal": "50"
+      }
+    ],
+    "Historico": [
+      {
+        "NumeroCertificado": "13783613",
+        "NumeroEnsaio": "425",
+        "Ano": "2024",
+        "DataLaudo": "19/06/2024",
+        "DataValidade": "18/06/2025",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13769838",
+        "NumeroEnsaio": "1193",
+        "Ano": "2020",
+        "DataLaudo": "08/01/2020",
+        "DataValidade": "07/01/2021",
+        "TipoServico": "Inicial",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13785996",
+        "NumeroEnsaio": "735",
+        "Ano": "2025",
+        "DataLaudo": "01/10/2025",
+        "DataValidade": "30/09/2026",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13774197",
+        "NumeroEnsaio": "439",
+        "Ano": "2022",
+        "DataLaudo": "27/04/2022",
+        "DataValidade": "26/04/2023",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13781750",
+        "NumeroEnsaio": "666",
+        "Ano": "2023",
+        "DataLaudo": "03/07/2023",
+        "DataValidade": "02/07/2024",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "",
+        "NumeroEnsaio": "480",
+        "Ano": "2026",
+        "DataLaudo": "28/08/2026",
+        "DataValidade": "27/08/2027",
+        "TipoServico": "Periódica",
+        "Resultado": "Aprovado"
+      },
+      {
+        "NumeroCertificado": "13785776",
+        "NumeroEnsaio": "789",
+        "Ano": "2024",
+        "DataLaudo": "05/11/2024",
+        "DataValidade": "04/11/2025",
+        "TipoServico": "Após Reparo",
+        "Resultado": "Aprovado"
+      }
+    ],
+    "Proprietario": {
+      "Nome": "CONSILUX CONSULTORIA E CONSTRUÇÕES ELÉTRICAS LTDA",
+      "Municipio": "CURITIBA",
+      "Estado": "PR"
+    }
+  }
+]
