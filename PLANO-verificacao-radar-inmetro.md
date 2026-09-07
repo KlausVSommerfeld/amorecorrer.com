@@ -358,9 +358,10 @@ npx supabase migration list     # aplicado no remoto vs. os 12 arquivos em supab
 npx supabase functions list     # há funções órfãs no remoto?
 ```
 
-`submit-form` e `force-log-webhook`, citados na versão anterior, **não existem no repositório**. Se
-aparecerem no remoto, são órfãs de uma versão antiga: abra issue, **não** integre nada nelas e **não**
-delete nesta branch.
+`submit-form` e `force-log-webhook`, citados na versão anterior, **não existem no repositório** — e
+**confirmou-se em 06/09/2026 que existem no remoto**: `submit-form` na versão 17 (última alteração em
+out/2025) e `force-log-webhook` na versão 9 (jan/2026), ambas `ACTIVE`. São órfãs de uma versão antiga:
+abra issue, **não** integre nada nelas e **não** delete nesta branch.
 
 `src/integrations/supabase/types.ts` está com os tipos **vazios** (`Tables: { [_ in never]: never }`),
 dessincronizado do banco real — isso se confirmou. Regenerar faz parte da Fase 1.
@@ -410,6 +411,10 @@ dessincronizado do banco real — isso se confirmou. Regenerar faz parte da Fase
 ```
 
 ### 5.1 Decisão de runtime — recomendação revisada
+
+> **⚠ A recomendação desta seção CAIU. Medido em 06/09/2026: uma Edge Function hospedada não consegue
+> alcançar `servicos.rbmlq.gov.br`.** O texto abaixo fica como registro do raciocínio; a decisão válida está
+> na **§5.1.2**. Não implemente a Fase 2 na Edge.
 
 Uma versão anterior deste plano previa GitHub Actions, justificado pelo tamanho dos arquivos (SP tem 18 MB).
 **Com o escopo travado em RJ, esse argumento caiu**: são 3,7 MB e 1.971 registros, que cabem folgadamente
@@ -487,18 +492,52 @@ publique uma função mínima que só faça `fetch` no endpoint real e invoque-a
 falhar lá também, o CPU deixa de ser o critério: a busca precisa acontecer onde ela comprovadamente
 funciona — o `server/` (Express), que já baixou o arquivo com sucesso.
 
-**Regra de decisão:**
+**Resultado:** cabe, e sobra. **Mas a pergunta de CPU deixou de ser a que decide** — ver §5.1.2.
 
-- Cabe com folga → siga a recomendação: Edge Function + `pg_cron`/`pg_net`. **Medido em 06/09: cabe.**
-  Resta só provar que a Edge hospedada consegue *alcançar* o endpoint (ver acima).
-- Não cabe → **o destino preferencial não é o GitHub Actions, e sim o `server/` (Express)**. Ele já existe,
-  já tem a `service_role` no ambiente e já é o caminho oficial até o Postgres (§4.1). Manter a chave onde ela
-  já está é o mesmo argumento de segurança que rejeitou o GitHub Actions — e aqui ele não custa um sistema
-  novo. Ressalva honesta: hoje o Express não tem endereço estável de produção (é a pendência 11 do
-  `PROGRESSO.md`, a mesma do `DISPATCH_PIPELINE_URL`); escolher esta rota amarra a Fase 2 à resolução dela.
-- Não cabe **e** o Express não tiver onde morar → aí sim GitHub Actions, com a troca registrada no PR.
+### 5.1.2 — O alcance da fonte, que é o critério que realmente decide
 
-Registre o número medido no PR, qualquer que seja a escolha. Sem ele, a decisão de runtime é palpite.
+Medido em 06/09/2026, com uma Edge Function publicada no projeto real (`tsdzvxgkokrjqayxukud`) e o mesmo
+teste rodado da máquina de desenvolvimento:
+
+| Alvo | Edge hospedada (região `sa-east-1`) | Máquina local (conexão brasileira) |
+|---|---|---|
+| `servicos.rbmlq.gov.br` — o arquivo | **timeout em 20s** | 200, 3.661.867 bytes em 6,8s |
+| `servicos.rbmlq.gov.br` — a raiz | **timeout em 20s** | 200, 26.141 bytes |
+| `dados.gov.br` | 200 em 25 ms | 200 |
+| `www.gov.br/inmetro` | 200 em 387 ms | 200 |
+| `example.com` | 200 em 56 ms | 200 |
+
+Antes disso, duas invocações diretas ao arquivo falharam com `Connection reset by peer (os error 104)` e
+`tcp connect error: Connection timed out (os error 110)` — **erro de TCP, antes de qualquer handshake TLS.**
+
+**A leitura é inequívoca.** Não é distância: a Edge roda em São Paulo. Não é rota para o Brasil, nem
+bloqueio genérico a IP estrangeiro: outros hosts do governo brasileiro respondem em milissegundos da mesma
+função. **O bloqueio é específico de `servicos.rbmlq.gov.br` contra o IP de saída da Supabase** — allowlist
+ou recusa de ASN de nuvem no firewall do RBMLQ.
+
+**Decisão: a ingestão não roda numa Edge Function.** O `pg_cron` + `pg_net` continua servindo para
+*agendar*, mas quem busca o arquivo tem de estar numa rede que o servidor aceite.
+
+E o problema é maior que trocar de runtime:
+
+- O **GitHub Actions**, que este plano listava como alternativa, roda em IPs da Azure e quase certamente
+  apanha do mesmo firewall. Deixou de ser alternativa até prova em contrário.
+- O **`server/` (Express)** baixa o arquivo hoje — **mas porque roda na máquina do Klaus, na conexão dele.**
+  Se for para uma nuvem em produção, é provável que apanhe igual. A rota do Express só vale depois de
+  testada a partir do endereço real de produção.
+
+**Regra de decisão, revisada:**
+
+1. **Antes de escolher qualquer runtime, teste o alcance a partir do candidato real de hospedagem.** É um
+   `curl` do endpoint, de lá. Falhou, o candidato está fora — o CPU nem chega a importar.
+2. Passando no alcance, o CPU já está medido e não é obstáculo (§5.1.1).
+3. Se nenhum candidato de nuvem passar, as saídas são: (a) rodar a ingestão numa máquina em rede aceita —
+   inclusive a do próprio Klaus, agendada —, ou (b) um proxy de saída numa rede aceita, com o runtime na
+   nuvem apenas consumindo. **Nenhuma das duas está desenhada neste plano**, e escolher entre elas é decisão
+   de arquitetura que precisa acontecer antes da Fase 2.
+
+Registre no PR o resultado do teste de alcance de cada candidato. Sem ele, a decisão de runtime é palpite —
+e desta vez um palpite que já se provou errado uma vez.
 
 ### 5.2 Convenções
 
@@ -691,6 +730,11 @@ bucket `evidencias`**; `npm run build` verde.
 ---
 
 ### Fase 2 — Ingestão
+
+> **⚠ Não comece esta fase antes de resolver a §5.1.2.** A Edge hospedada **não alcança** o endpoint do
+> INMETRO; os arquivos abaixo assumem um runtime que já foi descartado para a etapa de busca. A lógica de
+> `_shared/psie.ts` e os testes valem para qualquer runtime e podem ser escritos desde já; o entrypoint e o
+> agendamento dependem da decisão de onde a busca vai morar.
 
 **Arquivos:**
 - `supabase/functions/ingest-radares-rj/index.ts` — entrypoint (verifica shared secret, orquestra)
@@ -990,7 +1034,8 @@ o formulário como **sugestão editável** — nunca gravando direto. Abrir issu
 | 5 | ~~Credenciais n8n no bundle~~ | — | **Não se aplica mais**: o n8n saiu da arquitetura e `grep -rn "n8n" src/` não retorna nada (verificado em 03/09/2026) |
 | 6 | Snapshot só contém instrumentos hoje cadastrados | Radar removido do RJ pode sumir da base | Snapshots diários versionados mitigam daqui para frente; o passado não se recupera |
 | 7 | Snapshot diário custa ~1,35 GB/ano contra 1 GB de free tier | Bucket estoura em ~9 meses e a ingestão passa a falhar | Política de retenção na Fase 1. **O prazo (proposta: 90 dias + 1 por mês) é decisão do Klaus** — é um trade-off entre custo de storage e profundidade da prova histórica |
-| 8 | A ingestão pode não caber no limite de CPU de uma Edge Function | Define se a Fase 2 vive na Edge, no Express ou no GitHub Actions | **Medir antes de escrever a Fase 2** (§5.1.1). A rota do Express herda a pendência 11 do `PROGRESSO.md` |
+| 8 | ~~A ingestão pode não caber no limite de CPU de uma Edge Function~~ | — | **Respondido em 06/09/2026**: cabe com folga de 5× (411 ms de 2 s). Deixou de ser risco |
+| 9 | **`servicos.rbmlq.gov.br` recusa o IP de saída da Supabase** | A ingestão não pode rodar numa Edge Function, e talvez em nenhuma nuvem | Medido em 06/09 (§5.1.2). **Testar o alcance a partir do endereço real de produção antes de escolher o runtime.** Se nenhuma nuvem passar, decidir entre rodar em rede aceita ou usar proxy de saída — nenhuma das duas está desenhada aqui |
 
 ---
 
@@ -1007,7 +1052,9 @@ o formulário como **sugestão editável** — nunca gravando direto. Abrir issu
 - [ ] Bucket `evidencias` criado por migration — `supabase db reset` o recria sozinho, sem passo de Dashboard.
 - [ ] Política de retenção implementada e testada, **incluindo a exceção que preserva snapshot citado como
       evidência em `radar_consultas_log`**.
-- [ ] Tempo de CPU da ingestão medido e registrado no PR, com a decisão de runtime justificada nele (§5.1.1).
+- [ ] Tempo de CPU da ingestão medido e registrado no PR (§5.1.1) — **feito: 411 ms de 2 s**.
+- [ ] **Alcance do endpoint testado a partir do endereço real de produção**, com o resultado no PR (§5.1.2).
+      Sem isso a decisão de runtime é palpite, e já se provou errada uma vez.
 - [ ] Nenhum segredo novo em `VITE_*`; `SUPABASE_SERVICE_ROLE_KEY` não saiu do Supabase.
 - [ ] Caso real ponta a ponta: formulário → `form-submit` → RPC → `form_submissions.verificacao_medidor` →
       `GET /internal/cases/:id` → bloco de verificação visível no prompt da DeepSeek, com
@@ -1025,7 +1072,7 @@ o formulário como **sugestão editável** — nunca gravando direto. Abrir issu
 1. chore(radar): fixture RJ (20 registros, 7 casos-limite) + baseline     [Fase 0]
 2. docs(radar): calibração da base do INMETRO no RJ                       [Fase 0.5]
 3. feat(radar): schema, RLS e bucket de evidências                        [Fase 1]
-4. feat(radar): ingestão diária do RJ via edge function + pg_cron         [Fase 2]
+4. feat(radar): ingestão diária do RJ (runtime a definir — ver §5.1.2)    [Fase 2]
 5. feat(radar): RPC verificar_medidor + testes de borda                   [Fase 3]
 6. feat(form): campos do medidor de velocidade                            [Fase 4]
 7. feat(radar): verificação em form-submit + prompt da IA no pipeline     [Fase 5]
