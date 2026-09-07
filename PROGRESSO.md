@@ -45,7 +45,7 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 - **O e-mail é o que falta, e o bloqueio não é de código:** o Resend recusa com `550 — domínio amorecorrer.com não verificado`. Transporte, TLS e credenciais funcionam; falta verificar o domínio em resend.com/domains. Em `production`, enquanto isso, todo caso pago termina em `failed`.
 - **Falta para produção:** verificar o domínio no Resend, endereço estável do pipeline (o `DISPATCH_PIPELINE_URL` aponta para um túnel efêmero morto) e o bucket `generated-recursos` versionado, hoje passo manual de Dashboard.
 - **A feature de verificação de radar começou, em branch própria:** `feat/verificacao-radar-inmetro-rj`, com as **Fases 0, 1 e 3 entregues e verificadas** — fixture de 23 casos-limite, cinco tabelas com RLS, bucket `evidencias` criado por migration, e a RPC `verificar_medidor` com 24 testes de borda passando sobre banco reconstruído do zero. Nada disso toca o fluxo que já funciona: são tabelas e uma função novas, sem nenhuma alteração em `src/`, `server/` ou `pipeline/`.
-- **O que falta da feature:** a Fase 2 (ingestão diária) depende de medir o tempo de CPU numa Edge Function e, para o cron, do projeto remoto — que segue pausado. As Fases 4 a 6 dependem da Fase 0.5, que exige casos reais de multa que o produto ainda não tem. Ver pendências 18 e 19.
+- **O que falta da feature:** a Fase 2 (ingestão diária) **não é mais questão de CPU** — medido em 06/09, o trabalho todo custa ~411 ms contra um limite de 2s, folga de 5×. O que trava agora é outra coisa: **o `fetch` do endpoint do INMETRO falha de dentro do edge runtime** com erro de handshake TLS, e não se sabe se isso é da rede do container local ou do runtime hospedado. Descobrir exige o projeto remoto, que segue pausado. As Fases 4 a 6 dependem da Fase 0.5, que exige casos reais de multa. Ver pendências 10, 18, 19 e 20.
 - **Sem suíte automatizada.** A verificação é manual, via os 4 scripts PowerShell em `tests/edge-functions/`.
 
 ---
@@ -197,6 +197,7 @@ Ordenadas pelo custo de continuar adiando.
 17. **`VITE_STRIPE_PUBLISHABLE_KEY` é uma chave `pk_live_…` órfã.** Convive com um `sk_test_…` no mesmo arquivo e não é consumida em lugar nenhum de `src/`. Inofensiva hoje só por não ter consumidor; remover ou trocar pela chave de teste encerra o risco.
 12. **Rotacionar a chave `service_role`.** Ela está em texto puro em `server/.env` e `pipeline/.env` (fora do git, verificado), mas foi impressa no transcript da sessão de 31/08 por um comando de inspeção mal filtrado. Nada saiu da máquina; rotacionar é barato e encerra a dúvida.
 18. **A feature do radar está bloqueada por uma fase que hoje não roda.** A Fase 0.5 do `PLANO-verificacao-radar-inmetro.md` é declarada bloqueante e exige 8 a 10 casos reais de excesso de velocidade no RJ já em `form_submissions`, para conferir manualmente se os certificados das notificações aparecem na base pública. O produto não lançou: não existem casos reais. São três saídas, e a escolha é do Klaus — (a) usar notificações suas ou de conhecidos, (b) coletar amostras de notificações do DETRAN-RJ e da Prefeitura, ou (c) inverter a ordem: entregar as Fases 1–3 e 6 como triagem interna, sem conectar à IA jurídica, e adiar a decisão até haver volume real. A (c) é a que o próprio plano descreve como "cenário desfavorável", e a medição de 03/09 a tornou a mais provável. **Em 06/09 a (c) começou a acontecer de fato:** as Fases 0, 1 e 3 foram entregues como infraestrutura de triagem, sem nenhuma conexão com a IA jurídica. O bloqueio agora vale só para a Fase 5.4.
+20. **Não se sabe se uma Edge Function consegue alcançar o endpoint do INMETRO.** De dentro do edge runtime local, o `fetch` morre com `client error (Connect): tls handshake eof`; o mesmo endereço baixa por `curl` no WSL, na mesma máquina. A explicação fácil está descartada: o servidor (IIS 7.5) responde só em TLS 1.2 e negocia por padrão uma suíte CBC, mas **aceita** AES-GCM e ChaCha20 quando o cliente pede — não é o caso de cliente TLS moderno recusando CBC. Pode ser da rede do Docker Desktop e não do runtime hospedado. **Resolver custa uma função de três linhas que só faz `fetch`, publicada no projeto remoto** — e é por isso que depende da pendência 10. Se falhar lá também, a ingestão sai da Edge e vai para o `server/` (Express), que comprovadamente baixa o arquivo. É bloqueante para a Fase 2 e precisa ser respondido **antes** de escrever a ingestão, não depois.
 19. **O prazo de retenção dos snapshots do INMETRO é decisão sua.** O arquivo do RJ tem 3,66 MB e é regenerado quase todo dia: guardar tudo custa ~1,35 GB por ano contra 1 GB de free tier, e o bucket estoura em torno de nove meses. A proposta escrita no plano é 90 dias completos e depois um snapshot por mês, **nunca apagando** um snapshot citado como evidência em `radar_consultas_log` — essa exceção não é negociável, é o que sustenta peça já protocolada. O que é negociável é o prazo: é troca entre custo de storage e profundidade da prova histórica. Precisa estar decidido antes de ligar o cron da Fase 2.
 13. **Dois conjuntos completos de `.env` convivem** — os `.env.local` (local) e os `.env` (nuvem), cada um com seu próprio segredo HMAC. Foi essa duplicação que criou a armadilha corrigida em 31/08. Enquanto os dois existirem, qualquer divergência de precedência entre serviços volta a quebrar o fluxo em silêncio. Decidir qual é o canônico e apagar ou renomear o outro.
 
@@ -618,3 +619,42 @@ Os testes cobrem as bordas de data inclusivas nos dois extremos, a lacuna entre 
 **Ficou de fora:** a Fase 2 (ingestão), que depende de medir o tempo de CPU numa Edge Function — a afirmação do plano de que 3,66 MB "cabem folgadamente" é hipótese, não medição — e, para o cron, do projeto remoto pausado. As Fases 4 a 6 dependem da calibração da Fase 0.5. Nada foi deployado: tudo vive no Supabase local.
 
 **Estado deixado na máquina:** o banco local foi **resetado duas vezes, com sua autorização**, o que apagou os casos de teste das sessões anteriores — inclusive os dois em `failed` que estavam guardados como evidência do bloqueio do Resend. O conteúdo daquela evidência está preservado na entrada de 03/09, com as mensagens de erro na íntegra. O bucket `generated-recursos` foi recriado à mão depois de cada reset. Os containers do Supabase seguem no ar; os outros quatro processos foram encerrados durante a sessão.
+
+
+---
+
+## Sessão de 06/09/2026 (noite) — A medição de CPU passou; o que quase impediu a medição virou o problema
+
+Objetivo único: fechar a §5.1.1 do plano, que eu mesmo tinha escrito como pré-requisito da Fase 2 depois de notar que a frase "cabem folgadamente numa Edge Function" era hipótese, não medição.
+
+**Primeiro o limite, depois o número.** Confirmei na documentação do Supabase, e não de memória: **2s de CPU por request** — I/O assíncrono não conta — e 256 MB de memória. É o limite de CPU que morde neste trabalho, não o de *wall clock*, porque a ingestão é computação pura sem espera.
+
+**A hipótese do plano se confirmou, com folga de cerca de 5×.** Uma Edge Function descartável, rodando sobre os 3.661.867 bytes reais do RJ, três execuções:
+
+| Etapa | Mediana | Conta para o limite? |
+|---|---|---|
+| buscar o arquivo | 78 ms | não (I/O) |
+| `sha256` do corpo | 10 ms | sim |
+| `TextDecoder` + `JSON.parse` | 38 ms | sim |
+| `normalize` dos 1.971 registros | **365 ms** | sim |
+| **CPU total** | **≈411 ms — 20% do limite** | |
+
+`heapUsed` entre 13 e 17 MB de 256 disponíveis. As contagens fecharam com o censo da §1.2: 3.346 faixas, 7.814 verificações de histórico e 1.838 de topo, 14.969 linhas montadas. O `normalize` é 85% do custo e, dentro dele, o `sha256` por instrumento é o item dominante — é ali que se otimiza se um dia apertar. A medição **não** cobre a serialização das 14.969 linhas para os `upsert` em lotes, que também é CPU, mas de ordem muito menor que a folga.
+
+**E aí o risco mudou de lugar.** O `fetch` do endpoint do INMETRO **falha de dentro do edge runtime**, com `client error (Connect): tls handshake eof`. Terminei a medição servindo os mesmos bytes pelo Storage local, o que não altera o número, já que I/O não conta.
+
+**Levantei uma hipótese e ela estava errada — registro porque poupa o caminho.** Achei que fosse o clássico: servidor velho oferecendo só cifra CBC, cliente TLS moderno recusando. Fui conferir: o IIS 7.5 responde só em TLS 1.2 e de fato negocia `ECDHE-RSA-AES128-SHA256`, que é CBC — **mas aceita `AES128-GCM`, `AES256-GCM` e `ChaCha20-Poly1305` quando o cliente pede.** A explicação fácil está descartada. E o mesmo endereço baixa por `curl` no WSL, na mesma máquina. Pode muito bem ser da rede do Docker Desktop e não do runtime hospedado — **não sei, e o plano agora diz que não sei.** Virou a pendência 20, e ela custa uma função de três linhas publicada no remoto para ser respondida.
+
+**Sobre o ambiente, e isto vai morder de novo.** Cinco obstáculos, nenhum deles do código:
+
+1. **`supabase functions serve` não recarrega edições** de forma confiável — passei três iterações depurando erros de uma compilação em cache. Reiniciar o `serve` é o que vale.
+2. **`host.docker.internal` aponta para o Windows, não para o WSL.** Subi um servidor HTTP no WSL e o container não o alcançou; é a mesma assimetria já registrada em 03/09.
+3. **O isolate da função não enxerga o `/tmp` do container.** `docker cp` do arquivo para dentro não adianta.
+4. **O CLI só empacota `.ts`** — arquivo estático posto ao lado do `index.ts` não vai junto para o runtime.
+5. **`pgrep -f`/`pkill -f` casam com a linha de comando do próprio shell** quando o padrão aparece depois, na mesma linha, e mataram meu shell duas vezes (exit 144). O truque do colchete só protege a primeira ocorrência.
+
+O caminho que funcionou foi subir o arquivo no **Storage local** e buscá-lo de lá, container a container — que é, aliás, o que a Fase 2 vai fazer em produção de qualquer jeito.
+
+**Arquivos:** `PLANO-verificacao-radar-inmetro.md` (§5.1.1 ganhou a tabela da medição, o achado do TLS e a regra de decisão atualizada) e `PROGRESSO.md`. **Nenhum código de produção.** A Edge Function da medição era descartável e foi apagada, junto com o objeto de teste no Storage local.
+
+**Ficou de fora:** a Fase 2 em si. Escrever a ingestão antes de saber se a Edge alcança o endpoint seria construir sobre uma dúvida que custa três linhas para resolver — e a resposta muda o runtime da fase inteira.
