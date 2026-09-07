@@ -428,6 +428,36 @@ Vault e conferido pela função no header.
 Actions com cron `30 4 * * *`, secrets `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY`. Funciona igual;
 escolha essa se a primeira travar, e registre a troca no PR. Não implemente as duas.
 
+#### 5.1.1 — Medir antes de escolher (pré-requisito da Fase 2)
+
+A frase "cabem folgadamente numa Edge Function" acima **é uma hipótese, não uma medição**, e o limite que
+morde aqui não é o de *wall clock* — é o de **tempo de CPU** por invocação. O trabalho é justamente do tipo
+que consome CPU e não espera I/O: `sha256` sobre 3,66 MB, `JSON.parse` do mesmo volume, e a normalização de
+1.971 instrumentos em ~3.346 faixas e ~9.652 verificações. Uma função que estoura o limite de CPU é morta no
+meio, e o sintoma é uma ingestão que falha de forma intermitente conforme o arquivo cresce — o pior tipo de
+defeito para uma rotina que roda de madrugada.
+
+**Faça esta medição antes de escrever a Fase 2** (custa cerca de uma hora e decide o desenho dela):
+
+1. Escreva uma Edge Function descartável que baixe o arquivo do RJ, calcule o `sha256`, faça o `JSON.parse`
+   e rode `normalize` sobre os 1.971 registros — **sem gravar nada**. Retorne os tempos parciais.
+2. Rode contra o Supabase local e, se o projeto remoto estiver ativo, contra ele também. O local é
+   otimista: não tem os limites do runtime hospedado.
+3. Confira o limite de CPU vigente para o plano do projeto na documentação do Supabase e compare com a
+   medição, com folga — o arquivo cresce e o limite não.
+
+**Regra de decisão:**
+
+- Cabe com folga → siga a recomendação: Edge Function + `pg_cron`/`pg_net`.
+- Não cabe → **o destino preferencial não é o GitHub Actions, e sim o `server/` (Express)**. Ele já existe,
+  já tem a `service_role` no ambiente e já é o caminho oficial até o Postgres (§4.1). Manter a chave onde ela
+  já está é o mesmo argumento de segurança que rejeitou o GitHub Actions — e aqui ele não custa um sistema
+  novo. Ressalva honesta: hoje o Express não tem endereço estável de produção (é a pendência 11 do
+  `PROGRESSO.md`, a mesma do `DISPATCH_PIPELINE_URL`); escolher esta rota amarra a Fase 2 à resolução dela.
+- Não cabe **e** o Express não tiver onde morar → aí sim GitHub Actions, com a troca registrada no PR.
+
+Registre o número medido no PR, qualquer que seja a escolha. Sem ele, a decisão de runtime é palpite.
+
 ### 5.2 Convenções
 
 - Deno 2.x, consistente com as Edge Functions existentes.
@@ -573,11 +603,48 @@ create index on radar_verificacoes (data_laudo, data_validade);
 somente-leitura para `anon`, escrita só por `service_role`. `radar_consultas_log` contém dados de caso:
 **nenhum acesso para `anon`**. Escreva as policies explicitamente.
 
-Storage: bucket **privado** `evidencias`.
+**Storage: bucket privado `evidencias` — criado *pela migration*, não pelo Dashboard.**
 
-Ao fim: `supabase gen types typescript --linked > src/integrations/supabase/types.ts` (conserta §4.1 de quebra).
+```sql
+insert into storage.buckets (id, name, public)
+values ('evidencias', 'evidencias', false)
+on conflict (id) do nothing;
+```
 
-**Critério de aceite:** `supabase db push` limpo; `supabase db reset` reconstrói do zero; `npm run build` verde.
+…seguido das policies de `storage.objects` restringindo leitura e escrita à `service_role`.
+
+Isto não é preciosismo: o bucket `generated-recursos` do fluxo principal é criado à mão no Dashboard, e por
+isso **toda stack recriada do zero quebra no primeiro upload com `Bucket not found`** — aconteceu em três
+sessões seguidas (pendência 14 do `PROGRESSO.md`). Não repita o padrão numa feature nova. Se esta migration
+funcionar, ela é o molde para consertar o `generated-recursos` depois — **mas não o conserte nesta branch**,
+que é escopo alheio.
+
+**Política de retenção dos snapshots (decidir antes de ligar o cron).**
+
+O arquivo do RJ tem 3,66 MB e é regenerado quase todo dia. O `unique (uf, sha256)` da Fase 1 só evita gravar
+o **mesmo** arquivo duas vezes; como o conteúdo muda, ele quase nunca vai economizar. Guardar tudo custa
+**~1,35 GB por ano**, contra 1 GB do free tier do Supabase: o bucket estoura em torno de nove meses e a
+ingestão passa a falhar por falta de espaço.
+
+Política proposta — ajuste o prazo, não a estrutura:
+
+- **Últimos 90 dias:** todos os snapshots.
+- **Mais antigos que 90 dias:** manter apenas o primeiro snapshot de cada mês; apagar o resto do Storage.
+- **Nunca apagar** um snapshot referenciado por alguma linha de `radar_consultas_log` — isto é, cujo
+  `snapshot_id` apareça em `resultado -> 'evidencia' ->> 'snapshot_id'`. **É a prova que sustenta uma peça já
+  protocolada**, e a regra 5 da §3 exige que ela persista. A retenção precisa desta exceção
+  explícita, com teste.
+- A linha em `radar_snapshots` **nunca** é apagada — ela é metadado, custa bytes, e é o que permite auditar
+  a série histórica. Ao podar o arquivo, marque `storage_path = null` e grave `pruned_at timestamptz`.
+
+Acrescente `pruned_at timestamptz null` a `radar_snapshots` já nesta migration, para não precisar de uma
+segunda depois.
+
+Ao fim: `supabase gen types typescript --linked > src/integrations/supabase/types.ts` (conserta a dessincronia
+apontada na §4.4 de quebra).
+
+**Critério de aceite:** `supabase db push` limpo; `supabase db reset` reconstrói do zero **incluindo o
+bucket `evidencias`**; `npm run build` verde.
 
 ---
 
@@ -608,12 +675,21 @@ Fluxo do entrypoint:
 
 1. Conferir o shared secret do header. Sem ele, `401`.
 2. `GET` no endpoint do RJ com `User-Agent: amorecorrer.com/1.0 (+contato@amorecorrer.com)`.
-3. `sha256` do corpo. Se `(RJ, sha256)` já existe em `radar_snapshots` → **encerrar com `{status:"inalterado"}`**.
-   Re-execuções ficam gratuitas.
+3. `sha256` do corpo. Se `(RJ, sha256)` já existe em `radar_snapshots` → **pular para o passo 7** e
+   encerrar com `{status:"inalterado"}`. Re-execuções ficam gratuitas — mas a poda ainda roda, senão uma
+   fonte parada por muitos dias (§1.1) deixaria a retenção sem executar.
 4. Upload do bruto para `evidencias/radares/RJ/{YYYY-MM-DD}-{sha[:12]}.json`.
 5. `insert` em `radar_snapshots` → `snapshot_id`.
 6. Normalizar e `upsert` em lotes de 500. `radar_verificacoes` com `ignoreDuplicates: true` (histórico é imutável).
-7. Retornar `{status, records, faixas, verificacoes, bytes, ms}` e logar.
+7. **Poda**, conforme a política de retenção da Fase 1: apagar do Storage os snapshots fora da janela que
+   **não** estejam referenciados em `radar_consultas_log`, marcando `storage_path = null` e `pruned_at`.
+   Este passo roda em `try/catch` e **nunca aborta a ingestão** — falha de limpeza não pode custar o dado do
+   dia. Logue o que foi apagado.
+8. Retornar `{status, records, faixas, verificacoes, bytes, ms, pruned}` e logar.
+
+A poda mora aqui, e não numa função separada, para não precisar de um segundo `cron` e um segundo shared
+secret. O preço é a disciplina do `try/catch`: a ordem dos passos importa, e nada depois do passo 6 pode
+derrubar o que já foi gravado.
 
 **Sanidade antes de gravar** (aborta sem persistir nada se falhar):
 - `records >= 1500` (o RJ tem 1.971; queda abaixo disso indica arquivo truncado na origem);
@@ -636,6 +712,12 @@ Fluxo do entrypoint:
 
 **Teste de integração** (`supabase start`): rodar a ingestão duas vezes sobre o mesmo fixture → a segunda
 insere **zero** linhas em `radar_snapshots`.
+
+**Teste da retenção**, com snapshots forjados em datas antigas:
+- snapshot fora da janela e sem referência → arquivo apagado, linha mantida, `pruned_at` preenchido;
+- snapshot fora da janela **referenciado** por uma linha de `radar_consultas_log` → **arquivo preservado**;
+- snapshot dentro da janela → intocado;
+- exceção forçada na poda → a ingestão do dia ainda retorna sucesso.
 
 **Critério de aceite:** testes verdes; invocação manual popula o banco local com ~1.971 instrumentos e
 **~9.652 verificações — 7.814 de origem `historico` e ~1.838 de origem `topo`**; segunda invocação é no-op;
@@ -865,6 +947,8 @@ o formulário como **sugestão editável** — nunca gravando direto. Abrir issu
 | 4 | `LocalVerificacao` abreviado vs. endereço da notificação | Fallback por endereço é fraco | Já tratado: `local_municipio` nunca gera tese |
 | 5 | ~~Credenciais n8n no bundle~~ | — | **Não se aplica mais**: o n8n saiu da arquitetura e `grep -rn "n8n" src/` não retorna nada (verificado em 03/09/2026) |
 | 6 | Snapshot só contém instrumentos hoje cadastrados | Radar removido do RJ pode sumir da base | Snapshots diários versionados mitigam daqui para frente; o passado não se recupera |
+| 7 | Snapshot diário custa ~1,35 GB/ano contra 1 GB de free tier | Bucket estoura em ~9 meses e a ingestão passa a falhar | Política de retenção na Fase 1. **O prazo (proposta: 90 dias + 1 por mês) é decisão do Klaus** — é um trade-off entre custo de storage e profundidade da prova histórica |
+| 8 | A ingestão pode não caber no limite de CPU de uma Edge Function | Define se a Fase 2 vive na Edge, no Express ou no GitHub Actions | **Medir antes de escrever a Fase 2** (§5.1.1). A rota do Express herda a pendência 11 do `PROGRESSO.md` |
 
 ---
 
@@ -878,6 +962,10 @@ o formulário como **sugestão editável** — nunca gravando direto. Abrir issu
 - [ ] Instrumento com `Historico: []` e par do topo vigente retorna `comprovado_valido`, não `sem_registro`
       (§1.4.11 — a regressão mais provável desta feature).
 - [ ] RLS habilitada nas cinco tabelas; `radar_consultas_log` inacessível a `anon`.
+- [ ] Bucket `evidencias` criado por migration — `supabase db reset` o recria sozinho, sem passo de Dashboard.
+- [ ] Política de retenção implementada e testada, **incluindo a exceção que preserva snapshot citado como
+      evidência em `radar_consultas_log`**.
+- [ ] Tempo de CPU da ingestão medido e registrado no PR, com a decisão de runtime justificada nele (§5.1.1).
 - [ ] Nenhum segredo novo em `VITE_*`; `SUPABASE_SERVICE_ROLE_KEY` não saiu do Supabase.
 - [ ] Caso real ponta a ponta: formulário → `form-submit` → RPC → `form_submissions.verificacao_medidor` →
       `GET /internal/cases/:id` → bloco de verificação visível no prompt da DeepSeek, com
