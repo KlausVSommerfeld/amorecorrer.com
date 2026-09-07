@@ -446,9 +446,51 @@ defeito para uma rotina que roda de madrugada.
 3. Confira o limite de CPU vigente para o plano do projeto na documentação do Supabase e compare com a
    medição, com folga — o arquivo cresce e o limite não.
 
+#### Resultado da medição — feita em 06/09/2026
+
+Rodada no edge runtime local (`supabase functions serve`), sobre os 3.661.867 bytes reais do RJ, três
+execuções. O limite oficial, confirmado na documentação do Supabase, é **2s de CPU por request** (I/O
+assíncrono não conta) e **256 MB de memória**.
+
+| Etapa | Mediana | Natureza |
+|---|---|---|
+| Buscar o arquivo | 78 ms | I/O — **não conta** |
+| `sha256` do corpo | 10 ms | CPU |
+| `TextDecoder` + `JSON.parse` | 38 ms | CPU |
+| `normalize` dos 1.971 registros (inclui 1 `sha256` por instrumento) | **365 ms** | CPU |
+| **Total de CPU** | **≈411 ms** (faixa: 398–494) | **20% do limite** |
+
+Memória: `heapUsed` entre 13 e 17 MB, contra 256 MB disponíveis. As contagens conferem com o censo da §1.2:
+1.971 instrumentos, 3.346 faixas, 7.814 verificações de histórico e 1.838 de topo — 14.969 linhas montadas.
+
+**A hipótese se confirmou: cabe, com folga de cerca de 5×.** O `normalize` é 85% do custo, e dentro dele o
+`sha256` por instrumento é o item dominante — se um dia apertar, é ali que se otimiza. O que a medição *não*
+cobre é a serialização dos 14.969 registros para os `upsert` em lotes de 500 (~30 requisições): é CPU
+também, mas de ordem muito menor que a folga disponível.
+
+#### O risco que a medição encontrou no lugar do CPU
+
+**O `fetch` do endpoint do INMETRO falhou de dentro do edge runtime local**, com
+`client error (Connect): tls handshake eof`. A medição foi concluída servindo os mesmos bytes pelo Storage
+local — o que não afeta o número, já que I/O não conta para o limite de CPU.
+
+O que se apurou sobre a causa, para ninguém repetir o caminho:
+
+- O servidor (IIS 7.5) responde **só em TLS 1.2**, e negocia por padrão `ECDHE-RSA-AES128-SHA256`, que é
+  CBC — mas **também aceita** `AES128-GCM`, `AES256-GCM` e `ChaCha20-Poly1305` quando o cliente pede. Ou
+  seja, **a explicação fácil "o cliente TLS do Deno não faz CBC" está descartada.**
+- O mesmo endereço baixa normalmente por `curl` a partir do WSL, na mesma máquina.
+- Portanto pode ser específico da rede do container local (Docker Desktop) e **não** do runtime hospedado.
+
+**A causa está em aberto, e isso é bloqueante para a Fase 2 na Edge.** Antes de escrever a ingestão,
+publique uma função mínima que só faça `fetch` no endpoint real e invoque-a **no projeto hospedado**. Se
+falhar lá também, o CPU deixa de ser o critério: a busca precisa acontecer onde ela comprovadamente
+funciona — o `server/` (Express), que já baixou o arquivo com sucesso.
+
 **Regra de decisão:**
 
-- Cabe com folga → siga a recomendação: Edge Function + `pg_cron`/`pg_net`.
+- Cabe com folga → siga a recomendação: Edge Function + `pg_cron`/`pg_net`. **Medido em 06/09: cabe.**
+  Resta só provar que a Edge hospedada consegue *alcançar* o endpoint (ver acima).
 - Não cabe → **o destino preferencial não é o GitHub Actions, e sim o `server/` (Express)**. Ele já existe,
   já tem a `service_role` no ambiente e já é o caminho oficial até o Postgres (§4.1). Manter a chave onde ela
   já está é o mesmo argumento de segurança que rejeitou o GitHub Actions — e aqui ele não custa um sistema
