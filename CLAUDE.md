@@ -88,8 +88,7 @@ Todo par de cor em uso passa WCAG AA (verificado numericamente). Ao introduzir c
 
 ## Armadilhas conhecidas
 
-- **Duas assinaturas de `attempt_dispatch` convivem** — `case_id` (`20260109134917_remote_schema`) e `p_case_id` (`20260206120000`). Os callers em `form-submit` e `stripe-webhook` tentam as duas, em ordem oposta. É dívida técnica consciente; consolidar exige saber qual versão está viva no projeto remoto.
-- **A migration `20250101000005` está quebrada em runtime**: referencia `v_submission.payment_status`, coluna inexistente em `form_submissions`. Só não explode porque migrations posteriores substituem a função.
+- **`attempt_dispatch` tem UMA assinatura só, mas os callers tentam duas.** Corrigido aqui em 09/09/2026: a versão `case_id` foi dropada pela antiga `20260206120000` e **não existe nem em produção nem no banco local** — só `p_case_id`. O `CLAUDE.md` afirmava o contrário. O que ainda é verdade é o desperdício: `form-submit` e `stripe-webhook` tentam as duas, em ordem oposta, e o erro da tentativa inválida só é logado se **nenhuma** das duas devolver chave — ou seja, no caminho feliz a falha é invisível. Limpar os callers é dívida em aberto; o schema já está limpo.
 - **Autenticação bearer está desligada**: o bloco de validação de token está comentado em `create-checkout-session` e `form-submit`. Toda a infra existe (`src/lib/auth.ts`, `src/hooks/use-auth.tsx`, `BEARER_TOKEN_IMPLEMENTATION.md`) e `verify_jwt = false` em `supabase/config.toml`. Hoje `form-submit` é protegida só por whitelist de origem + existência do `case_id`.
 - **Rate limit é in-memory** (`Map` no isolate) — não vale entre instâncias de Edge Function.
 - **`BackgroundTasks` do FastAPI não é fila durável**: se o processo morrer entre o 202 e o `finish`, o caso fica preso em `generating`, sem retry automático.
