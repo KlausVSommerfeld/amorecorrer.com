@@ -138,8 +138,36 @@ async def call_deepseek(text_context: str) -> str:
     return (choice or "").strip() or "(resposta vazia do modelo)"
 
 
+# Campos de controle interno. O read model do Express faz `select("*")`, então a
+# linha inteira chegava ao prompt — inclusive o `dup_guard` (hash de 64
+# caracteres), o `form_token` e os uuids. Nada disso tem papel numa peça
+# jurídica, e tudo compete por atenção com os dados que têm.
+#
+# `created_at` e `updated_at` saem por um motivo a mais: são `timestamptz` em
+# UTC, e a IA lia "10/09" num caso protocolado às 22h do dia 9 em BRT. É o mesmo
+# erro de fuso que o front já havia corrigido do lado da data da infração.
+# Como nenhum dos dois entra no recurso, saem inteiros em vez de convertidos.
+CAMPOS_INTERNOS = frozenset(
+    {
+        "id",
+        "case_id",
+        "form_token",
+        "dup_guard",
+        "document_status",
+        "document_url",
+        "stripe_session_id",
+        "created_at",
+        "updated_at",
+    }
+)
+
+
 def build_case_context(case: dict[str, Any]) -> str:
-    lines = [f"{k}: {v}" for k, v in sorted(case.items()) if v is not None and str(v).strip()]
+    lines = [
+        f"{k}: {v}"
+        for k, v in sorted(case.items())
+        if k not in CAMPOS_INTERNOS and v is not None and str(v).strip()
+    ]
     return "Dados do caso para o recurso:\n" + "\n".join(lines[:200])
 
 
