@@ -35,19 +35,78 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 
 ## Estado atual
 
-*Atualizado em 2026-09-06.*
+*Atualizado em 2026-09-10.*
 
-- **Branch de trabalho:** `feat/ajuste-frontend-claudecode`, **36 commits à frente de `main`**, que segue parada em `a3b2142` (2025-10-29). Todo o produto — pagamento, Edge Functions, pipeline, redesenho — vive só na feature branch. **Merge para `main` nunca aconteceu.**
+- **Branch de trabalho:** `feat/verificacao-radar-inmetro-rj`, **55 commits à frente de `main`**, que segue parada em `a3b2142` (2025-10-29). Desde 09/09 essa branch carrega **dois assuntos independentes** — a feature do radar e a consolidação do schema —, o que encarece ainda mais a revisão do merge. Todo o produto — pagamento, Edge Functions, pipeline, redesenho — vive só na feature branch. **Merge para `main` nunca aconteceu.**
 - **O redesenho "Notificação e Resposta" está completo** — Fases 0 a 4. Todas as páginas usam o mesmo casco, a mesma tipografia e os mesmos tokens.
 - **O site não para mais de vender depois de 30 minutos.** O fim da promoção agora só tira a moldura promocional; o CTA continua ativo.
 - **O fluxo funciona ponta a ponta em ambiente local, com a peça redigida pela IA** — verificado em 03/09/2026 por dois caminhos independentes, não presumido: um roteiro de 23 verificações via API (checkout → webhook assinado → formulário → dispatch → PDF no Storage com SHA-256 conferido → idempotência → CORS) e a jornada real no navegador, com ViaCEP, validação e recibo. `document_status = completed`, `dispatches.status = sent`.
 - **A redação por IA está provada.** Com `DEEPSEEK_API_KEY` carregada, o PDF sai com peça própria (3168 bytes contra 1957 do placeholder), citando os dados do formulário, o art. 218 I do CTB e a Resolução CONTRAN 798/2020.
 - **O e-mail é o que falta, e o bloqueio não é de código:** o Resend recusa com `550 — domínio amorecorrer.com não verificado`. Transporte, TLS e credenciais funcionam; falta verificar o domínio em resend.com/domains. Em `production`, enquanto isso, todo caso pago termina em `failed`.
-- **Falta para produção:** verificar o domínio no Resend, endereço estável do pipeline (o `DISPATCH_PIPELINE_URL` aponta para um túnel efêmero morto) e o bucket `generated-recursos` versionado, hoje passo manual de Dashboard.
+- **Falta para produção:** verificar o domínio no Resend, endereço estável do pipeline (o `DISPATCH_PIPELINE_URL` aponta para um túnel efêmero morto) e **reconstruir o schema remoto** — hoje produção roda o schema antigo, sem bucket nenhum, e nenhuma correção de 09-10/09 chegou lá.
+- **O schema virou quatro migrations** (09-10/09/2026): uma baseline que consolida as doze antigas e as corrige, as duas do radar, e a do bucket `generated-recursos`. O bucket deixou de ser passo manual de Dashboard. Quinze anomalias foram levantadas e quatorze fechadas — entre elas a detecção de duplicata, que nunca funcionou, e a hora da infração, que o cliente digitava e o sistema descartava.
 - **A feature de verificação de radar começou, em branch própria:** `feat/verificacao-radar-inmetro-rj`, com as **Fases 0, 1 e 3 entregues e verificadas** — fixture de 23 casos-limite, cinco tabelas com RLS, bucket `evidencias` criado por migration, e a RPC `verificar_medidor` com 24 testes de borda passando sobre banco reconstruído do zero. Nada disso toca o fluxo que já funciona: são tabelas e uma função novas, sem nenhuma alteração em `src/`, `server/` ou `pipeline/`.
 - **O que falta da feature, e por quê:** a Fase 2 (ingestão diária) **não roda numa Edge Function** — medido em 06/09 no projeto real, `servicos.rbmlq.gov.br` recusa o IP de saída da Supabase, com erro de TCP antes de qualquer TLS. Não é distância nem falta de rota: a Edge roda em São Paulo e outros hosts do governo respondem em milissegundos dela. O CPU, que era a suspeita anterior, foi medido e **não** é obstáculo (411 ms contra 2 s). O que falta decidir é **de onde a busca vai sair**, e isso pode afetar qualquer nuvem. As Fases 4 a 6 dependem da Fase 0.5, que exige casos reais de multa. Ver pendências 19, 20 e 21.
 - **O projeto Supabase da nuvem está ativo de novo** desde 06/09, despausado para esse teste. Voltou a consumir recursos.
 - **Sem suíte automatizada.** A verificação é manual, via os 4 scripts PowerShell em `tests/edge-functions/`.
+
+---
+
+## Próximos passos
+
+*Escrito em 2026-09-10.* A lista de **Pendências** mais abaixo é o backlog, ordenado por custo de adiar. Esta seção é o **roteiro**: o que fazer, em que ordem, e o que trava o quê. Quem destrava cada passo está dito — vários dependem do Klaus e nenhuma sessão consegue contorná-los.
+
+### ⚠️ Uma ordem que não pode ser invertida
+
+**As Edge Functions corrigidas têm de ir para produção ANTES da reconstrução do schema.** O motivo é concreto:
+
+- **Edge nova + schema antigo:** funciona. O `form-submit` novo escreve `document_status` explicitamente, e o schema antigo (nullable, com `DEFAULT`) aceita o valor.
+- **Edge antiga + schema novo:** **quebra todo envio de formulário.** O `form-submit` que está publicado usa `.upsert()` sem informar `document_status`; no schema novo a coluna é `NOT NULL` sem `DEFAULT`, e o PostgREST sempre monta o ramo `INSERT` — resultado, `23502` em cada submissão.
+
+Inverter a ordem derruba o produto para todo cliente pagante. Se as duas coisas não puderem sair juntas, **a Edge vai primeiro**.
+
+As duas direções foram **medidas**, não deduzidas: o `23502` apareceu em 09/09 numa tentativa de omitir a coluna no upsert, e em 10/09 a Edge nova rodou contra um schema antigo simulado (`document_status` de volta a nullable com `DEFAULT`) — inserção e reenvio, ambos `ok: true`.
+
+### O roteiro
+
+1. **Excluir a Edge `submit-form` do projeto remoto.** — *destrava: Klaus.*
+   É o item mais barato e o de maior risco: está **ACTIVE, pública (`verify_jwt=false`), com CORS `*`, sem rate limit e com mass assignment** na `form_submissions` — o chamador escolhe qualquer coluna. Hoje é inerte por acidente (o insert cita `payment_status`, coluna que não existe, então morre no PostgREST); se alguém acrescentar essa coluna, o endereço volta a funcionar. O MCP não expõe exclusão e o CLI pede token:
+   ```bash
+   npx supabase login
+   npx supabase functions delete submit-form       --project-ref tsdzvxgkokrjqayxukud
+   npx supabase functions delete force-log-webhook --project-ref tsdzvxgkokrjqayxukud
+   ```
+   O código das duas está salvo; a `teste-fetch-inmetro` fica a seu critério (é de 07/09 e pode ainda servir à Fase 2). **Verificar:** `list_edge_functions` deve devolver só as três do repositório.
+
+2. **Publicar as Edge Functions corrigidas.** — *destrava: Klaus (login); executável em seguida.*
+   `form-submit` e `stripe-webhook` mudaram em 09/09. Ler o aviso de ordem acima antes.
+   ```bash
+   npx supabase functions deploy form-submit    --project-ref tsdzvxgkokrjqayxukud
+   npx supabase functions deploy stripe-webhook --project-ref tsdzvxgkokrjqayxukud
+   ```
+   **Verificar:** um envio de formulário real termina em `ok: true` e o log não traz `PGRST202`.
+
+3. **Reconstruir o schema remoto a partir da baseline** (pendência 23). — *destrava: Klaus; operação destrutiva.*
+   `migration repair` **não serve**: a baseline corrige em vez de retratar, e marcá-la como aplicada faria as correções nunca rodarem. Viável porque as tabelas do fluxo em produção estão vazias — **reconferir isso na hora, não presumir**. Depois do rebuild, aplicar as quatro migrations e rodar `tests/sql/assert_storage_setup.sql` contra o remoto: buckets e policies de Storage **não aparecem em `db dump`**, então é a asserção que prova que o bucket existe lá.
+
+4. **Destravar a entrega de e-mail** (pendência 16). — *destrava: Klaus, e não é código.*
+   A zona DNS de `amorecorrer.com` está estacionada no parking de expirados da Hostinger (`ns1/ns2.dns-expired.com`), enquanto o registro do domínio está pago até 2027-08-23. Enquanto a zona não voltar, **não existe onde publicar os registros do Resend** — a verificação não é "pendente", é impossível. Ou renovar a hospedagem, ou apontar os NS para outro provedor de DNS. Só depois: adicionar o domínio em resend.com/domains e publicar MX + SPF + DKIM.
+
+5. **Rodar o fluxo ponta a ponta com PDF e e-mail de verdade.** — *depende de 4.*
+   É o pedido que abriu a sessão de 09/09 e nunca pôde ser atendido. O roteiro está em `tests/edge-functions/README.md` (desatualizado em dois pontos: o `--env-file` fica na raiz, e nenhum dos quatro scripts chega ao PDF ou ao e-mail). **Verificar:** `document_status = completed`, `dispatches.status = sent`, `generated_documents.status = emailed`, e o sha256 do PDF baixado do Storage batendo com o gravado.
+
+6. **Endereço estável para o pipeline** (pendência 11). — *decisão do Klaus.*
+   `DISPATCH_PIPELINE_URL` aponta para um túnel `trycloudflare` morto. Sem endereço estável não há produção, mesmo com e-mail funcionando.
+
+7. **Merge para `main`** (pendência 1). — *decisão do Klaus.*
+   55 commits à frente, `main` parada desde 2025-10-29. A branch atual carrega **dois assuntos independentes** (radar e consolidação de schema); separá-los antes do merge deixaria a revisão viável. Os cinco commits de 09/09 e o de 10/09 saem limpos a partir de `5acaead`.
+
+### Fora do caminho crítico
+
+- **`UNIQUE` em `form_token`** (pendência 22) — exige escopar o token por caso em `src/pages/Form.tsx` antes; hoje o mesmo navegador reusa o token entre compras.
+- **Caminho legado do `202`** — se o pipeline responder `200`, a Edge grava `generating`, chama `confirm_dispatch` ela mesma, e o `document_status` fica **preso em `generating` para sempre**, porque o Express nunca é chamado.
+- **Dois conjuntos de `.env`** (pendência 13) — decidir o canônico e apagar o outro.
+- **`tests/edge-functions/README.md` desatualizado** — e nenhum dos quatro scripts cobre PDF ou e-mail.
 
 ---
 
