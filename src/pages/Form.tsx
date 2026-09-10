@@ -133,9 +133,14 @@ function cpfValido(digits: string): boolean {
 
 /**
  * `datetime-local` entrega a hora no relógio do usuário ("2026-03-12T21:07").
- * Passar por `toISOString()` convertia para UTC, e como `data_infracao` é uma
- * coluna `date`, toda infração depois das 21h em BRT era gravada no dia
- * seguinte — a data errada na peça. Enviamos a string local, sem fuso.
+ * Passar por `toISOString()` convertia para UTC, e toda infração depois das 21h
+ * em BRT era gravada no dia seguinte — a data errada na peça. Enviamos a string
+ * local, sem fuso.
+ *
+ * Continua obrigatório depois de `data_infracao` virar `timestamp` sem fuso, em
+ * 09/09/2026: a coluna guarda o relógio de parede impresso na notificação, não
+ * um instante. Mandar UTC daqui reintroduziria o mesmo desvio, agora de 3h na
+ * hora em vez de um dia na data.
  */
 function toLocalIso(datetimeLocal: string): string | null {
   const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(datetimeLocal || '');
@@ -146,11 +151,30 @@ function toLocalIso(datetimeLocal: string): string | null {
   return `${ano}-${mes}-${dia}T${hora}:${minuto}:00`;
 }
 
-/** Valor de `max` do campo de data: uma infração não acontece no futuro. */
+/**
+ * Valor de `max` do campo de data: uma infração não acontece no futuro.
+ *
+ * O "agora" que importa é o do BRASIL, não o do aparelho. Com o relógio local,
+ * um motorista com o celular em fuso a oeste era BARRADO ao informar uma
+ * infração legítima de horas atrás — "não pode estar no futuro" — e em fuso a
+ * leste o campo aceitava hora futura. Medido em 09/09/2026: com o aparelho em
+ * Honolulu o `max` saía 7h atrás do agora brasileiro.
+ *
+ * `sv-SE` não é capricho: é o locale que formata como `YYYY-MM-DD HH:mm`, que é
+ * exatamente o que o `datetime-local` espera depois de trocar o espaço por `T`.
+ * `hourCycle: 'h23'` evita que meia-noite vire "24:00" em engines que usam h24.
+ */
 function agoraParaInput(): string {
-  const d = new Date();
-  const p = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+  const brasilAgora = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23'
+  }).format(new Date());
+  return brasilAgora.replace(' ', 'T');
 }
 
 /**

@@ -1,6 +1,15 @@
 import { Link } from 'react-router-dom';
 import PageShell from '../components/PageShell';
 
+/**
+ * Data da última revisão REAL deste texto — atualizar à mão quando ele mudar.
+ *
+ * Aqui havia `new Date().toLocaleDateString(...)`, que fazia a página afirmar
+ * ter sido atualizada HOJE, todo dia. Numa página de termos isso não é um
+ * detalhe de UI: é uma afirmação falsa num documento jurídico.
+ */
+const ULTIMA_ATUALIZACAO = '18 de agosto de 2026';
+
 const Privacy = () => {
   return (
     <PageShell>
@@ -157,7 +166,7 @@ const Privacy = () => {
             </section>
 
             <div className="mt-10 border-t border-rule pt-6 text-sm">
-              <p>Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>
+              <p>Última atualização: {ULTIMA_ATUALIZACAO}</p>
             </div>
           </div>
         </div>
