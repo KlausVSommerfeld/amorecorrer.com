@@ -138,6 +138,19 @@ function formatDispatchError(err: unknown): string {
   return String(err);
 }
 
+/**
+ * `confirm_dispatch` devolve uma linha { confirmed }. Desde 09/09/2026 esse
+ * booleano diz se o UPDATE pegou alguma linha — antes era o eco do argumento
+ * `success`, ou seja, repetia o que o caller já sabia.
+ */
+function confirmDispatchOk(data: unknown): boolean {
+  const row = Array.isArray(data) ? data[0] : data;
+  if (typeof row === "object" && row !== null) {
+    return (row as Record<string, unknown>).confirmed === true;
+  }
+  return row === true;
+}
+
 function extractDispatchKey(data: unknown): string | null {
   if (!data) return null;
 
@@ -363,11 +376,55 @@ Deno.serve(async (req) => {
       updated_at: new Date().toISOString()
     };
 
-    const { data: updated, error: upsertErr } = await supabase
-      .from("form_submissions")
-      .upsert(updateFields, { onConflict: "case_id" })
-      .select("*")
-      .single();
+    // INSERT e UPDATE separados de propósito — aqui havia um `.upsert()`.
+    //
+    // `document_status` é NOT NULL e SEM DEFAULT desde 09/09/2026: quem cria a
+    // linha declara o estado, em vez de herdá-lo de uma regra invisível no
+    // schema. Isso exige as duas coisas ao mesmo tempo: a INSERÇÃO precisa
+    // informar a coluna, e o UPDATE precisa NÃO tocá-la — reescrever 'pending'
+    // por cima de um caso já em 'generating' (a guarda de 409 acima só barra
+    // 'completed' e 'failed') faria attempt_dispatch devolver a MESMA
+    // dispatch_key e o worker mandar um SEGUNDO e-mail ao cliente.
+    //
+    // Um `.upsert()` não consegue as duas: o ramo de INSERT é sempre montado,
+    // então omitir a coluna resulta em 23502 (not-null violation) mesmo quando
+    // a linha já existe e o que vai rodar é o DO UPDATE.
+    let updated: unknown = null;
+    let upsertErr: { code?: string; message?: string } | null = null;
+
+    if (existingCase) {
+      const r = await supabase
+        .from("form_submissions")
+        .update(updateFields)
+        .eq("case_id", norm.case_id)
+        .select("*")
+        .single();
+      updated = r.data;
+      upsertErr = r.error;
+    } else {
+      const r = await supabase
+        .from("form_submissions")
+        .insert({ ...updateFields, document_status: "pending" })
+        .select("*")
+        .single();
+      updated = r.data;
+      upsertErr = r.error;
+
+      // Corrida de duplo envio: outra requisição inseriu a linha entre o SELECT
+      // e este INSERT. O `.upsert()` anterior absorvia isso em silêncio; aqui
+      // refazemos como UPDATE, que é o mesmo efeito e continua sem tocar em
+      // document_status.
+      if (r.error?.code === "23505") {
+        const retry = await supabase
+          .from("form_submissions")
+          .update(updateFields)
+          .eq("case_id", norm.case_id)
+          .select("*")
+          .single();
+        updated = retry.data;
+        upsertErr = retry.error;
+      }
+    }
 
     if (upsertErr) {
       console.error("DB update error:", upsertErr);
@@ -380,24 +437,31 @@ Deno.serve(async (req) => {
       const dispatchRpcErrors: string[] = [];
       let dispatchRpcRawData: unknown = null;
 
-      // Be compatible with both RPC signatures seen across migrations:
-      // attempt_dispatch(case_id text) and attempt_dispatch(p_case_id text).
-      const rpcAttempts: Array<{ label: string; args: Record<string, unknown> }> = [
-        { label: "case_id", args: { case_id: norm.case_id } },
-        { label: "p_case_id", args: { p_case_id: norm.case_id } }
-      ];
+      // Uma assinatura só: attempt_dispatch(p_case_id). Conferido em produção e
+      // no banco local (09/09/2026) — a variante attempt_dispatch(case_id) foi
+      // dropada e não existe em lugar nenhum.
+      //
+      // A lista de tentativas que existia aqui chamava a inexistente PRIMEIRO,
+      // levava PGRST202 em TODO envio, e empilhava o erro num array que só era
+      // logado quando NENHUMA tentativa devolvia chave. Como a segunda quase
+      // sempre devolvia, o array era descartado — e com ele qualquer falha real
+      // desta etapa. Era um supressor de log na parte mais crítica do fluxo.
+      const rpcResult = await supabase.rpc("attempt_dispatch", {
+        p_case_id: norm.case_id
+      });
+      dispatchRpcRawData = rpcResult.data;
 
-      for (const attempt of rpcAttempts) {
-        const rpcResult = await supabase.rpc("attempt_dispatch", attempt.args);
-        dispatchRpcRawData = rpcResult.data;
-
-        if (rpcResult.error) {
-          dispatchRpcErrors.push(`${attempt.label}: ${formatDispatchError(rpcResult.error)}`);
-          continue;
-        }
-
+      if (rpcResult.error) {
+        const detalhe = formatDispatchError(rpcResult.error);
+        dispatchRpcErrors.push(`p_case_id: ${detalhe}`);
+        logDispatchError("attempt_dispatch_falhou", {
+          case_id: norm.case_id,
+          error: detalhe
+        });
+      } else {
+        // Resultado vazio não é erro: significa que as pré-condições
+        // (payment_status = 'paid' e document_status = 'pending') não valem.
         dispatch_key = extractDispatchKey(rpcResult.data);
-        if (dispatch_key) break;
       }
 
       // Recovery path: if RPC call shape failed but dispatch row already exists, resume from it.
@@ -510,10 +574,28 @@ Deno.serve(async (req) => {
           } finally {
             try {
               if (shouldConfirmDispatch) {
-                await supabase.rpc("confirm_dispatch", {
-                  dispatch_key,
-                  success: confirmSuccess
-                });
+                // supabase-js NÃO lança em erro do PostgREST — devolve
+                // { data, error }. O try/catch em volta só pegava falha de
+                // rede, então um erro da RPC passava batido e o dispatch ficava
+                // sem confirmação, em silêncio.
+                const { data: confirmData, error: confirmErr } =
+                  await supabase.rpc("confirm_dispatch", {
+                    dispatch_key,
+                    success: confirmSuccess
+                  });
+
+                if (confirmErr) {
+                  logDispatchError("confirm_dispatch_rpc_error", {
+                    case_id: norm.case_id,
+                    dispatch_key,
+                    error: formatDispatchError(confirmErr)
+                  });
+                } else if (!confirmDispatchOk(confirmData)) {
+                  logDispatchError("confirm_dispatch_sem_efeito", {
+                    case_id: norm.case_id,
+                    dispatch_key
+                  });
+                }
               }
             } catch (rpcErr) {
               logDispatchError("confirm_dispatch_rpc_error", {
@@ -530,10 +612,24 @@ Deno.serve(async (req) => {
             dispatch_key
           });
           try {
-            await supabase.rpc("confirm_dispatch", {
-              dispatch_key,
-              success: false
-            });
+            const { data: confirmData, error: confirmErr } =
+              await supabase.rpc("confirm_dispatch", {
+                dispatch_key,
+                success: false
+              });
+
+            if (confirmErr) {
+              logDispatchError("confirm_dispatch_rpc_error", {
+                case_id: norm.case_id,
+                dispatch_key,
+                error: formatDispatchError(confirmErr)
+              });
+            } else if (!confirmDispatchOk(confirmData)) {
+              logDispatchError("confirm_dispatch_sem_efeito", {
+                case_id: norm.case_id,
+                dispatch_key
+              });
+            }
           } catch (rpcErr) {
             logDispatchError("confirm_dispatch_rpc_error", {
               case_id: norm.case_id,

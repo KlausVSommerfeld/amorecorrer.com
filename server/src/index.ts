@@ -348,6 +348,25 @@ app.post(
         return res.status(500).json({ error: rpcRes.error.message });
       }
 
+      // confirm_dispatch devolve uma linha { confirmed } dizendo se o UPDATE
+      // pegou. Duas armadilhas aqui, ambas corrigidas em 09/09/2026: a função
+      // antes ecoava o próprio argumento `success`, e `!!rpcRes.data` era
+      // sempre verdadeiro porque `data` é um array. Somadas, faziam
+      // confirm_dispatch_ok ser `true` em qualquer cenário.
+      const confirmRow = Array.isArray(rpcRes.data) ? rpcRes.data[0] : rpcRes.data;
+      const confirm_dispatch_ok =
+        (confirmRow as { confirmed?: unknown } | null)?.confirmed === true;
+
+      if (!confirm_dispatch_ok) {
+        // O dispatch foi encontrado poucas linhas acima, então chegar aqui
+        // significa que a linha sumiu no meio do caminho. Não interrompemos: o
+        // status do formulário ainda precisa ser gravado. Mas fica alto no log.
+        console.error("confirm_dispatch não atualizou nenhuma linha", {
+          dispatch_key: body.dispatch_key,
+          case_id,
+        });
+      }
+
       const document_status = body.success ? "completed" : "failed";
       const patch: Record<string, string> = {
         document_status,
@@ -371,7 +390,7 @@ app.post(
         ok: true,
         case_id,
         document_status,
-        confirm_dispatch_ok: !!rpcRes.data,
+        confirm_dispatch_ok,
       });
     } catch (e) {
       console.error(e);

@@ -42,28 +42,24 @@ function shouldPromoteStatus(current: string | null, next: string): boolean {
 }
 
 async function triggerDispatch(case_id: string): Promise<void> {
-  const attempts = [
-    { label: "p_case_id", args: { p_case_id: case_id } },
-    { label: "case_id",   args: { case_id } },
-  ];
+  // Uma assinatura só: attempt_dispatch(p_case_id). A lista de tentativas que
+  // existia aqui protegia contra uma variante attempt_dispatch(case_id) que não
+  // existe em banco nenhum — conferido em produção e no local em 09/09/2026.
+  const { data, error } = await supabaseAdmin.rpc("attempt_dispatch", {
+    p_case_id: case_id,
+  });
 
-  for (const attempt of attempts) {
-    const { data, error } = await supabaseAdmin.rpc("attempt_dispatch", attempt.args);
-
-    if (error) {
-      console.warn(`[webhook] attempt_dispatch(${attempt.label}) falhou:`, error.message);
-      continue;
-    }
-
-    console.info("[webhook] attempt_dispatch concluído", {
+  if (error) {
+    console.error("[webhook] attempt_dispatch falhou", {
       case_id,
-      param: attempt.label,
-      result: data,
+      error: error.message,
     });
     return;
   }
 
-  console.error("[webhook] attempt_dispatch: todas as tentativas falharam", { case_id });
+  // Resultado vazio não é erro: significa que as pré-condições (pago e
+  // documento pendente) ainda não foram atendidas.
+  console.info("[webhook] attempt_dispatch concluído", { case_id, result: data });
 }
 
 async function handleSessionUpsertAndFormUpdate(
