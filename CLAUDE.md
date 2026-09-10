@@ -19,6 +19,7 @@ npm run lint                # eslint
 npx supabase start                                              # stack local (:54321, studio :54323)
 npx supabase functions serve --env-file .env.local              # edge functions locais
 npx supabase db push                                            # aplica migrations
+npx supabase db query --local -f tests/sql/assert_storage_setup.sql  # buckets no lugar?
 npx supabase functions deploy create-checkout-session           # deploy individual
 npx supabase secrets set KEY=value                              # secrets do projeto remoto
 
@@ -68,7 +69,7 @@ Mensagens assinadas: o corpo JSON **compacto** (`separators=(",",":")`) nos POST
 
 Invariantes: `attempt_dispatch` só cria dispatch se `payment_status = 'paid'` **e** `document_status = 'pending'` — caso contrário retorna conjunto vazio (não é erro). RLS habilitada em todas as tabelas com política permissiva para service role. O `id` de uma linha existente em `stripe_sessions` nunca é reescrito pelo webhook, para preservar a FK `dispatches.stripe_session_id`.
 
-Requer setup manual no Dashboard: bucket **privado** (`generated-recursos`) + políticas de Storage para a service role.
+Os dois buckets privados vêm por migration — `generated-recursos` (PDFs do pipeline) e `evidencias` (radar). **Nada de setup manual no Dashboard.** Buckets e policies de Storage **não entram** no `supabase db dump`, que cobre só o schema `public`, então nenhum diff de migration pegaria a regressão: quem guarda é `tests/sql/assert_storage_setup.sql`, que falha se algum deles sumir ou virar público.
 
 ## Design system
 
