@@ -69,22 +69,13 @@ As duas direções foram **medidas**, não deduzidas: o `23502` apareceu em 09/0
 
 ### O roteiro
 
-1. **Excluir a Edge `submit-form` do projeto remoto.** — *destrava: Klaus.*
-   É o item mais barato e o de maior risco: está **ACTIVE, pública (`verify_jwt=false`), com CORS `*`, sem rate limit e com mass assignment** na `form_submissions` — o chamador escolhe qualquer coluna. Hoje é inerte por acidente (o insert cita `payment_status`, coluna que não existe, então morre no PostgREST); se alguém acrescentar essa coluna, o endereço volta a funcionar. O MCP não expõe exclusão e o CLI pede token:
-   ```bash
-   npx supabase login
-   npx supabase functions delete submit-form       --project-ref tsdzvxgkokrjqayxukud
-   npx supabase functions delete force-log-webhook --project-ref tsdzvxgkokrjqayxukud
-   ```
-   O código das duas está salvo; a `teste-fetch-inmetro` fica a seu critério (é de 07/09 e pode ainda servir à Fase 2). **Verificar:** `list_edge_functions` deve devolver só as três do repositório.
+1. ~~**Excluir a Edge `submit-form` do projeto remoto.**~~ **FEITO em 11/09/2026** — o Klaus excluiu `submit-form` e `force-log-webhook` pelo Dashboard, e `teste-fetch-inmetro` pelo CLI. Conferido pela API: sobraram só as três funções do repositório.
 
-2. **Publicar as Edge Functions corrigidas.** — *destrava: Klaus (login); executável em seguida.*
-   `form-submit` e `stripe-webhook` mudaram em 09/09. Ler o aviso de ordem acima antes.
-   ```bash
-   npx supabase functions deploy form-submit    --project-ref tsdzvxgkokrjqayxukud
-   npx supabase functions deploy stripe-webhook --project-ref tsdzvxgkokrjqayxukud
-   ```
-   **Verificar:** um envio de formulário real termina em `ok: true` e o log não traz `PGRST202`.
+2. ~~**Publicar as Edge Functions corrigidas.**~~ **FEITO em 11/09/2026** — `form-submit` v60 e `stripe-webhook` v53, publicadas pelo CLI a partir do disco. **Conferido campo a campo pela API que o código publicado bate com o repositório**, e que `verify_jwt` continua `false` nas duas (vem do `config.toml`, sem precisar de flag).
+
+   **O deploy levou mais do que as correções desta sessão, e isso foi achado na checagem pré-deploy:** a `stripe-webhook` publicada era **anterior ao commit `b20f40c` (18/08)**. Ou seja, por quase um mês a produção rodou a versão que faz upsert com `on_conflict=case_id` mandando `id: session.id` — **reescrevendo o `id` de uma linha existente** quando o mesmo caso ganha uma segunda sessão de checkout, e quebrando a FK `dispatches.stripe_session_id`. O `CLAUDE.md` descrevia a invariante correta o tempo todo; era o repositório que estava certo e a produção que estava errada. A lição fica: **antes de qualquer deploy, comparar o publicado com o repositório** — foi o que pegou isto.
+
+   **Efeito colateral conhecido até o passo 3:** a `form-submit` nova lê o retorno de `confirm_dispatch`, mas a função no banco remoto ainda é a antiga, que ecoa o argumento `success`. Toda vez que ela confirmar uma **falha**, vai logar um `confirm_dispatch_sem_efeito` falso. É ruído, não defeito, e some com a reconstrução do schema.
 
 3. **Reconstruir o schema remoto a partir da baseline** (pendência 23). — *destrava: Klaus; operação destrutiva.*
    `migration repair` **não serve**: a baseline corrige em vez de retratar, e marcá-la como aplicada faria as correções nunca rodarem. Viável porque as tabelas do fluxo em produção estão vazias — **reconferir isso na hora, não presumir**. Depois do rebuild, aplicar as quatro migrations e rodar `tests/sql/assert_storage_setup.sql` contra o remoto: buckets e policies de Storage **não aparecem em `db dump`**, então é a asserção que prova que o bucket existe lá.
@@ -819,3 +810,28 @@ Ela é um bloco `DO` único de propósito: `supabase db query -f` não aceita ma
 **Ficou de fora:** as pendências 16 (domínio no Resend), 22 (`form_token`) e 23 (reconstrução do remoto) seguem abertas, e as três Edge Functions órfãs continuam publicadas — a `submit-form` segue **pública e sem autenticação**. Nada disso avançou hoje.
 
 **Estado deixado na máquina:** Supabase local no ar com as **quatro** migrations aplicadas, os dois buckets presentes e as tabelas do fluxo vazias. O projeto remoto **não foi tocado**.
+
+
+---
+
+## Sessão de 11/09/2026 — As Edge Functions foram para produção, e a checagem pré-deploy achou um mês de divergência
+
+Passos 1 e 2 do roteiro, executados pelo Klaus no terminal dele. A branch também foi empurrada para o GitHub pela primeira vez.
+
+**A limpeza das órfãs fechou.** `submit-form` e `force-log-webhook` saíram pelo Dashboard, `teste-fetch-inmetro` pelo CLI. Conferido pela API: restaram só `create-checkout-session`, `stripe-webhook` e `form-submit`. A `submit-form` era a urgente — pública, sem JWT, CORS `*` e com mass assignment na tabela central.
+
+**O achado da sessão veio da checagem pré-deploy, não do deploy.** Antes de publicar, comparei o que estava publicado com o histórico do git e encontrei uma divergência de quase um mês: a `stripe-webhook` em produção (v52, de 01/06) era **anterior ao commit `b20f40c` (18/08)**. A versão que rodava fazia upsert com `on_conflict=case_id` mandando `id: session.id` — **reescrevendo o `id` de uma linha existente** quando o mesmo caso ganhasse uma segunda sessão de checkout, e deixando `dispatches.stripe_session_id` apontando para um id que deixara de existir.
+
+O `CLAUDE.md` documenta essa invariante — "o `id` de uma linha existente em `stripe_sessions` nunca é reescrito pelo webhook" — e ela estava **correta no repositório e violada em produção**. A documentação descrevia o código; ninguém tinha conferido se o código descrevia o que rodava. Vale como regra daqui em diante: **antes de publicar, comparar o publicado com o repositório.**
+
+A `form-submit` publicada, por outro lado, já estava em dia com o `36a01a3` apesar do timestamp sugerir o contrário — tinha sido publicada da cópia de trabalho antes do commit.
+
+**Publicado e verificado campo a campo.** `form-submit` v60 e `stripe-webhook` v53, pelo CLI a partir do disco — e não pelo MCP, de propósito: o MCP exigiria reproduzir ~750 linhas dentro da chamada, e um deslize de transcrição na função de pagamento não é risco que se corra por economia. Depois do deploy, busquei o código publicado pela API e conferi: `verify_jwt` segue `false` nas duas (vem do `config.toml`, sem flag), os trechos antigos sumiram (`rpcAttempts`, `.upsert()`, `getCurrentStripePaymentState`) e os novos estão lá (`confirmDispatchOk`, split insert/update, retry `23505`, `existingRow`, `sessionIdToLink`).
+
+**O que produção ganhou hoje:** o fim do `PGRST202` em todo envio, o fim do supressor de log no `attempt_dispatch`, os erros de `confirm_dispatch` visíveis, e a correção da FK no webhook.
+
+**O que produção ainda NÃO tem, porque depende do passo 3:** o schema novo. Até lá, a detecção de duplicata continua morta (o trigger antigo ainda sobrescreve o `dup_guard`), a hora da infração continua sendo descartada (`data_infracao` ainda é `date`), não há bucket nenhum, e a `form-submit` vai logar um `confirm_dispatch_sem_efeito` falso sempre que confirmar uma falha — a função no banco ainda ecoa o argumento. Ruído conhecido, não defeito.
+
+**Arquivos:** só este. Nenhuma mudança de código — o deploy publicou o que já estava commitado.
+
+**Estado deixado:** produção com as Edge corrigidas rodando contra o schema **antigo**, que é a ordem certa e foi medida nas duas direções. Local intocado nesta sessão.
