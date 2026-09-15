@@ -13,6 +13,7 @@ Quando um fato deixa de ser "novidade" e vira "como as coisas são", ele migra p
 
 ## Convenção para atualizar
 
+
 Ao fim de uma sessão que mudou algo relevante:
 
 1. Atualize a seção **Estado atual** (ela é sempre reescrita, nunca acumulada).
@@ -35,6 +36,7 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 
 ## Estado atual
 
+
 *Atualizado em 2026-09-10.*
 
 - **Branch de trabalho:** `feat/verificacao-radar-inmetro-rj`, **55 commits à frente de `main`**, que segue parada em `a3b2142` (2025-10-29). Desde 09/09 essa branch carrega **dois assuntos independentes** — a feature do radar e a consolidação do schema —, o que encarece ainda mais a revisão do merge. Todo o produto — pagamento, Edge Functions, pipeline, redesenho — vive só na feature branch. **Merge para `main` nunca aconteceu.**
@@ -56,70 +58,46 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 
 ## Próximos passos
 
-*Escrito em 2026-09-10.* A lista de **Pendências** mais abaixo é o backlog, ordenado por custo de adiar. Esta seção é o **roteiro**: o que fazer, em que ordem, e o que trava o quê. Quem destrava cada passo está dito — vários dependem do Klaus e nenhuma sessão consegue contorná-los.
+*Atualizado em 2026-09-15.* Esta seção é o **roteiro em ordem de execução**. A lista de **Pendências**, logo abaixo, é o backlog completo — inclui o que não está no caminho crítico.
 
-### ⚠️ Uma ordem que não pode ser invertida
+### Concluídos
 
-**As Edge Functions corrigidas têm de ir para produção ANTES da reconstrução do schema.** O motivo é concreto:
+Detalhe de cada um na entrada de sessão correspondente, ao fim do arquivo.
 
-- **Edge nova + schema antigo:** funciona. O `form-submit` novo escreve `document_status` explicitamente, e o schema antigo (nullable, com `DEFAULT`) aceita o valor.
-- **Edge antiga + schema novo:** **quebra todo envio de formulário.** O `form-submit` que está publicado usa `.upsert()` sem informar `document_status`; no schema novo a coluna é `NOT NULL` sem `DEFAULT`, e o PostgREST sempre monta o ramo `INSERT` — resultado, `23502` em cada submissão.
+1. ~~**Excluir as Edge Functions órfãs**~~ — 11/09. `submit-form` (pública, sem JWT, com mass assignment), `force-log-webhook` e `teste-fetch-inmetro`. Restaram só as três do repositório.
+2. ~~**Publicar as Edge Functions corrigidas**~~ — 11/09. `form-submit` v60 e `stripe-webhook` v53, conferidas campo a campo contra o repositório. A checagem pré-deploy revelou que a produção estava **um mês atrás** do repositório no webhook, reescrevendo o `id` de sessões existentes.
+3. ~~**Reconstruir o schema remoto**~~ — 11/09. `db reset --linked` com as quatro migrations; impressão digital de 201 itens idêntica à do local.
+4. ~~**Rodar o fluxo ponta a ponta com PDF e e-mail**~~ — 15/09, **em modo sandbox**. `completed / sent / emailed`, com a Resend reportando `delivered` e o sha256 do PDF conferido. Não prova entregabilidade do domínio próprio.
 
-Inverter a ordem derruba o produto para todo cliente pagante. Se as duas coisas não puderem sair juntas, **a Edge vai primeiro**.
+**A ordem entre os passos 2 e 3 não era arbitrária** e vale guardar como lição: a Edge tinha de subir **antes** do schema. A `form-submit` antiga usa `.upsert()` sem informar `document_status`, que passou a ser `NOT NULL` sem `DEFAULT` — invertida, a ordem teria quebrado todo envio de formulário. As duas direções foram medidas antes do deploy.
 
-As duas direções foram **medidas**, não deduzidas: o `23502` apareceu em 09/09 numa tentativa de omitir a coluna no upsert, e em 10/09 a Edge nova rodou contra um schema antigo simulado (`document_status` de volta a nullable com `DEFAULT`) — inserção e reenvio, ambos `ok: true`.
+### Em aberto, na ordem em que devem acontecer
 
-### O roteiro
+5. 🔴 **RENOVAR O DOMÍNIO `amorecorrer.com`.** — *destrava: Klaus. **É o único item com prazo correndo.***
+   Expirado desde 23/08/2026; assinatura cancelada, sem renovação automática, R$ 96,08. Ver pendência 24. Confirmar com a Hostinger o prazo real da carência é a ação de hoje. **Os passos 6 e 7 pressupõem um domínio que continue seu.**
 
-0. 🔴 **RENOVAR O DOMÍNIO `amorecorrer.com`.** — *destrava: Klaus, e tem prazo.*
-   Expirado desde 23/08/2026, assinatura cancelada, sem renovação automática, R$ 96,08. Ver pendência 24. **Os passos 4 e 6 pressupõem um domínio que continue seu; o 5 já foi feito sem ele.** Confirmar com a Hostinger o prazo real da carência é a ação de hoje.
+6. **Destravar a entrega de e-mail pelo domínio próprio** (pendência 16). — *depende do 5.*
+   O domínio já foi **criado na conta da Resend** em 13/09 (região `sa-east-1`) — o que falta é DNS. A zona segue estacionada em `ns1/ns2.dns-expired.com`. Restaurada a zona (renovar a hospedagem ou apontar os NS para outro provedor), publicar os quatro registros abaixo e a verificação roda em segundos.
 
-
-1. ~~**Excluir a Edge `submit-form` do projeto remoto.**~~ **FEITO em 11/09/2026** — o Klaus excluiu `submit-form` e `force-log-webhook` pelo Dashboard, e `teste-fetch-inmetro` pelo CLI. Conferido pela API: sobraram só as três funções do repositório.
-
-2. ~~**Publicar as Edge Functions corrigidas.**~~ **FEITO em 11/09/2026** — `form-submit` v60 e `stripe-webhook` v53, publicadas pelo CLI a partir do disco. **Conferido campo a campo pela API que o código publicado bate com o repositório**, e que `verify_jwt` continua `false` nas duas (vem do `config.toml`, sem precisar de flag).
-
-   **O deploy levou mais do que as correções desta sessão, e isso foi achado na checagem pré-deploy:** a `stripe-webhook` publicada era **anterior ao commit `b20f40c` (18/08)**. Ou seja, por quase um mês a produção rodou a versão que faz upsert com `on_conflict=case_id` mandando `id: session.id` — **reescrevendo o `id` de uma linha existente** quando o mesmo caso ganha uma segunda sessão de checkout, e quebrando a FK `dispatches.stripe_session_id`. O `CLAUDE.md` descrevia a invariante correta o tempo todo; era o repositório que estava certo e a produção que estava errada. A lição fica: **antes de qualquer deploy, comparar o publicado com o repositório** — foi o que pegou isto.
-
-   **Efeito colateral conhecido até o passo 3:** a `form-submit` nova lê o retorno de `confirm_dispatch`, mas a função no banco remoto ainda é a antiga, que ecoa o argumento `success`. Toda vez que ela confirmar uma **falha**, vai logar um `confirm_dispatch_sem_efeito` falso. É ruído, não defeito, e some com a reconstrução do schema.
-
-3. ~~**Reconstruir o schema remoto a partir da baseline**~~ **FEITO em 11/09/2026.** `supabase db reset --linked` aplicou as quatro migrations; o histórico do remoto saiu de 12 linhas antigas para as 4 atuais, alinhado com o local. Antes de apertar, reconferido que `form_submissions`, `stripe_sessions`, `dispatches`, `generated_documents`, `auth.users` e `storage.objects` estavam **todos em zero**.
-
-   **Verificado por impressão digital, não por confiança no comando:** 201 itens de schema (colunas, constraints, índices, triggers, funções e policies) com `md5 6009693c9b06bcfa0eb60e307a6a3325` — **idêntico ao local**. E as correções conferidas uma a uma direto em produção: os dois buckets presentes e privados (nunca existiram lá), `document_status` NOT NULL sem default, `data_infracao` como `timestamp` sem fuso, `payment_at` como `timestamptz`, zero colunas mortas, zero trigger de `dup_guard`, e `confirm_dispatch` com chave inexistente devolvendo **`false`**.
-
-   Com isto, o ruído do `confirm_dispatch_sem_efeito` falso — previsto no passo 2 — **deixa de existir**: a função no banco não ecoa mais o argumento. E a ordem de deploy foi respeitada: Edge nova primeiro, schema depois.
-
-   **Produção passou a carregar o schema do radar** (5 tabelas, 3 funções e o bucket `evidencias`), vazio e inerte, por decisão do Klaus — mantém o histórico linear e local e remoto idênticos.
-
-4. **Destravar a entrega de e-mail** (pendência 16). — *destrava: Klaus; **depende do passo 0**.*
-   **Meio passo dado em 13/09/2026:** o domínio foi criado na conta da Resend (região `sa-east-1`, São Paulo) e os registros já existem. Descoberto no mesmo dia, e corrige o diagnóstico anterior: a conta tinha **zero domínios** — o `amorecorrer.com` nunca havia sido adicionado. O erro `550 — domain is not verified` de 03/09 não era "adicionado e pendente", era "inexistente".
-
-   **O que falta é DNS, e só.** A zona segue estacionada (`ns1/ns2.dns-expired.com`, todo TXT respondendo "This domain is expired at Hostinger!" — remedido em 13/09). Enquanto durar, não há onde publicar. Ou renovar a hospedagem na Hostinger, ou apontar os NS para outro provedor de DNS.
-
-   **Os quatro registros a publicar** (gerados para este domínio; se o domínio for recriado, a chave DKIM muda e estes deixam de valer):
-
-   | Tipo | Nome | Valor | Prioridade |
+| Tipo | Nome | Valor | Prioridade |
    |---|---|---|---|
    | TXT | `resend._domainkey` | `p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC4FBVOUNyUmu+x7ZtHieLZoITNwNRjynQz/8qcYKAEFAX5qDgXyeJHZRZdB8t9fMyxtmgK0Kz5OD4GF6uvNpPS1AO4mTNfGs6hsjWbVD9fMfEp54wL/vwoLl3mo5x9f1rNO9TQvbhiPWltKLlmvKtRil1ipeMBqUxJVrxvOQQgowIDAQAB` | — |
    | MX | `send` | `feedback-smtp.sa-east-1.amazonses.com` | 10 |
    | TXT | `send` | `v=spf1 include:amazonses.com ~all` | — |
    | CNAME | `rsend` | `send.forge.rmta.net` | — |
 
-   Publicados os quatro, a verificação é um comando e roda em segundos. **Atenção:** o pipeline entrega por **SMTP** (`aiosmtplib` → `smtp.resend.com`), não pela API da Resend — o plugin serve para administrar a conta e diagnosticar, não muda o caminho de entrega do produto.
+   **Atenção:** se o domínio for recriado na Resend, a chave DKIM muda e estes registros deixam de valer. E o pipeline entrega por **SMTP** (`aiosmtplib` → `smtp.resend.com`), não pela API — o plugin administra a conta, não muda o caminho de entrega.
 
-5. ~~**Rodar o fluxo ponta a ponta com PDF e e-mail de verdade.**~~ **FEITO em 15/09/2026, em modo sandbox** — e a premissa de que dependia do passo 4 estava **errada**. A Resend tem o remetente `onboarding@resend.dev`, que funciona sem domínio verificado; a limitação é o destinatário, que só pode ser o e-mail da própria conta. Trocando `MAIL_FROM` e o destinatário do caso, o ciclo inteiro roda hoje.
+   Feito isso, **repetir o passo 4 em modo real**: é o que prova entregabilidade, alinhamento DKIM/SPF e caixa de entrada versus spam.
 
-   Resultado: `document_status = completed`, `dispatches.status = sent`, `generated_documents.status = emailed`, e — a prova que não vem do nosso banco — a API da Resend reportando **`delivered`**. O PDF foi baixado do Storage e o **sha256 bate** com o gravado (3054 bytes, PDF 1.4, 1 página).
-
-   **A peça é documento, e a hora chegou nela.** O texto cita nome, CPF, CNH, placa, nº do auto, órgão, local, as duas velocidades, invoca o art. 218 do CTB e pede nulidade — e registra *"a infração foi registrada em 12 de março de 2026, **às 21h07**"*. Antes da correção de `data_infracao` para `timestamp`, a hora era descartada no cast e a IA nunca a veria. **É o primeiro artefato que prova aquela correção do lado do cliente.**
-
-   **O que este teste NÃO prova:** entregabilidade a partir de `amorecorrer.com` (o remetente foi o sandbox), alinhamento DKIM/SPF do domínio próprio, e colocação em caixa de entrada versus spam. Isso continua dependendo dos passos 4 e, antes dele, da renovação do domínio.
-
-6. **Endereço estável para o pipeline** (pendência 11). — *decisão do Klaus.*
+7. **Endereço estável para o pipeline** (pendência 11). — *decisão do Klaus.*
    `DISPATCH_PIPELINE_URL` aponta para um túnel `trycloudflare` morto. Sem endereço estável não há produção, mesmo com e-mail funcionando.
 
-7. **Merge para `main`** (pendência 1). — *decisão do Klaus.*
-   55 commits à frente, `main` parada desde 2025-10-29. A branch atual carrega **dois assuntos independentes** (radar e consolidação de schema); separá-los antes do merge deixaria a revisão viável. Os cinco commits de 09/09 e o de 10/09 saem limpos a partir de `5acaead`.
+8. **Desenhar a caixa de e-mail do produto** (pendência 25). — *depende do 5; decisão do Klaus.*
+   Hoje o contato oficial é `amorecorrer@gmail.com`, exposto no rodapé e nas duas páginas jurídicas, e o recurso sai de `no-reply@` sem caminho de resposta. Enviar e receber **não competem**: a Resend usa MX em `send.`, deixando o MX da raiz livre.
+
+9. **Merge para `main`** (pendência 1). — *decisão do Klaus.*
+   55 commits à frente, `main` parada desde 2025-10-29. A branch carrega **dois assuntos independentes** (radar e consolidação de schema); separá-los antes do merge deixaria a revisão viável.
 
 ### Fora do caminho crítico
 
@@ -128,9 +106,66 @@ As duas direções foram **medidas**, não deduzidas: o `23502` apareceu em 09/0
 - **Dois conjuntos de `.env`** (pendência 13) — decidir o canônico e apagar o outro.
 - **`tests/edge-functions/README.md` desatualizado** — e nenhum dos quatro scripts cobre PDF ou e-mail.
 
+## Pendências e decisões em aberto
+
+Os números são **identificadores estáveis**, não posições — sessões antigas referenciam por eles, então nada é renumerado. As abertas vêm ordenadas pelo custo de continuar adiando; as resolvidas ficam ao fim, para o histórico.
+
+### Abertas (17)
+
+24. 🔴 **O domínio `amorecorrer.com` está EXPIRADO, e há prazo correndo.** Descoberto em 14/09/2026 pela API da Hostinger, não pelo painel. Venceu em **23/08/2026**; a assinatura `.COM Domain` está **cancelada**, com `is_auto_renewed: false` e renovação de **R$ 96,08**. O registro na Verisign mostra 2027-08-23 porque a Hostinger fez a renovação protetiva no registro para segurar o nome durante a carência — **não porque esteja pago**. Se a carência vencer sem pagamento, a Hostinger apaga o domínio, recebe o crédito de volta e o nome cai; depois vem redemption, muito mais caro, e depois qualquer um registra. A janela típica é de 30 a 45 dias a partir de 23/08 — **o prazo exato só a Hostinger confirma, e é a primeira coisa a fazer**. Isso explica a zona em `dns-expired.com`, a ausência de hospedagem e a ausência de plano de e-mail: não é o DNS que quebrou, é o serviço que acabou. **Todo o resto do roteiro de e-mail pressupõe um domínio que continue seu.**
+25. **A caixa de e-mail do produto não foi desenhada, e hoje o contato oficial é um Gmail.** `VITE_CONTACT_EMAIL = amorecorrer@gmail.com`, exposto no rodapé (`Rodape.tsx:41`) e nas páginas de **Termos** (`Terms.tsx:117`) e **Privacidade** (`Privacy.tsx:160`). Some-se a isso que o recurso sai de `no-reply@amorecorrer.com`: **quem responder ao e-mail do próprio recurso fala com o vazio**. O brainstorming de 14/09 foi interrompido pelo achado da pendência 24, mas levantou o essencial — enviar e receber **não competem**: a Resend usa MX no subdomínio `send.`, deixando o MX da raiz livre, então destravar o envio não fecha nenhuma porta de recebimento. Os caminhos são encaminhamento gratuito (Cloudflare Email Routing, sem caixa real), caixa de verdade (Hostinger Mail, plano novo — a conta tem **zero** pedidos de e-mail), recebimento programático (Resend inbound, webhook e não caixa humana), ou manter o Gmail. **Decidir depois da 24.**
+1. **`main` está 36 commits atrás** (conferido em 31/08/2026). Todo o produto vive numa feature branch há dez meses. Quanto mais tempo passa, mais caro fica o merge.
+2. **O preço cheio existe só no sandbox** e a regra que escolhe entre os dois é decidida pelo navegador — quem limpar o `sessionStorage` paga R$ 19,99 para sempre. Duas frentes em aberto: replicar produto e preços na conta live, e decidir se a urgência vira um prazo global de campanha (verificável no servidor) ou continua por visitante.
+3. **Autenticação bearer está desligada.** O bloco de validação está comentado em `create-checkout-session` e `form-submit`, com `verify_jwt = false`. Toda a infra existe e não é usada; hoje `form-submit` é protegida só por whitelist de origem e existência do `case_id`.
+6. **Sem fila durável no pipeline.** Se o processo morrer entre o `202` e o `finish`, o caso fica preso em `generating` sem retry.
+7. **O redesenho acabou; falta o merge.** Fases 0–4 entregues e já commitadas na feature branch — o que continua faltando é o merge para `main`. Ver o item 1.
+8. **"HTML da peça" é oferta ou aspiração?** O card que prometia uma versão HTML saiu na Fase 3 porque o pipeline só entrega PDF. Decidir entre implementar ou deixar fora.
+11. **`DISPATCH_PIPELINE_URL` aponta para um túnel `trycloudflare` morto.** Esses endereços são efêmeros e morrem junto com o processo do túnel. Ou se sobe um túnel novo a cada sessão, ou se adota um endereço estável (Cloudflare Tunnel nomeado, ou o pipeline publicado). **É o item que falta para produção.** Em teste local, `http://host.docker.internal:8000/hooks/dispatch` resolve, porque a Edge roda em container e não enxerga o `127.0.0.1` do host.
+16. **O domínio `amorecorrer.com` não está verificado no Resend — e o bloqueio é a zona DNS.** *Atualizada em 13/09/2026:* o domínio foi **criado na conta** (região sa-east-1) e os quatro registros a publicar estão no passo 4 do roteiro. Antes disso a conta não tinha domínio nenhum, o que corrige o diagnóstico original.
+
+    Registro original: Descoberto em 03/09/2026: com `PIPELINE_ENV=production`, o envio é recusado no estágio DATA com `550 — The amorecorrer.com domain is not verified`, e com o remetente de teste `onboarding@resend.dev` a conta só aceita entregar em `klaus.velando@gmail.com`. Conexão, STARTTLS, AUTH e destinatário passam: **as credenciais estão certas, falta a verificação de domínio em resend.com/domains.** É bloqueio de produção — enquanto durar, todo caso pago gera o PDF, guarda no Storage e termina em `document_status = failed`.
+17. **`VITE_STRIPE_PUBLISHABLE_KEY` é uma chave `pk_live_…` órfã.** Convive com um `sk_test_…` no mesmo arquivo e não é consumida em lugar nenhum de `src/`. Inofensiva hoje só por não ter consumidor; remover ou trocar pela chave de teste encerra o risco.
+12. **Rotacionar a chave `service_role`.** Ela está em texto puro em `server/.env` e `pipeline/.env` (fora do git, verificado), mas foi impressa no transcript da sessão de 31/08 por um comando de inspeção mal filtrado. Nada saiu da máquina; rotacionar é barato e encerra a dúvida.
+18. **A feature do radar está bloqueada por uma fase que hoje não roda.** A Fase 0.5 do `PLANO-verificacao-radar-inmetro.md` é declarada bloqueante e exige 8 a 10 casos reais de excesso de velocidade no RJ já em `form_submissions`, para conferir manualmente se os certificados das notificações aparecem na base pública. O produto não lançou: não existem casos reais. São três saídas, e a escolha é do Klaus — (a) usar notificações suas ou de conhecidos, (b) coletar amostras de notificações do DETRAN-RJ e da Prefeitura, ou (c) inverter a ordem: entregar as Fases 1–3 e 6 como triagem interna, sem conectar à IA jurídica, e adiar a decisão até haver volume real. A (c) é a que o próprio plano descreve como "cenário desfavorável", e a medição de 03/09 a tornou a mais provável. **Em 06/09 a (c) começou a acontecer de fato:** as Fases 0, 1 e 3 foram entregues como infraestrutura de triagem, sem nenhuma conexão com a IA jurídica. O bloqueio agora vale só para a Fase 5.4.
+21. **De onde a ingestão vai buscar o arquivo?** `servicos.rbmlq.gov.br` recusa o IP de saída da Supabase — erro de TCP, antes de TLS —, enquanto `dados.gov.br`, `www.gov.br` e `example.com` respondem normalmente da mesma função. É bloqueio específico daquele servidor contra ASN de nuvem, não geografia. Consequências: **o GitHub Actions, alternativa que o plano listava, roda em IPs da Azure e quase certamente apanha igual**; e o `server/` (Express) baixa hoje **só porque roda na sua máquina, na sua conexão** — numa nuvem, provavelmente apanha também. As saídas são (a) rodar a ingestão numa máquina em rede aceita, inclusive a sua, agendada, ou (b) um proxy de saída em rede aceita, com o runtime na nuvem só consumindo. **Nenhuma das duas está desenhada no plano**, e a escolha é de arquitetura. Regra que ficou escrita: antes de escolher runtime, teste o alcance com um `curl` a partir do endereço real de produção — é barato e já se provou que o palpite erra.
+19. **O prazo de retenção dos snapshots do INMETRO é decisão sua.** O arquivo do RJ tem 3,66 MB e é regenerado quase todo dia: guardar tudo custa ~1,35 GB por ano contra 1 GB de free tier, e o bucket estoura em torno de nove meses. A proposta escrita no plano é 90 dias completos e depois um snapshot por mês, **nunca apagando** um snapshot citado como evidência em `radar_consultas_log` — essa exceção não é negociável, é o que sustenta peça já protocolada. O que é negociável é o prazo: é troca entre custo de storage e profundidade da prova histórica. Precisa estar decidido antes de ligar o cron da Fase 2.
+22. **`UNIQUE` em `form_token` foi pedido e recusado, com motivo.** Em 09/09/2026 a restauração da constraint entrou no escopo e foi retirada na hora de aplicar: `src/pages/Form.tsx` guarda o token em `localStorage` sob chave fixa e só gera outro se não houver nenhum, então **um cliente que compre duas vezes no mesmo navegador reenvia o MESMO `form_token` com `case_id` novo** — o UNIQUE recusaria o envio de quem já pagou. Foi provavelmente por isso que ele caiu lá atrás. Para restaurá-lo, escopar o token por caso no front vem primeiro.
+13. **Dois conjuntos completos de `.env` convivem** — os `.env.local` (local) e os `.env` (nuvem), cada um com seu próprio segredo HMAC. Foi essa duplicação que criou a armadilha corrigida em 31/08. Enquanto os dois existirem, qualquer divergência de precedência entre serviços volta a quebrar o fluxo em silêncio. Decidir qual é o canônico e apagar ou renomear o outro.
+
+
+---
+
+### Resolvidas (8)
+
+4. ~~**Duas assinaturas de `attempt_dispatch` convivem**~~ **Resolvida em 09/09/2026, e a premissa estava errada:** só existe `p_case_id`, em produção e no local — a variante `case_id` foi dropada pela antiga `20260206120000`. O que existia de verdade era o desperdício nos callers, que tentavam as duas e engoliam o erro da inválida; corrigido junto.
+5. ~~**Dark mode órfão.**~~ **Resolvido em 26/08/2026:** toggle implementado e `.dark` reescrito a partir da paleta (ver a entrada da sessão abaixo).
+9. ~~**O disco `C:` está cheio.**~~ **Resolvido em 01/09/2026** — e o alvo não era o `C:`: o que estava cheio por dentro era o `docker_data.vhdx` (33,8 GB). `docker system prune -a --volumes` liberou 8,65 GB internos e a stack voltou a subir. Ver a entrada da sessão.
+10. ~~**O projeto Supabase da nuvem está pausado.**~~ **Resolvido em 06/09/2026:** despausado para o teste de alcance da pendência 20. Voltou a `ACTIVE` e a consumir recursos — **decidir se fica de pé ou se repausa.** De quebra, com a API no ar confirmou-se que `submit-form` (v17) e `force-log-webhook` (v9) **existem mesmo no remoto** e não estão no repositório: são órfãs, e continuam sem issue aberta. **Em 09/09/2026 li o código da `submit-form` e ela é pior que órfã:** `verify_jwt=false`, `Access-Control-Allow-Origin: '*'`, sem rate limit, e faz `.insert({ ...formData, ... })` — mass assignment na tabela central, com o chamador podendo escrever qualquer coluna, inclusive `document_status`. Hoje é inerte **por acidente**: o insert inclui `payment_status`, coluna que não existe em `form_submissions`, então toda chamada morre no PostgREST. É o mesmo fóssil que quebrava a antiga `20250101000005`. Excluir é prioridade.
+14. ~~**O bucket `generated-recursos` não está versionado.**~~ **Resolvida em 10/09/2026:** `20260910000000_bucket_generated_recursos.sql` cria o bucket privado e sua policy, no mesmo padrão que a migration do radar já usava para o `evidencias`. Entrou como migration própria, e não dentro da baseline, para rodar tanto num remoto reconstruído quanto num que só receba `db push`. **O que faltava não era só a migration:** buckets e policies de Storage não entram no `supabase db dump`, que cobre apenas o schema `public` — nenhum diff de migration pegaria a regressão. Por isso entrou junto `tests/sql/assert_storage_setup.sql`, que falha se qualquer um dos dois buckets sumir ou virar público. Verificado do zero: asserção falhando antes, `db reset`, asserção passando, e upload real com a chave de service role devolvendo 200.
+15. ~~**A redação por IA nunca foi testada de ponta a ponta.**~~ **Resolvida em 03/09/2026 quanto à IA:** com a chave carregada, o DeepSeek redigiu peça própria e verificável (3168 bytes contra 1957 do placeholder), citando os dados do formulário e a legislação. A outra metade — o e-mail — não passou, e virou a pendência 16.
+20. ~~**Não se sabe se uma Edge Function consegue alcançar o endpoint do INMETRO.**~~ **Respondido em 06/09/2026: não consegue.** Ver a entrada da sessão e a §5.1.2 do plano. Virou a pendência 21, que é maior.
+23. ~~**O schema remoto precisa ser RECONSTRUÍDO, não reparado.**~~ **Resolvida em 11/09/2026** com `db reset --linked`, e verificada por impressão digital de schema idêntica à do local. Produção deixou de rodar o schema antigo.
+
+## Marcos anteriores
+
+
+Reconstruídos do histórico de commits. Datas são do commit, não de deploy.
+
+| Período | Marco |
+|---|---|
+| **Set 2025** | MVP da landing page sobre o stack `vite_react_shadcn_ts`; primeira conexão com Supabase. |
+| **Out 2025** | Identidade visual própria — saída dos assets do Lovable, favicon v2 e a paleta que o projeto usa até hoje. Último commit que chegou à `main`. |
+| **Nov 2025** | Integração de pagamento: `createCheckout()`, envio do formulário para a Edge Function, migração para `import.meta.env`, primeiras Edge Functions. |
+| **Dez 2025** | Supabase local completo e testado; CORS nas Edge Functions; migrations idempotentes após o primeiro deploy remoto; página de cancelamento e persistência do `case_id`; scripts de teste das Edge Functions. Correção de timeout de CPU. |
+| **Jan 2026** | Checkout passa a usar produto do catálogo (`STRIPE_PRICE_ID`) em vez de produto dinâmico; formulário ganha os campos do auto de infração; FKs `stripe_session_id`/`case_id` acertadas e ordem das migrations ajustada para evitar referência circular; `payment_status` migra para `stripe_sessions`; lookup de CEP via ViaCEP. |
+| **Mai 2026** | Refatoração do pipeline de `generated_documents`: contrato do `202`, trabalho pesado assíncrono e `confirm_dispatch` fechado pela API Express. |
+| **Jun 2026** | `stripe-webhook` reescrito para INSERT-se-novo / PATCH-seletivo, preservando o `id` da linha e a FK `dispatches.stripe_session_id`. |
+| **Ago 2026** | Documentação de contexto (`CLAUDE.md`) e redesenho visual, Fases 0–1. Endurecimento do formulário, auditoria técnica da home e passada de acabamento: tema escuro, landmarks, card social e limpeza de dependências mortas. |
+
 ---
 
 ## Registro de sessões
+
 
 ### 2026-08-15 — Formulário e páginas de retorno (Fase 4)
 
@@ -239,59 +274,8 @@ Também apareceu um defeito que a leitura estática não tinha revelado: o CTA d
 
 ---
 
-## Marcos anteriores
-
-Reconstruídos do histórico de commits. Datas são do commit, não de deploy.
-
-| Período | Marco |
-|---|---|
-| **Set 2025** | MVP da landing page sobre o stack `vite_react_shadcn_ts`; primeira conexão com Supabase. |
-| **Out 2025** | Identidade visual própria — saída dos assets do Lovable, favicon v2 e a paleta que o projeto usa até hoje. Último commit que chegou à `main`. |
-| **Nov 2025** | Integração de pagamento: `createCheckout()`, envio do formulário para a Edge Function, migração para `import.meta.env`, primeiras Edge Functions. |
-| **Dez 2025** | Supabase local completo e testado; CORS nas Edge Functions; migrations idempotentes após o primeiro deploy remoto; página de cancelamento e persistência do `case_id`; scripts de teste das Edge Functions. Correção de timeout de CPU. |
-| **Jan 2026** | Checkout passa a usar produto do catálogo (`STRIPE_PRICE_ID`) em vez de produto dinâmico; formulário ganha os campos do auto de infração; FKs `stripe_session_id`/`case_id` acertadas e ordem das migrations ajustada para evitar referência circular; `payment_status` migra para `stripe_sessions`; lookup de CEP via ViaCEP. |
-| **Mai 2026** | Refatoração do pipeline de `generated_documents`: contrato do `202`, trabalho pesado assíncrono e `confirm_dispatch` fechado pela API Express. |
-| **Jun 2026** | `stripe-webhook` reescrito para INSERT-se-novo / PATCH-seletivo, preservando o `id` da linha e a FK `dispatches.stripe_session_id`. |
-| **Ago 2026** | Documentação de contexto (`CLAUDE.md`) e redesenho visual, Fases 0–1. Endurecimento do formulário, auditoria técnica da home e passada de acabamento: tema escuro, landmarks, card social e limpeza de dependências mortas. |
-
----
-
-## Pendências e decisões em aberto
-
-Ordenadas pelo custo de continuar adiando.
-
-24. 🔴 **O domínio `amorecorrer.com` está EXPIRADO, e há prazo correndo.** Descoberto em 14/09/2026 pela API da Hostinger, não pelo painel. Venceu em **23/08/2026**; a assinatura `.COM Domain` está **cancelada**, com `is_auto_renewed: false` e renovação de **R$ 96,08**. O registro na Verisign mostra 2027-08-23 porque a Hostinger fez a renovação protetiva no registro para segurar o nome durante a carência — **não porque esteja pago**. Se a carência vencer sem pagamento, a Hostinger apaga o domínio, recebe o crédito de volta e o nome cai; depois vem redemption, muito mais caro, e depois qualquer um registra. A janela típica é de 30 a 45 dias a partir de 23/08 — **o prazo exato só a Hostinger confirma, e é a primeira coisa a fazer**. Isso explica a zona em `dns-expired.com`, a ausência de hospedagem e a ausência de plano de e-mail: não é o DNS que quebrou, é o serviço que acabou. **Todo o resto do roteiro de e-mail pressupõe um domínio que continue seu.**
-25. **A caixa de e-mail do produto não foi desenhada, e hoje o contato oficial é um Gmail.** `VITE_CONTACT_EMAIL = amorecorrer@gmail.com`, exposto no rodapé (`Rodape.tsx:41`) e nas páginas de **Termos** (`Terms.tsx:117`) e **Privacidade** (`Privacy.tsx:160`). Some-se a isso que o recurso sai de `no-reply@amorecorrer.com`: **quem responder ao e-mail do próprio recurso fala com o vazio**. O brainstorming de 14/09 foi interrompido pelo achado da pendência 24, mas levantou o essencial — enviar e receber **não competem**: a Resend usa MX no subdomínio `send.`, deixando o MX da raiz livre, então destravar o envio não fecha nenhuma porta de recebimento. Os caminhos são encaminhamento gratuito (Cloudflare Email Routing, sem caixa real), caixa de verdade (Hostinger Mail, plano novo — a conta tem **zero** pedidos de e-mail), recebimento programático (Resend inbound, webhook e não caixa humana), ou manter o Gmail. **Decidir depois da 24.**
-1. **`main` está 36 commits atrás** (conferido em 31/08/2026). Todo o produto vive numa feature branch há dez meses. Quanto mais tempo passa, mais caro fica o merge.
-2. **O preço cheio existe só no sandbox** e a regra que escolhe entre os dois é decidida pelo navegador — quem limpar o `sessionStorage` paga R$ 19,99 para sempre. Duas frentes em aberto: replicar produto e preços na conta live, e decidir se a urgência vira um prazo global de campanha (verificável no servidor) ou continua por visitante.
-3. **Autenticação bearer está desligada.** O bloco de validação está comentado em `create-checkout-session` e `form-submit`, com `verify_jwt = false`. Toda a infra existe e não é usada; hoje `form-submit` é protegida só por whitelist de origem e existência do `case_id`.
-4. ~~**Duas assinaturas de `attempt_dispatch` convivem**~~ **Resolvida em 09/09/2026, e a premissa estava errada:** só existe `p_case_id`, em produção e no local — a variante `case_id` foi dropada pela antiga `20260206120000`. O que existia de verdade era o desperdício nos callers, que tentavam as duas e engoliam o erro da inválida; corrigido junto.
-5. ~~**Dark mode órfão.**~~ **Resolvido em 26/08/2026:** toggle implementado e `.dark` reescrito a partir da paleta (ver a entrada da sessão abaixo).
-6. **Sem fila durável no pipeline.** Se o processo morrer entre o `202` e o `finish`, o caso fica preso em `generating` sem retry.
-7. **O redesenho acabou; falta o merge.** Fases 0–4 entregues e já commitadas na feature branch — o que continua faltando é o merge para `main`. Ver o item 1.
-8. **"HTML da peça" é oferta ou aspiração?** O card que prometia uma versão HTML saiu na Fase 3 porque o pipeline só entrega PDF. Decidir entre implementar ou deixar fora.
-9. ~~**O disco `C:` está cheio.**~~ **Resolvido em 01/09/2026** — e o alvo não era o `C:`: o que estava cheio por dentro era o `docker_data.vhdx` (33,8 GB). `docker system prune -a --volumes` liberou 8,65 GB internos e a stack voltou a subir. Ver a entrada da sessão.
-10. ~~**O projeto Supabase da nuvem está pausado.**~~ **Resolvido em 06/09/2026:** despausado para o teste de alcance da pendência 20. Voltou a `ACTIVE` e a consumir recursos — **decidir se fica de pé ou se repausa.** De quebra, com a API no ar confirmou-se que `submit-form` (v17) e `force-log-webhook` (v9) **existem mesmo no remoto** e não estão no repositório: são órfãs, e continuam sem issue aberta. **Em 09/09/2026 li o código da `submit-form` e ela é pior que órfã:** `verify_jwt=false`, `Access-Control-Allow-Origin: '*'`, sem rate limit, e faz `.insert({ ...formData, ... })` — mass assignment na tabela central, com o chamador podendo escrever qualquer coluna, inclusive `document_status`. Hoje é inerte **por acidente**: o insert inclui `payment_status`, coluna que não existe em `form_submissions`, então toda chamada morre no PostgREST. É o mesmo fóssil que quebrava a antiga `20250101000005`. Excluir é prioridade.
-11. **`DISPATCH_PIPELINE_URL` aponta para um túnel `trycloudflare` morto.** Esses endereços são efêmeros e morrem junto com o processo do túnel. Ou se sobe um túnel novo a cada sessão, ou se adota um endereço estável (Cloudflare Tunnel nomeado, ou o pipeline publicado). **É o item que falta para produção.** Em teste local, `http://host.docker.internal:8000/hooks/dispatch` resolve, porque a Edge roda em container e não enxerga o `127.0.0.1` do host.
-14. ~~**O bucket `generated-recursos` não está versionado.**~~ **Resolvida em 10/09/2026:** `20260910000000_bucket_generated_recursos.sql` cria o bucket privado e sua policy, no mesmo padrão que a migration do radar já usava para o `evidencias`. Entrou como migration própria, e não dentro da baseline, para rodar tanto num remoto reconstruído quanto num que só receba `db push`. **O que faltava não era só a migration:** buckets e policies de Storage não entram no `supabase db dump`, que cobre apenas o schema `public` — nenhum diff de migration pegaria a regressão. Por isso entrou junto `tests/sql/assert_storage_setup.sql`, que falha se qualquer um dos dois buckets sumir ou virar público. Verificado do zero: asserção falhando antes, `db reset`, asserção passando, e upload real com a chave de service role devolvendo 200.
-15. ~~**A redação por IA nunca foi testada de ponta a ponta.**~~ **Resolvida em 03/09/2026 quanto à IA:** com a chave carregada, o DeepSeek redigiu peça própria e verificável (3168 bytes contra 1957 do placeholder), citando os dados do formulário e a legislação. A outra metade — o e-mail — não passou, e virou a pendência 16.
-16. **O domínio `amorecorrer.com` não está verificado no Resend — e o bloqueio é a zona DNS.** *Atualizada em 13/09/2026:* o domínio foi **criado na conta** (região sa-east-1) e os quatro registros a publicar estão no passo 4 do roteiro. Antes disso a conta não tinha domínio nenhum, o que corrige o diagnóstico original.
-
-    Registro original: Descoberto em 03/09/2026: com `PIPELINE_ENV=production`, o envio é recusado no estágio DATA com `550 — The amorecorrer.com domain is not verified`, e com o remetente de teste `onboarding@resend.dev` a conta só aceita entregar em `klaus.velando@gmail.com`. Conexão, STARTTLS, AUTH e destinatário passam: **as credenciais estão certas, falta a verificação de domínio em resend.com/domains.** É bloqueio de produção — enquanto durar, todo caso pago gera o PDF, guarda no Storage e termina em `document_status = failed`.
-17. **`VITE_STRIPE_PUBLISHABLE_KEY` é uma chave `pk_live_…` órfã.** Convive com um `sk_test_…` no mesmo arquivo e não é consumida em lugar nenhum de `src/`. Inofensiva hoje só por não ter consumidor; remover ou trocar pela chave de teste encerra o risco.
-12. **Rotacionar a chave `service_role`.** Ela está em texto puro em `server/.env` e `pipeline/.env` (fora do git, verificado), mas foi impressa no transcript da sessão de 31/08 por um comando de inspeção mal filtrado. Nada saiu da máquina; rotacionar é barato e encerra a dúvida.
-18. **A feature do radar está bloqueada por uma fase que hoje não roda.** A Fase 0.5 do `PLANO-verificacao-radar-inmetro.md` é declarada bloqueante e exige 8 a 10 casos reais de excesso de velocidade no RJ já em `form_submissions`, para conferir manualmente se os certificados das notificações aparecem na base pública. O produto não lançou: não existem casos reais. São três saídas, e a escolha é do Klaus — (a) usar notificações suas ou de conhecidos, (b) coletar amostras de notificações do DETRAN-RJ e da Prefeitura, ou (c) inverter a ordem: entregar as Fases 1–3 e 6 como triagem interna, sem conectar à IA jurídica, e adiar a decisão até haver volume real. A (c) é a que o próprio plano descreve como "cenário desfavorável", e a medição de 03/09 a tornou a mais provável. **Em 06/09 a (c) começou a acontecer de fato:** as Fases 0, 1 e 3 foram entregues como infraestrutura de triagem, sem nenhuma conexão com a IA jurídica. O bloqueio agora vale só para a Fase 5.4.
-20. ~~**Não se sabe se uma Edge Function consegue alcançar o endpoint do INMETRO.**~~ **Respondido em 06/09/2026: não consegue.** Ver a entrada da sessão e a §5.1.2 do plano. Virou a pendência 21, que é maior.
-21. **De onde a ingestão vai buscar o arquivo?** `servicos.rbmlq.gov.br` recusa o IP de saída da Supabase — erro de TCP, antes de TLS —, enquanto `dados.gov.br`, `www.gov.br` e `example.com` respondem normalmente da mesma função. É bloqueio específico daquele servidor contra ASN de nuvem, não geografia. Consequências: **o GitHub Actions, alternativa que o plano listava, roda em IPs da Azure e quase certamente apanha igual**; e o `server/` (Express) baixa hoje **só porque roda na sua máquina, na sua conexão** — numa nuvem, provavelmente apanha também. As saídas são (a) rodar a ingestão numa máquina em rede aceita, inclusive a sua, agendada, ou (b) um proxy de saída em rede aceita, com o runtime na nuvem só consumindo. **Nenhuma das duas está desenhada no plano**, e a escolha é de arquitetura. Regra que ficou escrita: antes de escolher runtime, teste o alcance com um `curl` a partir do endereço real de produção — é barato e já se provou que o palpite erra.
-19. **O prazo de retenção dos snapshots do INMETRO é decisão sua.** O arquivo do RJ tem 3,66 MB e é regenerado quase todo dia: guardar tudo custa ~1,35 GB por ano contra 1 GB de free tier, e o bucket estoura em torno de nove meses. A proposta escrita no plano é 90 dias completos e depois um snapshot por mês, **nunca apagando** um snapshot citado como evidência em `radar_consultas_log` — essa exceção não é negociável, é o que sustenta peça já protocolada. O que é negociável é o prazo: é troca entre custo de storage e profundidade da prova histórica. Precisa estar decidido antes de ligar o cron da Fase 2.
-22. **`UNIQUE` em `form_token` foi pedido e recusado, com motivo.** Em 09/09/2026 a restauração da constraint entrou no escopo e foi retirada na hora de aplicar: `src/pages/Form.tsx` guarda o token em `localStorage` sob chave fixa e só gera outro se não houver nenhum, então **um cliente que compre duas vezes no mesmo navegador reenvia o MESMO `form_token` com `case_id` novo** — o UNIQUE recusaria o envio de quem já pagou. Foi provavelmente por isso que ele caiu lá atrás. Para restaurá-lo, escopar o token por caso no front vem primeiro.
-23. ~~**O schema remoto precisa ser RECONSTRUÍDO, não reparado.**~~ **Resolvida em 11/09/2026** com `db reset --linked`, e verificada por impressão digital de schema idêntica à do local. Produção deixou de rodar o schema antigo.
-13. **Dois conjuntos completos de `.env` convivem** — os `.env.local` (local) e os `.env` (nuvem), cada um com seu próprio segredo HMAC. Foi essa duplicação que criou a armadilha corrigida em 31/08. Enquanto os dois existirem, qualquer divergência de precedência entre serviços volta a quebrar o fluxo em silêncio. Decidir qual é o canônico e apagar ou renomear o outro.
-
-
----
-
 ## Sessão de 26/08/2026 — `/impeccable polish` na home
+
 
 Passada de acabamento sobre os achados da auditoria (`/impeccable audit src/pages/Home.tsx`, mesma sessão: 14/20).
 
@@ -333,6 +317,7 @@ Passada de acabamento sobre os achados da auditoria (`/impeccable audit src/page
 
 ## Sessão de 26/08/2026 — `/impeccable optimize`
 
+
 Medido antes e depois no build de produção, celular 390×844, CPU a 4×, rede a ~1,6 Mbps / 150 ms de latência, mediana de 3 passadas com contexto de navegador limpo em cada uma.
 
 | Métrica | Antes | Depois |
@@ -364,6 +349,7 @@ Medido antes e depois no build de produção, celular 390×844, CPU a 4×, rede 
 
 ## Sessão de 26/08/2026 — `colorize` + `polish` + `adapt`
 
+
 Fecha os achados da re-auditoria (19/20).
 
 **Contorno de campo (P2, SC 1.4.11).** `--input` era `150 14% 86%` (#D6E0DB): **1,35:1** contra o branco, onde a norma pede 3:1 da borda de um controle — e o campo não tem preenchimento próprio para carregar essa informação no lugar dela. Testada toda a faixa da paleta: só a **Sálvia de Margem** (`150 20% 47.1%`, #609078) passa nos dois lugares onde o campo aparece — **3,65:1** sobre o branco e **3,15:1** sobre o papel creme do somente-leitura. Os intermediários (#6C9D85) passavam no branco e reprovavam no creme. Nenhum valor novo entrou: é cor já nomeada da paleta, em papel novo. No escuro o token subiu junto, para **4,08:1**. A espessura continua 1px — aqui a borda delimita, não significa. `.choice` usa o mesmo token e acompanhou.
@@ -393,6 +379,7 @@ O `<p class="form-readonly">` foi conferido e **não** entra na regra: é texto,
 ---
 
 ## Sessão de 26/08/2026 (tarde) — `colorize` + `clarify` + `polish`
+
 
 **Simulação de daltonismo (colorize).** O eixo semântico desta direção é vermelho contra verde, e ele nunca tinha sido testado. Simulação dicromática (Viénot, Brettel & Mollon 1999, severidade total) sobre a paleta:
 
@@ -424,6 +411,7 @@ Essa última corrigiu também uma **inconsistência de vocabulário**: o rótulo
 
 ## Sessão de 26/08/2026 (noite) — `/impeccable harden`
 
+
 **Tela em branco no caminho de quem pagou.** Defeito que eu mesmo abri na divisão por rota: sem `ErrorBoundary`, um `import()` que falha derruba a árvore inteira. Medido antes da correção em `/form`: **1 nó no `<body>`, texto vazio, nada clicável**. O gatilho não é hipotético — basta um deploy enquanto o usuário está no Stripe para o `index.html` em cache apontar para um chunk que já foi apagado.
 
 Duas camadas de correção:
@@ -449,6 +437,7 @@ Duas camadas de correção:
 ---
 
 ## Sessão de 26/08/2026 (madrugada) — `polish` + `animate`
+
 
 Fecha os dois achados da terceira auditoria (20/20).
 
@@ -486,6 +475,7 @@ Medido com o relógio da animação pausado e `currentTime` controlado:
 
 ## Sessão de 27/08/2026 — `polish`: SC 1.3.5
 
+
 Uma linha, fechando o único achado da quarta auditoria.
 
 `emailConfirma` tinha `autoComplete="off"`. O campo coleta o e-mail **do próprio usuário**, e o SC 1.3.5 (Identify Input Purpose, nível AA) exige que esse propósito seja legível por máquina — `off` é exatamente o que o esconde. Agora declara `email`, como o campo principal.
@@ -500,6 +490,7 @@ O `off` estava lá para impedir que o autopreenchimento "esvaziasse" a conferên
 ---
 
 ## Sessão de 31/08/2026 — Teste do fluxo ponta a ponta: o dispatch estava morto em silêncio
+
 
 Sessão de diagnóstico, não de construção. Uma linha de código mudou; o resto é o mapa de onde o fluxo quebra e por quê. Relatório completo publicado como artifact: `Onde o Fluxo Quebra`.
 
@@ -546,6 +537,7 @@ Sobre o disco, vale registrar como foi confirmado, porque o sintoma engana: os c
 ---
 
 ## Sessão de 01/09/2026 — O fluxo ponta a ponta voltou a fechar
+
 
 Continuação direta do diagnóstico de 31/08. Klaus liberou espaço em `C:` e pediu novo teste. As seis etapas rodaram e o ciclo fechou.
 
@@ -595,6 +587,7 @@ E o PDF é artefato real, não registro otimista: baixei do Storage — 1952 byt
 
 ## Sessão de 03/09/2026 — A redação por IA passou; o e-mail é que não sai da conta Resend
 
+
 Terceira rodada seguida de teste ponta a ponta, agora fechando as duas pontas que 01/09 tinha deixado abertas (pendência 15): **a redação por IA e o envio de e-mail**. A primeira passou. A segunda encontrou um bloqueio real de produção, e não no nosso código.
 
 **A peça agora é redigida de verdade.** Com `DEEPSEEK_API_KEY` carregada, o PDF saltou de **1957 bytes** (o placeholder do modo sem IA) para **3168 bytes** de texto próprio. Extraí o conteúdo do PDF baixado do Storage para não confiar no tamanho: a peça cita o nº do auto, o órgão, a data, a placa, as velocidades permitida e aferida do formulário, invoca o art. 218, I do CTB, a Resolução CONTRAN 798/2020 e a Portaria INMETRO 544/2012, e fecha com pedido de nulidade. É documento, não resumo — o que a `PRODUCT.md` promete. **Metade da pendência 15 está encerrada.**
@@ -642,6 +635,7 @@ O bucket `generated-recursos` **de novo** não existia na stack recriada, e de n
 
 ## Sessão de 03/09/2026 (noite) — Revisão do plano do radar: 297 instrumentos mal classificados e uma arquitetura fantasma
 
+
 Sessão de análise, sem uma linha de código de produção tocada. O `PLANO-verificacao-radar-inmetro.md` chegou como arquivo solto na raiz — especificação de uma feature nova: para cada multa de velocidade no RJ, dizer se o radar tinha certificado de verificação do INMETRO vigente na data da infração. Li o documento inteiro e cruzei cada afirmação sua com o código e com o dado real. **Os dois lados tinham problema, e os problemas eram independentes.**
 
 **O plano conversava com um sistema que não existe mais.** A seção de estado do repositório descrevia a arquitetura **n8n**: `Form.tsx` mandando o formulário direto ao webhook com Basic Auth em `VITE_N8N_BASIC_USER`/`PASS`, Edge Functions `submit-form` e `force-log-webhook`, e a integração final desenhada como "payload → n8n → IA jurídica". Nada disso existe: `grep -rn "n8n" src/` não retorna uma linha, há exatamente três Edge Functions, e a perna de IA é `server/` + `pipeline/` desde a refatoração. Confirmou-se só uma coisa daquela seção — os tipos gerados em `src/integrations/supabase/types.ts` estão mesmo vazios. **A "dívida de segurança de prioridade alta" que o plano mandava abrir como issue tinha sido resolvida junto com a saída do n8n.**
@@ -670,6 +664,7 @@ Sessão de análise, sem uma linha de código de produção tocada. O `PLANO-ver
 ---
 
 ## Sessão de 06/09/2026 — A feature do radar saiu do papel: Fases 0, 1 e 3
+
 
 Klaus mandou implementar o plano. Registrei que continuo achando que o lançamento deveria vir antes — o produto ainda não consegue enviar um e-mail (pendência 16) — e implementei na ordem que sobrevive aos bloqueios: **Fases 0, 1 e 3**, que rodam inteiras no Supabase local, sem depender do projeto remoto pausado nem de casos reais de multa. As Fases 2, 4, 5 e 6 não foram tocadas.
 
@@ -712,6 +707,7 @@ Os testes cobrem as bordas de data inclusivas nos dois extremos, a lacuna entre 
 
 ## Sessão de 06/09/2026 (noite) — A medição de CPU passou; o que quase impediu a medição virou o problema
 
+
 Objetivo único: fechar a §5.1.1 do plano, que eu mesmo tinha escrito como pré-requisito da Fase 2 depois de notar que a frase "cabem folgadamente numa Edge Function" era hipótese, não medição.
 
 **Primeiro o limite, depois o número.** Confirmei na documentação do Supabase, e não de memória: **2s de CPU por request** — I/O assíncrono não conta — e 256 MB de memória. É o limite de CPU que morde neste trabalho, não o de *wall clock*, porque a ingestão é computação pura sem espera.
@@ -751,6 +747,7 @@ O caminho que funcionou foi subir o arquivo no **Storage local** e buscá-lo de 
 
 ## Sessão de 06/09/2026 (fim da noite) — O projeto voltou, e a Fase 2 perdeu o runtime que tinha
 
+
 Uma pergunta só, a pendência 20: uma Edge Function **hospedada** alcança o endpoint do INMETRO? Para responder era preciso despausar o projeto da nuvem, o que encerrou a pendência 10 de quebra.
 
 **O projeto voltou em segundos.** `INACTIVE` → `COMING_UP` → REST respondendo em ~3s. Com a API de gestão no ar, um item que o reconhecimento da Fase 0 tinha deixado aberto se fechou sozinho: **`submit-form` (v17, última alteração em out/2025) e `force-log-webhook` (v9, jan/2026) existem mesmo no remoto**, ambas `ACTIVE`, e nenhuma das duas está no repositório. São órfãs, como o plano suspeitava — e continuam sem issue.
@@ -789,6 +786,7 @@ Sobram duas saídas, e **nenhuma está desenhada no plano**: rodar a ingestão n
 
 ## Sessão de 09/09/2026 — Doze migrations viraram uma, e o caminho do despacho parou de errar em silêncio
 
+
 Começou como um pedido de teste do fluxo com PDF e e-mail, virou um plano para as pendências 14 e 16 — e o Klaus redirecionou para o que estava por baixo: **as migrations descreviam o mesmo schema três vezes, e ninguém conseguia ler o banco sem simular a fita inteira de cabeça.**
 
 **O diagnóstico dele estava certo, e os números são piores do que "risco de conflito".** Das doze migrations aplicadas em produção, **duas têm efeito líquido zero**: a `20250101000005` teve suas três funções dropadas pela `20260109134917`, e a `20251231000001` (`data_infracao` → timestamptz) foi desfeita pela migration seguinte. `attempt_dispatch` era definida em três arquivos, `confirm_dispatch` em três, `calculate_dup_guard` em dois com assinaturas diferentes. Só a `20260109134917` traz **vinte comandos `drop`** desmontando o que as três anteriores acabaram de montar.
@@ -826,6 +824,7 @@ Começou como um pedido de teste do fluxo com PDF e e-mail, virou um plano para 
 
 ## Sessão de 10/09/2026 — O bucket entrou na migration, e a lacuna era maior que a migration
 
+
 Continuação direta de 09/09. O Klaus perguntou se o bucket já estava nas migrations; **não estava** — a pendência 14 tinha sobrevivido à sessão inteira porque o trabalho foi redirecionado para a consolidação do schema. Conferido antes de responder: uma única linha `INSERT INTO storage.buckets` em todas as migrations, a do `evidencias`; banco local com só um bucket depois do reset; e **o projeto remoto sem bucket nenhum**.
 
 **A parte que não era óbvia:** versionar o bucket resolve o sintoma, mas não impediria a regressão de voltar em silêncio. `supabase db dump` cobre **apenas o schema `public`** — buckets e policies de Storage ficam de fora dele. Foi por isso que três sessões seguidas de teste ponta a ponta morreram no mesmo lugar sem que nenhum diff acusasse nada. A migration entrou com uma asserção junto, `tests/sql/assert_storage_setup.sql`, que confere os dois buckets, que ambos são privados e que a policy existe.
@@ -848,6 +847,7 @@ Ela é um bloco `DO` único de propósito: `supabase db query -f` não aceita ma
 ---
 
 ## Sessão de 11/09/2026 — As Edge Functions foram para produção, e a checagem pré-deploy achou um mês de divergência
+
 
 Passos 1 e 2 do roteiro, executados pelo Klaus no terminal dele. A branch também foi empurrada para o GitHub pela primeira vez.
 
@@ -874,6 +874,7 @@ A `form-submit` publicada, por outro lado, já estava em dia com o `36a01a3` ape
 
 ## Sessão de 11/09/2026 (noite) — O schema corrigido chegou a produção
 
+
 Passo 3 do roteiro. `supabase db reset --linked` reconstruiu o banco remoto a partir das quatro migrations. O histórico saiu de 12 linhas antigas para as 4 atuais, alinhado com o local.
 
 **A ordem foi respeitada, e ela importava.** As Edge Functions corrigidas subiram primeiro (passo 2, mais cedo hoje); só depois o schema. A ordem inversa teria quebrado todo envio de formulário, porque a `form-submit` antiga usa `.upsert()` sem informar `document_status` — coluna que passou a ser `NOT NULL` sem `DEFAULT`. Isso estava medido nas duas direções antes de qualquer deploy.
@@ -897,7 +898,41 @@ Descoberto de quebra: `storage.buckets` agora tem um trigger `protect_delete` qu
 
 ---
 
+## Sessão de 13–14/09/2026 — O domínio da empresa está expirado, e ninguém sabia
+
+
+Duas sessões curtas que começaram administrativas e terminaram num achado que reordena o projeto inteiro.
+
+**13/09 — o domínio entrou na Resend.** Com o plugin instalado, a primeira pergunta foi se ele completava o passo 4. **Não completa**, e vale entender por quê: o plugin dá acesso à API da Resend, e o bloqueio nunca foi acesso — é DNS. A zona segue estacionada (`ns1/ns2.dns-expired.com`, todo TXT respondendo o aviso de expiração), então não há onde publicar os registros.
+
+O que ele rendeu foi **corrigir o diagnóstico**: a conta da Resend tinha **zero domínios**. O `550 — domain is not verified` de 03/09 nunca significou "adicionado e aguardando verificação"; significava "não existe na conta". Criei o domínio em `sa-east-1` (São Paulo — produto e destinatários brasileiros), e os quatro registros a publicar estão no passo 4 do roteiro. São **quatro**, não três: o `CNAME rsend` é infraestrutura nova da Resend e não aparecia na descrição de 08/09.
+
+Ficou registrado também que **o pipeline entrega por SMTP**, não pela API — o plugin administra e diagnostica, não muda o caminho de entrega do produto.
+
+**14/09 — a pergunta era sobre caixa de e-mail; a resposta foi outra.** Ao explorar o contexto para desenhar a caixa, apareceu que o contato oficial do produto é `amorecorrer@gmail.com`, exposto no rodapé e nas duas páginas jurídicas — e que o recurso sai de `no-reply@`, sem caminho de resposta. Isso virou a pendência 25.
+
+Mas ao consultar a conta da Hostinger para saber se havia plano de e-mail, veio o que importa:
+
+```
+domínio       amorecorrer.com   status: Expired    venceu 23/08/2026
+assinatura    .COM Domain       cancelled          auto-renovação: OFF
+renovação     R$ 96,08
+plano de e-mail                 nenhum (zero pedidos)
+hospedagem                      nenhuma
+```
+
+**E a contradição com o registro é aparente, não real.** A Verisign mostra expiração em 2027-08-23 porque a Hostinger fez a renovação protetiva no registro para segurar o nome durante a carência — comportamento padrão de registrador, reversível: não pago dentro da janela, eles apagam e recebem o crédito de volta.
+
+Isso explica retroativamente tudo que vínhamos tratando como mistério desde 08/09 — a zona no parking, a ausência de hospedagem, a ausência de plano de e-mail. **Não é que o DNS quebrou; é que o serviço acabou.** Virou a pendência 24, a única do projeto com prazo correndo.
+
+**Uma lição de método:** o painel da Hostinger não tinha sido consultado em nenhuma das sessões anteriores. O diagnóstico de 08/09 — "a zona está estacionada no parking de expirados" — estava certo no sintoma e **incompleto na causa**, e a causa era a que tinha prazo. Quando um sintoma aponta para um provedor, vale consultar a conta daquele provedor antes de desenhar em cima do sintoma.
+
+**Arquivos:** `PROGRESSO.md`. Nenhuma mudança de código; o único efeito externo foi criar o domínio na conta da Resend.
+
+---
+
 ## Sessão de 15/09/2026 — O fluxo fechou inteiro, com PDF redigido e e-mail entregue
+
 
 Foi o pedido que abriu a sessão de 09/09 — testar o fluxo completo, incluindo geração do PDF e envio por e-mail — e que passou uma semana classificado como bloqueado. **Estava mal classificado.**
 
@@ -932,33 +967,3 @@ E a Edge **não alcançou o pipeline**, com o erro `connection closed before mes
 
 
 ---
-
-## Sessão de 13–14/09/2026 — O domínio da empresa está expirado, e ninguém sabia
-
-Duas sessões curtas que começaram administrativas e terminaram num achado que reordena o projeto inteiro.
-
-**13/09 — o domínio entrou na Resend.** Com o plugin instalado, a primeira pergunta foi se ele completava o passo 4. **Não completa**, e vale entender por quê: o plugin dá acesso à API da Resend, e o bloqueio nunca foi acesso — é DNS. A zona segue estacionada (`ns1/ns2.dns-expired.com`, todo TXT respondendo o aviso de expiração), então não há onde publicar os registros.
-
-O que ele rendeu foi **corrigir o diagnóstico**: a conta da Resend tinha **zero domínios**. O `550 — domain is not verified` de 03/09 nunca significou "adicionado e aguardando verificação"; significava "não existe na conta". Criei o domínio em `sa-east-1` (São Paulo — produto e destinatários brasileiros), e os quatro registros a publicar estão no passo 4 do roteiro. São **quatro**, não três: o `CNAME rsend` é infraestrutura nova da Resend e não aparecia na descrição de 08/09.
-
-Ficou registrado também que **o pipeline entrega por SMTP**, não pela API — o plugin administra e diagnostica, não muda o caminho de entrega do produto.
-
-**14/09 — a pergunta era sobre caixa de e-mail; a resposta foi outra.** Ao explorar o contexto para desenhar a caixa, apareceu que o contato oficial do produto é `amorecorrer@gmail.com`, exposto no rodapé e nas duas páginas jurídicas — e que o recurso sai de `no-reply@`, sem caminho de resposta. Isso virou a pendência 25.
-
-Mas ao consultar a conta da Hostinger para saber se havia plano de e-mail, veio o que importa:
-
-```
-domínio       amorecorrer.com   status: Expired    venceu 23/08/2026
-assinatura    .COM Domain       cancelled          auto-renovação: OFF
-renovação     R$ 96,08
-plano de e-mail                 nenhum (zero pedidos)
-hospedagem                      nenhuma
-```
-
-**E a contradição com o registro é aparente, não real.** A Verisign mostra expiração em 2027-08-23 porque a Hostinger fez a renovação protetiva no registro para segurar o nome durante a carência — comportamento padrão de registrador, reversível: não pago dentro da janela, eles apagam e recebem o crédito de volta.
-
-Isso explica retroativamente tudo que vínhamos tratando como mistério desde 08/09 — a zona no parking, a ausência de hospedagem, a ausência de plano de e-mail. **Não é que o DNS quebrou; é que o serviço acabou.** Virou a pendência 24, a única do projeto com prazo correndo.
-
-**Uma lição de método:** o painel da Hostinger não tinha sido consultado em nenhuma das sessões anteriores. O diagnóstico de 08/09 — "a zona está estacionada no parking de expirados" — estava certo no sintoma e **incompleto na causa**, e a causa era a que tinha prazo. Quando um sintoma aponta para um provedor, vale consultar a conta daquele provedor antes de desenhar em cima do sintoma.
-
-**Arquivos:** `PROGRESSO.md`. Nenhuma mudança de código; o único efeito externo foi criar o domínio na conta da Resend.
