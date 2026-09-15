@@ -43,6 +43,8 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 - **O fluxo funciona ponta a ponta em ambiente local, com a peça redigida pela IA** — verificado em 03/09/2026 por dois caminhos independentes, não presumido: um roteiro de 23 verificações via API (checkout → webhook assinado → formulário → dispatch → PDF no Storage com SHA-256 conferido → idempotência → CORS) e a jornada real no navegador, com ViaCEP, validação e recibo. `document_status = completed`, `dispatches.status = sent`.
 - **A redação por IA está provada.** Com `DEEPSEEK_API_KEY` carregada, o PDF sai com peça própria (3168 bytes contra 1957 do placeholder), citando os dados do formulário, o art. 218 I do CTB e a Resolução CONTRAN 798/2020.
 - **O e-mail é o que falta, e o bloqueio não é de código:** o Resend recusa com `550 — domínio amorecorrer.com não verificado`. Transporte, TLS e credenciais funcionam; falta verificar o domínio em resend.com/domains. Em `production`, enquanto isso, todo caso pago termina em `failed`.
+- 🔴 **O domínio `amorecorrer.com` está expirado desde 23/08/2026** e a renovação automática está desligada. É o único item do projeto com prazo correndo — ver pendência 24.
+- **O fluxo foi provado ponta a ponta COM e-mail entregue** (15/09/2026), em modo sandbox: PDF redigido pela IA, guardado no Storage com sha256 conferido, enviado e reportado como `delivered` pela API da Resend. O que falta provar é a entrega a partir do domínio próprio.
 - **Produção já roda o schema e as Edge Functions corrigidos** (11/09/2026): `form-submit` v60, `stripe-webhook` v53, e as quatro migrations aplicadas com impressão digital idêntica à do local. **Falta para produção:** verificar o domínio no Resend e um endereço estável do pipeline (o `DISPATCH_PIPELINE_URL` aponta para um túnel efêmero morto).
 - **O schema virou quatro migrations** (09-10/09/2026): uma baseline que consolida as doze antigas e as corrige, as duas do radar, e a do bucket `generated-recursos`. O bucket deixou de ser passo manual de Dashboard. Quinze anomalias foram levantadas e quatorze fechadas — entre elas a detecção de duplicata, que nunca funcionou, e a hora da infração, que o cliente digitava e o sistema descartava.
 - **A feature de verificação de radar começou, em branch própria:** `feat/verificacao-radar-inmetro-rj`, com as **Fases 0, 1 e 3 entregues e verificadas** — fixture de 23 casos-limite, cinco tabelas com RLS, bucket `evidencias` criado por migration, e a RPC `verificar_medidor` com 24 testes de borda passando sobre banco reconstruído do zero. Nada disso toca o fluxo que já funciona: são tabelas e uma função novas, sem nenhuma alteração em `src/`, `server/` ou `pipeline/`.
@@ -69,6 +71,10 @@ As duas direções foram **medidas**, não deduzidas: o `23502` apareceu em 09/0
 
 ### O roteiro
 
+0. 🔴 **RENOVAR O DOMÍNIO `amorecorrer.com`.** — *destrava: Klaus, e tem prazo.*
+   Expirado desde 23/08/2026, assinatura cancelada, sem renovação automática, R$ 96,08. Ver pendência 24. **Os passos 4 e 6 pressupõem um domínio que continue seu; o 5 já foi feito sem ele.** Confirmar com a Hostinger o prazo real da carência é a ação de hoje.
+
+
 1. ~~**Excluir a Edge `submit-form` do projeto remoto.**~~ **FEITO em 11/09/2026** — o Klaus excluiu `submit-form` e `force-log-webhook` pelo Dashboard, e `teste-fetch-inmetro` pelo CLI. Conferido pela API: sobraram só as três funções do repositório.
 
 2. ~~**Publicar as Edge Functions corrigidas.**~~ **FEITO em 11/09/2026** — `form-submit` v60 e `stripe-webhook` v53, publicadas pelo CLI a partir do disco. **Conferido campo a campo pela API que o código publicado bate com o repositório**, e que `verify_jwt` continua `false` nas duas (vem do `config.toml`, sem precisar de flag).
@@ -85,7 +91,7 @@ As duas direções foram **medidas**, não deduzidas: o `23502` apareceu em 09/0
 
    **Produção passou a carregar o schema do radar** (5 tabelas, 3 funções e o bucket `evidencias`), vazio e inerte, por decisão do Klaus — mantém o histórico linear e local e remoto idênticos.
 
-4. **Destravar a entrega de e-mail** (pendência 16). — *destrava: Klaus, e não é código.*
+4. **Destravar a entrega de e-mail** (pendência 16). — *destrava: Klaus; **depende do passo 0**.*
    **Meio passo dado em 13/09/2026:** o domínio foi criado na conta da Resend (região `sa-east-1`, São Paulo) e os registros já existem. Descoberto no mesmo dia, e corrige o diagnóstico anterior: a conta tinha **zero domínios** — o `amorecorrer.com` nunca havia sido adicionado. O erro `550 — domain is not verified` de 03/09 não era "adicionado e pendente", era "inexistente".
 
    **O que falta é DNS, e só.** A zona segue estacionada (`ns1/ns2.dns-expired.com`, todo TXT respondendo "This domain is expired at Hostinger!" — remedido em 13/09). Enquanto durar, não há onde publicar. Ou renovar a hospedagem na Hostinger, ou apontar os NS para outro provedor de DNS.
@@ -254,6 +260,8 @@ Reconstruídos do histórico de commits. Datas são do commit, não de deploy.
 
 Ordenadas pelo custo de continuar adiando.
 
+24. 🔴 **O domínio `amorecorrer.com` está EXPIRADO, e há prazo correndo.** Descoberto em 14/09/2026 pela API da Hostinger, não pelo painel. Venceu em **23/08/2026**; a assinatura `.COM Domain` está **cancelada**, com `is_auto_renewed: false` e renovação de **R$ 96,08**. O registro na Verisign mostra 2027-08-23 porque a Hostinger fez a renovação protetiva no registro para segurar o nome durante a carência — **não porque esteja pago**. Se a carência vencer sem pagamento, a Hostinger apaga o domínio, recebe o crédito de volta e o nome cai; depois vem redemption, muito mais caro, e depois qualquer um registra. A janela típica é de 30 a 45 dias a partir de 23/08 — **o prazo exato só a Hostinger confirma, e é a primeira coisa a fazer**. Isso explica a zona em `dns-expired.com`, a ausência de hospedagem e a ausência de plano de e-mail: não é o DNS que quebrou, é o serviço que acabou. **Todo o resto do roteiro de e-mail pressupõe um domínio que continue seu.**
+25. **A caixa de e-mail do produto não foi desenhada, e hoje o contato oficial é um Gmail.** `VITE_CONTACT_EMAIL = amorecorrer@gmail.com`, exposto no rodapé (`Rodape.tsx:41`) e nas páginas de **Termos** (`Terms.tsx:117`) e **Privacidade** (`Privacy.tsx:160`). Some-se a isso que o recurso sai de `no-reply@amorecorrer.com`: **quem responder ao e-mail do próprio recurso fala com o vazio**. O brainstorming de 14/09 foi interrompido pelo achado da pendência 24, mas levantou o essencial — enviar e receber **não competem**: a Resend usa MX no subdomínio `send.`, deixando o MX da raiz livre, então destravar o envio não fecha nenhuma porta de recebimento. Os caminhos são encaminhamento gratuito (Cloudflare Email Routing, sem caixa real), caixa de verdade (Hostinger Mail, plano novo — a conta tem **zero** pedidos de e-mail), recebimento programático (Resend inbound, webhook e não caixa humana), ou manter o Gmail. **Decidir depois da 24.**
 1. **`main` está 36 commits atrás** (conferido em 31/08/2026). Todo o produto vive numa feature branch há dez meses. Quanto mais tempo passa, mais caro fica o merge.
 2. **O preço cheio existe só no sandbox** e a regra que escolhe entre os dois é decidida pelo navegador — quem limpar o `sessionStorage` paga R$ 19,99 para sempre. Duas frentes em aberto: replicar produto e preços na conta live, e decidir se a urgência vira um prazo global de campanha (verificável no servidor) ou continua por visitante.
 3. **Autenticação bearer está desligada.** O bloco de validação está comentado em `create-checkout-session` e `form-submit`, com `verify_jwt = false`. Toda a infra existe e não é usada; hoje `form-submit` é protegida só por whitelist de origem e existência do `case_id`.
@@ -921,3 +929,36 @@ E a Edge **não alcançou o pipeline**, com o erro `connection closed before mes
 **Arquivos:** só este. Nenhuma mudança de código. O `.env.local` recebeu um bloco temporário com SMTP e DeepSeek e foi **restaurado do backup** ao fim (conferido: 63 linhas, zero credenciais residuais, `SMTP_HOST` vazio de novo).
 
 **Estado deixado:** Supabase local de pé com as quatro migrations e as tabelas do fluxo **vazias** (o caso de teste foi removido). Express, pipeline e `functions serve` encerrados. O PDF gerado está no scratchpad da sessão.
+
+
+---
+
+## Sessão de 13–14/09/2026 — O domínio da empresa está expirado, e ninguém sabia
+
+Duas sessões curtas que começaram administrativas e terminaram num achado que reordena o projeto inteiro.
+
+**13/09 — o domínio entrou na Resend.** Com o plugin instalado, a primeira pergunta foi se ele completava o passo 4. **Não completa**, e vale entender por quê: o plugin dá acesso à API da Resend, e o bloqueio nunca foi acesso — é DNS. A zona segue estacionada (`ns1/ns2.dns-expired.com`, todo TXT respondendo o aviso de expiração), então não há onde publicar os registros.
+
+O que ele rendeu foi **corrigir o diagnóstico**: a conta da Resend tinha **zero domínios**. O `550 — domain is not verified` de 03/09 nunca significou "adicionado e aguardando verificação"; significava "não existe na conta". Criei o domínio em `sa-east-1` (São Paulo — produto e destinatários brasileiros), e os quatro registros a publicar estão no passo 4 do roteiro. São **quatro**, não três: o `CNAME rsend` é infraestrutura nova da Resend e não aparecia na descrição de 08/09.
+
+Ficou registrado também que **o pipeline entrega por SMTP**, não pela API — o plugin administra e diagnostica, não muda o caminho de entrega do produto.
+
+**14/09 — a pergunta era sobre caixa de e-mail; a resposta foi outra.** Ao explorar o contexto para desenhar a caixa, apareceu que o contato oficial do produto é `amorecorrer@gmail.com`, exposto no rodapé e nas duas páginas jurídicas — e que o recurso sai de `no-reply@`, sem caminho de resposta. Isso virou a pendência 25.
+
+Mas ao consultar a conta da Hostinger para saber se havia plano de e-mail, veio o que importa:
+
+```
+domínio       amorecorrer.com   status: Expired    venceu 23/08/2026
+assinatura    .COM Domain       cancelled          auto-renovação: OFF
+renovação     R$ 96,08
+plano de e-mail                 nenhum (zero pedidos)
+hospedagem                      nenhuma
+```
+
+**E a contradição com o registro é aparente, não real.** A Verisign mostra expiração em 2027-08-23 porque a Hostinger fez a renovação protetiva no registro para segurar o nome durante a carência — comportamento padrão de registrador, reversível: não pago dentro da janela, eles apagam e recebem o crédito de volta.
+
+Isso explica retroativamente tudo que vínhamos tratando como mistério desde 08/09 — a zona no parking, a ausência de hospedagem, a ausência de plano de e-mail. **Não é que o DNS quebrou; é que o serviço acabou.** Virou a pendência 24, a única do projeto com prazo correndo.
+
+**Uma lição de método:** o painel da Hostinger não tinha sido consultado em nenhuma das sessões anteriores. O diagnóstico de 08/09 — "a zona está estacionada no parking de expirados" — estava certo no sintoma e **incompleto na causa**, e a causa era a que tinha prazo. Quando um sintoma aponta para um provedor, vale consultar a conta daquele provedor antes de desenhar em cima do sintoma.
+
+**Arquivos:** `PROGRESSO.md`. Nenhuma mudança de código; o único efeito externo foi criar o domínio na conta da Resend.
