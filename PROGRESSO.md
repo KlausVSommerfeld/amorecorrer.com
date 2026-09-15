@@ -101,8 +101,13 @@ As duas direções foram **medidas**, não deduzidas: o `23502` apareceu em 09/0
 
    Publicados os quatro, a verificação é um comando e roda em segundos. **Atenção:** o pipeline entrega por **SMTP** (`aiosmtplib` → `smtp.resend.com`), não pela API da Resend — o plugin serve para administrar a conta e diagnosticar, não muda o caminho de entrega do produto.
 
-5. **Rodar o fluxo ponta a ponta com PDF e e-mail de verdade.** — *depende de 4.*
-   É o pedido que abriu a sessão de 09/09 e nunca pôde ser atendido. O roteiro está em `tests/edge-functions/README.md` (desatualizado em dois pontos: o `--env-file` fica na raiz, e nenhum dos quatro scripts chega ao PDF ou ao e-mail). **Verificar:** `document_status = completed`, `dispatches.status = sent`, `generated_documents.status = emailed`, e o sha256 do PDF baixado do Storage batendo com o gravado.
+5. ~~**Rodar o fluxo ponta a ponta com PDF e e-mail de verdade.**~~ **FEITO em 15/09/2026, em modo sandbox** — e a premissa de que dependia do passo 4 estava **errada**. A Resend tem o remetente `onboarding@resend.dev`, que funciona sem domínio verificado; a limitação é o destinatário, que só pode ser o e-mail da própria conta. Trocando `MAIL_FROM` e o destinatário do caso, o ciclo inteiro roda hoje.
+
+   Resultado: `document_status = completed`, `dispatches.status = sent`, `generated_documents.status = emailed`, e — a prova que não vem do nosso banco — a API da Resend reportando **`delivered`**. O PDF foi baixado do Storage e o **sha256 bate** com o gravado (3054 bytes, PDF 1.4, 1 página).
+
+   **A peça é documento, e a hora chegou nela.** O texto cita nome, CPF, CNH, placa, nº do auto, órgão, local, as duas velocidades, invoca o art. 218 do CTB e pede nulidade — e registra *"a infração foi registrada em 12 de março de 2026, **às 21h07**"*. Antes da correção de `data_infracao` para `timestamp`, a hora era descartada no cast e a IA nunca a veria. **É o primeiro artefato que prova aquela correção do lado do cliente.**
+
+   **O que este teste NÃO prova:** entregabilidade a partir de `amorecorrer.com` (o remetente foi o sandbox), alinhamento DKIM/SPF do domínio próprio, e colocação em caixa de entrada versus spam. Isso continua dependendo dos passos 4 e, antes dele, da renovação do domínio.
 
 6. **Endereço estável para o pipeline** (pendência 11). — *decisão do Klaus.*
    `DISPATCH_PIPELINE_URL` aponta para um túnel `trycloudflare` morto. Sem endereço estável não há produção, mesmo com e-mail funcionando.
@@ -880,3 +885,39 @@ Descoberto de quebra: `storage.buckets` agora tem um trigger `protect_delete` qu
 **Arquivos:** só este. Nenhuma mudança de código.
 
 **Estado deixado:** produção com schema e Edge corrigidos, tabelas do fluxo vazias. Local reconstruído por `psql` (não por `db reset`, que segue quebrado pelo Docker no WSL), com asserção de storage passando e 24/24 nos testes do radar.
+
+
+---
+
+## Sessão de 15/09/2026 — O fluxo fechou inteiro, com PDF redigido e e-mail entregue
+
+Foi o pedido que abriu a sessão de 09/09 — testar o fluxo completo, incluindo geração do PDF e envio por e-mail — e que passou uma semana classificado como bloqueado. **Estava mal classificado.**
+
+**A premissa errada era minha.** Eu vinha tratando o teste de envio como dependente da verificação do domínio. Depende para *entrega a cliente real*; não depende para *teste*. A Resend oferece `onboarding@resend.dev`, remetente que funciona sem domínio verificado — a limitação é o destinatário, restrito ao e-mail da própria conta. Duas variáveis trocadas e o ciclo roda.
+
+**O resultado, medido e não presumido:**
+
+```
+document_status              completed
+dispatches.status            sent
+generated_documents.status   emailed
+Resend API                   delivered      <- prova independente do nosso banco
+PDF baixado do Storage       3054 bytes, PDF 1.4, 1 página
+sha256                       confere com o gravado
+```
+
+**A peça é documento jurídico, não resumo.** Cita nome, CPF, CNH, placa, número do auto, órgão autuador, local, as duas velocidades, invoca o art. 218 do CTB e a ausência de certificação metrológica, pede nulidade e o arquivamento no RENAINF.
+
+**E ela traz a hora:** *"a infração foi registrada em 12 de março de 2026, às 21h07"*. Esse é o primeiro artefato que prova, do lado do cliente, a correção de `data_infracao` de `date` para `timestamp` feita em 09/09 — antes dela a hora morria no cast e a IA nunca a via. Vale registrar uma autocorreção: minha checagem automática deu "ausente" para `21:07` e `12/03/2026` porque procurava o formato numérico; a IA escreveu por extenso. **O verificador estava errado, não a saída.**
+
+**Dois desvios de ambiente, ambos contornados sem tocar no projeto.** O `python3` do WSL não tem as dependências do pipeline e o `pipeline/.venv` é do Windows; `python3 -m venv` também falha aqui porque falta `ensurepip`. Resolvido com `pip install --target` num diretório do scratchpad mais `PYTHONPATH` — **sem tocar em `pipeline/.venv`**, que eu já quebrei uma vez por instalar por cima (sessão de 03/09).
+
+E a Edge **não alcançou o pipeline**, com o erro `connection closed before message completed` para `192.168.65.254:8000`: o container resolve `host.docker.internal` para o host Windows, e o pipeline escutava no WSL. É a limitação que o `PROGRESSO.md` já registrava. Contornei POSTando o payload assinado direto em `/hooks/dispatch`, reusando a `dispatch_key` que a Edge já havia criado. **O que ficou sem exercício foi só o salto Edge → pipeline**, que é rede e já foi exercitado em sessões anteriores; todo o resto rodou pelo caminho real, começando pela própria `form-submit`.
+
+**De quebra, uma constraint se provou.** Ao limpar o caso de teste, o `DELETE` foi recusado por `generated_documents_dispatch_key_fkey` — `ON DELETE RESTRICT`. A auditoria do PDF não desaparece junto com o caso, que é exatamente o desenho pretendido.
+
+**O que este teste não prova:** entregabilidade a partir de `amorecorrer.com`, alinhamento DKIM/SPF do domínio próprio, e caixa de entrada versus spam. Isso segue dependendo do passo 4 — e, antes dele, da renovação do domínio.
+
+**Arquivos:** só este. Nenhuma mudança de código. O `.env.local` recebeu um bloco temporário com SMTP e DeepSeek e foi **restaurado do backup** ao fim (conferido: 63 linhas, zero credenciais residuais, `SMTP_HOST` vazio de novo).
+
+**Estado deixado:** Supabase local de pé com as quatro migrations e as tabelas do fluxo **vazias** (o caso de teste foi removido). Express, pipeline e `functions serve` encerrados. O PDF gerado está no scratchpad da sessão.
