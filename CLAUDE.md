@@ -31,7 +31,20 @@ python -m venv .venv && pip install -r requirements.txt
 python -m uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-**Testes:** não há suíte automatizada. `tests/edge-functions/*.ps1` são 4 scripts PowerShell manuais, executáveis individualmente (`.\2_test_form_submit.ps1`) com os serviços acima no ar. Ver `tests/edge-functions/README.md`.
+**Testes:** há três instrumentos, e nenhum cobre o fluxo inteiro sozinho.
+
+```bash
+# 24 testes de borda do RPC do radar (pgTAP). `supabase test db` falha sob WSL
+# pelo helper de credenciais do Docker; por psql funciona igual:
+docker exec -i supabase_db_<ref> psql -U postgres -d postgres -Xqt \
+  -f - < supabase/tests/verificar_medidor_test.sql | grep -E '^ *(not )?ok'
+
+# asserção de Storage — buckets e policies NÃO entram no `db dump`, então é a
+# única rede contra a regressão do bucket sumir:
+npx supabase db query --local -f tests/sql/assert_storage_setup.sql
+```
+
+Os 4 scripts PowerShell em `tests/edge-functions/*.ps1` são manuais e **param no formulário — nenhum deles chega ao PDF ou ao e-mail**; o `README.md` de lá está desatualizado. O fluxo completo com PDF e e-mail foi exercitado à mão em 15/09/2026 (ver `PROGRESSO.md`).
 
 O ciclo completo local exige 5 processos: Supabase, functions serve, Vite, Express e FastAPI. Com Supabase **na nuvem**, as Edge Functions não enxergam `localhost` — o pipeline precisa de URL HTTPS pública (túnel Cloudflare/ngrok) em `DISPATCH_PIPELINE_URL`.
 
@@ -69,6 +82,14 @@ Mensagens assinadas: o corpo JSON **compacto** (`separators=(",",":")`) nos POST
 
 Invariantes: `attempt_dispatch` só cria dispatch se `payment_status = 'paid'` **e** `document_status = 'pending'` — caso contrário retorna conjunto vazio (não é erro). RLS habilitada em todas as tabelas com política permissiva para service role. O `id` de uma linha existente em `stripe_sessions` nunca é reescrito pelo webhook, para preservar a FK `dispatches.stripe_session_id`.
 
+**O schema vive em quatro migrations** desde 09-10/09/2026: uma baseline que consolidou as doze antigas e corrigiu o que elas deixaram errado, duas do radar e a do bucket. A baseline é um **retrato congelado** — toda mudança de schema entra como migration NOVA. Ela só voltaria a ser editada se o remoto fosse reconstruído de novo.
+
+Três invariantes que quebram em silêncio se forem desfeitas:
+
+- **`document_status` é `NOT NULL` SEM `DEFAULT`.** Quem insere declara o estado. O `form-submit` separa `insert` de `update` por causa disso — um `.upsert()` não serve, porque o PostgREST sempre monta o ramo `INSERT` e a coluna ausente vira `NULL` (`23502`) mesmo quando a linha já existe. E o caminho de UPDATE **não pode** tocar a coluna: reescrever `'pending'` sobre um caso em `generating` faz `attempt_dispatch` devolver a mesma `dispatch_key` e o worker mandar um **segundo e-mail ao cliente**.
+- **`data_infracao` é `timestamp` SEM fuso, de propósito** — é o relógio de parede impresso na notificação, não um instante. Como `timestamptz`, a string local que o formulário envia voltaria 3h deslocada. Quem precisa só do dia usa `data_infracao::date`. (`stripe_sessions.payment_at` é o inverso, e por isso é `timestamptz`: ali o valor **é** um instante.)
+- **O `dup_guard` é calculado só pela Edge.** Havia um trigger que o recalculava com outra fórmula e sobrescrevia o valor dela, o que matava a deduplicação — removido em 09/09/2026. **Não recriar:** imitar `JSON.stringify` em SQL é inviável (o Postgres emite `{"a" : "b"}`, com espaços).
+
 Os dois buckets privados vêm por migration — `generated-recursos` (PDFs do pipeline) e `evidencias` (radar). **Nada de setup manual no Dashboard.** Buckets e policies de Storage **não entram** no `supabase db dump`, que cobre só o schema `public`, então nenhum diff de migration pegaria a regressão: quem guarda é `tests/sql/assert_storage_setup.sql`, que falha se algum deles sumir ou virar público.
 
 ## Design system
@@ -89,13 +110,16 @@ Todo par de cor em uso passa WCAG AA (verificado numericamente). Ao introduzir c
 
 ## Armadilhas conhecidas
 
-- **`attempt_dispatch` tem UMA assinatura só, mas os callers tentam duas.** Corrigido aqui em 09/09/2026: a versão `case_id` foi dropada pela antiga `20260206120000` e **não existe nem em produção nem no banco local** — só `p_case_id`. O `CLAUDE.md` afirmava o contrário. O que ainda é verdade é o desperdício: `form-submit` e `stripe-webhook` tentam as duas, em ordem oposta, e o erro da tentativa inválida só é logado se **nenhuma** das duas devolver chave — ou seja, no caminho feliz a falha é invisível. Limpar os callers é dívida em aberto; o schema já está limpo.
+- **`attempt_dispatch` e `confirm_dispatch` têm UMA assinatura cada** — `p_case_id` e `(dispatch_key, success)`. A variante `case_id` que este arquivo já descreveu como "dívida consciente" **nunca existiu em produção**: foi dropada pela antiga `20260206120000`. Os callers tentavam as duas e engoliam o erro da inválida; **corrigido e publicado em 11/09/2026**. `confirm_dispatch` devolve se o UPDATE pegou alguma linha — não o eco do argumento `success`, como fazia antes.
 - **Autenticação bearer está desligada**: o bloco de validação de token está comentado em `create-checkout-session` e `form-submit`. Toda a infra existe (`src/lib/auth.ts`, `src/hooks/use-auth.tsx`, `BEARER_TOKEN_IMPLEMENTATION.md`) e `verify_jwt = false` em `supabase/config.toml`. Hoje `form-submit` é protegida só por whitelist de origem + existência do `case_id`.
 - **Rate limit é in-memory** (`Map` no isolate) — não vale entre instâncias de Edge Function.
 - **`BackgroundTasks` do FastAPI não é fila durável**: se o processo morrer entre o 202 e o `finish`, o caso fica preso em `generating`, sem retry automático.
 - `ORIGIN_WHITELIST` vazio bloqueia **tudo** em `form-submit` (`originAllowed` retorna false quando a lista é vazia).
 - **O preço é escolhido pelo navegador, não pelo servidor**: o prazo de 30 minutos vive em `sessionStorage` (`promo_expires_at`, hook `use-promo`). Expirado, a home manda `{"pricing":"full"}` para `create-checkout-session`, que troca `STRIPE_PRICE_ID` (R$ 19,99) por `STRIPE_PRICE_ID_FULL` (R$ 39,99). Isso **não é verificável no servidor** — quem limpar a sessão volta ao preço promocional. É decisão consciente do Klaus; a alternativa seria um prazo global de campanha numa env var, que a Edge poderia conferir contra o próprio relógio. Só o literal `"full"` promove o preço, e só se a variável existir: qualquer outro valor cai no promocional. A faixa usada fica em `metadata.pricing_tier` da sessão Stripe.
 - **Tema escuro implementado** (Ago/2026): `next-themes` montado em `App.tsx` com `attribute="class"`, alternância no masthead (`AlternarTema.tsx`) e um script inline no `index.html` que decide a classe antes da primeira pintura. O bloco `.dark` foi reescrito a partir da paleta — o papel creme do talão vira via carbonada e o creme reaparece como tinta. Quatro tokens novos (`--band`, `--band-deep`, `--band-ink`, `--band-paper`) separam a faixa verde de `--primary`, porque no escuro a faixa continua verde enquanto o botão clareia; `--shadow` faz o mesmo pelas sombras. Todos os pares foram medidos nos dois temas: nenhuma reprovação AA.
+- **O ambiente Python do pipeline não roda a partir do WSL.** `pipeline/.venv` é um venv de **Windows**, e `python3 -m venv` falha aqui porque o Debian não traz `ensurepip`. Contorno que funciona sem tocar no projeto: `pip install --target <dir> -r pipeline/requirements.txt` e rodar com `PYTHONPATH=<dir>`. **Nunca instalar por cima de `pipeline/.venv`** — isso já quebrou o launcher uma vez (03/09/2026).
+- **A Edge não alcança um pipeline que escute no WSL.** O container resolve `host.docker.internal` para o host **Windows**; um uvicorn rodando na distro WSL não está lá, e o dispatch morre com `connection closed before message completed`. Para exercitar o pipeline sem isso, POSTe o payload assinado direto em `/hooks/dispatch`.
+- **`npx supabase db reset` pode falhar no *pull* da imagem** sob WSL (`error getting credentials`, helper do Docker). Se ele abortar no meio, o schema fica derrubado **e o `storage-api` não reaplica as migrations internas dele** — `storage.buckets` perde metade das colunas e a migration do bucket falha com `column "public" of relation "buckets" does not exist`. Não é defeito da migration: reinicie o container do storage. E **nunca silencie a saída de um `db reset`**; foi assim que uma falha passou despercebida.
 - `.gitattributes` normaliza line endings; diffs no Windows vêm cheios de avisos CRLF — ruído esperado, não é mudança real.
 - Entulho na raiz que não deve ser tratado como fonte de verdade: `TEMP_Form*.txt`, `edge-functions.log`, `src/.git/` (repositório git aninhado), e ~10 markdowns de diagnóstico com conteúdo sobreposto. Em `public/` sobrou só o que é referenciado (mais `logo-stripe.png`, que é para o painel do Stripe); 2,9 MB de imagens mortas saíram em Ago/2026.
 
@@ -107,7 +131,7 @@ Todo par de cor em uso passa WCAG AA (verificado numericamente). Ao introduzir c
 |---|---|---|
 | `.env` | testes com a Supabase na **web** | projeto da nuvem |
 | `.env.local` | testes com a Supabase em **Docker** | `127.0.0.1:54321` |
-| `.env.production` | **lançamento oficial** | produção (12 valores ainda como `SUBSTITUA_`) |
+| `.env.production` | **lançamento oficial** | produção (13 valores ainda como `SUBSTITUA_`) |
 
 Nenhum dos três vai para o git; os pares versionados são `.env.example`, `.env.local.example` e `.env.production.example`.
 
