@@ -46,7 +46,7 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 - **A redação por IA está provada.** Com `DEEPSEEK_API_KEY` carregada, o PDF sai com peça própria (3168 bytes contra 1957 do placeholder), citando os dados do formulário, o art. 218 I do CTB e a Resolução CONTRAN 798/2020.
 - **O e-mail é o que falta, e o bloqueio não é de código:** o Resend recusa com `550 — domínio amorecorrer.com não verificado`. Transporte, TLS e credenciais funcionam; falta verificar o domínio em resend.com/domains. Em `production`, enquanto isso, todo caso pago termina em `failed`.
 - **O domínio está renovado e verificado na Resend** (17/09/2026): `Active` até 2027, auto-renovação ligada, e os quatro registros de autenticação publicados e validados. `no-reply@amorecorrer.com` é remetente válido para qualquer destinatário.
-- **O fluxo foi provado ponta a ponta COM e-mail entregue** (15/09/2026), em modo sandbox: PDF redigido pela IA, guardado no Storage com sha256 conferido, enviado e reportado como `delivered` pela API da Resend. O que falta provar é a entrega a partir do domínio próprio.
+- **O fluxo foi provado ponta a ponta EM PRODUÇÃO** (18/09/2026): Edge publicada → internet → pipeline, com PDF no Storage de produção (sha256 conferido) e e-mail **entregue a partir de `no-reply@amorecorrer.com`**, via `sa-east-1`. O pipeline rodava numa máquina local exposta por túnel — o que falta é **onde** ele vai morar, não **se** funciona.
 - **Produção já roda o schema e as Edge Functions corrigidos** (11/09/2026): `form-submit` v60, `stripe-webhook` v53, e as quatro migrations aplicadas com impressão digital idêntica à do local. **Falta para produção:** verificar o domínio no Resend e um endereço estável do pipeline (o `DISPATCH_PIPELINE_URL` aponta para um túnel efêmero morto).
 - **O schema virou quatro migrations** (09-10/09/2026): uma baseline que consolida as doze antigas e as corrige, as duas do radar, e a do bucket `generated-recursos`. O bucket deixou de ser passo manual de Dashboard. Quinze anomalias foram levantadas e quatorze fechadas — entre elas a detecção de duplicata, que nunca funcionou, e a hora da infração, que o cliente digitava e o sistema descartava.
 - **A feature de verificação de radar começou, em branch própria:** `feat/verificacao-radar-inmetro-rj`, com as **Fases 0, 1 e 3 entregues e verificadas** — fixture de 23 casos-limite, cinco tabelas com RLS, bucket `evidencias` criado por migration, e a RPC `verificar_medidor` com 24 testes de borda passando sobre banco reconstruído do zero. Nada disso toca o fluxo que já funciona: são tabelas e uma função novas, sem nenhuma alteração em `src/`, `server/` ou `pipeline/`.
@@ -103,6 +103,8 @@ Os números são **identificadores estáveis**, não posições — sessões ant
 
 ### Abertas (17)
 
+
+26. 🔴 **`.env.local` sobrescreve variáveis REAIS de ambiente no Express — e não no pipeline.** Descoberto em 18/09/2026, e é a mesma família do 401 silencioso de 31/08. `server/src/index.ts:28` carrega com `dotenv.config({ override: i > 0 })`, e `override: true` sobrepõe até o que já está em `process.env`; `pipeline/config.py`, com `pydantic-settings`, faz o **oposto** — ambiente real vence os arquivos. Rodando os dois contra produção com as variáveis passadas pelo ambiente, o pipeline assinou com o segredo de produção e o Express verificou com o local: **401**. A regra que o `CLAUDE.md` documenta ("carrega-se `.env` e depois `.env.local`, quem vem depois ganha") vale para arquivo-contra-arquivo e **não diz nada sobre variáveis de ambiente**, que é justamente onde os dois divergem. O próprio código oferece a saída (`DOTENV_CONFIG_PATH`, que carrega só o arquivo indicado), usada no teste. **Some em contêiner**, onde não existe `.env.local` — mas morde em qualquer execução local contra a nuvem, e o `CLAUDE.md` precisa dizer isso.
 24. ~~**O domínio `amorecorrer.com` está EXPIRADO, e há prazo correndo.**~~ **RESOLVIDA em 17/09/2026** — o Klaus renovou, com 25 dos ~30-45 dias de carência consumidos. Conferido em quatro fontes: Hostinger `Active` até 23/08/2027; assinatura `active` com **auto-renovação religada** (`is_auto_renewed: true`, cobrança em 27/07/2027 — era o `false` que causou tudo isto); registro com NS migrados de `DNS-EXPIRED` para `DNS-PARKING`; e o TXT `"This domain is expired at Hostinger!"` finalmente fora do ar. A expiração seguir em 2027-08-23 está correto: a renovação converteu em pagamento a renovação protetiva que a Hostinger já havia feito no registro, sem empilhar um ano extra. Registro original abaixo, para o histórico:
 
      Descoberto em 14/09/2026 pela API da Hostinger, não pelo painel. Venceu em **23/08/2026**; a assinatura `.COM Domain` está **cancelada**, com `is_auto_renewed: false` e renovação de **R$ 96,08**. O registro na Verisign mostra 2027-08-23 porque a Hostinger fez a renovação protetiva no registro para segurar o nome durante a carência — **não porque esteja pago**. Se a carência vencer sem pagamento, a Hostinger apaga o domínio, recebe o crédito de volta e o nome cai; depois vem redemption, muito mais caro, e depois qualquer um registra. A janela típica é de 30 a 45 dias a partir de 23/08 — **o prazo exato só a Hostinger confirma, e é a primeira coisa a fazer**. Isso explica a zona em `dns-expired.com`, a ausência de hospedagem e a ausência de plano de e-mail: não é o DNS que quebrou, é o serviço que acabou. **Todo o resto do roteiro de e-mail pressupõe um domínio que continue seu.**
@@ -987,3 +989,54 @@ A expiração ter continuado em 2027-08-23, em vez de pular para 2028, está **c
 **Arquivos:** só este. Nenhuma mudança de código — o `.env` já trazia `MAIL_FROM=no-reply@amorecorrer.com`, que agora é válido.
 
 **Estado deixado:** domínio renovado e verificado; zona com cinco registros (os quatro da Resend mais o `www`); nada tocado no código nem no banco.
+
+
+---
+
+## Sessão de 18/09/2026 — O fluxo rodou em produção, e o teste pagou por si duas vezes
+
+A pergunta do Klaus foi direta: dá para testar o pipeline **antes** de contratar o VPS? Dá — e o teste achou dois defeitos que só apareceriam depois da compra.
+
+**A dúvida legítima que veio antes.** Ele perguntou se o teste não esbarraria no mesmo problema de 15/09 — o container resolvendo `host.docker.internal` para o host Windows enquanto o pipeline escuta no WSL. **Não esbarra**, e a razão é a direção da conexão: o `cloudflared` roda no WSL e abre uma conexão **de saída**; as requisições entram por ela. Demonstrado antes de qualquer outra coisa, com um servidor trivial: o nome público resolvia para IPs da Cloudflare, o conteúdo vinha do processo no WSL, e o servidor registrou a requisição vindo de **`127.0.0.1`** — prova de que nada entrou por porta.
+
+**Antes disso, o elo de maior risco foi isolado.** Em 15/09 fui eu quem calculou a assinatura, do mesmo lado que a verifica; as duas implementações — `crypto.subtle` na Edge e `hmac/hashlib` no pipeline — nunca tinham se encontrado. Testei-as diretamente, com um segredo contendo acentos para forçar o caso de UTF-8: **assinaturas idênticas**. Se divergissem, o resto seria tempo perdido.
+
+**O teste real.** Express e pipeline apontados para produção, túnel aberto, e o secret `DISPATCH_PIPELINE_URL` do projeto remoto redirecionado para ele. Um detalhe útil: o `secrets list` mostra apenas um digest, e descobri que é **SHA-256 puro do valor** — validando contra a URL que eu mesmo acabara de definir. Com isso confirmei, sem que ninguém revelasse o valor, que o `DISPATCH_PIPELINE_HMAC_SECRET` publicado é o mesmo do `.env`. A `ORIGIN_WHITELIST` saiu por sondagem: corpo vazio devolve `400` se a origem passa e `403` se não — produção aceita `https://www.amorecorrer.com` e `https://amorecorrer.com`.
+
+**O desfecho, medido:**
+
+```
+POST /hooks/dispatch   202, de 2600:1f1e:229:a90b:…   (egress da Supabase, via túnel)
+document_status        completed
+dispatches.status      sent
+generated_documents    emailed
+Resend                 delivered
+Message-ID             <…@amorecorrer.com> via sa-east-1.amazonses.com
+PDF                    3797 bytes, sha256 conferido contra o banco
+```
+
+O `Message-ID` é a diferença que importa em relação a 15/09: saiu do **domínio próprio** e pela região de **São Paulo**, não do `resend.dev` em us-east-1.
+
+### Os dois defeitos, ambos invisíveis fora de produção
+
+**1. A versão fixada do `supabase-py` recusa a chave de produção.** A `2.15.1` valida por regex que a chave da API seja um **JWT**; o projeto usa o formato novo `sb_secret_…` (41 caracteres). O cliente estourava `SupabaseException: Invalid API key` **antes de qualquer requisição**, no upload do PDF. Conferi por digest que a chave no `.env` é a **mesma** publicada no projeto — não era chave errada, era a biblioteca. Subido para `2.31.0`, o ciclo completou. Nunca apareceu antes porque o Supabase local ainda emite JWT clássico, e o teste de 15/09 rodou contra o local.
+
+**2. `.env.local` sobrescreve variáveis reais de ambiente — só no Express.** Virou a pendência 26. É a mesma família do 401 silencioso de 31/08, e o comentário logo acima da linha culpada fala justamente daquele episódio.
+
+### Três confirmações incidentais
+
+A **deduplicação funcionou em produção** — o primeiro reenvio devolveu `Duplicate submission (no-op)`. Ela ignora `numero_auto`, que não entra no hash da Edge; trocar a placa foi o que produziu hash novo. É a primeira vez que esse caminho é visto funcionando, depois de ter sido código morto até 09/09.
+
+A **guarda de 409** barrou o reenvio de um caso em `failed`, e reprocessá-lo exigiu devolvê-lo a `pending` — o cenário que a pendência de reprocessamento descreve.
+
+O **`ON DELETE RESTRICT`** exigiu apagar a auditoria antes do caso, na limpeza.
+
+### Uma armadilha de ambiente a mais
+
+O `curl` do WSL falhou com *"Could not resolve host"* no endereço do túnel enquanto o DNS público resolvia normalmente: **o resolvedor local cacheou o NXDOMAIN** de uma tentativa feita cedo demais. Contornado com `--resolve`. Não afeta a Supabase, que resolve pelo DNS público — mas confunde o diagnóstico.
+
+**Arquivos:** `pipeline/requirements.txt` (a correção do `supabase-py`) e este. O `.env.local` **não foi tocado** — usei `DOTENV_CONFIG_PATH` e um arquivo de ambiente no scratchpad, destruído ao fim.
+
+**Ficou de fora:** a correção da pendência 26, e o `CLAUDE.md`, que documenta a regra de precedência de forma incompleta.
+
+**Estado deixado:** serviços e túnel encerrados; produção com as quatro tabelas **zeradas** (caso de teste removido); `DISPATCH_PIPELINE_URL` apontando para um túnel morto, como estava antes. O plano do VPS segue necessário e **inalterado** — o teste provou que o software funciona, não resolveu onde ele mora.
