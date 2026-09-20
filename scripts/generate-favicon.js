@@ -1,6 +1,6 @@
-const fs = require('fs');
-const sharp = require('sharp');
-const pngToIco = require('png-to-ico');
+import fs from 'fs';
+import sharp from 'sharp';
+import pngToIco from 'png-to-ico';
 
 (async () => {
   try {

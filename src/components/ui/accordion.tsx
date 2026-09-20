@@ -26,13 +26,19 @@ const AccordionTrigger = React.forwardRef<
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
-        "flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180",
+        // `transition-all` incluía `outline`: por 150ms o anel de foco era um traço
+        // de 3px quase preto antes de virar o verde do sistema. A seta tem a própria
+        // transição de transform, então nada se perde.
+        "flex flex-1 items-center justify-between py-4 font-medium transition-colors hover:underline [&[data-state=open]>svg]:rotate-180",
         className
       )}
       {...props}
     >
       {children}
-      <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+      <ChevronDown
+        className="h-4 w-4 shrink-0 transition-transform duration-200"
+        aria-hidden="true"
+      />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ))

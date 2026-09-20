@@ -1,0 +1,32 @@
+# Supabase local config example
+# This file is a safe example for developers. Do NOT commit secrets.
+# The real `supabase/config.toml` is generated/used by the Supabase CLI
+# and is ignored by git via `.gitignore`.
+
+[project]
+id = "your-project-id"
+
+[db]
+# Example DB connection settings used by the CLI for local development
+# Replace the placeholders with your real local values if you need to run locally.
+user = "postgres"
+password = "postgres_password"
+port = 5432
+host = "localhost"
+
+[auth]
+# The `site_url` is used by Supabase for e.g. email links.
+site_url = "http://localhost:5173"
+
+[services]
+# Example service ports (adjust if needed)
+api_port = 54321
+realtime_port = 4000
+
+# Tips:
+# - Keep secrets (passwords, keys) out of the repo. Use environment variables
+#   or a secrets manager for CI/deploy.
+# - If you accidentally committed `supabase/config.toml`, run:
+#     git rm --cached supabase/config.toml
+#     git commit -m "Stop tracking supabase local config"
+# - Use this example to create your local `supabase/config.toml` if needed.

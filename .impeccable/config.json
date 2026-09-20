@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-color",
+        "value": "#000",
+        "createdAt": "2026-08-19T05:38:36.091Z",
+        "reason": "Não é cor: é o stop opaco de um mask-image em .doc__page (linear-gradient(to bottom,#000 72%,transparent)). O canal alfa é o que importa; nenhum pixel sai preto."
+      }
+    ]
+  }
+}

@@ -1,4 +1,3 @@
-# Logs
 logs
 *.log
 npm-debug.log*
@@ -6,13 +5,12 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-
+bun.lockb
+bun.lock
 node_modules
 dist
 dist-ssr
 *.local
-
-# Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -23,3 +21,17 @@ dist-ssr
 *.sln
 *.sw?
 .env
+.env.local
+.env.production
+scripts/*
+**/venv/
+.venv/
+__pycache__/
+*.py[cod]
+supabase/.branches/
+supabase/.temp/
+secrets.json
+.playwright-mcp/
+.claude/settings.json
+.claude/settings.local.json
+recursos testes/
