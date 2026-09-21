@@ -17,7 +17,10 @@ const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   auth: { persistSession: false },
 });
 
-function mapStripeToLocalStatus(eventType: string, session: any): string | null {
+function mapStripeToLocalStatus(
+  eventType: string,
+  session: Stripe.Checkout.Session,
+): string | null {
   if (eventType === "checkout.session.completed") return "paid";
   if (eventType === "checkout.session.async_payment_succeeded") return "paid";
   if (eventType === "checkout.session.async_payment_failed") return "failed";
@@ -63,8 +66,8 @@ async function triggerDispatch(case_id: string): Promise<void> {
 }
 
 async function handleSessionUpsertAndFormUpdate(
-  event: any,
-  session: any,
+  event: Stripe.Event,
+  session: Stripe.Checkout.Session,
   statusToApply: string | null
 ): Promise<{ paymentConfirmed: boolean; case_id: string | null }> {
   const case_id = session.client_reference_id ?? session.metadata?.case_id ?? null;
@@ -232,7 +235,7 @@ Deno.serve(async (req) => {
     const rawBody = new Uint8Array(buf);
     const sig = req.headers.get("stripe-signature") ?? "";
 
-    let event: any;
+    let event: Stripe.Event;
     try {
       event = await stripe.webhooks.constructEventAsync(rawBody, sig, STRIPE_WEBHOOK_SECRET);
     } catch (err) {
@@ -255,7 +258,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const session = event.data.object ?? {};
+    const session = (event.data.object ?? {}) as Stripe.Checkout.Session;
     const statusToApply = mapStripeToLocalStatus(event.type, session);
 
     let paymentConfirmed = false;
