@@ -162,6 +162,43 @@ Reconstruídos do histórico de commits. Datas são do commit, não de deploy.
 ## Registro de sessões
 
 
+### 2026-09-20 — Limpeza de dependências: 5 vulnerabilidades a zero, e duas deps que não deviam estar ali
+
+**Feito:** o aviso do `caniuse-lite` desencadeou uma sequência de `npm install`/`npm audit fix --force` que deixou o `package.json` pior do que encontrou. Desfeito e corrigido na causa, não no sintoma:
+
+- **`node-vibrant` saiu.** Estava em `dependencies` (produção) e **não era importado por lugar nenhum** — nem em `src/`, nem nos scripts. Era ele, sozinho, quem puxava `@jimp/core` → `file-type` + `phin`, ou seja **4 das 5 vulnerabilidades**. O `scripts/extract-colors.js`, que extraiu a paleta do favicon, usa `sharp`, não ele. Provável sobra do scaffold do Lovable.
+- **`caniuse-lite` e `baseline-browser-mapping` saíram de `dependencies`.** O `npx update-browserslist-db@latest` instala os dois, atualiza o lockfile e **os desinstala sozinho** — o próprio log mostra o `npm uninstall` dele. O `npm install caniuse-lite baseline-browser-mapping` rodado logo depois cravou como dependência de runtime aquilo que a ferramenta tinha acabado de limpar. Hoje o `caniuse-lite` volta a ser transitivo do `autoprefixer`, que é o certo.
+- **`react-router-dom` 6.30.6 → 7.18.4**, a única vulnerabilidade que de fato alcançava o usuário (open redirect por contrabarra em `<Link>`/`useNavigate`, CVE-2025-68470 bypass). O upgrade é de uma linha porque o projeto só usa a API declarativa — `BrowserRouter`, `Routes`, `Route`, `Link`, `useNavigate`, `useSearchParams`, `useLocation`. Nada de data router, `loader`, `json()` ou `defer()`, que são o que a v7 quebra.
+- **`sharp` 0.34.4 → 0.35.4** — bump major que o `audit fix --force` já tinha feito; mantido e verificado. É `devDependency` de dois scripts avulsos de favicon, fora do bundle.
+
+**Arquivos:** `package.json`, `package-lock.json`. Nenhuma linha de `src/` mudou — a v7 do router não exigiu nenhuma adaptação.
+
+**Verificação:** `npm audit` → **0 vulnerabilidades** (eram 5 moderadas). `npx tsc --noEmit` → exit 0. `npm run build` → ✓. `npm run lint` → 14 problemas (7 erros, 7 avisos), **exatamente os mesmos de antes** — nenhuma regressão. No navegador, com Playwright sobre o dev server: home sem erro de console; `/terms` alcançada **clicando no `<Link>`** (navegação client-side, não recarga); `/cancel?case_id=CASO_teste-123` leu o parâmetro via `useSearchParams` e disparou o `checkout_cancelled`; o catch-all `path="*"` registrou o pathname certo via `useLocation`; `/form?...` montou os quatro `fieldset` com o `case_id` na tela. O aviso do browserslist sumiu do `npm run dev`.
+
+**Custo medido:** o bundle inicial foi de 228,57 kB para 246,42 kB (gzip 75,93 → 82,02 kB). Os ~6 kB gzip a mais são o preço da v7 do router.
+
+**Também nesta sessão — os 7 erros de ESLint foram a zero.** Nenhum deles foi silenciado com `eslint-disable`; todos foram corrigidos na origem:
+
+- **Duas interfaces vazias** (`ui/textarea.tsx`, `ui/command.tsx`) viraram alias de tipo — correção que **a limpeza seguinte tornou discutível**, porque os dois arquivos acabaram apagados por serem código morto.
+- **`require("tailwindcss-animate")` virou `import` estático** no `tailwind.config.ts`, que já era ESM por causa do `import type { Config }`. Era a única linha CJS do arquivo.
+- **Os 4 `any` do `stripe-webhook` viraram os tipos do próprio SDK** — `Stripe.Event` e `Stripe.Checkout.Session`, que já estavam disponíveis pelo `import Stripe from "npm:stripe@12.16.0"` no topo. A asserção de tipo acontece **num ponto só**, onde a `session` sai do evento, e é verdadeira por construção: logo abaixo, `relevantEvents` restringe o processamento a eventos `checkout.session.*`.
+
+**Verificação dessa parte:** `npm run lint` → **0 erros** (restam 7 avisos de `react-refresh`, que são de componentes shadcn exportando variantes junto do componente — outro assunto). A prova forte veio do build: **todos os hashes de conteúdo saíram idênticos aos de antes da limpeza** — `index-3P1EKMf4.css`, `index-DBfsE_Nl.js`, `Form-BsuRG4YH.js` e os demais. Build byte a byte igual significa duas coisas de uma vez: as trocas de tipo somem na emissão, como devem, e o `tailwindcss-animate` continua ativo pelo import ESM (se o plugin tivesse caído, o CSS mudaria e o hash com ele). O webhook é Deno e não passa pelo `tsc` do projeto (`tsconfig.app.json` inclui só `src`), então foi checado à parte: as assinaturas e o cast compilam com `strict: true` contra os tipos reais do `stripe@12.16.0`.
+
+**Depois disso, os 7 avisos de `react-refresh` também foram a zero — mas não por reorganização de exports.** Medir antes de mexer mudou a resposta: um percurso do grafo de imports a partir de `src/main.tsx` mostrou que **48 dos 49 arquivos de `src/components/ui/` eram inalcançáveis** — 4.691 linhas que nada importava. Só `accordion.tsx` está vivo, no FAQ. Os 7 avisos estavam **todos** em arquivos mortos (`badge`, `button`, `form`, `navigation-menu`, `sidebar`, `sonner`, `toggle`): reorganizar exports ali seria arrumar código que ninguém executa.
+
+- **50 arquivos apagados** — os 48 de `ui/`, mais `hooks/use-mobile.tsx` e `hooks/use-toast.ts`, igualmente órfãos. Total: **4.902 linhas**.
+- **41 das 55 dependências de produção saíram**, por não terem um único import no código vivo: 27 pacotes `@radix-ui/*`, além de `recharts`, `react-hook-form`, `zod`, `date-fns`, `cmdk`, `vaul`, `embla-carousel-react`, `react-day-picker`, `sonner`, `input-otp`, `react-resizable-panels`, `@tanstack/react-query`, `class-variance-authority` e `@hookform/resolvers`. O `npm` removeu **107 pacotes** no total, contando transitivos: 411 → 304. Ficaram 14 dependências.
+- **Isso é reversível e barato.** O `components.json` continua no repo, então `npx shadcn@latest add <componente>` traz qualquer um de volta quando for preciso — o que é o argumento que torna a remoção segura, e não uma aposta.
+
+**Por que isso não é só estética.** Foi uma dependência não usada — o `node-vibrant` — que respondeu por 4 das 5 vulnerabilidades desta mesma sessão. Cada pacote que ninguém importa é superfície de ataque que só aparece no dia do `npm audit`.
+
+**Verificação da limpeza:** `npm run lint` → **saída vazia**, 0 erros e 0 avisos. `npx tsc --noEmit` → exit 0. `npm audit` → 0 vulnerabilidades. `npm run build` → ✓. No navegador, com o servidor de desenvolvimento: home completa e **o accordion do FAQ abrindo** (é o único componente shadcn que sobrou, então é ele que precisava ser provado); alternância de tema levando `documentElement` para `dark`, persistindo em `localStorage` e mudando o fundo para `rgb(9, 16, 14)`; e `/terms`, `/privacy` e `/form` renderizando conteúdo real — h1 "Termos de uso", "Política de Privacidade" e "Os dados do auto" —, não o fallback "Carregando…". Console sem um único erro; o único registro é o `checkout_cancelled` que o `/cancel` emite de propósito.
+
+**Uma previsão minha saiu errada, e para melhor.** Ao propor a limpeza, eu disse que o bundle ficaria inalterado, porque o tree-shaking já excluía o código morto. Isso vale para o **JS** — os chunks saíram com os mesmos tamanhos de antes (246,42 kB no principal). Mas **não vale para o CSS**: o Tailwind não faz tree-shaking, ele **varre os arquivos-fonte** listados em `content` e gerava utilitários para todas as classes que apareciam nos 48 arquivos mortos. Com eles fora, o CSS caiu de **95,72 kB para 49,49 kB** — de 15,91 kB para **8,90 kB** comprimido, 44% a menos em cima do fio para todo visitante.
+
+**Ficou de fora:** o `stripe-webhook` em produção segue na **v53**. Como as mudanças são só de tipo e somem na compilação, o runtime lá é idêntico ao do fonte, mas os dois só voltam a coincidir byte a byte no próximo `supabase functions deploy stripe-webhook`. E as **devDependencies não foram auditadas** — a varredura cobriu só `dependencies`.
+
 ### 2026-08-15 — Formulário e páginas de retorno (Fase 4)
 
 **Feito:** o redesenho chegou às páginas internas. Com isso o plano "Notificação e Resposta" está executado de ponta a ponta.
