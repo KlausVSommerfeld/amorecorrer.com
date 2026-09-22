@@ -8,6 +8,8 @@
 //   npm run radar:ingest                 # carga real, pede confirmação
 //   npm run radar:ingest -- --yes        # carga real, sem prompt
 
+import { createInterface } from 'node:readline/promises'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { UF_ALVO, normalize } from './lib/psie.ts'
 import { comRetry } from './lib/retry.ts'
 import type { FaixaRow, InstrumentRow, PsieRecord, VerificacaoRow } from './lib/psie.ts'
@@ -119,6 +121,103 @@ function relatorio(n: Awaited<ReturnType<typeof normalizarTudo>>): void {
   log('')
 }
 
+function clienteSupabase(): { db: SupabaseClient; ref: string; url: string } {
+  const url = process.env.SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) {
+    throw new Error(
+      'faltam SUPABASE_URL e/ou SUPABASE_SERVICE_ROLE_KEY. ' +
+        'Rode com --dry-run para conferir a fonte sem credencial.',
+    )
+  }
+  const ref = new URL(url).hostname.split('.')[0]
+  return { db: createClient(url, key, { auth: { persistSession: false } }), ref, url }
+}
+
+/**
+ * Confirma o destino em voz alta. É a guarda contra o erro mais caro disponível
+ * aqui — gravar no projeto errado —, e custa uma linha.
+ */
+async function confirmarDestino(ref: string, url: string): Promise<void> {
+  log(`\n  DESTINO: ${url}`)
+  log(`  project ref: ${ref}`)
+  if (SEM_PROMPT) {
+    log('  --yes passado; seguindo sem perguntar.\n')
+    return
+  }
+  const rl = createInterface({ input: process.stdin, output: process.stdout })
+  const resposta = await rl.question(`\n  Gravar no projeto "${ref}"? [s/N] `)
+  rl.close()
+  if (resposta.trim().toLowerCase() !== 's') {
+    throw new Error('cancelado pelo operador')
+  }
+}
+
+/**
+ * Idempotência com uma correção sobre a Fase 2 do plano.
+ *
+ * O plano manda sair se (uf, sha256) já existe em radar_snapshots. Sozinha, essa
+ * regra tem um buraco: se a carga falhar no meio, o snapshot já estará gravado e
+ * toda re-execução vira no-op, deixando as tabelas incompletas para sempre — e
+ * em silêncio. Por isso comparamos também o record_count com o count real.
+ */
+async function jaCarregado(db: SupabaseClient, sha: string, esperado: number): Promise<boolean> {
+  const { data, error } = await db
+    .from('radar_snapshots')
+    .select('id, record_count')
+    .eq('uf', UF_ALVO)
+    .eq('sha256', sha)
+    .maybeSingle()
+  if (error) throw new Error(`consulta a radar_snapshots falhou: ${error.message}`)
+  if (!data) return false
+
+  const { count, error: erroCount } = await db
+    .from('radar_instruments')
+    .select('id', { count: 'exact', head: true })
+  if (erroCount) throw new Error(`contagem de radar_instruments falhou: ${erroCount.message}`)
+
+  if (count === esperado) {
+    log(`\n  snapshot ${data.id} já carregado, com ${count} instrumentos. Nada a fazer.`)
+    return true
+  }
+  log(
+    `\n  snapshot já existe (${data.id}), mas radar_instruments tem ${count} linhas ` +
+      `contra ${esperado} esperadas — carga anterior incompleta. Reprocessando.`,
+  )
+  return false
+}
+
+/**
+ * Um upsert em lote com duas linhas de mesma PK falha com "ON CONFLICT DO UPDATE
+ * command cannot affect row a second time" — erro duro, que aborta o lote.
+ * Medido em 22/09: zero colisões no arquivo real. Isto é seguro contra mudança
+ * da fonte, não remendo para defeito conhecido.
+ */
+function dedupePorChave<T>(linhas: T[], chave: (l: T) => string, rotulo: string): T[] {
+  const vistas = new Map<string, T>()
+  for (const l of linhas) vistas.set(chave(l), l)
+  const removidas = linhas.length - vistas.size
+  if (removidas > 0) log(`  ⚠ ${removidas} linha(s) duplicada(s) de ${rotulo} removida(s) do lote`)
+  return [...vistas.values()]
+}
+
+async function enviarEmLotes<T>(
+  db: SupabaseClient,
+  tabela: string,
+  linhas: T[],
+  onConflict: string,
+  ignoreDuplicates: boolean,
+): Promise<void> {
+  for (let i = 0; i < linhas.length; i += LOTE) {
+    const lote = linhas.slice(i, i + LOTE)
+    const { error } = await db.from(tabela).upsert(lote as never, { onConflict, ignoreDuplicates })
+    if (error) {
+      throw new Error(`upsert em ${tabela} (lote ${i / LOTE + 1}) falhou: ${error.message}`)
+    }
+    log(`  ${tabela}: ${Math.min(i + LOTE, linhas.length)}/${linhas.length}`)
+  }
+}
+
 async function main(): Promise<void> {
   const t0 = Date.now()
   log(`\n=== Carga de radares ${UF_ALVO} ${DRY_RUN ? '(DRY RUN — nada será gravado)' : ''}\n`)
@@ -140,7 +239,75 @@ async function main(): Promise<void> {
     return
   }
 
-  throw new Error('carga real ainda não implementada — ver Task 5')
+  const { db, ref, url } = clienteSupabase()
+  await confirmarDestino(ref, url)
+
+  if (await jaCarregado(db, sha, n.instruments.length)) {
+    log(`\nNada a fazer. ${Date.now() - t0} ms\n`)
+    return
+  }
+
+  // A ordem daqui para baixo é imposta pelas FKs:
+  // snapshot -> instruments -> faixas / verificações.
+  const dia = new Date().toISOString().slice(0, 10)
+  const caminho = `radares/${UF_ALVO}/${dia}-${sha.slice(0, 12)}.json`
+
+  log(`\n→ upload de ${caminho} para o bucket ${BUCKET}`)
+  const { error: erroUpload } = await db.storage
+    .from(BUCKET)
+    .upload(caminho, bytes, { contentType: 'application/json', upsert: true })
+  if (erroUpload) throw new Error(`upload para o Storage falhou: ${erroUpload.message}`)
+
+  log('→ insert em radar_snapshots')
+  const { data: snap, error: erroSnap } = await db
+    .from('radar_snapshots')
+    .insert({
+      uf: UF_ALVO,
+      source_url: FONTE,
+      last_modified: lastModified,
+      sha256: sha,
+      storage_path: caminho,
+      bytes: bytes.byteLength,
+      record_count: n.instruments.length,
+    })
+    .select('id')
+    .single()
+  if (erroSnap || !snap) throw new Error(`insert em radar_snapshots falhou: ${erroSnap?.message}`)
+
+  const snapshotId = snap.id as string
+  log(`  snapshot_id: ${snapshotId}`)
+
+  // As linhas foram normalizadas com o id fictício; agora recebem o verdadeiro.
+  for (const i of n.instruments) i.snapshot_id = snapshotId
+
+  log('→ upserts')
+  await enviarEmLotes(
+    db,
+    'radar_instruments',
+    dedupePorChave(n.instruments, (i) => i.id, 'radar_instruments'),
+    'id',
+    false,
+  )
+  await enviarEmLotes(
+    db,
+    'radar_faixas',
+    dedupePorChave(n.faixas, (f) => `${f.instrument_id}|${f.numero_faixa}|${f.sentido}`, 'radar_faixas'),
+    'instrument_id,numero_faixa,sentido',
+    false,
+  )
+  await enviarEmLotes(
+    db,
+    'radar_verificacoes',
+    dedupePorChave(
+      n.verificacoes,
+      (v) => `${v.instrument_id}|${v.origem}|${v.numero_certificado}|${v.data_laudo}`,
+      'radar_verificacoes',
+    ),
+    'instrument_id,origem,numero_certificado,data_laudo',
+    true, // histórico metrológico é imutável: duplicata é no-op, não atualização
+  )
+
+  log(`\n✓ Carga concluída em ${Date.now() - t0} ms.\n`)
 }
 
 main().catch((erro) => {
