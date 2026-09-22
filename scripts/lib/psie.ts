@@ -4,6 +4,39 @@
 // PLANO-verificacao-radar-inmetro.md (o RBMLQ recusa o IP de saída da Supabase).
 // Escrito só com APIs que Node e Deno compartilham, para que mover seja barato.
 
+export interface PsieFaixa {
+  NumeroFaixa?: string | null
+  NumeroInmetro?: string | null
+  NumeroSerie?: string | null
+  /** Vem `null` em registros reais (3 no fixture). Entra na PK, então nunca pode virar NULL no banco. */
+  Sentido?: string | null
+  VelocidadeNominal?: string | null
+}
+
+export interface PsieHistorico {
+  NumeroCertificado?: string | null
+  NumeroEnsaio?: string | null
+  Ano?: string | null
+  DataLaudo?: string | null
+  DataValidade?: string | null
+  TipoServico?: string | null
+  Resultado?: string | null
+}
+
+export interface PsieRecord {
+  SiglaUf?: string | null
+  Estado?: string | null
+  Municipio?: string | null
+  LocalVerificacao?: string | null
+  DataUltimaVerificacao?: string | null
+  DataValidade?: string | null
+  UltimoResultado?: string | null
+  TipoMedidor?: string | null
+  Faixas?: PsieFaixa[] | null
+  Historico?: PsieHistorico[] | null
+  Proprietario?: string | null
+}
+
 export const UF_ALVO = 'RJ'
 
 /** "12/07/2024" -> "2024-07-12". Qualquer outra coisa -> null. */
@@ -45,4 +78,32 @@ export function classificarResultado(
   if (t === 'aprovado') return 'conforme'
   if (t === 'reprovado') return 'nao_conforme'
   return 'indeterminado'
+}
+
+/**
+ * Identidade derivada (§5.3 do plano). O dataset não tem chave primária.
+ *
+ * sha256( SiglaUf | Municipio | LocalVerificacao | série_1 | série_2 | … )[:32]
+ * com as séries únicas, não vazias e ordenadas — a ordenação é o que torna o id
+ * invariante à ordem do array Faixas.
+ *
+ * RISCO ACEITO: se o INMETRO corrigir a grafia de LocalVerificacao, o hash muda
+ * e o instrumento entra como novo. Tolerável porque o histórico vive em
+ * radar_verificacoes e a consulta casa por numero_serie / numero_inmetro.
+ */
+export async function instrumentId(r: PsieRecord): Promise<string> {
+  const series = [
+    ...new Set(
+      (r.Faixas ?? [])
+        .map((f) => (f.NumeroSerie ?? '').trim())
+        .filter((s) => s !== ''),
+    ),
+  ].sort()
+
+  const base = [r.SiglaUf ?? '', r.Municipio ?? '', r.LocalVerificacao ?? '', ...series].join('|')
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(base))
+  return [...new Uint8Array(digest)]
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+    .slice(0, 32)
 }
