@@ -37,7 +37,7 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 ## Estado atual
 
 
-*Atualizado em 2026-09-21.*
+*Atualizado em 2026-09-22.*
 
 - **O merge aconteceu.** Em 20/09/2026 o Klaus mergeou `feat/verificacao-radar-inmetro-rj` em `main` (`f155c4e`, merge de `a3b2142` com `c89d0c4`): **115 arquivos, +23.526 / −1.408**. `main` deixou de estar parada em 2025-10-29 e `origin/main` já tem tudo, sem divergência. Todo o produto — pagamento, Edge Functions, pipeline, redesenho e o schema do radar — passou a viver no tronco. Sobrou uma branch não mergeada, `chore/limpeza-dependencias`. **Encerra as pendências 1 e 7.**
 - **O redesenho "Notificação e Resposta" está completo** — Fases 0 a 4. Todas as páginas usam o mesmo casco, a mesma tipografia e os mesmos tokens.
@@ -47,9 +47,9 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 - **Produção roda o schema e as Edge Functions corrigidos** (11/09): `form-submit` v60, `stripe-webhook` v53 e as quatro migrations com impressão digital idêntica à do local. As tabelas do fluxo estão **zeradas** — o caso do teste de 18/09 foi removido.
 - **O teste em produção deixou uma correção e uma pendência:** `supabase-py` subiu para 2.31.0 (a versão fixada recusava a chave `sb_secret_…` antes de qualquer requisição), e a divergência de precedência de `.env` entre Express e pipeline virou a **pendência 26**, ainda aberta.
 - **O schema são quatro migrations** (09-10/09): a baseline que consolida as doze antigas e as corrige, as duas do radar e a do bucket `generated-recursos`. Quinze anomalias levantadas, quatorze fechadas.
-- **A verificação de radar tem as Fases 0, 1 e 3 entregues, e só elas** — fixture de 23 casos-limite, cinco tabelas com RLS, bucket `evidencias` por migration, e a RPC `verificar_medidor` com 24 testes pgTAP. Conferido no projeto remoto em 20/09: as três funções (`verificar_medidor`, `radar_classificar_resultado`, `radar_unaccent_imutavel`) estão lá e as cinco tabelas `radar_*` têm **0 linhas**. A infraestrutura está de pé, **inerte, sem dado e sem consumidor**.
-- **As Fases 2, 4, 5 e 6 não começaram**, e isso é verificável: não existem `supabase/functions/ingest-radares-rj/`, `_shared/psie.ts` nem migration de `pg_cron`; nenhum arquivo fora dos docs e da fixture cita `rbmlq` ou `medidores.json`; e a coluna `form_submissions.verificacao_medidor`, que é o contrato de saída da feature, **não existe em migration nenhuma**. `src/`, `server/` e `pipeline/` seguem sem uma linha sobre o assunto.
-- **Três coisas travam o radar, nessa ordem:** de onde a ingestão vai buscar o arquivo (pendência 21 — o IP de saída da Supabase é recusado no TCP pelo `servicos.rbmlq.gov.br`), a retenção dos snapshots (pendência 19, a decidir antes de ligar o cron) e a Fase 0.5 (pendência 18), que exige 8 a 10 casos reais de excesso de velocidade no RJ — e `form_submissions` está **vazia** em produção, conferido em 20/09. **O VPS do passo 7 pode resolver a 21 de carona:** se ele passar num `curl` ao arquivo do RJ, passa a existir uma máquina sempre ligada em rede aceita onde o cron pode morar. É um teste de um minuto, e é a regra que o próprio plano escreveu.
+- **A verificação de radar deixou de ser inerte em 22/09/2026.** As tabelas `radar_*` de produção, que tinham 0 linhas desde 06/09, agora carregam o parque do RJ: **1.971 instrumentos, 3.346 faixas e 9.652 verificações** (7.814 de origem `historico`, 1.838 de `topo`), mais o arquivo bruto de 3.661.867 bytes arquivado em `evidencias/radares/RJ/2026-09-22-4dcb3d35ee37.json`. A RPC `verificar_medidor`, escrita em 06/09 e testada só contra fixture, **respondeu com dado real pela primeira vez**: para o série `2000065` em 01/09/2026 devolveu `comprovado_valido`, confiança alta, match por número de série, com `sha256` e `snapshot_id` no bloco de evidência.
+- **A Fase 2 foi entregue pela metade, e de propósito.** A ingestão existe (`scripts/ingest-radares-rj.ts` + `scripts/lib/psie.ts` e `retry.ts`, 34 testes), mas roda **manualmente, da máquina do Klaus**, porque é a rede dele que o RBMLQ aceita — a saída (a) que a §5.1.2 do plano já previa. **Não existe `pg_cron` nem poda de retenção**, e isso deixa a pendência 19 intocada. **As Fases 4, 5 e 6 não começaram:** a coluna `form_submissions.verificacao_medidor`, que é o contrato de saída da feature, **não existe em migration nenhuma**, e `src/`, `server/` e `pipeline/` seguem sem uma linha sobre o assunto. O dado está no banco e ainda **não tem consumidor**.
+- **O que trava o radar agora são duas coisas, não três.** A pendência 21 (de onde a ingestão busca o arquivo) deixou de bloquear a carga — passou-se a conviver com ela, rodando à mão —, mas continua aberta para qualquer ingestão *recorrente*. Seguem travando: a Fase 0.5 (pendência 18), que exige 8 a 10 casos reais de excesso de velocidade no RJ, e `form_submissions` está **vazia** em produção; e a decisão de retenção (pendência 19), agora só quando houver cron. **O VPS do passo 7 continua podendo resolver a 21 de carona:** um `curl` ao arquivo do RJ a partir dele custa um minuto e é a regra que o próprio plano escreveu.
 - **A fonte do INMETRO está parada há três semanas.** Medido em 21/09: o arquivo do RJ responde `200` com `Last-Modified: 01/09/2026` e **os mesmos 3.661.867 bytes, sha256 `4dcb3d35…648fb9b`** — byte a byte o snapshot de 03/09. Não é "atualização irregular, apesar de nominalmente diária": são **21 dias sem regenerar**. Isso derruba a premissa de custo da pendência 19 e é um risco de produto, porque a prova de vigência envelhece junto com a fonte. A mesma requisição prova que o endpoint está no ar e aceita a rede do Klaus — o que reforça que a pendência 21 é bloqueio de ASN de nuvem, e não fonte fora do ar.
 - **O projeto Supabase da nuvem está ativo** desde 06/09, despausado para o teste de alcance. Continua consumindo recursos.
 - **Sem suíte automatizada.** A verificação é manual, via os 4 scripts PowerShell em `tests/edge-functions/` — que param no formulário —, mais os 24 testes pgTAP do radar e a asserção de Storage.
@@ -1074,3 +1074,74 @@ Mesma pergunta do Klaus de ontem: como está a verificação do INMETRO dos pard
 **Arquivos:** só este. **Nenhuma linha de código, migration ou configuração tocada**; as consultas ao remoto foram `SELECT` e a requisição ao INMETRO foi `GET` num endpoint público CC0, com `User-Agent` identificado. O download foi para o scratchpad da sessão.
 
 **Ficou de fora:** o teste de alcance a partir do VPS (que ainda não existe) e a pendência 26, ambas inalteradas.
+
+---
+
+## Sessão de 22/09/2026 — A carga dos radares do RJ: 1.971 instrumentos em produção, e o campo que eu li errado
+
+Decisão sua, tomada no começo da sessão e que destravou tudo: como o RBMLQ recusa IPs de nuvem e a fonte se
+atualiza em intervalos arbitrários, a coleta passa a ser **manual, da sua máquina**. É a saída (a) que a
+§5.1.2 do plano do radar já tinha escrito e deixado sem escolher. Não contorna o plano — escolhe uma das
+duas portas que ele deixou abertas.
+
+**Spec e plano antes de código.** `docs/superpowers/specs/2026-09-22-carga-manual-radares-rj-design.md` e
+`docs/superpowers/plans/2026-09-22-carga-manual-radares-rj.md`. Quatro decisões ficaram travadas ali: JSON
+e não XML (o censo, o fixture e os 24 testes pgTAP foram todos construídos sobre a estrutura do JSON);
+carga única e manual; Node 22 sem ferramenta nova; e produção como alvo, com `--dry-run` fazendo o papel
+que a stack local faria se não fosse custosa sob WSL.
+
+**Três medições dispensaram dependências que o plano previa.** O Node 22.23.2 da máquina faz
+type-stripping nativo, roda `node --test` sobre `.ts` e importa `@supabase/supabase-js` — `tsx` saiu.
+`--env-file-if-exists` reproduz a precedência que o `CLAUDE.md` documenta (último arquivo ganha, ausente
+não derruba) e **dá ao ambiente real precedência sobre o arquivo**, que é a semântica do pipeline, não a do
+Express da pendência 26 — `dotenv` saiu. Resultado: **zero dependências novas**.
+
+**O que foi construído.** `scripts/lib/psie.ts` (núcleo puro, zero I/O), `scripts/lib/retry.ts` e
+`scripts/ingest-radares-rj.ts`, com **34 testes** em `node --test`. Duas correções sobre o plano da Fase 2
+entraram no caminho: a idempotência confere `record_count` contra o `count(*)` real, porque só o `sha256`
+deixaria uma carga interrompida presa em no-op **para sempre e em silêncio**; e os lotes são deduplicados
+por PK antes do envio, já que uma colisão dispara *"ON CONFLICT DO UPDATE cannot affect row a second
+time"* e aborta o lote inteiro (medido: zero colisões hoje).
+
+**A fonte é pior do que "parada": é errática.** O primeiro dry-run morreu com `TypeError: terminated`.
+Medido em execuções seguidas do mesmo arquivo: **1,5 s · 7,0 s · 9,3 s · 11,8 s · 15,9 s · 27,7 s ·
+40,9 s · 46,9 s**, com uma morrendo no meio do corpo — cerca de 1 falha a cada 5. Daí o `retry.ts`, com 4
+tentativas, backoff linear e o `dormir` injetável, para os testes não dependerem de rede nem de relógio.
+
+**Dois achados de ambiente que valem mais que o código.** O `.gitignore` tinha `scripts/*` desde 20/09, o
+que teria deixado a carga inteira fora do git — você mandou remover a regra, e os dois scripts que ela
+escondia entraram (nenhum com segredo: a chave da NVIDIA vem de `os.environ`). E **`.env.local` aponta
+para `127.0.0.1:54321` e vence a precedência**, então `npm run radar:ingest` mandaria a carga para a stack
+local, que está desligada. Virou `npm run radar:ingest:prod`, que carrega só o `.env` — o footgun não deve
+depender de alguém lembrar.
+
+**O defeito que a carga revelou, e que os testes não pegaram.** Depois da primeira carga, conferindo a
+saída da RPC contra o arquivo bruto, `proprietario` estava `null`. A fonte manda **`Proprietario` como
+objeto aninhado** — `{Nome, Municipio, Estado}` —, e meu tipo assumia `string`: as 1.971 linhas entraram
+sem proprietário. **Os testes não pegaram porque o fixture reproduzia o mesmo engano** — eu comparava a
+saída contra a minha própria suposição, e não contra a fonte. Quem pegou foi conferir o dado real.
+Corrigido com quatro testes, um deles varrendo o fixture inteiro, e a recarga precisou de um `--force`
+novo, já que bytes idênticos fariam a idempotência recusar a correção como no-op.
+
+**Estado final, conferido no banco e não presumido:** 1.971 instrumentos, 3.346 faixas, 9.652 verificações
+(7.814 `historico`, 1.838 `topo`), 1 snapshot com `sha256 4dcb3d35…648fb9b` e o arquivo de 3.661.867 bytes
+no bucket `evidencias`. Zero `snapshot_id` órfão, zero `velocidade_nominal = 0` contra **32 nulas —
+exatamente as 32 que o plano previa** —, zero verificações `topo` com número de certificado, e os
+proprietários reproduzindo o censo (CONSILUX 328, SPLICE 293, PERKONS 247, CLD 233, ELISEU KOPP 231,
+SITRAN 162).
+
+**Um achado para a Fase 3, que não é desta carga e não bloqueia nada:** **81 das 7.814** entradas de
+histórico não trazem número de certificado na origem. A RPC devolve `numero: null` com
+`origem: "historico"` e **`avisos: []` vazio** — o plano só previa o aviso para origem `topo`. Como está,
+uma peça poderia afirmar vigência sem número e sem ressalva. Decidir na Fase 5, quando a redação por
+status for escrita.
+
+**Arquivos:** `scripts/lib/psie.ts`, `scripts/lib/psie.test.ts`, `scripts/lib/retry.ts`,
+`scripts/lib/retry.test.ts`, `scripts/ingest-radares-rj.ts`, `package.json`, `.gitignore`, a spec, o plano
+e este. Nove commits na branch `feat/carga-radares-rj`. **Nenhuma migration, nenhum schema tocado, e nada
+em `src/`, `server/`, `pipeline/` ou `supabase/functions/`.**
+
+**Ficou de fora:** `pg_cron` e poda (pendências 19 e 21 intocadas), a Fase 0.5 (segue bloqueada —
+`form_submissions` tem 0 linhas), e as Fases 4 e 5, que são o próximo passo: sem a coluna
+`form_submissions.verificacao_medidor`, o dado carregado **ainda não tem consumidor**.
+

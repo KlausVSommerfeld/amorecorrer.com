@@ -23,7 +23,6 @@ dist-ssr
 .env
 .env.local
 .env.production
-scripts/*
 **/venv/
 .venv/
 __pycache__/
