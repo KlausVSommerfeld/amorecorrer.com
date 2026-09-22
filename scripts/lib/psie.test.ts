@@ -101,3 +101,105 @@ test('instrumentId não quebra em registro sem faixas', async () => {
   const semFaixas: PsieRecord = { SiglaUf: 'RJ', Municipio: 'SÃO JOSÉ DO NORTE', LocalVerificacao: "1'", Faixas: [] }
   assert.match(await instrumentId(semFaixas), /^[0-9a-f]{32}$/)
 })
+
+import { readFileSync } from 'node:fs'
+import { normalize } from './psie.ts'
+
+const SNAP = '00000000-0000-4000-8000-000000000000'
+const FIXTURE: PsieRecord[] = JSON.parse(
+  readFileSync(new URL('../../tests/fixtures/medidores_RJ.json', import.meta.url), 'utf8'),
+)
+
+test('o fixture tem os 23 registros esperados', () => {
+  assert.equal(FIXTURE.length, 23)
+})
+
+test('normalize monta a linha do instrumento a partir do registro canônico', async () => {
+  const { instrument } = await normalize(FIXTURE[0], SNAP)
+  assert.equal(instrument.uf, 'RJ')
+  assert.equal(instrument.municipio, 'RIO DE JANEIRO')
+  assert.equal(instrument.local_via, 'Est Rio Grande Px1096')
+  assert.equal(instrument.data_ultima_verificacao, '2026-08-28')
+  assert.equal(instrument.data_validade, '2027-08-27')
+  assert.equal(instrument.ultimo_resultado, 'Aprovado')
+  assert.equal(instrument.snapshot_id, SNAP)
+  assert.match(instrument.updated_at, /^\d{4}-\d{2}-\d{2}T/)
+})
+
+test('normalize devolve o histórico ordenado por data_laudo', async () => {
+  const { verificacoes } = await normalize(FIXTURE[0], SNAP)
+  const hist = verificacoes.filter((v) => v.origem === 'historico').map((v) => v.data_laudo)
+  assert.deepEqual(hist, [...hist].sort())
+  assert.equal(hist.length, 8)
+  assert.equal(hist[0], '2019-09-19')
+})
+
+test('registro com Historico vazio e par do topo válido devolve UMA verificação, origem topo', async () => {
+  const { verificacoes } = await normalize(FIXTURE[1], SNAP)
+  assert.equal(verificacoes.length, 1)
+  assert.equal(verificacoes[0].origem, 'topo')
+  assert.equal(verificacoes[0].numero_certificado, '')
+  assert.equal(verificacoes[0].numero_ensaio, null)
+  assert.equal(verificacoes[0].data_laudo, '2026-06-12')
+  assert.equal(verificacoes[0].data_validade, '2027-06-11')
+})
+
+test('registro com histórico devolve historico.length + 1 verificações', async () => {
+  const { verificacoes } = await normalize(FIXTURE[0], SNAP)
+  assert.equal(verificacoes.length, (FIXTURE[0].Historico ?? []).length + 1)
+  assert.equal(verificacoes.filter((v) => v.origem === 'topo').length, 1)
+})
+
+test('DataValidade vazia no topo não gera linha de origem topo', async () => {
+  const { verificacoes } = await normalize(FIXTURE[3], SNAP)
+  assert.equal(verificacoes.filter((v) => v.origem === 'topo').length, 0)
+  assert.equal(verificacoes.length, 0)
+})
+
+test('VelocidadeNominal "0" vira null, nunca 0 km/h', async () => {
+  const { faixas } = await normalize(FIXTURE[11], SNAP)
+  assert.equal(faixas[0].velocidade_nominal, null)
+})
+
+test('Sentido null vira string vazia — a coluna é NOT NULL e entra na PK', async () => {
+  const { faixas } = await normalize(FIXTURE[11], SNAP)
+  assert.equal(faixas[0].sentido, '')
+  assert.equal(typeof faixas[0].sentido, 'string')
+})
+
+test('registro sem Faixas e sem Historico não quebra', async () => {
+  const r = await normalize(FIXTURE[12], SNAP)
+  assert.equal(r.faixas.length, 0)
+  assert.equal(r.verificacoes.filter((v) => v.origem === 'historico').length, 0)
+  assert.match(r.instrument.id, /^[0-9a-f]{32}$/)
+})
+
+test('entrada de histórico com data inválida é descartada e contada', async () => {
+  const sujo: PsieRecord = {
+    SiglaUf: 'RJ', Municipio: 'X', LocalVerificacao: 'Y', Faixas: [],
+    DataUltimaVerificacao: '', DataValidade: '',
+    Historico: [
+      { NumeroCertificado: '1', DataLaudo: '12/07/2024', DataValidade: '11/07/2025', Resultado: 'Aprovado' },
+      { NumeroCertificado: '2', DataLaudo: 'lixo', DataValidade: '11/07/2025', Resultado: 'Aprovado' },
+      { NumeroCertificado: '3', DataLaudo: '12/07/2024', DataValidade: '', Resultado: 'Aprovado' },
+    ],
+  }
+  const r = await normalize(sujo, SNAP)
+  assert.equal(r.verificacoes.length, 1)
+  assert.equal(r.descartes, 2)
+})
+
+test('o fixture inteiro reproduz as contagens medidas', async () => {
+  let faixas = 0, hist = 0, topo = 0, descartes = 0
+  for (const reg of FIXTURE) {
+    const r = await normalize(reg, SNAP)
+    faixas += r.faixas.length
+    hist += r.verificacoes.filter((v) => v.origem === 'historico').length
+    topo += r.verificacoes.filter((v) => v.origem === 'topo').length
+    descartes += r.descartes
+  }
+  assert.equal(faixas, 31)
+  assert.equal(hist, 103)
+  assert.equal(topo, 17)
+  assert.equal(descartes, 0)
+})

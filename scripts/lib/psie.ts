@@ -107,3 +107,137 @@ export async function instrumentId(r: PsieRecord): Promise<string> {
     .join('')
     .slice(0, 32)
 }
+
+export interface InstrumentRow {
+  id: string
+  uf: string
+  municipio: string | null
+  local_via: string | null
+  tipo_medidor: string | null
+  proprietario: string | null
+  data_ultima_verificacao: string | null
+  data_validade: string | null
+  ultimo_resultado: string | null
+  snapshot_id: string
+  updated_at: string
+}
+
+export interface FaixaRow {
+  instrument_id: string
+  numero_faixa: string
+  numero_inmetro: string | null
+  numero_serie: string | null
+  sentido: string
+  velocidade_nominal: number | null
+}
+
+export interface VerificacaoRow {
+  instrument_id: string
+  origem: 'historico' | 'topo'
+  numero_certificado: string
+  numero_ensaio: string | null
+  ano: number | null
+  data_laudo: string
+  data_validade: string
+  tipo_servico: string | null
+  resultado: string | null
+}
+
+export interface NormalizeResult {
+  instrument: InstrumentRow
+  faixas: FaixaRow[]
+  verificacoes: VerificacaoRow[]
+  /** Entradas de histórico jogadas fora por data não parseável. Esperado hoje: 0. */
+  descartes: number
+}
+
+/** Texto da fonte -> coluna nullable: vazio e só-espaço viram null. */
+function textoOuNull(s?: string | null): string | null {
+  if (typeof s !== 'string') return null
+  const t = s.trim()
+  return t === '' ? null : t
+}
+
+/**
+ * Converte um registro da fonte nas linhas das três tabelas.
+ *
+ * A verificação de origem `topo` é o coração desta função: 297 instrumentos do
+ * RJ têm `Historico: []` e, ainda assim, declaram verificação no topo do
+ * registro (§1.4.11 do plano). Ignorá-la classificaria os 297 como sem
+ * registro — erro que o produto venderia como fato.
+ */
+export async function normalize(r: PsieRecord, snapshotId: string): Promise<NormalizeResult> {
+  const id = await instrumentId(r)
+
+  const instrument: InstrumentRow = {
+    id,
+    uf: textoOuNull(r.SiglaUf) ?? UF_ALVO,
+    municipio: textoOuNull(r.Municipio),
+    local_via: textoOuNull(r.LocalVerificacao),
+    tipo_medidor: textoOuNull(r.TipoMedidor),
+    proprietario: textoOuNull(r.Proprietario),
+    data_ultima_verificacao: parseBrDate(r.DataUltimaVerificacao),
+    data_validade: parseBrDate(r.DataValidade),
+    ultimo_resultado: textoOuNull(r.UltimoResultado),
+    snapshot_id: snapshotId,
+    // Escrito explicitamente: o DEFAULT só vale no INSERT, e num upsert que
+    // atualiza linha existente a coluna ficaria congelada na primeira carga.
+    updated_at: new Date().toISOString(),
+  }
+
+  // `sentido` e `numero_faixa` entram na PK: NOT NULL, então `?? ''`.
+  const faixas: FaixaRow[] = (r.Faixas ?? []).map((f) => ({
+    instrument_id: id,
+    numero_faixa: (f.NumeroFaixa ?? '').trim(),
+    numero_inmetro: textoOuNull(f.NumeroInmetro),
+    numero_serie: textoOuNull(f.NumeroSerie),
+    sentido: (f.Sentido ?? '').trim(),
+    velocidade_nominal: parseIntOrNull(f.VelocidadeNominal),
+  }))
+
+  let descartes = 0
+  const verificacoes: VerificacaoRow[] = []
+
+  for (const h of r.Historico ?? []) {
+    const laudo = parseBrDate(h.DataLaudo)
+    const validade = parseBrDate(h.DataValidade)
+    // data_laudo e data_validade são NOT NULL: sem as duas, a linha não existe.
+    if (laudo === null || validade === null) {
+      descartes++
+      continue
+    }
+    verificacoes.push({
+      instrument_id: id,
+      origem: 'historico',
+      numero_certificado: (h.NumeroCertificado ?? '').trim(),
+      numero_ensaio: textoOuNull(h.NumeroEnsaio),
+      ano: parseIntOrNull(h.Ano),
+      data_laudo: laudo,
+      data_validade: validade,
+      tipo_servico: textoOuNull(h.TipoServico),
+      resultado: textoOuNull(h.Resultado),
+    })
+  }
+
+  verificacoes.sort((a, b) => a.data_laudo.localeCompare(b.data_laudo))
+
+  const topoLaudo = parseBrDate(r.DataUltimaVerificacao)
+  const topoValidade = parseBrDate(r.DataValidade)
+  if (topoLaudo !== null && topoValidade !== null) {
+    verificacoes.push({
+      instrument_id: id,
+      origem: 'topo',
+      // A fonte não fornece número de certificado no topo. A peça pode afirmar
+      // a vigência; não pode citar um número que não existe na base pública.
+      numero_certificado: '',
+      numero_ensaio: null,
+      ano: null,
+      data_laudo: topoLaudo,
+      data_validade: topoValidade,
+      tipo_servico: null,
+      resultado: textoOuNull(r.UltimoResultado),
+    })
+  }
+
+  return { instrument, faixas, verificacoes, descartes }
+}
