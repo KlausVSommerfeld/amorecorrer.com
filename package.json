@@ -10,6 +10,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "radar:test": "node --test \"scripts/lib/*.test.ts\"",
+    "radar:ingest": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/ingest-radares-rj.ts",
     "preview": "vite preview"
   },
   "dependencies": {
