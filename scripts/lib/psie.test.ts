@@ -203,3 +203,32 @@ test('o fixture inteiro reproduz as contagens medidas', async () => {
   assert.equal(topo, 17)
   assert.equal(descartes, 0)
 })
+
+// --- Proprietário: a fonte manda OBJETO, não string ---
+// Descoberto em 22/09/2026, depois da primeira carga em produção: as 1.971
+// linhas ficaram com proprietario NULL porque o tipo assumia string.
+
+test('proprietário vem do campo Nome do objeto aninhado', async () => {
+  const { instrument } = await normalize(FIXTURE[0], SNAP)
+  assert.equal(instrument.proprietario, 'CONSILUX CONSULTORIA E CONSTRUÇÕES ELÉTRICAS LTDA')
+})
+
+test('todo o fixture tem proprietário — nenhum null', async () => {
+  for (const reg of FIXTURE) {
+    const { instrument } = await normalize(reg, SNAP)
+    assert.equal(typeof instrument.proprietario, 'string', `local ${reg.LocalVerificacao} veio sem proprietário`)
+  }
+})
+
+test('proprietário tolera string solta, caso a fonte mude de forma', async () => {
+  const comString: PsieRecord = { ...FIXTURE[0], Proprietario: 'EMPRESA X LTDA' }
+  const { instrument } = await normalize(comString, SNAP)
+  assert.equal(instrument.proprietario, 'EMPRESA X LTDA')
+})
+
+test('proprietário ausente ou com Nome vazio vira null, sem quebrar', async () => {
+  for (const p of [null, undefined, {}, { Nome: '' }, { Nome: '   ' }] as PsieRecord['Proprietario'][]) {
+    const { instrument } = await normalize({ ...FIXTURE[0], Proprietario: p }, SNAP)
+    assert.equal(instrument.proprietario, null)
+  }
+})

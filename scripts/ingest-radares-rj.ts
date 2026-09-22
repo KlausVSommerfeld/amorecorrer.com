@@ -7,6 +7,8 @@
 //   npm run radar:ingest -- --dry-run    # não escreve nada, dispensa credencial
 //   npm run radar:ingest                 # carga real, pede confirmação
 //   npm run radar:ingest -- --yes        # carga real, sem prompt
+//   npm run radar:ingest -- --force      # reprocessa mesmo que o sha256 já exista
+//   npm run radar:ingest:prod            # carga real contra produção (só .env)
 
 import { createInterface } from 'node:readline/promises'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
@@ -33,6 +35,9 @@ const TENTATIVAS = 4
 const args = new Set(process.argv.slice(2))
 const DRY_RUN = args.has('--dry-run')
 const SEM_PROMPT = args.has('--yes')
+// Reprocessar bytes idênticos é legítimo quando o BUG estava em nós, não na
+// fonte — foi o que aconteceu com `proprietario` em 22/09/2026.
+const FORCAR = args.has('--force')
 
 function log(...partes: unknown[]): void {
   console.log(...partes)
@@ -162,6 +167,11 @@ async function confirmarDestino(ref: string, url: string): Promise<void> {
  * em silêncio. Por isso comparamos também o record_count com o count real.
  */
 async function jaCarregado(db: SupabaseClient, sha: string, esperado: number): Promise<boolean> {
+  if (FORCAR) {
+    log('\n  --force: pulando a checagem de idempotência.')
+    return false
+  }
+
   const { data, error } = await db
     .from('radar_snapshots')
     .select('id, record_count')
@@ -258,10 +268,12 @@ async function main(): Promise<void> {
     .upload(caminho, bytes, { contentType: 'application/json', upsert: true })
   if (erroUpload) throw new Error(`upload para o Storage falhou: ${erroUpload.message}`)
 
-  log('→ insert em radar_snapshots')
+  log('→ upsert em radar_snapshots')
+  // upsert, e não insert: num reprocessamento (--force) os bytes são os mesmos,
+  // e UNIQUE(uf, sha256) recusaria um insert.
   const { data: snap, error: erroSnap } = await db
     .from('radar_snapshots')
-    .insert({
+    .upsert({
       uf: UF_ALVO,
       source_url: FONTE,
       last_modified: lastModified,
@@ -269,7 +281,7 @@ async function main(): Promise<void> {
       storage_path: caminho,
       bytes: bytes.byteLength,
       record_count: n.instruments.length,
-    })
+    }, { onConflict: 'uf,sha256' })
     .select('id')
     .single()
   if (erroSnap || !snap) throw new Error(`insert em radar_snapshots falhou: ${erroSnap?.message}`)

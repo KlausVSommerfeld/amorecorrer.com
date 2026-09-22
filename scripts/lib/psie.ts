@@ -23,6 +23,18 @@ export interface PsieHistorico {
   Resultado?: string | null
 }
 
+/**
+ * A fonte manda o proprietário como OBJETO aninhado, não como string — os 1.971
+ * registros do RJ trazem exatamente {Nome, Municipio, Estado}. Assumir string
+ * aqui custou a coluna inteira na primeira carga (22/09/2026).
+ * O `| string` é tolerância defensiva, caso outra UF ou versão mude a forma.
+ */
+export interface PsieProprietario {
+  Nome?: string | null
+  Municipio?: string | null
+  Estado?: string | null
+}
+
 export interface PsieRecord {
   SiglaUf?: string | null
   Estado?: string | null
@@ -34,7 +46,7 @@ export interface PsieRecord {
   TipoMedidor?: string | null
   Faixas?: PsieFaixa[] | null
   Historico?: PsieHistorico[] | null
-  Proprietario?: string | null
+  Proprietario?: PsieProprietario | string | null
 }
 
 export const UF_ALVO = 'RJ'
@@ -151,6 +163,13 @@ export interface NormalizeResult {
   descartes: number
 }
 
+/** O nome do proprietário, venha ele como objeto (o normal) ou como string. */
+function nomeProprietario(p?: PsieProprietario | string | null): string | null {
+  if (typeof p === 'string') return textoOuNull(p)
+  if (p && typeof p === 'object') return textoOuNull(p.Nome)
+  return null
+}
+
 /** Texto da fonte -> coluna nullable: vazio e só-espaço viram null. */
 function textoOuNull(s?: string | null): string | null {
   if (typeof s !== 'string') return null
@@ -175,7 +194,7 @@ export async function normalize(r: PsieRecord, snapshotId: string): Promise<Norm
     municipio: textoOuNull(r.Municipio),
     local_via: textoOuNull(r.LocalVerificacao),
     tipo_medidor: textoOuNull(r.TipoMedidor),
-    proprietario: textoOuNull(r.Proprietario),
+    proprietario: nomeProprietario(r.Proprietario),
     data_ultima_verificacao: parseBrDate(r.DataUltimaVerificacao),
     data_validade: parseBrDate(r.DataValidade),
     ultimo_resultado: textoOuNull(r.UltimoResultado),
