@@ -1122,10 +1122,16 @@ Expected: 1.971 / 3.346 / 7.814 / 1.838 / 9.652 / 0 descartes.
 
 - [ ] **Step 3: A carga real**
 
-Confirme antes que o `.env` ativo aponta para produção. Lembre-se da regra do `CLAUDE.md`: **enquanto `.env.local` existir, ele ganha** — se ele apontar para `127.0.0.1:54321`, a carga iria para o banco local. O prompt de confirmação imprime o `project ref`; **leia-o antes de responder `s`**.
+**Medido em 22/09/2026: `.env.local` existe e aponta para `127.0.0.1:54321`.** Pela regra de precedência
+do `CLAUDE.md`, ele vence — então `npm run radar:ingest` mandaria a carga para o banco local, que está
+desligado. Por isso existe o `radar:ingest:prod`, que carrega **só o `.env`**.
 
-Run: `npm run radar:ingest`
-Expected: o prompt mostra `project ref: tsdzvxgkokrjqayxukud`; após `s`, o upload e os três upserts completam sem erro.
+**Este passo é do Klaus, não do agente.** O prompt de confirmação foi desenhado para um humano ler o
+`project ref` e responder; um agente passando `--yes` derrota a única guarda que existe aqui. No Claude
+Code, rode com o prefixo `!` para a saída cair na conversa.
+
+Run: `npm run radar:ingest:prod`
+Expected: o prompt mostra `project ref: tsdzvxgkokrjqayxukud` — **confira antes de responder `s`**. Depois, o upload e os três upserts completam sem erro.
 
 - [ ] **Step 4: Conferir o resultado no banco**
 
@@ -1149,7 +1155,7 @@ Expected: `storage_path` preenchido, `bytes = 3661867`, `record_count = 1971`.
 
 - [ ] **Step 5: Provar a idempotência**
 
-Run: `npm run radar:ingest -- --yes`
+Run: `npm run radar:ingest:prod -- --yes`
 Expected: `snapshot ... já carregado, com 1971 instrumentos. Nada a fazer.` — e as contagens do Step 4 inalteradas.
 
 - [ ] **Step 6: Provar que a RPC funciona com dado real**
