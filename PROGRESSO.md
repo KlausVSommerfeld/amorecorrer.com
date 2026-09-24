@@ -29,6 +29,7 @@ Ao fim de uma sessão que mudou algo relevante:
 ```
 
 3. Mova para **Pendências e decisões em aberto** qualquer escolha que dependa do Klaus.
+4. Atualize o `PENDENCIAS.md`: remova o que foi concluído e acrescente o que nasceu, apontando para a entrada desta sessão.
 
 Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo está no *porquê* e no que **não** está no código.
 

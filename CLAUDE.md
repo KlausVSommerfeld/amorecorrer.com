@@ -4,6 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Histórico e pendências:** este arquivo descreve *como o sistema funciona hoje*. Para *o que aconteceu, quando e o que ficou em aberto*, leia `PROGRESSO.md` — e acrescente uma entrada lá ao fim de qualquer sessão que mude algo relevante.
 
+**O que falta fazer:** `PENDENCIAS.md` é a lista bruta de tudo que está em aberto (pendências, fases, etapas, tasks de plano), cada item com a referência da sessão do `PROGRESSO.md` onde nasceu. **Mantenha-o em dia na mesma sessão:** ao concluir um item, remova-o de lá; ao surgir um novo, acrescente-o com a referência.
+
 ## Produto
 
 **Amo Recorrer** vende recursos de multa de trânsito gerados por IA (R$ 19,99, ticket único, sem cadastro de usuário). O usuário paga primeiro no Stripe, depois preenche o formulário do auto de infração; o backend redige a peça com IA, gera um PDF e envia por e-mail. A identidade de um pedido é o **`case_id`** (`CASO_<uuid>`), gerado no backend no momento do checkout — ele amarra todas as tabelas e todos os serviços.
