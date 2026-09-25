@@ -106,7 +106,7 @@ async def notify_finish(
     r.raise_for_status()
 
 
-async def call_deepseek(text_context: str) -> str:
+async def call_deepseek(text_context: str, sistema: str | None = None) -> str:
     if not settings.deepseek_api_key:
         return (
             "[Modo sem IA: defina DEEPSEEK_API_KEY] Rascunho automático indisponível. "
@@ -122,7 +122,7 @@ async def call_deepseek(text_context: str) -> str:
         messages=[
             {
                 "role": "system",
-                "content": system_prompt(settings.radar_tese_ativa),
+                "content": sistema or system_prompt(False),
             },
             {
                 "role": "user",
@@ -268,7 +268,8 @@ async def run_dispatch_pipeline(body_text: str) -> None:
                 bloco = bloco_verificacao(case.get("verificacao_medidor"))
                 # Só dados do equipamento: nenhum dado pessoal do cliente.
                 log.info("verificação do medidor no prompt case_id=%s bloco=%r", payload.case_id, bloco)
-            draft = await call_deepseek(context)
+            sistema = system_prompt(settings.radar_tese_ativa, case.get("verificacao_medidor"))
+            draft = await call_deepseek(context, sistema)
 
             pdf_title = f"Recurso — {payload.case_id}"
             pdf_body = (

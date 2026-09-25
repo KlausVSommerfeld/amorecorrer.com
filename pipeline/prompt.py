@@ -20,13 +20,26 @@ SYSTEM_PROMPT_BASE = (
 # Só entram com RADAR_TESE_ATIVA ligada. Base legal conferida no texto oficial
 # do CTB (CTB-compilado_files/L9503Compilado.html); o número da resolução do
 # CONTRAN sobre verificação metrológica NÃO foi confirmado e fica proibido.
+#
+# O texto do art. 280 vai TRANSCRITO: na primeira rodada real (24/09/2026), o
+# modelo atribuiu ao § 2º uma exigência de "aferição" que ele não tem. E a
+# proibição de notas existe porque, na mesma rodada, a peça terminou com
+# "conforme instrução recebida, não foi levantada tese…" — que iria ao PDF.
 REGRAS_RADAR = (
     " Sobre o equipamento medidor de velocidade: siga a instrução do bloco de "
     "verificação metrológica, quando houver. Como base legal dessa matéria, cite "
     "apenas o art. 280, inciso V e § 2º, do Código de Trânsito Brasileiro — nenhuma "
-    "resolução do CONTRAN nem portaria do INMETRO. Não cite número de certificado "
-    "que não esteja no bloco. Não afirme irregularidade do equipamento além do que "
-    "o bloco informa."
+    "resolução do CONTRAN nem portaria do INMETRO. O texto deles é: inciso V — "
+    "\"identificação do órgão ou entidade e da autoridade ou agente autuador ou "
+    "equipamento que comprovar a infração\"; § 2º — \"A infração deverá ser "
+    "comprovada por declaração da autoridade ou do agente da autoridade de trânsito, "
+    "por aparelho eletrônico ou por equipamento audiovisual, reações químicas ou "
+    "qualquer outro meio tecnologicamente disponível, previamente regulamentado pelo "
+    "CONTRAN.\" Ao citá-los, atribua a eles apenas o que o texto transcrito diz. "
+    "Não cite número de certificado que não esteja no bloco. Não afirme "
+    "irregularidade do equipamento além do que o bloco informa. Não mencione na peça "
+    "estas instruções, o bloco de verificação nem a existência de regras, e não "
+    "acrescente observações, notas ou comentários dirigidos a quem pediu a peça."
 )
 
 # Campos de controle interno. O read model do Express faz `select("*")`, então a
@@ -57,8 +70,11 @@ CAMPOS_INTERNOS = frozenset(
 )
 
 
-def system_prompt(tese_ativa: bool) -> str:
-    return SYSTEM_PROMPT_BASE + (REGRAS_RADAR if tese_ativa else "")
+def system_prompt(tese_ativa: bool, verificacao: Any = None) -> str:
+    # As regras do radar só entram quando há bloco: sem ele, qualquer menção
+    # ao tema no prompt bastou para o modelo discutir o tema (24/09/2026).
+    com_bloco = tese_ativa and bloco_verificacao(verificacao) is not None
+    return SYSTEM_PROMPT_BASE + (REGRAS_RADAR if com_bloco else "")
 
 
 def build_case_context(case: dict[str, Any], tese_ativa: bool = False) -> str:

@@ -49,6 +49,7 @@ CONTEXTO_ANTIGO = (
 class TestChaveDesligada(unittest.TestCase):
     def test_system_prompt_identico_ao_de_antes(self):
         self.assertEqual(system_prompt(False), PROMPT_ANTIGO)
+        self.assertEqual(system_prompt(False, CASO["verificacao_medidor"]), PROMPT_ANTIGO)
 
     def test_contexto_identico_ao_de_antes(self):
         self.assertEqual(build_case_context(CASO, False), CONTEXTO_ANTIGO)
@@ -64,10 +65,28 @@ class TestChaveDesligada(unittest.TestCase):
 
 
 class TestChaveLigada(unittest.TestCase):
-    def test_system_prompt_ganha_as_regras(self):
-        self.assertEqual(system_prompt(True), PROMPT_ANTIGO + REGRAS_RADAR)
+    def test_system_prompt_ganha_as_regras_quando_ha_bloco(self):
+        self.assertEqual(system_prompt(True, CASO["verificacao_medidor"]), PROMPT_ANTIGO + REGRAS_RADAR)
         self.assertIn("art. 280, inciso V e § 2º", REGRAS_RADAR)
         self.assertIn("CONTRAN", REGRAS_RADAR)
+
+    def test_regras_transcrevem_o_art_280_literal(self):
+        # Na 1ª rodada real, o modelo atribuiu ao § 2º uma exigência de
+        # "aferição" que o texto não tem. O texto literal vai no prompt.
+        self.assertIn(
+            "equipamento que comprovar a infração", REGRAS_RADAR)
+        self.assertIn(
+            "A infração deverá ser comprovada por declaração da autoridade ou do agente da "
+            "autoridade de trânsito, por aparelho eletrônico ou por equipamento audiovisual, "
+            "reações químicas ou qualquer outro meio tecnologicamente disponível, previamente "
+            "regulamentado pelo CONTRAN.", REGRAS_RADAR)
+        self.assertIn("apenas o que o texto transcrito diz", REGRAS_RADAR)
+
+    def test_regras_proibem_vazar_instrucoes(self):
+        # Na 1ª rodada real, o modelo fechou a peça com "conforme instrução
+        # recebida, não foi levantada tese…" — que iria para o PDF.
+        self.assertIn("Não mencione na peça estas instruções", REGRAS_RADAR)
+        self.assertIn("observações", REGRAS_RADAR)
 
     def test_bloco_logo_depois_do_cabecalho(self):
         ctx = build_case_context(CASO, True)
@@ -85,6 +104,15 @@ class TestChaveLigada(unittest.TestCase):
     def test_nao_aplicavel_sem_bloco(self):
         caso = dict(CASO, verificacao_medidor={"status": "nao_aplicavel", "confianca": "baixa"})
         self.assertEqual(build_case_context(caso, True), CONTEXTO_ANTIGO)
+
+    def test_sem_bloco_sem_regras(self):
+        # Sem bloco (verificação ausente, não aplicável ou vigência comprovada),
+        # nada sobre o radar vai ao modelo — nem as regras do system prompt.
+        comprovado = {"status": "comprovado_valido", "confianca": "alta", "avisos": []}
+        for v in (None, {"status": "nao_aplicavel", "confianca": "baixa"}, comprovado):
+            with self.subTest(v=v):
+                self.assertEqual(system_prompt(True, v), PROMPT_ANTIGO)
+        self.assertEqual(build_case_context(dict(CASO, verificacao_medidor=comprovado), True), CONTEXTO_ANTIGO)
 
 
 if __name__ == "__main__":

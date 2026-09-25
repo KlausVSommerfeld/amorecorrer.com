@@ -9,7 +9,6 @@ import json
 import unittest
 
 from verificacao import (
-    INSTRUCAO_COMPROVADO,
     INSTRUCAO_EXIBICAO,
     INSTRUCAO_REPROVADO,
     bloco_verificacao,
@@ -50,8 +49,11 @@ class TestInstrucao(unittest.TestCase):
     def test_reprovado_alta_e_tese_forte(self):
         self.assertEqual(instrucao_de_redacao(verificacao()), INSTRUCAO_REPROVADO)
 
-    def test_comprovado_alta_descarta_a_tese(self):
-        self.assertEqual(instrucao_de_redacao(verificacao(status="comprovado_valido")), INSTRUCAO_COMPROVADO)
+    def test_comprovado_alta_e_silencio(self):
+        # Em duas rodadas reais (24/09/2026), com um bloco dizendo "não mencione",
+        # o modelo mencionou a verificação e montou tese pelo art. 280. O que ele
+        # não recebe, não cita: vigência comprovada não gera instrução nenhuma.
+        self.assertIsNone(instrucao_de_redacao(verificacao(status="comprovado_valido")))
 
     def test_confianca_nao_alta_vence_o_status(self):
         for status in ("reprovado", "comprovado_valido"):
@@ -77,6 +79,9 @@ class TestBloco(unittest.TestCase):
         self.assertIsNone(bloco_verificacao({"status": "nao_aplicavel", "confianca": "baixa"}))
         self.assertIsNone(bloco_verificacao(None))
 
+    def test_comprovado_sem_bloco(self):
+        self.assertIsNone(bloco_verificacao(verificacao(status="comprovado_valido")))
+
     def test_reprovado_cita_certificado_equipamento_e_fonte(self):
         b = bloco_verificacao(verificacao())
         self.assertIn("reprovado", b)
@@ -98,7 +103,7 @@ class TestBloco(unittest.TestCase):
         casos = [
             verificacao(status="nao_comprovado"),
             verificacao(status="reprovado", confianca="baixa"),
-            verificacao(status="comprovado_valido"),
+            verificacao(status="comprovado_valido", confianca="baixa"),
             verificacao(status="ambiguo"),
         ]
         for v in casos:

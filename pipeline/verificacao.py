@@ -17,10 +17,6 @@ INSTRUCAO_REPROVADO = (
     "cobre a data da infração, citando a data do laudo e o resultado informados acima, "
     "e o número do certificado somente se ele constar acima."
 )
-INSTRUCAO_COMPROVADO = (
-    "Não levante tese sobre a verificação metrológica do equipamento e não mencione "
-    "esta consulta na peça."
-)
 INSTRUCAO_EXIBICAO = (
     "Requeira que o órgão autuador junte aos autos o certificado de verificação "
     "metrológica do equipamento vigente na data da infração, informando que a consulta "
@@ -30,7 +26,6 @@ INSTRUCAO_EXIBICAO = (
 
 _RESULTADO = {
     INSTRUCAO_REPROVADO: "o equipamento foi reprovado na verificação metrológica que cobre a data da infração.",
-    INSTRUCAO_COMPROVADO: "há verificação metrológica vigente na data da infração.",
     INSTRUCAO_EXIBICAO: (
         "a consulta à base pública não localizou, com segurança, verificação "
         "metrológica vigente na data da infração."
@@ -77,7 +72,10 @@ def instrucao_de_redacao(v: Any) -> str | None:
     if status == "reprovado":
         return INSTRUCAO_REPROVADO
     if status == "comprovado_valido":
-        return INSTRUCAO_COMPROVADO
+        # Silêncio, não instrução. Em duas rodadas reais (24/09/2026), um bloco
+        # dizendo "não mencione a verificação" fez o modelo mencioná-la e montar
+        # tese pelo art. 280. Sem bloco, o caso vai ao modelo como ia antes.
+        return None
     return INSTRUCAO_EXIBICAO
 
 
