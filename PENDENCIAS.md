@@ -48,7 +48,6 @@ Plano: `PLANO-verificacao-radar-inmetro.md`. Fases 0, 1, 3 entregues; Fase 2 só
   - Medir junto quantas notificações trazem o nº de série (risco 2) — `form_submissions` está vazia, só dá pelas notificações. → Sessão de 24/09/2026 · plano §7
 - **Fase 4: publicar o front** — migration e `form-submit` v63 já estão em produção; falta o build do `Form.tsx` novo (código em `main` desde 24/09). → Sessão de 24/09/2026
   - Confirmar com uma notificação real a dica de "onde encontrar" os números no formulário (texto genérico hoje). → Sessão de 24/09/2026
-- **Fase 5 em produção** — `db push` da migration `20260924000001`, **depois** `functions deploy form-submit`. Pelo Klaus, no terminal dele. → Sessão de 24/09/2026 (Fase 5)
 - **Ligar `RADAR_TESE_ATIVA`** — só depois da Fase 0.5 assinada. → Sessão de 24/09/2026 (Fase 5)
   - **Condição antes de ligar:** casos sem bloco (`nao_aplicavel`, comprovado) vão sem as regras do radar, logo sem a trava de base legal. Acrescentar uma trava neutra ao prompt base com a chave ligada (ex.: "não cite resolução, portaria ou certificado que não conste nos dados do caso"). → Sessão de 24/09/2026 (Fase 5, revisão final)
   - Oito achados menores da revisão final (fuso do "capturada em", robustez a formatos impossíveis hoje, reenvio só com nº do medidor não reverifica, reenvio em `generating` diverge da auditoria…) — lista no `PROGRESSO.md`. → Sessão de 24/09/2026 (Fase 5, revisão final)

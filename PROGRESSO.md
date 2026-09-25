@@ -52,7 +52,7 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 - **A Fase 2 foi entregue pela metade, e de propósito.** A ingestão existe (`scripts/ingest-radares-rj.ts` + `scripts/lib/psie.ts` e `retry.ts`, 34 testes), mas roda **manualmente, da máquina do Klaus**, porque é a rede dele que o RBMLQ aceita — a saída (a) que a §5.1.2 do plano já previa. **Não existe `pg_cron` nem poda de retenção**, e isso deixa a pendência 19 intocada. **As Fases 4, 5 e 6 não começaram:** a coluna `form_submissions.verificacao_medidor`, que é o contrato de saída da feature, **não existe em migration nenhuma**, e `src/`, `server/` e `pipeline/` seguem sem uma linha sobre o assunto. O dado está no banco e ainda **não tem consumidor**.
 - **O que trava o radar agora são duas coisas, não três.** A pendência 21 (de onde a ingestão busca o arquivo) deixou de bloquear a carga — passou-se a conviver com ela, rodando à mão —, mas continua aberta para qualquer ingestão *recorrente*. Seguem travando: a Fase 0.5 (pendência 18), que exige 8 a 10 casos reais de excesso de velocidade no RJ, e `form_submissions` está **vazia** em produção; e a decisão de retenção (pendência 19), agora só quando houver cron. **O VPS do passo 7 continua podendo resolver a 21 de carona:** um `curl` ao arquivo do RJ a partir dele custa um minuto e é a regra que o próprio plano escreveu.
 - **A fonte do INMETRO está parada há três semanas.** Medido em 21/09: o arquivo do RJ responde `200` com `Last-Modified: 01/09/2026` e **os mesmos 3.661.867 bytes, sha256 `4dcb3d35…648fb9b`** — byte a byte o snapshot de 03/09. Não é "atualização irregular, apesar de nominalmente diária": são **21 dias sem regenerar**. Isso derruba a premissa de custo da pendência 19 e é um risco de produto, porque a prova de vigência envelhece junto com a fonte. A mesma requisição prova que o endpoint está no ar e aceita a rede do Klaus — o que reforça que a pendência 21 é bloqueio de ASN de nuvem, e não fonte fora do ar.
-- **As Fases 4 e 5 do radar estão prontas** (24/09). A 4 (campos do medidor no formulário) tem migration e `form-submit` v63 em produção e falta publicar o front. A 5 grava a verificação do medidor e o log de auditoria no envio do formulário, e deixa a tese pronta **atrás de `RADAR_TESE_ATIVA=false`**. Falta `db push` e o deploy da `form-submit` (nessa ordem) e, para ligar a tese, a Fase 0.5.
+- **As Fases 4 e 5 do radar estão prontas** (24/09). A 4 (campos do medidor no formulário) tem migration e `form-submit` v63 em produção e falta publicar o front. A 5 está **em produção desde 25/09** (migration `20260924000001` e `form-submit` v64): todo envio grava a verificação do medidor e o log de auditoria, e a tese está pronta **atrás de `RADAR_TESE_ATIVA=false`**. Para ligá-la, falta a Fase 0.5 e a trava neutra de base legal (ver `PENDENCIAS.md`).
 - **O projeto Supabase da nuvem está ativo** desde 06/09, despausado para o teste de alcance. Continua consumindo recursos.
 - **Sem suíte automatizada.** A verificação é manual, via os 4 scripts PowerShell em `tests/edge-functions/` — que param no formulário —, mais os 24 testes pgTAP do radar e a asserção de Storage.
 
@@ -1251,4 +1251,12 @@ Oito achados menores ficaram para depois, sem correção:
 - o bloco é calculado três vezes por caso;
 - `nullif` não pega número só com espaços;
 - o equipamento só aparece no bloco do `reprovado`, e não em todos como a spec previa.
+
+**Deploy, em 25/09:** o Klaus rodou `git push`, `db push` e `functions deploy form-submit`, nessa ordem. Conferido pelo conector:
+- a migration `20260924000001` está no histórico remoto, com a versão do arquivo;
+- a coluna existe e a RPC nova está no ar (a condição antiga sumiu, e só `service_role` executa);
+- `verificar_medidor('0022/2019', null, '2020-07-28')` devolve `reprovado` com o aviso de número ausente, igual ao teste local;
+- `form-submit` v64 tem o bloco de verificação e o `verificacao.ts`.
+
+De quebra, `create-checkout-session` (v53) e `stripe-webhook` (v56) apareceram republicadas em 24/09 às 22:37, sem mudança de código desde `12a37e5`. Provavelmente foi um `functions deploy` sem nome de função.
 
