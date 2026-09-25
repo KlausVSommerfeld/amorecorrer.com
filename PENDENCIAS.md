@@ -8,7 +8,7 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 - `#N` é o número estável da pendência em `PROGRESSO.md › Pendências e decisões em aberto`. Item sem número não tem entrada lá.
 - Sem explicação aqui: uma linha por item.
 
-*Atualizado em 2026-09-22.*
+*Atualizado em 2026-09-24.*
 
 ---
 
@@ -45,10 +45,10 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 Plano: `PLANO-verificacao-radar-inmetro.md`. Fases 0, 1, 3 entregues; Fase 2 só como carga manual.
 
 - **#18 Fase 0.5 — calibração** com 8 a 10 notificações reais do RJ; escrever `docs/verificacao-radar-calibracao.md`. *Bloqueia a §5.4.* → Sessão de 03/09/2026 (noite)
-- **Fase 4 — captura dos dados do medidor** — três campos opcionais em `Form.tsx`, migration, normalização. → Sessão de 22/09/2026 · plano §6
-  - Medir antes quantas notificações trazem o nº de série (risco 2). → plano §7
+  - Medir junto quantas notificações trazem o nº de série (risco 2) — `form_submissions` está vazia, só dá pelas notificações. → Sessão de 24/09/2026 · plano §7
+- **Fase 4: publicar o front** — migration e `form-submit` v63 já estão em produção; falta o build do `Form.tsx` novo. Código na branch `feat/radar-fase4-campos-medidor`. → Sessão de 24/09/2026
+  - Confirmar com uma notificação real a dica de "onde encontrar" os números no formulário (texto genérico hoje). → Sessão de 24/09/2026
 - **Fase 5 — integração no fluxo** — coluna `form_submissions.verificacao_medidor`, chamada da RPC em `form-submit`, bloco em `build_case_context`, regras no system prompt. → Sessão de 22/09/2026 · plano §6
-  - Decidir se os campos do medidor entram no `dup_guard`. → Sessão de 03/09/2026 (noite)
   - Decidir o aviso para as 81 verificações de `historico` sem nº de certificado. → Sessão de 22/09/2026
   - Confirmar o dispositivo do CONTRAN antes de citá-lo na peça (risco 3). → plano §7
 - **Fase 6 — observabilidade** — alerta de `record_count`, frescor como métrica (fonte congelada), view `radar_revisao_pendente`, métricas mensais. → Sessão de 21/09/2026 · plano §6

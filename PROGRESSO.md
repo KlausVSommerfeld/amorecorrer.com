@@ -38,7 +38,7 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 ## Estado atual
 
 
-*Atualizado em 2026-09-22.*
+*Atualizado em 2026-09-24.*
 
 - **O merge aconteceu.** Em 20/09/2026 o Klaus mergeou `feat/verificacao-radar-inmetro-rj` em `main` (`f155c4e`, merge de `a3b2142` com `c89d0c4`): **115 arquivos, +23.526 / −1.408**. `main` deixou de estar parada em 2025-10-29 e `origin/main` já tem tudo, sem divergência. Todo o produto — pagamento, Edge Functions, pipeline, redesenho e o schema do radar — passou a viver no tronco. Sobrou uma branch não mergeada, `chore/limpeza-dependencias`. **Encerra as pendências 1 e 7.**
 - **O redesenho "Notificação e Resposta" está completo** — Fases 0 a 4. Todas as páginas usam o mesmo casco, a mesma tipografia e os mesmos tokens.
@@ -52,6 +52,7 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 - **A Fase 2 foi entregue pela metade, e de propósito.** A ingestão existe (`scripts/ingest-radares-rj.ts` + `scripts/lib/psie.ts` e `retry.ts`, 34 testes), mas roda **manualmente, da máquina do Klaus**, porque é a rede dele que o RBMLQ aceita — a saída (a) que a §5.1.2 do plano já previa. **Não existe `pg_cron` nem poda de retenção**, e isso deixa a pendência 19 intocada. **As Fases 4, 5 e 6 não começaram:** a coluna `form_submissions.verificacao_medidor`, que é o contrato de saída da feature, **não existe em migration nenhuma**, e `src/`, `server/` e `pipeline/` seguem sem uma linha sobre o assunto. O dado está no banco e ainda **não tem consumidor**.
 - **O que trava o radar agora são duas coisas, não três.** A pendência 21 (de onde a ingestão busca o arquivo) deixou de bloquear a carga — passou-se a conviver com ela, rodando à mão —, mas continua aberta para qualquer ingestão *recorrente*. Seguem travando: a Fase 0.5 (pendência 18), que exige 8 a 10 casos reais de excesso de velocidade no RJ, e `form_submissions` está **vazia** em produção; e a decisão de retenção (pendência 19), agora só quando houver cron. **O VPS do passo 7 continua podendo resolver a 21 de carona:** um `curl` ao arquivo do RJ a partir dele custa um minuto e é a regra que o próprio plano escreveu.
 - **A fonte do INMETRO está parada há três semanas.** Medido em 21/09: o arquivo do RJ responde `200` com `Last-Modified: 01/09/2026` e **os mesmos 3.661.867 bytes, sha256 `4dcb3d35…648fb9b`** — byte a byte o snapshot de 03/09. Não é "atualização irregular, apesar de nominalmente diária": são **21 dias sem regenerar**. Isso derruba a premissa de custo da pendência 19 e é um risco de produto, porque a prova de vigência envelhece junto com a fonte. A mesma requisição prova que o endpoint está no ar e aceita a rede do Klaus — o que reforça que a pendência 21 é bloqueio de ASN de nuvem, e não fonte fora do ar.
+- **A Fase 4 do radar está pronta, mas ainda não chegou à produção** (24/09). O formulário captura nº de série, nº INMETRO e nº do certificado do medidor, e a Edge grava os três normalizados em `form_submissions`. Migration e `form-submit` v63 **em produção** desde 24/09; falta publicar o front (branch `feat/radar-fase4-campos-medidor`).
 - **O projeto Supabase da nuvem está ativo** desde 06/09, despausado para o teste de alcance. Continua consumindo recursos.
 - **Sem suíte automatizada.** A verificação é manual, via os 4 scripts PowerShell em `tests/edge-functions/` — que param no formulário —, mais os 24 testes pgTAP do radar e a asserção de Storage.
 
@@ -1146,3 +1147,33 @@ em `src/`, `server/`, `pipeline/` ou `supabase/functions/`.**
 `form_submissions` tem 0 linhas), e as Fases 4 e 5, que são o próximo passo: sem a coluna
 `form_submissions.verificacao_medidor`, o dado carregado **ainda não tem consumidor**.
 
+## Sessão de 24/09/2026 — Fase 4 do radar: os três números do medidor entram no formulário
+
+**Feito:** o formulário ganhou o bloco "Medidor de velocidade · se constar na notificação", sempre visível dentro de "Autuação", com nº de série, nº INMETRO e nº do certificado, todos opcionais. A migration `20260924000000_form_submissions_medidor.sql` acrescenta as três colunas `text` anuláveis, e `form-submit` as normaliza e grava. Nada chama `verificar_medidor` ainda: isso é Fase 5.
+
+**A normalização foi decidida pelo dado, não pelo plano.** Medi as 3.346 faixas de produção: o nº de série tem 17 formatos (`1300001`, `R06364`, `0272`, `0001/2019`, `FSC-4013`…), e **`FSC-S3924` e `FSCS3924` existem como aparelhos distintos**. Tirar o hífen colidiria os dois, e zero à esquerda e barra também são parte do número. Então a série só passa por caixa alta e remoção de espaços. INMETRO e certificado são só dígitos na base (6 a 8), então ficam só os dígitos. As regras vivem em `src/lib/medidor.ts`, com 7 testes, e são repetidas na Edge, que não importa de `src/`.
+
+**Decisões registradas.** (1) O bloco fica sempre à vista, e não atrás da heurística por palavra-chave que o plano sugeria: decisão do Klaus, coerente com as velocidades, que também aparecem sempre. (2) **Os campos do medidor ficam fora do `dup_guard`.** O hash cobre só a identidade de quem envia; data, local, velocidades e justificativa já ficavam fora, e o medidor segue a mesma regra. Pendência fechada. (3) O risco 2 (quantas notificações trazem o nº de série) **não é mensurável pelo banco**: `form_submissions` tem 0 linhas em produção. A medição foi para junto da Fase 0.5. Como os campos são opcionais, seguir sem ela não custa nada.
+
+**`types.ts` estava atrasado em relação à baseline.** Ainda listava `renavam`, `dispatches.delivered_at`/`payload` e `generate_case_id`, que a baseline removeu, e tinha `document_status` anulável. Foi regenerado do banco local. Ninguém importa o módulo, então nada quebrou antes nem quebra agora.
+
+**Verificação:** `radar:test` com 41/41 testes (34 antigos + 7 novos), build verde, lint nos mesmos 7 erros e 7 avisos do baseline, arquivos alterados limpos, pgTAP 24/24 e asserção de Storage verde. Ponta a ponta local, com Supabase, `functions serve` e Vite:
+- envio sem os campos → 200, três colunas `NULL`;
+- valores sujos direto na Edge (`"  fsc-s 3924 "`, `"104.167-73"`, `"  "`) → `FSC-S3924`, `10416773`, `NULL`;
+- formulário no navegador, digitado tecla a tecla → `FSC-S3924`, `10416773`, `13750622` no banco;
+- a série vira caixa alta na tela enquanto a pessoa digita.
+
+Layout conferido em 1280 px e 390 px. Linhas de teste apagadas depois.
+
+**Dois tropeços de ambiente**, os dois foram para o `CLAUDE.md`. `npx supabase migration up --local` tentou reaplicar a baseline, porque o histórico de migrations do banco local está vazio, e falhou em `stripe_sessions already exists` sem mudar nada. A migration nova foi aplicada direto pelo `psql`. E o Vite rodando no WSL **não percebeu uma edição** em `/mnt/c`: continuou servindo o `Form.tsx` antigo até ser reiniciado.
+
+**Arquivos:** `supabase/migrations/20260924000000_form_submissions_medidor.sql`, `src/lib/medidor.ts`, `src/lib/medidor.test.ts`, `src/pages/Form.tsx`, `supabase/functions/form-submit/index.ts`, `src/integrations/supabase/types.ts`, `package.json` (o `radar:test` passa a cobrir `src/lib/*.test.ts`).
+
+**Ficou de fora:** o deploy. A migration sobe **antes** da Edge, porque na ordem inversa o `INSERT` de `form-submit` falha por coluna inexistente e derruba todos os envios. Também ficou de fora a confirmação, com uma notificação real, de onde os números aparecem no papel: a dica do formulário é genérica. E a Fase 5 inteira.
+
+**Deploy, no mesmo dia:** o CLI não conseguia autenticar a partir do shell do Claude Code (o login não funciona sem TTY, e o token vai para o chaveiro do sistema, que esse processo não enxerga). Por isso o Klaus rodou `db push` e `functions deploy form-submit` no terminal dele, nessa ordem. Conferido pelo conector:
+- a migration `20260924000000` está no histórico remoto, com o mesmo número de versão do arquivo;
+- as três colunas existem, anuláveis, sem default e com os comentários;
+- `form-submit` passou da v62 para a v63, e o código publicado contém a normalização e os três campos.
+
+O front antigo, que ainda está no ar, não manda os campos, e a Edge grava `NULL` nesse caso (testado localmente). A ordem de publicação não abriu nenhuma janela de quebra.

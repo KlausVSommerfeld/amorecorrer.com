@@ -67,6 +67,16 @@ function normalizePayload(p: Record<string, unknown>) {
   if ("cep" in norm) norm.cep = digitsOnly(norm.cep);
   if ("placa" in norm && typeof norm.placa === "string")
     norm.placa = norm.placa.toUpperCase().replace(/\s+/g, "") || null;
+
+  // Medidor de velocidade: as mesmas regras de `src/lib/medidor.ts`, conferidas
+  // contra a base do INMETRO no RJ. No nº de série, hífen, barra e zero à
+  // esquerda são parte do número (`FSC-S3924` e `FSCS3924` são aparelhos
+  // distintos); INMETRO e certificado são só dígitos.
+  if ("medidor_numero_serie" in norm)
+    norm.medidor_numero_serie = (norm.medidor_numero_serie || "").toString().toUpperCase().replace(/\s+/g, "") || null;
+  if ("medidor_numero_inmetro" in norm) norm.medidor_numero_inmetro = digitsOnly(norm.medidor_numero_inmetro);
+  if ("medidor_numero_certificado" in norm)
+    norm.medidor_numero_certificado = digitsOnly(norm.medidor_numero_certificado);
   
   for (const k of Object.keys(norm)) {
     if (typeof norm[k] === "string") norm[k] = norm[k].trim();
@@ -301,6 +311,10 @@ Deno.serve(async (req) => {
     }
 
     // Calculate dup_guard to detect duplicate submissions
+    //
+    // O hash cobre só a identidade de quem envia, não o conteúdo da autuação:
+    // data, local, velocidades e justificativa ficam de fora — e os três campos
+    // do medidor também, pela mesma regra (decidido na Fase 4 do plano do radar).
     const dupSource = {
       case_id: norm.case_id,
       form_token: norm.form_token,
@@ -367,6 +381,9 @@ Deno.serve(async (req) => {
       descricao_infracao: norm.descricao_infracao ?? null,
       velocidade_permitida: norm.velocidade_permitida ?? null,
       velocidade_aferida: norm.velocidade_aferida ?? null,
+      medidor_numero_serie: norm.medidor_numero_serie ?? null,
+      medidor_numero_inmetro: norm.medidor_numero_inmetro ?? null,
+      medidor_numero_certificado: norm.medidor_numero_certificado ?? null,
       orgao_autuador: norm.orgao_autuador ?? null,
       artigo_ctb: norm.artigo_ctb ?? null,
       amparo_legal: norm.amparo_legal ?? null,
