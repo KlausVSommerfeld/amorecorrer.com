@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { getCaseIdFromUrl } from '../lib/caseId';
 import { submitForm } from '../lib/api';
+import { normalizarNumeroDigitos, normalizarNumeroSerie } from '../lib/medidor';
 import PageShell from '../components/PageShell';
 
 /** O envio dispara a Edge Function, que por sua vez chama o pipeline. É mais
@@ -62,6 +63,10 @@ interface FormData {
   justificativa: string;
   velocidade_permitida: string;
   velocidade_aferida: string;
+  // Medidor de velocidade — todos opcionais; alimentam `verificar_medidor`.
+  medidor_numero_serie: string;
+  medidor_numero_inmetro: string;
+  medidor_numero_certificado: string;
 
   form_token: string;
   case_id: string;
@@ -230,6 +235,9 @@ const INITIAL_FORM: FormData = {
   justificativa: '',
   velocidade_permitida: '',
   velocidade_aferida: '',
+  medidor_numero_serie: '',
+  medidor_numero_inmetro: '',
+  medidor_numero_certificado: '',
 
   form_token: '',
   case_id: '',
@@ -287,7 +295,9 @@ const FIELD_ORDER = [
   'nomeCompleto', 'cpf', 'email', 'emailConfirma', 'telefone', 'cep', 'cidade', 'endereco',
   'placa', 'renainf', 'estagio', 'orgaoAutuador', 'autoInfracao',
   'notificacaoPenalidade', 'dataHora', 'localSentido',
-  'velocidade_permitida', 'velocidade_aferida', 'justificativa'
+  'velocidade_permitida', 'velocidade_aferida',
+  'medidor_numero_serie', 'medidor_numero_inmetro', 'medidor_numero_certificado',
+  'justificativa'
 ];
 
 const Form = () => {
@@ -723,6 +733,10 @@ const Form = () => {
       velocidade_permitida: Number.isFinite(vPermitida) ? vPermitida : null,
       velocidade_aferida: Number.isFinite(vAferida) ? vAferida : null,
 
+      medidor_numero_serie: normalizarNumeroSerie(data.medidor_numero_serie),
+      medidor_numero_inmetro: normalizarNumeroDigitos(data.medidor_numero_inmetro),
+      medidor_numero_certificado: normalizarNumeroDigitos(data.medidor_numero_certificado),
+
       artigo_ctb: null
     };
   };
@@ -889,6 +903,14 @@ const Form = () => {
     // `type="number"` ainda aceita "e", "+" e "-" digitados.
     if (name === 'velocidade_permitida' || name === 'velocidade_aferida') {
       setFormData(prev => ({ ...prev, [name]: onlyDigits(value).slice(0, 3) }));
+      return;
+    }
+    if (name === 'medidor_numero_serie') {
+      setFormData(prev => ({ ...prev, medidor_numero_serie: normalizarNumeroSerie(value) ?? '' }));
+      return;
+    }
+    if (name === 'medidor_numero_inmetro' || name === 'medidor_numero_certificado') {
+      setFormData(prev => ({ ...prev, [name]: onlyDigits(value) }));
       return;
     }
 
@@ -1614,6 +1636,71 @@ const Form = () => {
                   )}
                 </div>
               </div>
+
+              {/*
+               * Sempre à vista, como as velocidades: esconder atrás de heurística
+               * arriscaria sumir com o bloco justamente de quem precisa dele.
+               * Nada aqui é obrigatório — sem estes números a peça sai igual.
+               */}
+              <fieldset className="form-field--wide mt-2" aria-describedby="hint-medidor">
+                <legend className="fieldset__legend mb-4">
+                  <span className="form-label mb-0">Medidor de velocidade · se constar na notificação</span>
+                  <span className="fieldset__rule" aria-hidden="true" />
+                </legend>
+                <div className="grid gap-x-5 gap-y-4 md:grid-cols-3">
+                  <div>
+                    <label className="form-label" htmlFor="medidor_numero_serie">
+                      Nº de série
+                    </label>
+                    <input
+                      type="text"
+                      id="medidor_numero_serie"
+                      name="medidor_numero_serie"
+                      value={formData.medidor_numero_serie}
+                      onChange={handleInputChange}
+                      className="form-input form-input--code"
+                      maxLength={30}
+                      autoCapitalize="characters"
+                      spellCheck={false}
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label" htmlFor="medidor_numero_inmetro">
+                      Nº INMETRO
+                    </label>
+                    <input
+                      type="text"
+                      id="medidor_numero_inmetro"
+                      name="medidor_numero_inmetro"
+                      value={formData.medidor_numero_inmetro}
+                      onChange={handleInputChange}
+                      className="form-input form-input--code"
+                      inputMode="numeric"
+                      maxLength={12}
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label" htmlFor="medidor_numero_certificado">
+                      Nº do certificado
+                    </label>
+                    <input
+                      type="text"
+                      id="medidor_numero_certificado"
+                      name="medidor_numero_certificado"
+                      value={formData.medidor_numero_certificado}
+                      onChange={handleInputChange}
+                      className="form-input form-input--code"
+                      inputMode="numeric"
+                      maxLength={12}
+                    />
+                  </div>
+                </div>
+                <p className="form-hint" id="hint-medidor">
+                  Só para multa de radar. Procure na notificação o quadro do equipamento medidor e
+                  copie o número de série como está escrito, com hífen ou barra se houver. Se algum
+                  número não aparecer, deixe em branco: o envio segue normalmente.
+                </p>
+              </fieldset>
             </div>
           </fieldset>
 
