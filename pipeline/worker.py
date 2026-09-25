@@ -20,6 +20,7 @@ from supabase import create_client
 
 from config import settings
 from hmac_utils import hmac_sha256_hex
+from peca import paragrafo_para_pdf, texto_da_peca
 from prompt import build_case_context, system_prompt
 from verificacao import bloco_verificacao
 
@@ -148,7 +149,11 @@ def build_pdf_bytes(title: str, body_text: str) -> bytes:
     styles = getSampleStyleSheet()
     story: list = [Paragraph(html.escape(title), styles["Title"]), Spacer(1, 12)]
     for para in body_text.split("\n\n"):
-        story.append(Paragraph(html.escape(para), styles["BodyText"]))
+        if not para.strip():
+            continue
+        # Com `\n` virando <br/>: sem isso o reportlab junta o cabeçalho e o
+        # bloco de assinatura (nome, CPF) numa linha só.
+        story.append(Paragraph(paragrafo_para_pdf(para), styles["BodyText"]))
         story.append(Spacer(1, 8))
     doc.build(story)
     return buf.getvalue()
@@ -274,7 +279,7 @@ async def run_dispatch_pipeline(body_text: str) -> None:
             pdf_title = f"Recurso — {payload.case_id}"
             pdf_body = (
                 "Rascunho gerado para apreciação. Revise antes de protocolar.\n\n"
-                f"{draft}"
+                f"{texto_da_peca(draft, case)}"
             )
             pdf_bytes = build_pdf_bytes(pdf_title, pdf_body)
             sha256_hex = hashlib.sha256(pdf_bytes).hexdigest()

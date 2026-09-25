@@ -1260,3 +1260,33 @@ Oito achados menores ficaram para depois, sem correção:
 
 De quebra, `create-checkout-session` (v53) e `stripe-webhook` (v56) apareceram republicadas em 24/09 às 22:37, sem mudança de código desde `12a37e5`. Provavelmente foi um `functions deploy` sem nome de função.
 
+## Sessão de 25/09/2026 — A peça sai limpa no PDF
+
+**Feito:** o prompt base agora pede texto puro, sem prefácio e sem notas ao cliente. Dado ausente vira linha em branco (`________`), decisão do Klaus contra omitir ou usar marcadores entre colchetes, e a peça termina no "pede deferimento". Um módulo puro novo, `pipeline/peca.py`, garante a forma por código. Ele:
+- limpa o markdown que escapar;
+- corta o que vier depois do pedido;
+- monta o fecho a partir do caso: cidade do cliente, data **sempre em branco**, nome e CPF formatado.
+
+O `build_pdf_bytes` passou a respeitar as quebras de linha simples.
+
+**O diagnóstico mudou a pergunta.** A pendência falava em marcadores (`[Local], [data]`), que tinham aparecido nos testes da Fase 5, com formulário quase vazio. Três rodadas do prompt antigo com um caso **completo** mostraram outros três problemas, e mais graves:
+- **nenhum marcador aparecia**;
+- as três peças assinavam com "Rio de Janeiro, **20 de agosto de 2026**", a data de expedição da notificação, como se fosse a data do protocolo;
+- duas de três traziam `**DEFESA PRÉVIA**` e `---`, impressos literalmente no PDF;
+- o reportlab juntava numa linha só o cabeçalho de campos e o bloco de assinatura.
+
+**Verificação:**
+- 53 testes Python (20 do `test_peca`), worker compilando;
+- rodada real com o prompt novo em dois casos, com os **PDFs gerados pela própria `build_pdf_bytes`** e abertos:
+  - no caso completo, texto sem markdown, sem prefácio e sem data, fecho "Rio de Janeiro/RJ, ____ de ______________ de ________." e nome e CPF em linhas próprias;
+  - no caso sem nº do auto e sem cidade, o modelo usou o nº da notificação de penalidade sem inventar nada, e o local do fecho saiu em branco.
+
+**Arquivos:** `pipeline/peca.py`, `pipeline/test_peca.py`, `pipeline/prompt.py`, `pipeline/test_prompt.py`, `pipeline/worker.py`, `CLAUDE.md`, `PENDENCIAS.md`.
+
+**Ficou de fora** (vai para o `PENDENCIAS.md`):
+- a defesa prévia endereçada à JARI;
+- o art. 24 do Código Penal e o art. 90 do CTB citados sem conferência;
+- o CPF sem formatação no corpo da peça.
+
+Sem deploy: o pipeline não roda em produção.
+

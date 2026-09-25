@@ -11,10 +11,19 @@ from typing import Any
 
 from verificacao import bloco_verificacao
 
+# O que vem depois do núcleo original saiu de uma rodada real (25/09/2026):
+# markdown impresso no PDF, prefácio e notas dirigidas ao cliente, e a data de
+# expedição da notificação usada como data da peça. O fecho (local, data em
+# branco, assinatura) é montado por código em peca.py — o modelo para no pedido.
 SYSTEM_PROMPT_BASE = (
     "Você é um assistente jurídico que redige rascunhos de recurso de multa de trânsito "
     "em português do Brasil. Seja formal, claro e cite fatos do formulário. "
-    "Não invente dados ausentes. Produza 2 a 4 parágrafos."
+    "Não invente dados ausentes: quando um dado necessário não constar do formulário, "
+    "deixe uma linha em branco para preenchimento (________), nunca um marcador entre "
+    "colchetes. Produza 2 a 4 parágrafos. Escreva apenas o texto da peça, em texto puro: "
+    "sem markdown (nada de asteriscos, cerquilhas ou linhas de traços), sem introdução "
+    "e sem observações ou notas dirigidas a quem pediu a peça. Não escreva local, data "
+    "nem assinatura: termine no pedido, com \"Nestes termos, pede deferimento.\""
 )
 
 # Só entram com RADAR_TESE_ATIVA ligada. Base legal conferida no texto oficial

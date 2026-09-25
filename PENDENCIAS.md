@@ -53,7 +53,9 @@ Plano: `PLANO-verificacao-radar-inmetro.md`. Fases 0, 1, 3 entregues; Fase 2 só
   - Oito achados menores da revisão final (fuso do "capturada em", robustez a formatos impossíveis hoje, reenvio só com nº do medidor não reverifica, reenvio em `generating` diverge da auditoria…) — lista no `PROGRESSO.md`. → Sessão de 24/09/2026 (Fase 5, revisão final)
   - Confirmar o dispositivo do CONTRAN antes de acrescentá-lo a `REGRAS_RADAR` (risco 3). → plano §7
   - *Decisão do Klaus:* com vigência comprovada, o DeepSeek ainda pede o certificado por conta própria ao ver `medidor_numero_serie` no formulário. Omitir os campos `medidor_*` do contexto nesse caso? → Sessão de 24/09/2026 (Fase 5)
-- **Prompt base: placeholders e notas ao usuário na peça** — o DeepSeek escreve `[Local], [data]`, `[Nome do recorrente]` (mesmo com o nome no contexto) e fecha com "Observação: os campos entre colchetes… precisam ser completados" — tudo iria ao PDF. Anterior à Fase 5, visto nas rodadas reais dela. → Sessão de 24/09/2026 (Fase 5)
+- **Peça endereçada ao destinatário errado** — numa rodada real, uma *defesa prévia* saiu endereçada à JARI, que só julga recurso. O prompt não diz a quem cada estágio (`especie_documento`) se dirige. → Sessão de 25/09/2026 (peça limpa)
+- **Base legal sem conferência fora do radar** — a IA citou o art. 24 do Código Penal (estado de necessidade) e o art. 90 do CTB sem que ninguém os tenha conferido. Mesma solução da trava neutra pendente do radar, mas vale para todo caso. → Sessão de 25/09/2026 (peça limpa)
+- *Menor:* o CPF aparece só com dígitos no corpo da peça quando o modelo o repete ("11144477735"); o fecho já formata. → Sessão de 25/09/2026 (peça limpa)
 - **Fase 6 — observabilidade** — alerta de `record_count`, frescor como métrica (fonte congelada), view `radar_revisao_pendente`, métricas mensais. → Sessão de 21/09/2026 · plano §6
 - **Fase 7 — OCR da notificação** — só abrir issue; fora desta branch. → plano §6
 - **#21 De onde a ingestão *recorrente* busca o arquivo** — RBMLQ recusa IP de nuvem; testar `curl` a partir do VPS. → Sessão de 06/09/2026 (fim da noite) · Sessão de 20/09/2026

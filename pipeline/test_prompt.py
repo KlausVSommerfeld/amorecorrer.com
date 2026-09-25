@@ -7,15 +7,11 @@ Nunca `unittest discover`: test_resend_smtp.py manda e-mail real ao ser importad
 
 import unittest
 
-from prompt import CAMPOS_INTERNOS, REGRAS_RADAR, build_case_context, system_prompt
+from prompt import CAMPOS_INTERNOS, REGRAS_RADAR, SYSTEM_PROMPT_BASE, build_case_context, system_prompt
 from verificacao import INSTRUCAO_EXIBICAO
 
-# O system prompt exato de antes da Fase 5 (worker.py, call_deepseek).
-PROMPT_ANTIGO = (
-    "Você é um assistente jurídico que redige rascunhos de recurso de multa de trânsito "
-    "em português do Brasil. Seja formal, claro e cite fatos do formulário. "
-    "Não invente dados ausentes. Produza 2 a 4 parágrafos."
-)
+# Com a chave do radar desligada (ou sem bloco), o system prompt é só a base.
+PROMPT_ANTIGO = SYSTEM_PROMPT_BASE
 
 CASO = {
     "id": "uuid",
@@ -44,6 +40,31 @@ CONTEXTO_ANTIGO = (
     "placa: ABC1D23\n"
     "velocidade_aferida: 55"
 )
+
+
+class TestPromptBase(unittest.TestCase):
+    # Rodada real de 25/09/2026, caso completo: `**negrito**` e `---` no PDF,
+    # e as três peças assinadas com a data de expedição da notificação.
+    def test_pede_texto_puro_sem_prefacio_nem_notas(self):
+        self.assertIn("texto puro", SYSTEM_PROMPT_BASE)
+        self.assertIn("sem markdown", SYSTEM_PROMPT_BASE)
+        self.assertIn("sem introdução", SYSTEM_PROMPT_BASE)
+        self.assertIn("observações", SYSTEM_PROMPT_BASE)
+
+    def test_dado_ausente_vira_linha_em_branco(self):
+        self.assertIn("________", SYSTEM_PROMPT_BASE)
+        self.assertIn("colchetes", SYSTEM_PROMPT_BASE)
+
+    def test_termina_no_pedido_sem_local_data_nem_assinatura(self):
+        self.assertIn("Não escreva local, data nem assinatura", SYSTEM_PROMPT_BASE)
+        self.assertIn("Nestes termos, pede deferimento.", SYSTEM_PROMPT_BASE)
+
+    def test_mantem_o_nucleo_antigo(self):
+        self.assertTrue(SYSTEM_PROMPT_BASE.startswith(
+            "Você é um assistente jurídico que redige rascunhos de recurso de multa de trânsito "
+            "em português do Brasil. Seja formal, claro e cite fatos do formulário. "
+            "Não invente dados ausentes"))
+        self.assertIn("Produza 2 a 4 parágrafos.", SYSTEM_PROMPT_BASE)
 
 
 class TestChaveDesligada(unittest.TestCase):
