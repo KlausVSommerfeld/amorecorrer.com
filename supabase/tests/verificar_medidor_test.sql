@@ -17,6 +17,13 @@
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap WITH SCHEMA extensions;
+
+-- Isolamento: o seed usa números de série REAIS (2000065 é o instrumento da
+-- §1.3). Com o parque do RJ carregado no banco local (`npm run radar:ingest`),
+-- eles colidem com os de verdade e viram `ambiguo` — 7 testes falhavam por
+-- ambiente, não por código (24/09/2026). O TRUNCATE é desfeito pelo ROLLBACK
+-- do fim do arquivo: nenhum dado real é apagado.
+TRUNCATE radar_instruments CASCADE;
 SELECT plan(26);
 
 -- ---------------------------------------------------------------------------

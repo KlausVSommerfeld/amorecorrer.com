@@ -52,7 +52,7 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 - **A Fase 2 foi entregue pela metade, e de propósito.** A ingestão existe (`scripts/ingest-radares-rj.ts` + `scripts/lib/psie.ts` e `retry.ts`, 34 testes), mas roda **manualmente, da máquina do Klaus**, porque é a rede dele que o RBMLQ aceita — a saída (a) que a §5.1.2 do plano já previa. **Não existe `pg_cron` nem poda de retenção**, e isso deixa a pendência 19 intocada. **As Fases 4, 5 e 6 não começaram:** a coluna `form_submissions.verificacao_medidor`, que é o contrato de saída da feature, **não existe em migration nenhuma**, e `src/`, `server/` e `pipeline/` seguem sem uma linha sobre o assunto. O dado está no banco e ainda **não tem consumidor**.
 - **O que trava o radar agora são duas coisas, não três.** A pendência 21 (de onde a ingestão busca o arquivo) deixou de bloquear a carga — passou-se a conviver com ela, rodando à mão —, mas continua aberta para qualquer ingestão *recorrente*. Seguem travando: a Fase 0.5 (pendência 18), que exige 8 a 10 casos reais de excesso de velocidade no RJ, e `form_submissions` está **vazia** em produção; e a decisão de retenção (pendência 19), agora só quando houver cron. **O VPS do passo 7 continua podendo resolver a 21 de carona:** um `curl` ao arquivo do RJ a partir dele custa um minuto e é a regra que o próprio plano escreveu.
 - **A fonte do INMETRO está parada há três semanas.** Medido em 21/09: o arquivo do RJ responde `200` com `Last-Modified: 01/09/2026` e **os mesmos 3.661.867 bytes, sha256 `4dcb3d35…648fb9b`** — byte a byte o snapshot de 03/09. Não é "atualização irregular, apesar de nominalmente diária": são **21 dias sem regenerar**. Isso derruba a premissa de custo da pendência 19 e é um risco de produto, porque a prova de vigência envelhece junto com a fonte. A mesma requisição prova que o endpoint está no ar e aceita a rede do Klaus — o que reforça que a pendência 21 é bloqueio de ASN de nuvem, e não fonte fora do ar.
-- **A Fase 4 do radar está pronta, mas ainda não chegou à produção** (24/09). O formulário captura nº de série, nº INMETRO e nº do certificado do medidor, e a Edge grava os três normalizados em `form_submissions`. Migration e `form-submit` v63 **em produção** desde 24/09; falta publicar o front (branch `feat/radar-fase4-campos-medidor`).
+- **As Fases 4 e 5 do radar estão prontas** (24/09). A 4 (campos do medidor no formulário) tem migration e `form-submit` v63 em produção e falta publicar o front. A 5 grava a verificação do medidor e o log de auditoria no envio do formulário, e deixa a tese pronta **atrás de `RADAR_TESE_ATIVA=false`**. Falta `db push` e o deploy da `form-submit` (nessa ordem) e, para ligar a tese, a Fase 0.5.
 - **O projeto Supabase da nuvem está ativo** desde 06/09, despausado para o teste de alcance. Continua consumindo recursos.
 - **Sem suíte automatizada.** A verificação é manual, via os 4 scripts PowerShell em `tests/edge-functions/` — que param no formulário —, mais os 24 testes pgTAP do radar e a asserção de Storage.
 
@@ -1177,3 +1177,64 @@ Layout conferido em 1280 px e 390 px. Linhas de teste apagadas depois.
 - `form-submit` passou da v62 para a v63, e o código publicado contém a normalização e os três campos.
 
 O front antigo, que ainda está no ar, não manda os campos, e a Edge grava `NULL` nesse caso (testado localmente). A ordem de publicação não abriu nenhuma janela de quebra.
+
+## Sessão de 24/09/2026 — Fase 5 do radar: a verificação entra no fluxo, e a tese espera atrás de uma chave
+
+**Feito:** a `form-submit` passou a chamar `verificar_medidor` entre a gravação do formulário e o `attempt_dispatch`. O resultado vai para `form_submissions.verificacao_medidor` e para `radar_consultas_log`, que até aqui não tinha consumidor. O pipeline transforma a verificação num bloco em português, com uma regra de redação escolhida em código. Tudo isso fica atrás de `RADAR_TESE_ATIVA`, que é `false` por padrão e **fica desligada até a Fase 0.5 ser assinada**. Com ela desligada, o contexto e o system prompt são idênticos aos de antes, e há teste provando isso byte a byte.
+
+**Spec e plano antes de código:** `docs/superpowers/specs/2026-09-24-verificacao-medidor-no-fluxo-design.md` e `docs/superpowers/plans/2026-09-24-verificacao-medidor-no-fluxo.md`. Decisões do Klaus:
+- construir tudo e pôr a tese atrás de uma chave, resolvendo a contradição do plano sobre a Fase 0.5;
+- a verificação roda na Edge, não no pipeline, que nem está em produção;
+- a peça só pode citar como base legal o **CTB, art. 280, V e § 2º**, conferidos no texto oficial que entrou no repositório hoje;
+- o aviso de "nº de certificado ausente" é corrigido na própria RPC.
+
+Três outras decisões vieram do código:
+- **Sem nº de série nem nº INMETRO, a RPC não é chamada**, porque devolveria "instrumento não localizado", o que é falso quando nem houve busca.
+- **O match por endereço não é usado**, porque o formulário não tem município da infração: `cidade` é o endereço do cliente.
+- **`build_case_context` e o system prompt saíram do `worker.py` para `pipeline/prompt.py`**, sem dependências, porque o worker importa `httpx`, `openai` e `supabase` no topo, e nenhum teste que o importe roda fora do venv de Windows.
+
+**A RPC:** a condição do aviso passou de `origem = 'topo'` para "número ausente, qualquer que seja a origem". **O primeiro teste com dado real já esbarrou nisso.** O aparelho reprovado usado no teste (`0022/2019`, RJ 116 km 9,5, Itaboraí) tem um laudo `historico` "Reprovado" de 28/07/2020 **sem número**, é um dos 81, e agora sai com a ressalva.
+
+**Ponta a ponta local, com o parque do RJ carregado no banco local:**
+
+| Caso | Envio | Coluna e log | Observação |
+|---|---|---|---|
+| f501 | sem números | `nao_aplicavel` ("dados do medidor não informados") | RPC não chamada |
+| f502 | `0001/2019` em 16/05/2019 | `comprovado_valido` | |
+| f503 | `0022/2019` em 28/07/2020 | `reprovado` | com aviso de nº ausente |
+| f504 | `EXECUTE` revogado temporariamente | `nao_aplicavel` ("verificação indisponível") | **resposta 200**, `attempt_dispatch` rodou em seguida |
+
+**As rodadas reais com o DeepSeek mudaram o desenho, e esta é a parte que mais importa.**
+1. **Primeira rodada:**
+   - o modelo atribuiu ao § 2º uma exigência que o texto não tem ("que o equipamento esteja aferido e em conformidade com as normas metrológicas");
+   - no caso comprovado, fechou a peça com "*conforme instrução recebida, não foi levantada tese sobre a verificação metrológica… nem mencionada a consulta à base do INMETRO*", texto que iria para o PDF.
+
+   Correção: o texto do art. 280 passou a ir **transcrito** no prompt, com a ordem de não mencionar instruções nem acrescentar notas.
+2. **Segunda rodada:** reprovado e não comprovado passaram, com o CTB citado literalmente. O comprovado **falhou de novo**: abriu dizendo que "a verificação metrológica se encontrava vigente" e montou tese pelo art. 280. Conclusão: qualquer menção ao tema faz o modelo discutir o tema. **A vigência comprovada passou a ser silêncio**, sem bloco e sem as regras do radar no system prompt, que agora só entram quando há bloco. Isso é um desvio da spec, que previa um bloco com "não mencione", e está registrado no plano e aqui.
+3. **Terceira rodada:**
+   - **reprovado:** sustenta a reprovação com a data do laudo e o resultado, cita o art. 280 **literalmente** e não inventa número;
+   - **não comprovado:** faz o pedido de exibição e diz "*não afirmo que o equipamento estava sem verificação ou irregular*";
+   - **comprovado:** não menciona mais a consulta, mas **por conta própria** pede o certificado ao ver o nº de série no formulário. É o comportamento de antes da feature. Não é falso, só não traz a economia que a spec queria. A decisão ficou com o Klaus.
+
+**Achado fora do escopo, anterior à Fase 5:** o prompt base produz `[Local], [data]` e `[Nome do recorrente]` mesmo com o nome no contexto, e às vezes uma "Observação" dirigida ao usuário, e tudo isso iria para o PDF. Foi para o `PENDENCIAS.md`.
+
+**Dois contornos de ambiente**, os dois no `CLAUDE.md`:
+- **Express:** `server/node_modules` é de Windows e o `tsx` não sobe no WSL. Compilei com `tsc` e rodei o `dist`.
+- **Chave do DeepSeek:** o `.env.local` deixa a `DEEPSEEK_API_KEY` vazia de propósito ("sem IA no perfil local"). A chave do `.env` foi passada como variável de ambiente só no processo do teste, sem editar nenhum arquivo e sem imprimi-la.
+
+**Verificação:**
+- pgTAP 26/26 (depois de isolar o teste dos radares reais carregados localmente, que derrubavam 7 asserções por colisão da série `2000065`), `radar:test` 49/49, `unittest` 26/26;
+- worker compilando, asserção de Storage verde;
+- lint no baseline (7 erros e 7 avisos) e build verde.
+
+**Arquivos:**
+- banco: `supabase/migrations/20260924000001_verificacao_medidor.sql`, `supabase/tests/verificar_medidor_test.sql`;
+- Edge: `supabase/functions/form-submit/{index.ts, verificacao.ts, verificacao.test.ts}`;
+- pipeline: `pipeline/{prompt.py, verificacao.py, test_prompt.py, test_verificacao.py, config.py, worker.py}`;
+- configuração e docs: `package.json`, os três `.env*.example`, `CLAUDE.md` e a spec e o plano.
+
+**Ficou de fora:**
+- o deploy: `db push` e depois `functions deploy form-submit`, pelo Klaus;
+- ligar `RADAR_TESE_ATIVA`, que depende da Fase 0.5;
+- a decisão sobre o caso comprovado;
+- a Fase 6.

@@ -36,7 +36,7 @@ python -m uvicorn main:app --host 0.0.0.0 --port 8000
 **Testes:** há três instrumentos, e nenhum cobre o fluxo inteiro sozinho.
 
 ```bash
-# 24 testes de borda do RPC do radar (pgTAP). `supabase test db` falha sob WSL
+# 26 testes de borda do RPC do radar (pgTAP), isolados dos radares reais (TRUNCATE revertido). `supabase test db` falha sob WSL
 # pelo helper de credenciais do Docker; por psql funciona igual:
 docker exec -i supabase_db_<ref> psql -U postgres -d postgres -Xqt \
   -f - < supabase/tests/verificar_medidor_test.sql | grep -E '^ *(not )?ok'
@@ -45,6 +45,8 @@ docker exec -i supabase_db_<ref> psql -U postgres -d postgres -Xqt \
 # única rede contra a regressão do bucket sumir:
 npx supabase db query --local -f tests/sql/assert_storage_setup.sql
 ```
+
+Os testes Python do pipeline rodam fora do venv, de dentro de `pipeline/`: `python3 -m unittest test_verificacao test_prompt`. **Nunca `unittest discover`** — `test_resend_smtp.py` casa com o padrão e manda um e-mail real ao ser importado. O `npm run radar:test` cobre também `supabase/functions/form-submit/*.test.ts`.
 
 Os 4 scripts PowerShell em `tests/edge-functions/*.ps1` são manuais e **param no formulário — nenhum deles chega ao PDF ou ao e-mail**; o `README.md` de lá está desatualizado. O fluxo completo com PDF e e-mail foi exercitado à mão em 15/09/2026 (ver `PROGRESSO.md`).
 
@@ -84,12 +86,13 @@ Mensagens assinadas: o corpo JSON **compacto** (`separators=(",",":")`) nos POST
 
 Invariantes: `attempt_dispatch` só cria dispatch se `payment_status = 'paid'` **e** `document_status = 'pending'` — caso contrário retorna conjunto vazio (não é erro). RLS habilitada em todas as tabelas com política permissiva para service role. O `id` de uma linha existente em `stripe_sessions` nunca é reescrito pelo webhook, para preservar a FK `dispatches.stripe_session_id`.
 
-**O schema vive em cinco migrations**: uma baseline (09-10/09/2026) que consolidou as doze antigas e corrigiu o que elas deixaram errado, duas do radar, a do bucket e a dos campos do medidor em `form_submissions` (24/09/2026). A baseline é um **retrato congelado** — toda mudança de schema entra como migration NOVA. Ela só voltaria a ser editada se o remoto fosse reconstruído de novo.
+**O schema vive em seis migrations**: uma baseline (09-10/09/2026) que consolidou as doze antigas e corrigiu o que elas deixaram errado, duas do radar, a do bucket, a dos campos do medidor em `form_submissions` e a da verificação do medidor no fluxo (ambas de 24/09/2026). A baseline é um **retrato congelado** — toda mudança de schema entra como migration NOVA. Ela só voltaria a ser editada se o remoto fosse reconstruído de novo.
 
-Três invariantes que quebram em silêncio se forem desfeitas:
+Quatro invariantes que quebram em silêncio se forem desfeitas:
 
 - **`document_status` é `NOT NULL` SEM `DEFAULT`.** Quem insere declara o estado. O `form-submit` separa `insert` de `update` por causa disso — um `.upsert()` não serve, porque o PostgREST sempre monta o ramo `INSERT` e a coluna ausente vira `NULL` (`23502`) mesmo quando a linha já existe. E o caminho de UPDATE **não pode** tocar a coluna: reescrever `'pending'` sobre um caso em `generating` faz `attempt_dispatch` devolver a mesma `dispatch_key` e o worker mandar um **segundo e-mail ao cliente**.
 - **`data_infracao` é `timestamp` SEM fuso, de propósito** — é o relógio de parede impresso na notificação, não um instante. Como `timestamptz`, a string local que o formulário envia voltaria 3h deslocada. Quem precisa só do dia usa `data_infracao::date`. (`stripe_sessions.payment_at` é o inverso, e por isso é `timestamptz`: ali o valor **é** um instante.)
+- **A verificação do medidor nunca derruba o envio, e nunca vai crua ao prompt.** A `form-submit` chama `verificar_medidor` com timeout de 3 s antes do `attempt_dispatch`, e grava o resultado em `form_submissions.verificacao_medidor` e em `radar_consultas_log`; qualquer falha vira `status: "nao_aplicavel"` e o envio segue. No pipeline, `verificacao_medidor` está sempre em `CAMPOS_INTERNOS` (`pipeline/prompt.py`) e só entra como bloco em português, com `RADAR_TESE_ATIVA=true`. A regra de redação é escolhida em código (`pipeline/verificacao.py`), não pelo modelo — e **vigência comprovada é silêncio** (sem bloco e sem as regras do radar no system prompt): com um bloco dizendo "não mencione", o DeepSeek mencionou em duas rodadas seguidas.
 - **O `dup_guard` é calculado só pela Edge.** Havia um trigger que o recalculava com outra fórmula e sobrescrevia o valor dela, o que matava a deduplicação — removido em 09/09/2026. **Não recriar:** imitar `JSON.stringify` em SQL é inviável (o Postgres emite `{"a" : "b"}`, com espaços).
 
 Os dois buckets privados vêm por migration — `generated-recursos` (PDFs do pipeline) e `evidencias` (radar). **Nada de setup manual no Dashboard.** Buckets e policies de Storage **não entram** no `supabase db dump`, que cobre só o schema `public`, então nenhum diff de migration pegaria a regressão: quem guarda é `tests/sql/assert_storage_setup.sql`, que falha se algum deles sumir ou virar público.
@@ -123,6 +126,7 @@ Todo par de cor em uso passa WCAG AA (verificado numericamente). Ao introduzir c
 - **A Edge não alcança um pipeline que escute no WSL.** O container resolve `host.docker.internal` para o host **Windows**; um uvicorn rodando na distro WSL não está lá, e o dispatch morre com `connection closed before message completed`. Para exercitar o pipeline sem isso, POSTe o payload assinado direto em `/hooks/dispatch`.
 - **`npx supabase db reset` pode falhar no *pull* da imagem** sob WSL (`error getting credentials`, helper do Docker). Se ele abortar no meio, o schema fica derrubado **e o `storage-api` não reaplica as migrations internas dele** — `storage.buckets` perde metade das colunas e a migration do bucket falha com `column "public" of relation "buckets" does not exist`. Não é defeito da migration: reinicie o container do storage. E **nunca silencie a saída de um `db reset`**; foi assim que uma falha passou despercebida.
 - **O banco local não tem histórico de migrations** (`supabase_migrations.schema_migrations` vazia): `npx supabase migration up --local` tenta reaplicar a baseline e falha em `relation "stripe_sessions" already exists`, sem mudar nada. Para aplicar só uma migration nova: `docker exec -i supabase_db_<ref> psql -U postgres -d postgres -v ON_ERROR_STOP=1 -f - < supabase/migrations/<arquivo>.sql`.
+- **O Express não sobe com `npm run dev --prefix server` no WSL**: `server/node_modules` foi instalado pelo Windows (esbuild `win32-x64`) e o `tsx` morre com `Host version … does not match binary version`. Sem reinstalar nada: `npm run build --prefix server` (tsc, independe de plataforma) e `npm start` de dentro de `server/`.
 - **O Vite no WSL pode não ver edições em `/mnt/c`** e seguir servindo o módulo antigo sem aviso. Se um teste no navegador contradiz o código, confira o que está sendo servido (`curl localhost:8080/src/...`) e reinicie o `npm run dev`.
 - `.gitattributes` normaliza line endings; diffs no Windows vêm cheios de avisos CRLF — ruído esperado, não é mudança real.
 - Entulho na raiz que não deve ser tratado como fonte de verdade: `TEMP_Form*.txt`, `edge-functions.log`, `src/.git/` (repositório git aninhado), e ~10 markdowns de diagnóstico com conteúdo sobreposto. Em `public/` sobrou só o que é referenciado (mais `logo-stripe.png`, que é para o painel do Stripe); 2,9 MB de imagens mortas saíram em Ago/2026.
@@ -141,7 +145,7 @@ Nenhum dos três vai para o git; os pares versionados são `.env.example`, `.env
 
 **A precedência é uma só, igual nos quatro runtimes:** carrega-se `.env` e depois `.env.local`, e **quem vem depois ganha**. Ou seja, *enquanto `.env.local` existir, o perfil ativo é o local* — para testar contra a web, renomeie o arquivo (`.env.local.off`), não adianta editar o `.env`. Vite já faz isso nativamente; `server/src/index.ts` e `pipeline/config.py` ancoram na raiz pelo caminho do próprio arquivo (não por `cwd`, já que ambos são iniciados de dentro do seu diretório) e replicam a mesma ordem. Foi a divergência dessa regra entre Express e pipeline que derrubou o dispatch inteiro em 401, em silêncio — ver `PROGRESSO.md`, sessão de 31/08/2026.
 
-Chaves por consumidor: **Vite** lê só `VITE_*` (o resto não entra no bundle); **Edge** lê `STRIPE_*`, `ORIGIN_WHITELIST`, `DISPATCH_PIPELINE_*`, `FRONTEND_URL`; **Express** lê `SUPABASE_*`, `PIPELINE_HMAC_SECRET`, `PORT`; **pipeline** lê `PIPELINE_*`, `EXPRESS_INTERNAL_URL`, `SUPABASE_*`, `STORAGE_BUCKET`, `DEEPSEEK_*`, `SMTP_*`, `MAIL_*`.
+Chaves por consumidor: **Vite** lê só `VITE_*` (o resto não entra no bundle); **Edge** lê `STRIPE_*`, `ORIGIN_WHITELIST`, `DISPATCH_PIPELINE_*`, `FRONTEND_URL`; **Express** lê `SUPABASE_*`, `PIPELINE_HMAC_SECRET`, `PORT`; **pipeline** lê `PIPELINE_*`, `EXPRESS_INTERNAL_URL`, `SUPABASE_*`, `STORAGE_BUCKET`, `DEEPSEEK_*`, `SMTP_*`, `MAIL_*`, `RADAR_TESE_ATIVA`.
 
 `DISPATCH_PIPELINE_HMAC_SECRET` (Edge) e `PIPELINE_HMAC_SECRET` (Express e pipeline) são **o mesmo segredo com dois nomes** — num arquivo só, a invariante fica visível. No perfil local, `DISPATCH_PIPELINE_URL` precisa ser `http://host.docker.internal:8000/hooks/dispatch`: a Edge roda dentro de container e `127.0.0.1` ali é o próprio container. E atenção: `supabase functions serve --env-file` **ignora silenciosamente toda variável `SUPABASE_*`** ("Env name cannot start with SUPABASE_"); no local não morde, porque o runtime injeta as próprias.
 
