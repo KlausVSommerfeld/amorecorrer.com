@@ -17,7 +17,7 @@
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap WITH SCHEMA extensions;
-SELECT plan(24);
+SELECT plan(26);
 
 -- ---------------------------------------------------------------------------
 -- Seed
@@ -36,7 +36,8 @@ VALUES
   ('inst_f', 'SAO GONCALO',    'BR 101 km 316+400',     'Fixo', 'SITRAN',   '11111111-1111-1111-1111-111111111111'),
   ('inst_g', 'RIO DE JANEIRO', 'Rua Doutor Satamini',   'Fixo', 'TALENTECH','11111111-1111-1111-1111-111111111111'),
   ('inst_h', 'RIO DE JANEIRO', 'R DOUTOR SATAMINI PX69A','Fixo','TALENTECH','11111111-1111-1111-1111-111111111111'),
-  ('inst_i', 'RIO DE JANEIRO', 'Est Cafunda Px 2125',   'Fixo', 'CONSILUX', '11111111-1111-1111-1111-111111111111');
+  ('inst_i', 'RIO DE JANEIRO', 'Est Cafunda Px 2125',   'Fixo', 'CONSILUX', '11111111-1111-1111-1111-111111111111'),
+  ('inst_j', 'NITEROI',        'Av Roberto Silveira',   'Fixo', 'SPLICE',   '11111111-1111-1111-1111-111111111111');
 
 INSERT INTO radar_faixas (instrument_id, numero_faixa, numero_inmetro, numero_serie, sentido, velocidade_nominal)
 VALUES
@@ -49,7 +50,8 @@ VALUES
   ('inst_f', '1', '14100005', '3000005', 'Centro',       60),
   ('inst_g', '1', '14100006', '9999999', 'Norte',        40),
   ('inst_h', '1', '14100007', '9999999', 'Sul',          40),
-  ('inst_i', '1', '14100008', '3000006', 'Leste',        50);
+  ('inst_i', '1', '14100008', '3000006', 'Leste',        50),
+  ('inst_j', '1', '14100009', '3000007', 'Centro',       50);
 
 -- inst_a: os quatro laudos reais, FORA de ordem cronológica de propósito
 INSERT INTO radar_verificacoes (instrument_id, origem, numero_certificado, numero_ensaio, ano, data_laudo, data_validade, tipo_servico, resultado)
@@ -69,7 +71,9 @@ VALUES
   ('inst_f','historico','13790001','9',   2026,'2026-01-10','2027-01-09','Periódica','Pendente'),
   -- inst_i: histórico E topo cobrindo a MESMA data
   ('inst_i','historico','13790002','10',  2026,'2026-01-10','2027-01-09','Periódica','Aprovado'),
-  ('inst_i','topo',     '',        NULL,  2026,'2026-01-10','2027-01-09',NULL,        'Aprovado');
+  ('inst_i','topo',     '',        NULL,  2026,'2026-01-10','2027-01-09',NULL,        'Aprovado'),
+  -- inst_j: histórico vigente SEM número de certificado — as 81 entradas reais do RJ
+  ('inst_j','historico','',        '11',  2026,'2026-01-10','2027-01-09','Periódica','Aprovado');
 -- inst_d: nenhuma verificação — nem histórico, nem topo. Os 14 casos reais.
 
 -- ---------------------------------------------------------------------------
@@ -138,6 +142,14 @@ SELECT is((verificar_medidor(NULL, NULL, '2024-07-12', 'Rio de Janeiro', 'Estrad
           'match por municipio+endereco e SEMPRE confianca baixa');
 SELECT is((verificar_medidor('2000065', NULL, NULL))->>'status', 'nao_aplicavel',
           'sem data da infracao nao ha o que julgar');
+
+-- ---------------------------------------------------------------------------
+-- Número de certificado ausente, qualquer que seja a origem (Fase 5)
+-- ---------------------------------------------------------------------------
+SELECT ok((verificar_medidor('3000007', NULL, '2026-06-01'))->>'avisos' LIKE '%não o número do certificado%',
+          'historico vigente sem numero: o aviso sai tambem, nao so na origem topo');
+SELECT ok((verificar_medidor('3000006', NULL, '2026-06-01'))->>'avisos' NOT LIKE '%não o número do certificado%',
+          'historico vigente COM numero: sem aviso falso');
 
 SELECT * FROM finish();
 ROLLBACK;
