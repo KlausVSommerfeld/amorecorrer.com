@@ -9,7 +9,7 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "radar:test": "node --test \"scripts/lib/*.test.ts\" \"src/lib/*.test.ts\"",
+    "radar:test": "node --test \"scripts/lib/*.test.ts\" \"src/lib/*.test.ts\" \"supabase/functions/form-submit/*.test.ts\"",
     "radar:ingest": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/ingest-radares-rj.ts",
     "radar:ingest:prod": "node --env-file=.env scripts/ingest-radares-rj.ts",
     "preview": "vite preview"
