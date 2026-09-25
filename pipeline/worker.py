@@ -21,7 +21,7 @@ from supabase import create_client
 from config import settings
 from hmac_utils import hmac_sha256_hex
 from peca import paragrafo_para_pdf, texto_da_peca
-from prompt import build_case_context, system_prompt
+from prompt import argumentos_da_chamada, build_case_context, system_prompt, texto_da_resposta
 from verificacao import bloco_verificacao
 
 log = logging.getLogger(__name__)
@@ -119,22 +119,12 @@ async def call_deepseek(text_context: str, sistema: str | None = None) -> str:
         base_url=settings.deepseek_api_base,
     )
     completion = await client.chat.completions.create(
-        model=settings.deepseek_model,
-        messages=[
-            {
-                "role": "system",
-                "content": sistema or system_prompt(False),
-            },
-            {
-                "role": "user",
-                "content": text_context,
-            },
-        ],
-        max_tokens=1200,
-        temperature=0.4,
+        **argumentos_da_chamada(settings.deepseek_model, sistema or system_prompt(False), text_context)
     )
-    choice = completion.choices[0].message.content
-    return (choice or "").strip() or "(resposta vazia do modelo)"
+    escolha = completion.choices[0]
+    # Vazia ou cortada lança erro: o caso vai a `failed` em vez de o cliente
+    # receber um PDF sem peça (antes saía "(resposta vazia do modelo)").
+    return texto_da_resposta(escolha.message.content, escolha.finish_reason)
 
 
 def build_pdf_bytes(title: str, body_text: str) -> bytes:

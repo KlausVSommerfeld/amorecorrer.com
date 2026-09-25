@@ -98,3 +98,38 @@ def build_case_context(case: dict[str, Any], tese_ativa: bool = False) -> str:
         # Fora do corte de 200 linhas: a verificação não pode ser a que some.
         cabecalho += bloco + "\n\n"
     return cabecalho + "\n".join(lines[:200])
+
+
+class RespostaDoModeloInvalida(RuntimeError):
+    """Resposta vazia ou cortada: nunca vira peça.
+
+    É RuntimeError de propósito — o `run_dispatch_pipeline` já trata qualquer
+    exceção levando o caso a `failed`, sem e-mail ao cliente.
+    """
+
+
+def argumentos_da_chamada(modelo: str, sistema: str, contexto: str) -> dict[str, Any]:
+    return {
+        "model": modelo,
+        "messages": [
+            {"role": "system", "content": sistema},
+            {"role": "user", "content": contexto},
+        ],
+        "max_tokens": 1200,
+        "temperature": 0.4,
+        # O deepseek-flash vem com raciocínio LIGADO por padrão. Numa rodada real
+        # (25/09/2026), os 1200 tokens foram todos para o raciocínio e a peça voltou
+        # vazia. Desligado, ele se comporta como o deepseek-chat de antes — que a
+        # API já redirecionava para o próprio flash sem raciocínio.
+        "extra_body": {"thinking": {"type": "disabled"}},
+    }
+
+
+def texto_da_resposta(conteudo: str | None, finish_reason: str | None) -> str:
+    texto = (conteudo or "").strip()
+    if not texto:
+        raise RespostaDoModeloInvalida("resposta vazia do modelo")
+    if finish_reason == "length":
+        raise RespostaDoModeloInvalida("resposta cortada pelo limite de tokens")
+    return texto
+

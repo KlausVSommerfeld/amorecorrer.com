@@ -1307,3 +1307,25 @@ Sem deploy: o pipeline não roda em produção.
 
 **Fontes:** api-docs.deepseek.com, nas páginas `guides/tool_calls`, `guides/thinking_mode`, `quick_start/pricing` e `news/news260424`, mais `GET /models` com a chave do projeto.
 
+## Sessão de 25/09/2026 — O pipeline passa ao deepseek-flash, com raciocínio desligado
+
+**Feito:** o modelo passou a ser `deepseek-flash` por decisão do Klaus, válida "até o OCR" das notificações. A mudança está no padrão de `config.py`, nos dois `.env*.example` e na linha `DEEPSEEK_MODEL` do `.env` e do `.env.production` locais. A chamada foi extraída para funções puras em `pipeline/prompt.py` (`argumentos_da_chamada`, `texto_da_resposta`) e passou a desligar o raciocínio explicitamente.
+
+**Por que o raciocínio desligado, com dado:**
+
+| Chamada | Resultado |
+|---|---|
+| `deepseek-chat` (como era) | a API respondeu como **`deepseek-flash`** sem raciocínio, então o pipeline já rodava nele |
+| `deepseek-flash` no padrão (raciocínio ligado) | os 1.200 tokens de `max_tokens` foram **todos para o raciocínio**: `finish_reason: length` e **peça vazia**, nos dois casos |
+| `deepseek-flash` com raciocínio desligado | peça completa em 3 a 4 s, igual à de antes |
+
+**Um defeito antigo fechado de passagem:** quando a resposta vinha vazia, o worker punha o texto "(resposta vazia do modelo)" no PDF e o mandava por e-mail ao cliente. Agora resposta vazia ou cortada lança `RespostaDoModeloInvalida` (um `RuntimeError`), e o caso vai a `failed` pelo caminho que já existia, sem e-mail.
+
+**Verificação:**
+- 59 testes Python (6 novos, sobre a chamada ao modelo);
+- chamada real pelo próprio `call_deepseek` do worker, com o modelo lido da configuração, nos dois casos, com os PDFs abertos: peça inteira, sem markdown, terminando no pedido e com o fecho do código.
+
+**Arquivos:** `pipeline/prompt.py`, `pipeline/test_prompt.py`, `pipeline/worker.py`, `pipeline/config.py`, `.env.example`, `.env.production.example`, `CLAUDE.md` e `PENDENCIAS.md`, mais o `.env` e o `.env.production` locais, que estão fora do git.
+
+**Ficou de fora:** reavaliar o modelo na Fase 7 (OCR), que ficou registrado no `PENDENCIAS.md`. O `deepseek-flash` aceita imagem.
+
