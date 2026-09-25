@@ -20,6 +20,8 @@ from supabase import create_client
 
 from config import settings
 from hmac_utils import hmac_sha256_hex
+from prompt import build_case_context, system_prompt
+from verificacao import bloco_verificacao
 
 log = logging.getLogger(__name__)
 
@@ -104,7 +106,7 @@ async def notify_finish(
     r.raise_for_status()
 
 
-async def call_deepseek(text_context: str) -> str:
+async def call_deepseek(text_context: str, sistema: str | None = None) -> str:
     if not settings.deepseek_api_key:
         return (
             "[Modo sem IA: defina DEEPSEEK_API_KEY] Rascunho automático indisponível. "
@@ -120,11 +122,7 @@ async def call_deepseek(text_context: str) -> str:
         messages=[
             {
                 "role": "system",
-                "content": (
-                    "Você é um assistente jurídico que redige rascunhos de recurso de multa de trânsito "
-                    "em português do Brasil. Seja formal, claro e cite fatos do formulário. "
-                    "Não invente dados ausentes. Produza 2 a 4 parágrafos."
-                ),
+                "content": sistema or system_prompt(False),
             },
             {
                 "role": "user",
@@ -136,39 +134,6 @@ async def call_deepseek(text_context: str) -> str:
     )
     choice = completion.choices[0].message.content
     return (choice or "").strip() or "(resposta vazia do modelo)"
-
-
-# Campos de controle interno. O read model do Express faz `select("*")`, então a
-# linha inteira chegava ao prompt — inclusive o `dup_guard` (hash de 64
-# caracteres), o `form_token` e os uuids. Nada disso tem papel numa peça
-# jurídica, e tudo compete por atenção com os dados que têm.
-#
-# `created_at` e `updated_at` saem por um motivo a mais: são `timestamptz` em
-# UTC, e a IA lia "10/09" num caso protocolado às 22h do dia 9 em BRT. É o mesmo
-# erro de fuso que o front já havia corrigido do lado da data da infração.
-# Como nenhum dos dois entra no recurso, saem inteiros em vez de convertidos.
-CAMPOS_INTERNOS = frozenset(
-    {
-        "id",
-        "case_id",
-        "form_token",
-        "dup_guard",
-        "document_status",
-        "document_url",
-        "stripe_session_id",
-        "created_at",
-        "updated_at",
-    }
-)
-
-
-def build_case_context(case: dict[str, Any]) -> str:
-    lines = [
-        f"{k}: {v}"
-        for k, v in sorted(case.items())
-        if k not in CAMPOS_INTERNOS and v is not None and str(v).strip()
-    ]
-    return "Dados do caso para o recurso:\n" + "\n".join(lines[:200])
 
 
 def build_pdf_bytes(title: str, body_text: str) -> bytes:
@@ -298,8 +263,13 @@ async def run_dispatch_pipeline(body_text: str) -> None:
             if stripe_session_id is not None:
                 stripe_session_id = str(stripe_session_id)
 
-            context = build_case_context(case)
-            draft = await call_deepseek(context)
+            context = build_case_context(case, settings.radar_tese_ativa)
+            if settings.radar_tese_ativa:
+                bloco = bloco_verificacao(case.get("verificacao_medidor"))
+                # Só dados do equipamento: nenhum dado pessoal do cliente.
+                log.info("verificação do medidor no prompt case_id=%s bloco=%r", payload.case_id, bloco)
+            sistema = system_prompt(settings.radar_tese_ativa, case.get("verificacao_medidor"))
+            draft = await call_deepseek(context, sistema)
 
             pdf_title = f"Recurso — {payload.case_id}"
             pdf_body = (

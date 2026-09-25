@@ -46,11 +46,15 @@ Plano: `PLANO-verificacao-radar-inmetro.md`. Fases 0, 1, 3 entregues; Fase 2 só
 
 - **#18 Fase 0.5 — calibração** com 8 a 10 notificações reais do RJ; escrever `docs/verificacao-radar-calibracao.md`. *Bloqueia a §5.4.* → Sessão de 03/09/2026 (noite)
   - Medir junto quantas notificações trazem o nº de série (risco 2) — `form_submissions` está vazia, só dá pelas notificações. → Sessão de 24/09/2026 · plano §7
-- **Fase 4: publicar o front** — migration e `form-submit` v63 já estão em produção; falta o build do `Form.tsx` novo. Código na branch `feat/radar-fase4-campos-medidor`. → Sessão de 24/09/2026
+- **Fase 4: publicar o front** — migration e `form-submit` v63 já estão em produção; falta o build do `Form.tsx` novo (código em `main` desde 24/09). → Sessão de 24/09/2026
   - Confirmar com uma notificação real a dica de "onde encontrar" os números no formulário (texto genérico hoje). → Sessão de 24/09/2026
-- **Fase 5 — integração no fluxo** — coluna `form_submissions.verificacao_medidor`, chamada da RPC em `form-submit`, bloco em `build_case_context`, regras no system prompt. → Sessão de 22/09/2026 · plano §6
-  - Decidir o aviso para as 81 verificações de `historico` sem nº de certificado. → Sessão de 22/09/2026
-  - Confirmar o dispositivo do CONTRAN antes de citá-lo na peça (risco 3). → plano §7
+- **Fase 5 em produção** — `db push` da migration `20260924000001`, **depois** `functions deploy form-submit`. Pelo Klaus, no terminal dele. → Sessão de 24/09/2026 (Fase 5)
+- **Ligar `RADAR_TESE_ATIVA`** — só depois da Fase 0.5 assinada. → Sessão de 24/09/2026 (Fase 5)
+  - **Condição antes de ligar:** casos sem bloco (`nao_aplicavel`, comprovado) vão sem as regras do radar, logo sem a trava de base legal. Acrescentar uma trava neutra ao prompt base com a chave ligada (ex.: "não cite resolução, portaria ou certificado que não conste nos dados do caso"). → Sessão de 24/09/2026 (Fase 5, revisão final)
+  - Oito achados menores da revisão final (fuso do "capturada em", robustez a formatos impossíveis hoje, reenvio só com nº do medidor não reverifica, reenvio em `generating` diverge da auditoria…) — lista no `PROGRESSO.md`. → Sessão de 24/09/2026 (Fase 5, revisão final)
+  - Confirmar o dispositivo do CONTRAN antes de acrescentá-lo a `REGRAS_RADAR` (risco 3). → plano §7
+  - *Decisão do Klaus:* com vigência comprovada, o DeepSeek ainda pede o certificado por conta própria ao ver `medidor_numero_serie` no formulário. Omitir os campos `medidor_*` do contexto nesse caso? → Sessão de 24/09/2026 (Fase 5)
+- **Prompt base: placeholders e notas ao usuário na peça** — o DeepSeek escreve `[Local], [data]`, `[Nome do recorrente]` (mesmo com o nome no contexto) e fecha com "Observação: os campos entre colchetes… precisam ser completados" — tudo iria ao PDF. Anterior à Fase 5, visto nas rodadas reais dela. → Sessão de 24/09/2026 (Fase 5)
 - **Fase 6 — observabilidade** — alerta de `record_count`, frescor como métrica (fonte congelada), view `radar_revisao_pendente`, métricas mensais. → Sessão de 21/09/2026 · plano §6
 - **Fase 7 — OCR da notificação** — só abrir issue; fora desta branch. → plano §6
 - **#21 De onde a ingestão *recorrente* busca o arquivo** — RBMLQ recusa IP de nuvem; testar `curl` a partir do VPS. → Sessão de 06/09/2026 (fim da noite) · Sessão de 20/09/2026

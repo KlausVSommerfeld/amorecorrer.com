@@ -42,6 +42,11 @@ class Settings(BaseSettings):
     deepseek_api_base: str = "https://api.deepseek.com"
     deepseek_model: str = "deepseek-chat"
 
+    # Fase 5 do radar: com True, a verificação do medidor entra no prompt como
+    # bloco + regras de redação. Fica False até a calibração (Fase 0.5) ser
+    # assinada — ligar é mudar a variável, sem deploy de código.
+    radar_tese_ativa: bool = False
+
     # Runtime mode: production requires SMTP; development/test may skip email.
     pipeline_env: str = "development"
 
