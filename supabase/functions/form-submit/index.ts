@@ -2,6 +2,15 @@
 // Uses Deno.serve and @supabase/supabase-js@2.x
 // Import from bare specifier, assuming deno.json imports: "@supabase/supabase-js": "jsr:@supabase/supabase-js@2"
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import {
+  AVISO_INDISPONIVEL,
+  AVISO_SEM_DADOS,
+  VERIFICACAO_TIMEOUT_MS,
+  entradaDaVerificacao,
+  linhaDoLog,
+  naoAplicavel,
+  type Verificacao,
+} from "./verificacao.ts";
 
 const MAX_BODY_BYTES = 64 * 1024; // 64KB
 const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
@@ -446,6 +455,60 @@ Deno.serve(async (req) => {
     if (upsertErr) {
       console.error("DB update error:", upsertErr);
       return bad("DB upsert error", 500, corsHeadersForOrigin);
+    }
+
+    // Verificação do medidor de velocidade — Fase 5 do plano do radar.
+    //
+    // ANTES do attempt_dispatch, para o pipeline já ler o caso com ela. Nada
+    // aqui pode derrubar o envio: toda falha vira `nao_aplicavel` e é só
+    // logada. O UPDATE não toca document_status (ver o comentário do INSERT
+    // acima: reescrevê-lo manda um segundo e-mail ao cliente).
+    try {
+      const entrada = entradaDaVerificacao(norm);
+      let verificacao: Verificacao = naoAplicavel(AVISO_SEM_DADOS);
+
+      if (entrada) {
+        const { data, error } = await supabase
+          .rpc("verificar_medidor", entrada)
+          .abortSignal(AbortSignal.timeout(VERIFICACAO_TIMEOUT_MS));
+        if (error || !data) {
+          console.error("[radar] verificar_medidor_falhou", {
+            case_id: norm.case_id,
+            error: error ? formatDispatchError(error) : "resposta vazia"
+          });
+          verificacao = naoAplicavel(AVISO_INDISPONIVEL);
+        } else {
+          verificacao = data as Verificacao;
+        }
+      }
+
+      const { error: colunaErr } = await supabase
+        .from("form_submissions")
+        .update({ verificacao_medidor: verificacao })
+        .eq("case_id", norm.case_id);
+      if (colunaErr) {
+        console.error("[radar] gravar_verificacao_falhou", {
+          case_id: norm.case_id,
+          error: formatDispatchError(colunaErr)
+        });
+      }
+
+      // Também para `nao_aplicavel`: a calibração precisa saber quantos casos
+      // chegam sem os números do medidor.
+      const { error: logErr } = await supabase
+        .from("radar_consultas_log")
+        .upsert(linhaDoLog(String(norm.case_id), entrada, verificacao), { onConflict: "case_id" });
+      if (logErr) {
+        console.error("[radar] log_consulta_falhou", {
+          case_id: norm.case_id,
+          error: formatDispatchError(logErr)
+        });
+      }
+    } catch (err) {
+      console.error("[radar] verificacao_excecao", {
+        case_id: norm.case_id,
+        error: err instanceof Error ? err.message : String(err)
+      });
     }
 
     // After successful update, attempt dispatch via RPC
