@@ -8,7 +8,7 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 - `#N` é o número estável da pendência em `PROGRESSO.md › Pendências e decisões em aberto`. Item sem número não tem entrada lá.
 - Sem explicação aqui: uma linha por item.
 
-*Atualizado em 2026-09-24.*
+*Atualizado em 2026-09-25.*
 
 ---
 
@@ -21,6 +21,7 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
   - Task 4 — serviços no VPS com TLS (Caddy)
   - Task 5 — Edge aponta para o endereço novo; fluxo em produção *(manda e-mail real; com o Klaus)*
   - Task 6 — documentação
+- **Trocar o modelo do DeepSeek** — `DEEPSEEK_MODEL=deepseek-chat` foi aposentado pela DeepSeek ("fully retired and inaccessible after Jul 24th, 2026", nota do V4); a API hoje lista só `deepseek-flash` e `deepseek-v4-pro`, e o nome antigo ainda responde por um redirecionamento sem garantia — quando parar, toda peça falha. Os dois modelos novos vêm com *thinking* ligado por padrão: `temperature` deixa de ter efeito, falta confirmar se o `max_tokens=1200` passa a contar o raciocínio (e cortar a peça), e com ferramentas o `reasoning_content` precisa voltar em toda rodada (senão 400). Rodar o prompt atual no modelo novo antes de trocar. → Sessão de 25/09/2026 (spike da ferramenta do CTB)
 - **Hospedagem do frontend** — zona sem registro `A` na raiz; fora do plano do VPS. → Estado atual · plano do VPS, "Notas de execução"
 - **#2 Preço na conta live** — criar produto e os dois preços em `acct_1RrARg…`, `secrets set STRIPE_PRICE_ID_FULL`; decidir prazo global de campanha vs. por visitante. → 2026-08-15 — Preço cheio fora da promoção
 - **`.env.production`** — 13 valores ainda como `SUBSTITUA_`. → `CLAUDE.md › Variáveis de ambiente`
@@ -54,7 +55,8 @@ Plano: `PLANO-verificacao-radar-inmetro.md`. Fases 0, 1, 3 entregues; Fase 2 só
   - Confirmar o dispositivo do CONTRAN antes de acrescentá-lo a `REGRAS_RADAR` (risco 3). → plano §7
   - *Decisão do Klaus:* com vigência comprovada, o DeepSeek ainda pede o certificado por conta própria ao ver `medidor_numero_serie` no formulário. Omitir os campos `medidor_*` do contexto nesse caso? → Sessão de 24/09/2026 (Fase 5)
 - **Peça endereçada ao destinatário errado** — numa rodada real, uma *defesa prévia* saiu endereçada à JARI, que só julga recurso. O prompt não diz a quem cada estágio (`especie_documento`) se dirige. → Sessão de 25/09/2026 (peça limpa)
-- **Base legal sem conferência fora do radar** — a IA citou o art. 24 do Código Penal (estado de necessidade) e o art. 90 do CTB sem que ninguém os tenha conferido. Mesma solução da trava neutra pendente do radar, mas vale para todo caso. → Sessão de 25/09/2026 (peça limpa)
+- **Base legal sem conferência fora do radar** — a IA citou o art. 24 do Código Penal (estado de necessidade) e o art. 90 do CTB sem que ninguém os tenha conferido (o 90 foi conferido depois: existe e foi bem aplicado). Mesma solução da trava neutra pendente do radar, mas vale para todo caso. → Sessão de 25/09/2026 (peça limpa)
+  - Spike feito: ferramenta de consulta ao CTB (`ler_artigo`/`buscar_ctb`) é viável — o arquivo do Planalto tem 389 artigos, só a redação vigente — mas **sozinha não trava**: precisa de conferência em código de que todo artigo citado foi lido. Próximo passo: teste com código descartável (5–10 casos, no modelo novo). *Depende da troca de modelo.* → Sessão de 25/09/2026 (spike da ferramenta do CTB)
 - *Menor:* o CPF aparece só com dígitos no corpo da peça quando o modelo o repete ("11144477735"); o fecho já formata. → Sessão de 25/09/2026 (peça limpa)
 - **Fase 6 — observabilidade** — alerta de `record_count`, frescor como métrica (fonte congelada), view `radar_revisao_pendente`, métricas mensais. → Sessão de 21/09/2026 · plano §6
 - **Fase 7 — OCR da notificação** — só abrir issue; fora desta branch. → plano §6

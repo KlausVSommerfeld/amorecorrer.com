@@ -1290,3 +1290,20 @@ O `build_pdf_bytes` passou a respeitar as quebras de linha simples.
 
 Sem deploy: o pipeline não roda em produção.
 
+## Sessão de 25/09/2026 — Spike: ferramenta de consulta ao CTB (sem código)
+
+**Pergunta:** dar ao DeepSeek uma ferramenta que consulta o CTB oficial resolve as citações de base legal sem conferência?
+
+**Resposta:** é viável, mas a ferramenta sozinha não trava nada. Ela dá ao modelo a *possibilidade* de conferir, não a obrigação, e a Fase 5 mostrou que ele desobedece instrução. A trava de verdade é a ferramenta **mais** uma conferência em código de que todo artigo citado foi lido naquela conversa. Norma fora do CTB (Código Penal, resolução do CONTRAN) a ferramenta não cobre.
+
+**O arquivo do CTB serve.** `CTB-compilado_files/L9503Compilado.html` é a versão compilada do Planalto:
+- 389 artigos, **só a redação vigente** (o texto riscado soma cerca de 370 caracteres, quase todo anotações);
+- anotações de redação, revogação e veto em cada dispositivo;
+- mudanças por Medida Provisória só nos arts. 139-A e 268-A.
+
+É uma página salva pelo navegador, com scripts de extensão misturados, então deve virar um índice limpo e versionado antes de ser usada. Conferido de passagem: o art. 90 citado pela IA na sessão anterior existe e foi bem aplicado.
+
+**Achado mais urgente que a pergunta:** o `deepseek-chat` do pipeline foi **aposentado** pela DeepSeek ("fully retired and inaccessible after Jul 24th, 2026"). A API lista só `deepseek-flash` e `deepseek-v4-pro`, e o nome antigo ainda responde por um redirecionamento sem garantia. Os dois modelos novos suportam ferramentas e vêm com *thinking* ligado por padrão. Nesse modo, `temperature` não tem efeito, e com ferramentas o `reasoning_content` precisa ser devolvido em toda rodada, senão a API responde 400. Virou pendência de lançamento.
+
+**Fontes:** api-docs.deepseek.com, nas páginas `guides/tool_calls`, `guides/thinking_mode`, `quick_start/pricing` e `news/news260424`, mais `GET /models` com a chave do projeto.
+
