@@ -46,7 +46,7 @@ Plano: `PLANO-verificacao-radar-inmetro.md`. Fases 0, 1, 3 entregues; Fase 2 só
 
 - **#18 Fase 0.5 — calibração** com 8 a 10 notificações reais do RJ; escrever `docs/verificacao-radar-calibracao.md`. *Bloqueia a §5.4.* → Sessão de 03/09/2026 (noite)
   - Medir junto quantas notificações trazem o nº de série (risco 2) — `form_submissions` está vazia, só dá pelas notificações. → Sessão de 24/09/2026 · plano §7
-- **Fase 4 em produção** — `db push` da migration `20260924000000`, **depois** deploy de `form-submit` e do front, nessa ordem. Código na branch `feat/radar-fase4-campos-medidor`. → Sessão de 24/09/2026
+- **Fase 4: publicar o front** — migration e `form-submit` v63 já estão em produção; falta o build do `Form.tsx` novo. Código na branch `feat/radar-fase4-campos-medidor`. → Sessão de 24/09/2026
   - Confirmar com uma notificação real a dica de "onde encontrar" os números no formulário (texto genérico hoje). → Sessão de 24/09/2026
 - **Fase 5 — integração no fluxo** — coluna `form_submissions.verificacao_medidor`, chamada da RPC em `form-submit`, bloco em `build_case_context`, regras no system prompt. → Sessão de 22/09/2026 · plano §6
   - Decidir o aviso para as 81 verificações de `historico` sem nº de certificado. → Sessão de 22/09/2026
