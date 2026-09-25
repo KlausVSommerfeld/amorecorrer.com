@@ -10,6 +10,7 @@ import unittest
 
 from verificacao import (
     INSTRUCAO_EXIBICAO,
+    INSTRUCAO_EXIBICAO_SEM_APROVACAO,
     INSTRUCAO_REPROVADO,
     bloco_verificacao,
     instrucao_de_redacao,
@@ -65,9 +66,12 @@ class TestInstrucao(unittest.TestCase):
                     )
 
     def test_demais_status_pedem_exibicao(self):
+        # Sem registro cobrindo a data (o caso com registro sem aprovação tem
+        # teste próprio: test_registro_sem_aprovacao_nao_vira_nao_localizou).
         for status in ("nao_comprovado", "sem_registro", "ambiguo", "status_que_nao_existe"):
             with self.subTest(status=status):
-                self.assertEqual(instrucao_de_redacao(verificacao(status=status)), INSTRUCAO_EXIBICAO)
+                v = verificacao(status=status, certificado_vigente=None)
+                self.assertEqual(instrucao_de_redacao(v), INSTRUCAO_EXIBICAO)
 
     def test_string_json_e_aceita(self):
         self.assertEqual(instrucao_de_redacao(json.dumps(verificacao())), INSTRUCAO_REPROVADO)
@@ -116,6 +120,33 @@ class TestBloco(unittest.TestCase):
         b = bloco_verificacao(verificacao(status="reprovado", confianca="baixa"))
         self.assertNotIn("foi reprovado", b)
         self.assertTrue(b.rstrip().endswith(INSTRUCAO_EXIBICAO))
+
+    def test_registro_sem_aprovacao_nao_vira_nao_localizou(self):
+        # Revisão final: `nao_comprovado` também sai quando a base TEM registro
+        # cobrindo a data, com resultado Pendente/Reparado/vazio. Dizer que a
+        # consulta "não localizou" seria desmentido pelo próprio órgão.
+        for resultado in ("Pendente", "Reparado", ""):
+            with self.subTest(resultado=resultado):
+                cert = dict(verificacao()["certificado_vigente"], resultado=resultado)
+                v = verificacao(status="nao_comprovado", certificado_vigente=cert)
+                self.assertEqual(instrucao_de_redacao(v), INSTRUCAO_EXIBICAO_SEM_APROVACAO)
+                b = bloco_verificacao(v)
+                self.assertNotIn("não localizou", b)
+                self.assertNotIn("não o localizou", b)
+                self.assertIn("sem resultado de aprovação", b)
+                self.assertNotIn("13785621", b)
+                if resultado:
+                    self.assertIn(f'"{resultado}"', b)
+
+    def test_sem_registro_continua_nao_localizou(self):
+        v = verificacao(status="nao_comprovado", certificado_vigente=None)
+        self.assertEqual(instrucao_de_redacao(v), INSTRUCAO_EXIBICAO)
+        self.assertIn("não localizou", bloco_verificacao(v))
+
+    def test_confianca_baixa_com_registro_continua_generica(self):
+        # Com match incerto, o registro pode nem ser deste equipamento.
+        v = verificacao(status="nao_comprovado", confianca="baixa")
+        self.assertEqual(instrucao_de_redacao(v), INSTRUCAO_EXIBICAO)
 
     def test_avisos_da_base_entram(self):
         b = bloco_verificacao(verificacao(

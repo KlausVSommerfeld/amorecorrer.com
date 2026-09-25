@@ -50,6 +50,8 @@ Plano: `PLANO-verificacao-radar-inmetro.md`. Fases 0, 1, 3 entregues; Fase 2 só
   - Confirmar com uma notificação real a dica de "onde encontrar" os números no formulário (texto genérico hoje). → Sessão de 24/09/2026
 - **Fase 5 em produção** — `db push` da migration `20260924000001`, **depois** `functions deploy form-submit`. Pelo Klaus, no terminal dele. → Sessão de 24/09/2026 (Fase 5)
 - **Ligar `RADAR_TESE_ATIVA`** — só depois da Fase 0.5 assinada. → Sessão de 24/09/2026 (Fase 5)
+  - **Condição antes de ligar:** casos sem bloco (`nao_aplicavel`, comprovado) vão sem as regras do radar, logo sem a trava de base legal. Acrescentar uma trava neutra ao prompt base com a chave ligada (ex.: "não cite resolução, portaria ou certificado que não conste nos dados do caso"). → Sessão de 24/09/2026 (Fase 5, revisão final)
+  - Oito achados menores da revisão final (fuso do "capturada em", robustez a formatos impossíveis hoje, reenvio só com nº do medidor não reverifica, reenvio em `generating` diverge da auditoria…) — lista no `PROGRESSO.md`. → Sessão de 24/09/2026 (Fase 5, revisão final)
   - Confirmar o dispositivo do CONTRAN antes de acrescentá-lo a `REGRAS_RADAR` (risco 3). → plano §7
   - *Decisão do Klaus:* com vigência comprovada, o DeepSeek ainda pede o certificado por conta própria ao ver `medidor_numero_serie` no formulário. Omitir os campos `medidor_*` do contexto nesse caso? → Sessão de 24/09/2026 (Fase 5)
 - **Prompt base: placeholders e notas ao usuário na peça** — o DeepSeek escreve `[Local], [data]`, `[Nome do recorrente]` (mesmo com o nome no contexto) e fecha com "Observação: os campos entre colchetes… precisam ser completados" — tudo iria ao PDF. Anterior à Fase 5, visto nas rodadas reais dela. → Sessão de 24/09/2026 (Fase 5)

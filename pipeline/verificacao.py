@@ -24,6 +24,17 @@ INSTRUCAO_EXIBICAO = (
     "equipamento estava sem verificação ou irregular, e não cite número de certificado."
 )
 
+# Quando a base TEM registro cobrindo a data, mas sem aprovação (Pendente,
+# Reparado, vazio), "não localizou" seria desmentido pelo próprio órgão
+# (revisão final, 24/09/2026). O pedido de exibição continua; a premissa muda.
+INSTRUCAO_EXIBICAO_SEM_APROVACAO = (
+    "Requeira que o órgão autuador junte aos autos o certificado de verificação "
+    "metrológica do equipamento vigente na data da infração, informando que a base "
+    "pública de dados abertos do INMETRO registra verificação cobrindo essa data, mas "
+    "sem resultado de aprovação. Não afirme que o equipamento estava sem verificação "
+    "ou irregular, e não cite número de certificado."
+)
+
 _RESULTADO = {
     INSTRUCAO_REPROVADO: "o equipamento foi reprovado na verificação metrológica que cobre a data da infração.",
     INSTRUCAO_EXIBICAO: (
@@ -68,7 +79,10 @@ def instrucao_de_redacao(v: Any) -> str | None:
     # Só confiança alta libera tese forte ou descarte. `media` existe no
     # contrato, ainda que a RPC hoje só produza `alta` e `baixa`.
     if v.get("confianca") != "alta":
+        # Match incerto: o registro pode nem ser deste equipamento.
         return INSTRUCAO_EXIBICAO
+    if status == "nao_comprovado" and isinstance(v.get("certificado_vigente"), dict):
+        return INSTRUCAO_EXIBICAO_SEM_APROVACAO
     if status == "reprovado":
         return INSTRUCAO_REPROVADO
     if status == "comprovado_valido":
@@ -85,9 +99,18 @@ def bloco_verificacao(v: Any) -> str | None:
     if instrucao is None:
         return None
 
+    if instrucao == INSTRUCAO_EXIBICAO_SEM_APROVACAO:
+        resultado = str((v.get("certificado_vigente") or {}).get("resultado") or "").strip()
+        texto = (
+            "a base pública registra verificação metrológica cobrindo a data da infração, "
+            + (f'com resultado "{resultado}", ' if resultado else "sem resultado informado, ")
+            + "sem resultado de aprovação."
+        )
+    else:
+        texto = _RESULTADO[instrucao]
     linhas = [
         "Verificação metrológica do medidor de velocidade (consulta automática à base do INMETRO):",
-        f"- Resultado: {_RESULTADO[instrucao]}",
+        f"- Resultado: {texto}",
     ]
 
     # Equipamento e certificado só entram quando a regra manda citá-los.

@@ -1238,3 +1238,17 @@ Três outras decisões vieram do código:
 - ligar `RADAR_TESE_ATIVA`, que depende da Fase 0.5;
 - a decisão sobre o caso comprovado;
 - a Fase 6.
+
+**Revisão final (revisor novo, no modelo mais capaz):** nenhum achado crítico. A Edge, a migration (o corpo da função é idêntico ao da Fase 3, exceto a condição trocada), a igualdade byte a byte com a chave desligada e os cinco casos de borda do plano foram confirmados. Dois achados importantes:
+1. **Corrigido:** `nao_comprovado` também sai quando a base **tem** registro cobrindo a data, mas com resultado Pendente, Reparado ou vazio. Nesse caso, o bloco mandava dizer que a consulta "não localizou" verificação, e o órgão desmentiria. Agora há uma instrução própria ("a base registra verificação cobrindo a data, sem resultado de aprovação"), com o mesmo pedido de exibição. O teste antigo que fixava o comportamento errado foi corrigido. Resultado: 29 testes Python.
+2. **Registrado, não corrigido:** as regras do radar só entram quando há bloco. Com a chave ligada, um caso `nao_aplicavel` ou comprovado vai sem a trava de base legal, como antes da feature. Isso virou condição obrigatória na pendência de ligar a chave.
+
+Oito achados menores ficaram para depois, sem correção:
+- o "capturada em" sai pelo dia UTC, então um snapshot feito depois das 21h de Brasília aparece com a data do dia seguinte;
+- três formatos de dado que hoje são impossíveis (objetos que não são dict, `avisos` como string, `reprovado` sem certificado);
+- um reenvio que só corrige o nº do medidor é no-op pelo `dup_guard` e não reverifica;
+- um reenvio com o caso em `generating` reescreve a auditoria depois de o pipeline já ter lido;
+- o bloco é calculado três vezes por caso;
+- `nullif` não pega número só com espaços;
+- o equipamento só aparece no bloco do `reprovado`, e não em todos como a spec previa.
+
