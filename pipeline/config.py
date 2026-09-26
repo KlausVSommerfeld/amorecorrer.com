@@ -40,7 +40,10 @@ class Settings(BaseSettings):
     # DeepSeek OpenAI-compatible API
     deepseek_api_key: str = ""
     deepseek_api_base: str = "https://api.deepseek.com"
-    deepseek_model: str = "deepseek-chat"
+    # deepseek-flash por decisão do Klaus (25/09/2026), até a implementação do
+    # OCR das notificações — reavaliar ali. O deepseek-chat foi aposentado pela
+    # DeepSeek em 24/07/2026. O raciocínio vai desligado em prompt.py.
+    deepseek_model: str = "deepseek-flash"
 
     # Fase 5 do radar: com True, a verificação do medidor entra no prompt como
     # bloco + regras de redação. Fica False até a calibração (Fase 0.5) ser

@@ -61,7 +61,7 @@ Quatro runtimes independentes encadeados por um `case_id`:
 | `src/` | React 18 + Vite + Tailwind/shadcn | landing, formulário, páginas legais |
 | `supabase/functions/` | Deno | `create-checkout-session`, `stripe-webhook`, `form-submit` |
 | `server/` | Express + TS | API `/internal/*` — **único** caminho do pipeline até o Postgres |
-| `pipeline/` | FastAPI + worker async | DeepSeek → PDF (reportlab) → Storage → SMTP |
+| `pipeline/` | FastAPI + worker async | DeepSeek (`deepseek-flash`) → PDF (reportlab) → Storage → SMTP |
 
 ### Fluxo ponta a ponta
 
@@ -127,6 +127,7 @@ Todo par de cor em uso passa WCAG AA (verificado numericamente). Ao introduzir c
 - **A Edge não alcança um pipeline que escute no WSL.** O container resolve `host.docker.internal` para o host **Windows**; um uvicorn rodando na distro WSL não está lá, e o dispatch morre com `connection closed before message completed`. Para exercitar o pipeline sem isso, POSTe o payload assinado direto em `/hooks/dispatch`.
 - **`npx supabase db reset` pode falhar no *pull* da imagem** sob WSL (`error getting credentials`, helper do Docker). Se ele abortar no meio, o schema fica derrubado **e o `storage-api` não reaplica as migrations internas dele** — `storage.buckets` perde metade das colunas e a migration do bucket falha com `column "public" of relation "buckets" does not exist`. Não é defeito da migration: reinicie o container do storage. E **nunca silencie a saída de um `db reset`**; foi assim que uma falha passou despercebida.
 - **O banco local não tem histórico de migrations** (`supabase_migrations.schema_migrations` vazia): `npx supabase migration up --local` tenta reaplicar a baseline e falha em `relation "stripe_sessions" already exists`, sem mudar nada. Para aplicar só uma migration nova: `docker exec -i supabase_db_<ref> psql -U postgres -d postgres -v ON_ERROR_STOP=1 -f - < supabase/migrations/<arquivo>.sql`.
+- **O modelo é `deepseek-flash` com raciocínio DESLIGADO** (`extra_body={"thinking": {"type": "disabled"}}` em `pipeline/prompt.py`). O flash vem com raciocínio **ligado** por padrão, e com `max_tokens=1200` ele gasta tudo pensando: a peça volta **vazia** (medido em 25/09/2026). Resposta vazia ou cortada (`finish_reason == "length"`) lança erro e o caso vai a `failed`, em vez de mandar PDF sem peça ao cliente. O `deepseek-chat` foi aposentado pela DeepSeek em 24/07/2026 — a API o redirecionava para o próprio flash sem raciocínio. Escolha do Klaus "até o OCR" das notificações.
 - **O Express não sobe com `npm run dev --prefix server` no WSL**: `server/node_modules` foi instalado pelo Windows (esbuild `win32-x64`) e o `tsx` morre com `Host version … does not match binary version`. Sem reinstalar nada: `npm run build --prefix server` (tsc, independe de plataforma) e `npm start` de dentro de `server/`.
 - **O Vite no WSL pode não ver edições em `/mnt/c`** e seguir servindo o módulo antigo sem aviso. Se um teste no navegador contradiz o código, confira o que está sendo servido (`curl localhost:8080/src/...`) e reinicie o `npm run dev`.
 - `.gitattributes` normaliza line endings; diffs no Windows vêm cheios de avisos CRLF — ruído esperado, não é mudança real.

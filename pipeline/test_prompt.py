@@ -7,7 +7,16 @@ Nunca `unittest discover`: test_resend_smtp.py manda e-mail real ao ser importad
 
 import unittest
 
-from prompt import CAMPOS_INTERNOS, REGRAS_RADAR, SYSTEM_PROMPT_BASE, build_case_context, system_prompt
+from prompt import (
+    CAMPOS_INTERNOS,
+    REGRAS_RADAR,
+    SYSTEM_PROMPT_BASE,
+    RespostaDoModeloInvalida,
+    argumentos_da_chamada,
+    build_case_context,
+    system_prompt,
+    texto_da_resposta,
+)
 from verificacao import INSTRUCAO_EXIBICAO
 
 # Com a chave do radar desligada (ou sem bloco), o system prompt é só a base.
@@ -65,6 +74,44 @@ class TestPromptBase(unittest.TestCase):
             "em português do Brasil. Seja formal, claro e cite fatos do formulário. "
             "Não invente dados ausentes"))
         self.assertIn("Produza 2 a 4 parágrafos.", SYSTEM_PROMPT_BASE)
+
+
+class TestChamadaAoModelo(unittest.TestCase):
+    # Rodada real de 25/09/2026: o deepseek-flash vem com raciocínio LIGADO por
+    # padrão, e com max_tokens=1200 gastou os 1200 tokens pensando — a peça
+    # voltou vazia, nos dois casos testados. O deepseek-chat de antes já era
+    # o flash sem raciocínio (a API o redirecionava).
+    def test_raciocinio_desligado_explicitamente(self):
+        args = argumentos_da_chamada("deepseek-flash", "SISTEMA", "CONTEXTO")
+        self.assertEqual(args["extra_body"], {"thinking": {"type": "disabled"}})
+
+    def test_mantem_modelo_limite_e_temperatura(self):
+        args = argumentos_da_chamada("deepseek-flash", "SISTEMA", "CONTEXTO")
+        self.assertEqual(args["model"], "deepseek-flash")
+        self.assertEqual(args["max_tokens"], 1200)
+        self.assertEqual(args["temperature"], 0.4)
+        self.assertEqual(args["messages"], [
+            {"role": "system", "content": "SISTEMA"},
+            {"role": "user", "content": "CONTEXTO"},
+        ])
+
+    def test_resposta_completa_passa(self):
+        self.assertEqual(texto_da_resposta("  Texto da peça.  ", "stop"), "Texto da peça.")
+
+    def test_resposta_vazia_nunca_vira_peca(self):
+        # Antes virava "(resposta vazia do modelo)" — no PDF e no e-mail do cliente.
+        for vazio in (None, "", "   \n "):
+            with self.subTest(conteudo=vazio):
+                with self.assertRaises(RespostaDoModeloInvalida):
+                    texto_da_resposta(vazio, "stop")
+
+    def test_resposta_cortada_nunca_vira_peca(self):
+        with self.assertRaises(RespostaDoModeloInvalida):
+            texto_da_resposta("Excelentíssimo Senhor, venho apresentar", "length")
+
+    def test_erro_e_runtime_error(self):
+        # O worker já trata RuntimeError: caso vai a failed, sem e-mail ao cliente.
+        self.assertTrue(issubclass(RespostaDoModeloInvalida, RuntimeError))
 
 
 class TestChaveDesligada(unittest.TestCase):

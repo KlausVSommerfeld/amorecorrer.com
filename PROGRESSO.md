@@ -1290,3 +1290,42 @@ O `build_pdf_bytes` passou a respeitar as quebras de linha simples.
 
 Sem deploy: o pipeline não roda em produção.
 
+## Sessão de 25/09/2026 — Spike: ferramenta de consulta ao CTB (sem código)
+
+**Pergunta:** dar ao DeepSeek uma ferramenta que consulta o CTB oficial resolve as citações de base legal sem conferência?
+
+**Resposta:** é viável, mas a ferramenta sozinha não trava nada. Ela dá ao modelo a *possibilidade* de conferir, não a obrigação, e a Fase 5 mostrou que ele desobedece instrução. A trava de verdade é a ferramenta **mais** uma conferência em código de que todo artigo citado foi lido naquela conversa. Norma fora do CTB (Código Penal, resolução do CONTRAN) a ferramenta não cobre.
+
+**O arquivo do CTB serve.** `CTB-compilado_files/L9503Compilado.html` é a versão compilada do Planalto:
+- 389 artigos, **só a redação vigente** (o texto riscado soma cerca de 370 caracteres, quase todo anotações);
+- anotações de redação, revogação e veto em cada dispositivo;
+- mudanças por Medida Provisória só nos arts. 139-A e 268-A.
+
+É uma página salva pelo navegador, com scripts de extensão misturados, então deve virar um índice limpo e versionado antes de ser usada. Conferido de passagem: o art. 90 citado pela IA na sessão anterior existe e foi bem aplicado.
+
+**Achado mais urgente que a pergunta:** o `deepseek-chat` do pipeline foi **aposentado** pela DeepSeek ("fully retired and inaccessible after Jul 24th, 2026"). A API lista só `deepseek-flash` e `deepseek-v4-pro`, e o nome antigo ainda responde por um redirecionamento sem garantia. Os dois modelos novos suportam ferramentas e vêm com *thinking* ligado por padrão. Nesse modo, `temperature` não tem efeito, e com ferramentas o `reasoning_content` precisa ser devolvido em toda rodada, senão a API responde 400. Virou pendência de lançamento.
+
+**Fontes:** api-docs.deepseek.com, nas páginas `guides/tool_calls`, `guides/thinking_mode`, `quick_start/pricing` e `news/news260424`, mais `GET /models` com a chave do projeto.
+
+## Sessão de 25/09/2026 — O pipeline passa ao deepseek-flash, com raciocínio desligado
+
+**Feito:** o modelo passou a ser `deepseek-flash` por decisão do Klaus, válida "até o OCR" das notificações. A mudança está no padrão de `config.py`, nos dois `.env*.example` e na linha `DEEPSEEK_MODEL` do `.env` e do `.env.production` locais. A chamada foi extraída para funções puras em `pipeline/prompt.py` (`argumentos_da_chamada`, `texto_da_resposta`) e passou a desligar o raciocínio explicitamente.
+
+**Por que o raciocínio desligado, com dado:**
+
+| Chamada | Resultado |
+|---|---|
+| `deepseek-chat` (como era) | a API respondeu como **`deepseek-flash`** sem raciocínio, então o pipeline já rodava nele |
+| `deepseek-flash` no padrão (raciocínio ligado) | os 1.200 tokens de `max_tokens` foram **todos para o raciocínio**: `finish_reason: length` e **peça vazia**, nos dois casos |
+| `deepseek-flash` com raciocínio desligado | peça completa em 3 a 4 s, igual à de antes |
+
+**Um defeito antigo fechado de passagem:** quando a resposta vinha vazia, o worker punha o texto "(resposta vazia do modelo)" no PDF e o mandava por e-mail ao cliente. Agora resposta vazia ou cortada lança `RespostaDoModeloInvalida` (um `RuntimeError`), e o caso vai a `failed` pelo caminho que já existia, sem e-mail.
+
+**Verificação:**
+- 59 testes Python (6 novos, sobre a chamada ao modelo);
+- chamada real pelo próprio `call_deepseek` do worker, com o modelo lido da configuração, nos dois casos, com os PDFs abertos: peça inteira, sem markdown, terminando no pedido e com o fecho do código.
+
+**Arquivos:** `pipeline/prompt.py`, `pipeline/test_prompt.py`, `pipeline/worker.py`, `pipeline/config.py`, `.env.example`, `.env.production.example`, `CLAUDE.md` e `PENDENCIAS.md`, mais o `.env` e o `.env.production` locais, que estão fora do git.
+
+**Ficou de fora:** reavaliar o modelo na Fase 7 (OCR), que ficou registrado no `PENDENCIAS.md`. O `deepseek-flash` aceita imagem.
+
