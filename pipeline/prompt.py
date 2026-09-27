@@ -27,7 +27,7 @@ SYSTEM_PROMPT_BASE = (
 )
 
 # Só entram com RADAR_TESE_ATIVA ligada. Base legal conferida no texto oficial
-# do CTB (CTB-compilado_files/L9503Compilado.html); o número da resolução do
+# do CTB (CTB-compilado_files/l9503compilado.htm → saida/ctb.json); o número da resolução do
 # CONTRAN sobre verificação metrológica NÃO foi confirmado e fica proibido.
 #
 # O texto do art. 280 vai TRANSCRITO: na primeira rodada real (24/09/2026), o

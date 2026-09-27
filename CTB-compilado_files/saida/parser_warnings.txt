@@ -1,0 +1,6 @@
+marcador vazio removido: art-147.par-1-A
+marcador vazio removido: art-147.par-1-A.inc-I
+marcador vazio removido: art-147.par-1-A.inc-II
+definição separada: CALÇADA | CAMINHÃO-TRATOR
+definição separada: PESO BRUTO TOTAL COMBINADO | PISCA-ALERTA
+definição separada: RODOVIA | SEMI-REBOQUE

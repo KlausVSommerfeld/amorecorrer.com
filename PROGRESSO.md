@@ -1329,3 +1329,23 @@ Sem deploy: o pipeline não roda em produção.
 
 **Ficou de fora:** reavaliar o modelo na Fase 7 (OCR), que ficou registrado no `PENDENCIAS.md`. O `deepseek-flash` aceita imagem.
 
+## Sessão de 26/09/2026 — Spike: contexto pronto × ferramenta de consulta ao CTB
+
+**Material novo, feito pelo Klaus fora da sessão:** `CTB-compilado_files/` agora tem um parser (`ctb_parser.py`), uma consulta que só usa a biblioteca padrão (`consulta.py`) e a pasta `saida/`, com `ctb.json` versionado por `sha256` e data de obtenção (24/09/2026): 391 artigos, 364 vigentes e 2.066 dispositivos, cada um com status. Os 41 testes do parser passam. A consulta por dispositivo é exata. A `busca` procura o trecho exato, na ordem dos artigos, e **não serve para descoberta**: "sinalização insuficiente" não acha nada. Tudo isso está **fora do git**, e o `L9503Compilado.html` versionado aparece como apagado.
+
+**O teste (código descartável, fora do projeto):** 6 casos (218, I; 218, III; 208; 230, V; 165-A; 181, XVII), com justificativas realistas, no `deepseek-flash` sem raciocínio. Os dois caminhos tinham a mesma proibição de citar outras leis, resoluções e jurisprudência:
+- **A**: `contexto_peticao`, que manda cerca de 7 mil tokens de base normativa (o enquadramento, o art. 90 e o rito, arts. 257 e 280 a 290), numa só chamada;
+- **B**: a ferramenta `ler_dispositivo`, que o modelo consulta antes de redigir.
+
+**Resultado, nas 12 peças:**
+- **nenhum artigo inexistente, nenhuma lei externa e nenhuma citação deturpada**. Os 4 alertas do verificador eram remissões feitas dentro dos próprios textos entregues (208 → 44-A, 165-A → 277 e 270) e uma citação de caput mais inciso;
+- o B **nunca entrou em repetição**: sempre uma rodada de consulta, com vários dispositivos pedidos de uma vez;
+- a diferença está na **substância**, e favorece o A:
+  - o **art. 90** (sinalização insuficiente) apareceu nos três casos que dependiam dele no A (218, I; 208; 181, XVII) e em **nenhum** no B, porque o modelo não se lembrou de consultá-lo;
+  - no 218, III, com a notificação 47 dias depois da infração, o A citou o **art. 281, § 1º, II** com o texto vigente (renumerado pela Lei 14.304/2022). O B pediu "281", recebeu só o caput e **perdeu o argumento do prazo**.
+- o custo é irrelevante nos dois: cerca de US$ 0,003 por peça no A e US$ 0,0017 no B, no preço de pico.
+
+**Conclusão:** para a trava de base legal, o contexto pronto supera a ferramenta. A descoberta pela ferramenta depende da memória do modelo e da granularidade da consulta, e foi aí que ela falhou. A conferência em código continua necessária, e precisa aceitar remissões feitas dentro dos textos entregues. São 12 amostras, uma rodada cada, e o mérito jurídico das peças é avaliação do Klaus.
+
+**Versionamento, no mesmo dia:** o Klaus confirmou que a troca foi intencional, e a pasta `CTB-compilado_files/` entrou no git (parser, `consulta.py`, `saida/`, testes e o `l9503compilado.htm` fonte, no lugar do `L9503Compilado.html` antigo). A fonte tem 11.936 finais CRLF e o `.gitattributes` normaliza tudo para LF. Commitada assim, ela perderia o `sha256` registrado em `ctb.json → meta` sem ninguém perceber. Ganhou a regra `-text`, e o arquivo gravado no git foi conferido: tem o mesmo `sha256` (`e8b6414d…`). De passagem, o texto do art. 280, V e § 2º que o prompt do radar transcreve confere literalmente com a base nova.
+

@@ -8,7 +8,7 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 - `#N` é o número estável da pendência em `PROGRESSO.md › Pendências e decisões em aberto`. Item sem número não tem entrada lá.
 - Sem explicação aqui: uma linha por item.
 
-*Atualizado em 2026-09-25.*
+*Atualizado em 2026-09-26.*
 
 ---
 
@@ -55,7 +55,8 @@ Plano: `PLANO-verificacao-radar-inmetro.md`. Fases 0, 1, 3 entregues; Fase 2 só
   - *Decisão do Klaus:* com vigência comprovada, o DeepSeek ainda pede o certificado por conta própria ao ver `medidor_numero_serie` no formulário. Omitir os campos `medidor_*` do contexto nesse caso? → Sessão de 24/09/2026 (Fase 5)
 - **Peça endereçada ao destinatário errado** — numa rodada real, uma *defesa prévia* saiu endereçada à JARI, que só julga recurso. O prompt não diz a quem cada estágio (`especie_documento`) se dirige. → Sessão de 25/09/2026 (peça limpa)
 - **Base legal sem conferência fora do radar** — a IA citou o art. 24 do Código Penal (estado de necessidade) e o art. 90 do CTB sem que ninguém os tenha conferido (o 90 foi conferido depois: existe e foi bem aplicado). Mesma solução da trava neutra pendente do radar, mas vale para todo caso. → Sessão de 25/09/2026 (peça limpa)
-  - Spike feito: ferramenta de consulta ao CTB (`ler_artigo`/`buscar_ctb`) é viável — o arquivo do Planalto tem 389 artigos, só a redação vigente — mas **sozinha não trava**: precisa de conferência em código de que todo artigo citado foi lido. Próximo passo: teste com código descartável (5–10 casos, no `deepseek-flash`). Com ferramentas, o `reasoning_content` precisa voltar em toda rodada se o raciocínio estiver ligado — hoje está desligado. → Sessão de 25/09/2026 (spike da ferramenta do CTB)
+  - Spikes feitos (25–26/09): a comparação real favoreceu o **contexto pronto** (`contexto_peticao` do `CTB-compilado_files/consulta.py`) sobre a ferramenta `ler_dispositivo`. Próximo passo: desenhar a integração no pipeline — contexto por caso + conferência em código das citações (aceitando remissões feitas dentro dos textos entregues). → Sessão de 26/09/2026 (spike: contexto × ferramenta)
+  - Não usar a "Res. 798/2020" citada no README do parser sem conferência (risco 3 do plano do radar). → Sessão de 26/09/2026 (spike: contexto × ferramenta)
 - *Menor:* o CPF aparece só com dígitos no corpo da peça quando o modelo o repete ("11144477735"); o fecho já formata. → Sessão de 25/09/2026 (peça limpa)
 - **Fase 6 — observabilidade** — alerta de `record_count`, frescor como métrica (fonte congelada), view `radar_revisao_pendente`, métricas mensais. → Sessão de 21/09/2026 · plano §6
 - **Fase 7 — OCR da notificação** — só abrir issue; fora desta branch. → plano §6
