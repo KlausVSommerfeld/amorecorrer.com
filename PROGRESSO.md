@@ -1398,3 +1398,14 @@ Sete das oito passaram de primeira. Os PDFs do código "7455-0" e do caso provoc
 - as resoluções do CONTRAN;
 - os dois achados de tese.
 
+**Revisão final (revisor novo, no modelo mais capaz):** nenhum achado crítico. O revisor testou as **1.507 bases possíveis** contra o `ctb.json` real. Cinco achados foram corrigidos numa passada, cada um com teste que falhou antes:
+1. **Palavras comuns tratadas como norma.** "Rua da Constituição", "baixa resolução" da foto do radar e "portaria" do condomínio gastavam o único refazer e podiam levar um caso pago a `failed`. Agora cada norma exige contexto jurídico.
+2. **A base citava artigos que não trazia.** O próprio rito cita os arts. 256, 258 e 259 (a decadência do art. 282), e as 1.507 bases recusavam uma citação fiel de si mesmas. As remissões passaram a ser seguidas **até o fim**, e não um nível só como a spec previa. Medido antes: mediana de 25 artigos e cerca de 33 mil caracteres por base, máximo de 45, com teto de 40 extras. A correção revelou que a base e a conferência tinham extratores de citação diferentes (um lia só o primeiro número de "arts. 44, 45 e 70"). Agora há **um extrator só**.
+3. **Normas proibidas que passavam:** "Res. 798/2020" (justamente a que a spec proíbe), MBFT, STJ/REsp, TJ, acórdão, Lei Complementar.
+4. **Número com unidade lido como artigo:** "art. 218, 20% acima" virava art. 20.
+5. **Alertas com dado pessoal no log:** agora vão só a contagem e um hash.
+
+Dois defeitos novos apareceram durante a própria correção e também foram fechados: "art. 999 **do Código de Trânsito**" escapava da conferência, e o trecho recusado saía cortado ("art. 5º, LV, da Constitui") no pedido de correção. Na re-verificação real, os 8 casos passaram de primeira.
+
+**Verificação final:** 97 testes Python e `radar:test` 49/49.
+
