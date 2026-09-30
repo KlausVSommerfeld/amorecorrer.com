@@ -50,6 +50,11 @@ class Settings(BaseSettings):
     # assinada — ligar é mudar a variável, sem deploy de código.
     radar_tese_ativa: bool = False
 
+    # Base normativa do CTB (parser + consulta do Klaus). O pipeline lê direto
+    # de lá — uma fonte da verdade, sem cópia. No contêiner, aponta para a
+    # pasta copiada pelo Dockerfile.
+    ctb_dir: str = str(REPO_ROOT / "CTB-compilado_files")
+
     # Runtime mode: production requires SMTP; development/test may skip email.
     pipeline_env: str = "development"
 

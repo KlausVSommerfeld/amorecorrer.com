@@ -11,16 +11,20 @@ from prompt import (
     CAMPOS_INTERNOS,
     REGRAS_RADAR,
     SYSTEM_PROMPT_BASE,
+    REGRA_BASE_LEGAL,
+    REGRA_SEM_ENQUADRAMENTO,
     RespostaDoModeloInvalida,
     argumentos_da_chamada,
     build_case_context,
+    pedido_de_correcao,
     system_prompt,
     texto_da_resposta,
 )
 from verificacao import INSTRUCAO_EXIBICAO
 
-# Com a chave do radar desligada (ou sem bloco), o system prompt é só a base.
-PROMPT_ANTIGO = SYSTEM_PROMPT_BASE
+# Sem bloco do radar, o system prompt é a base mais a regra de base legal —
+# que entra em toda peça desde a integração do CTB (29/09/2026).
+PROMPT_ANTIGO = SYSTEM_PROMPT_BASE + REGRA_BASE_LEGAL
 
 CASO = {
     "id": "uuid",
@@ -112,6 +116,41 @@ class TestChamadaAoModelo(unittest.TestCase):
     def test_erro_e_runtime_error(self):
         # O worker já trata RuntimeError: caso vai a failed, sem e-mail ao cliente.
         self.assertTrue(issubclass(RespostaDoModeloInvalida, RuntimeError))
+
+
+class TestBaseLegalNoPrompt(unittest.TestCase):
+    def test_regra_de_base_legal_em_toda_peca(self):
+        self.assertIn("exclusivamente a base normativa do CTB", REGRA_BASE_LEGAL)
+        self.assertIn("Não cite outras leis, códigos, resoluções, portarias nem jurisprudência", REGRA_BASE_LEGAL)
+        self.assertEqual(system_prompt(False), SYSTEM_PROMPT_BASE + REGRA_BASE_LEGAL)
+
+    def test_sem_enquadramento_proibe_o_artigo_da_infracao(self):
+        self.assertIn("não cite o artigo da infração", REGRA_SEM_ENQUADRAMENTO)
+        self.assertEqual(system_prompt(False, sem_enquadramento=True),
+                         SYSTEM_PROMPT_BASE + REGRA_BASE_LEGAL + REGRA_SEM_ENQUADRAMENTO)
+
+    def test_ordem_com_radar(self):
+        v = CASO["verificacao_medidor"]
+        self.assertEqual(system_prompt(True, v, sem_enquadramento=True),
+                         SYSTEM_PROMPT_BASE + REGRA_BASE_LEGAL + REGRA_SEM_ENQUADRAMENTO + REGRAS_RADAR)
+
+    def test_pedido_de_correcao_lista_cada_recusa(self):
+        class R:
+            def __init__(self, trecho, motivo):
+                self.trecho, self.motivo = trecho, motivo
+        texto = pedido_de_correcao([R("art. 24 do Código Penal", "norma fora do CTB"),
+                                    R("art. 29", "não consta da base normativa fornecida")])
+        self.assertIn("Reescreva a peça inteira", texto)
+        self.assertIn("'art. 24 do Código Penal' (norma fora do CTB)", texto)
+        self.assertIn("'art. 29' (não consta da base normativa fornecida)", texto)
+
+    def test_historico_vai_depois_da_primeira_mensagem(self):
+        hist = [{"role": "assistant", "content": "PECA"}, {"role": "user", "content": "CORRIJA"}]
+        args = argumentos_da_chamada("deepseek-flash", "S", "C", hist)
+        self.assertEqual([m["role"] for m in args["messages"]], ["system", "user", "assistant", "user"])
+        self.assertEqual(args["extra_body"], {"thinking": {"type": "disabled"}})
+        self.assertEqual(argumentos_da_chamada("deepseek-flash", "S", "C")["messages"][-1],
+                         {"role": "user", "content": "C"})
 
 
 class TestChaveDesligada(unittest.TestCase):

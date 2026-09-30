@@ -1329,3 +1329,83 @@ Sem deploy: o pipeline não roda em produção.
 
 **Ficou de fora:** reavaliar o modelo na Fase 7 (OCR), que ficou registrado no `PENDENCIAS.md`. O `deepseek-flash` aceita imagem.
 
+## Sessão de 26/09/2026 — Spike: contexto pronto × ferramenta de consulta ao CTB
+
+**Material novo, feito pelo Klaus fora da sessão:** `CTB-compilado_files/` agora tem um parser (`ctb_parser.py`), uma consulta que só usa a biblioteca padrão (`consulta.py`) e a pasta `saida/`, com `ctb.json` versionado por `sha256` e data de obtenção (24/09/2026): 391 artigos, 364 vigentes e 2.066 dispositivos, cada um com status. Os 41 testes do parser passam. A consulta por dispositivo é exata. A `busca` procura o trecho exato, na ordem dos artigos, e **não serve para descoberta**: "sinalização insuficiente" não acha nada. Tudo isso está **fora do git**, e o `L9503Compilado.html` versionado aparece como apagado.
+
+**O teste (código descartável, fora do projeto):** 6 casos (218, I; 218, III; 208; 230, V; 165-A; 181, XVII), com justificativas realistas, no `deepseek-flash` sem raciocínio. Os dois caminhos tinham a mesma proibição de citar outras leis, resoluções e jurisprudência:
+- **A**: `contexto_peticao`, que manda cerca de 7 mil tokens de base normativa (o enquadramento, o art. 90 e o rito, arts. 257 e 280 a 290), numa só chamada;
+- **B**: a ferramenta `ler_dispositivo`, que o modelo consulta antes de redigir.
+
+**Resultado, nas 12 peças:**
+- **nenhum artigo inexistente, nenhuma lei externa e nenhuma citação deturpada**. Os 4 alertas do verificador eram remissões feitas dentro dos próprios textos entregues (208 → 44-A, 165-A → 277 e 270) e uma citação de caput mais inciso;
+- o B **nunca entrou em repetição**: sempre uma rodada de consulta, com vários dispositivos pedidos de uma vez;
+- a diferença está na **substância**, e favorece o A:
+  - o **art. 90** (sinalização insuficiente) apareceu nos três casos que dependiam dele no A (218, I; 208; 181, XVII) e em **nenhum** no B, porque o modelo não se lembrou de consultá-lo;
+  - no 218, III, com a notificação 47 dias depois da infração, o A citou o **art. 281, § 1º, II** com o texto vigente (renumerado pela Lei 14.304/2022). O B pediu "281", recebeu só o caput e **perdeu o argumento do prazo**.
+- o custo é irrelevante nos dois: cerca de US$ 0,003 por peça no A e US$ 0,0017 no B, no preço de pico.
+
+**Conclusão:** para a trava de base legal, o contexto pronto supera a ferramenta. A descoberta pela ferramenta depende da memória do modelo e da granularidade da consulta, e foi aí que ela falhou. A conferência em código continua necessária, e precisa aceitar remissões feitas dentro dos textos entregues. São 12 amostras, uma rodada cada, e o mérito jurídico das peças é avaliação do Klaus.
+
+**Versionamento, no mesmo dia:** o Klaus confirmou que a troca foi intencional, e a pasta `CTB-compilado_files/` entrou no git (parser, `consulta.py`, `saida/`, testes e o `l9503compilado.htm` fonte, no lugar do `L9503Compilado.html` antigo). A fonte tem 11.936 finais CRLF e o `.gitattributes` normaliza tudo para LF. Commitada assim, ela perderia o `sha256` registrado em `ctb.json → meta` sem ninguém perceber. Ganhou a regra `-text`, e o arquivo gravado no git foi conferido: tem o mesmo `sha256` (`e8b6414d…`). De passagem, o texto do art. 280, V e § 2º que o prompt do radar transcreve confere literalmente com a base nova.
+
+## Sessão de 29/09/2026 — Base legal do CTB em toda peça
+
+**Feito:** toda peça passa a receber o texto oficial dos artigos do CTB que pode citar, e uma conferência em código impede que uma citação fora dessa base chegue ao PDF. As peças novas:
+- `pipeline/base_legal.py` lê `CTB-compilado_files/` (o parser e a consulta do Klaus) pelo caminho `CTB_DIR` e monta, a partir do `amparo_legal`, o dispositivo enquadrado, as remissões dele, o art. 61 no 218 (única entrada da tabela de extras) e o rito (arts. 90, 257 e 280 a 290);
+- `pipeline/conferencia.py` recusa artigo fora da base e norma externa;
+- o worker refaz a peça uma vez e, se ela for recusada de novo, leva o caso a `failed`.
+
+Spec: `docs/superpowers/specs/2026-09-29-base-legal-ctb-design.md`. Plano: `docs/superpowers/plans/2026-09-29-base-legal-ctb.md`.
+
+**Decisões do Klaus:**
+- contexto pronto, e não ferramenta (pelo teste de 26/09);
+- refazer uma vez;
+- amparo não reconhecido recebe só o rito;
+- extras só com aprovação dele.
+
+**Três coisas que a execução ensinou:**
+1. **O "Sim" no `ctb.json`.** Uma palavra digitada por engano no início do arquivo o tornou JSON inválido, fora da sessão. Restaurado pelo git, virou teste: base corrompida falha ao carregar com mensagem clara, e a falha não fica em cache (corrigido o arquivo, o próximo caso carrega).
+2. **Um defeito no regex do próprio plano.** O sufixo de artigo aceitava espaço e quebra de linha antes do hífen: "art. 270" seguido de uma linha "- Origem…" virava o inexistente "270-O", e a remissão do 165-A sumia. Na conferência, "art. 280 - A infração" virava "280-A". O sufixo passou a ser colado ao número, e dois testes fixam o comportamento. O segundo foi confrontado com o regex original, que recusava o caso como "não existe no CTB".
+3. **A base cita outras leis nas notas de redação.** Ela traz "(Redação dada pela Lei nº 11.334, de 2006)", e repetir isso não pode ser tratado como lei externa. A conferência aceita "Lei nº X" quando esse X aparece na própria base.
+
+**Verificação real** (`deepseek-flash` e as funções do worker, até o PDF, com 8 casos):
+
+| Caso | Resultado |
+|---|---|
+| 218, I | enquadramento reconhecido; arts. 218, 61, 90, 280 e 281 citados |
+| 218, III | art. 281, § 1º, II (prazo de 30 dias) com o texto literal |
+| 208 | art. 90 |
+| 230, V | arts. 230 e 281 |
+| 165-A | arts. 165-A e 277 (remissão) |
+| 181, XVII | art. 90 |
+| código "7455-0" | sem enquadramento; não cita o art. 218; defesa pelo 90, 280, 281, 281-A e 285 |
+| provocado (pede Código Penal e Constituição) | recusado na primeira (Código Penal, Constituição), aprovado na segunda (2 chamadas) |
+
+Sete das oito passaram de primeira. Os PDFs do código "7455-0" e do caso provocado foram abertos: estão limpos, com o fecho montado pelo código.
+
+**Dois achados de tese, fora do alcance da conferência** (ela olha citações), os dois para decisão do Klaus no `PENDENCIAS.md`:
+- **a peça argumentou contra o cliente**: com 97 km/h num limite de 80, sustentou que o caso "se amolda ao inciso II" do art. 218, que é mais grave. O formulário não coleta a velocidade *considerada* (com a tolerância);
+- **a tese de "estado de necessidade" continuou no texto** depois que o Código Penal foi recusado, agora sem citar norma.
+
+**Também corrigido:** o plano do #11 (Dockerfile copia todos os `.py` do pipeline, menos os de teste, e a base do CTB com `CTB_DIR=/app/ctb`; `DEEPSEEK_MODEL=deepseek-flash` no `.env.vps`).
+
+**Verificação:** 87 testes Python (23 novos de base, conferência e refazer; 5 novos de prompt), `radar:test` 49/49, worker compilando.
+
+**Ficou de fora:**
+- a tabela de códigos de enquadramento;
+- a ferramenta de consulta (caminho B);
+- as resoluções do CONTRAN;
+- os dois achados de tese.
+
+**Revisão final (revisor novo, no modelo mais capaz):** nenhum achado crítico. O revisor testou as **1.507 bases possíveis** contra o `ctb.json` real. Cinco achados foram corrigidos numa passada, cada um com teste que falhou antes:
+1. **Palavras comuns tratadas como norma.** "Rua da Constituição", "baixa resolução" da foto do radar e "portaria" do condomínio gastavam o único refazer e podiam levar um caso pago a `failed`. Agora cada norma exige contexto jurídico.
+2. **A base citava artigos que não trazia.** O próprio rito cita os arts. 256, 258 e 259 (a decadência do art. 282), e as 1.507 bases recusavam uma citação fiel de si mesmas. As remissões passaram a ser seguidas **até o fim**, e não um nível só como a spec previa. Medido antes: mediana de 25 artigos e cerca de 33 mil caracteres por base, máximo de 45, com teto de 40 extras. A correção revelou que a base e a conferência tinham extratores de citação diferentes (um lia só o primeiro número de "arts. 44, 45 e 70"). Agora há **um extrator só**.
+3. **Normas proibidas que passavam:** "Res. 798/2020" (justamente a que a spec proíbe), MBFT, STJ/REsp, TJ, acórdão, Lei Complementar.
+4. **Número com unidade lido como artigo:** "art. 218, 20% acima" virava art. 20.
+5. **Alertas com dado pessoal no log:** agora vão só a contagem e um hash.
+
+Dois defeitos novos apareceram durante a própria correção e também foram fechados: "art. 999 **do Código de Trânsito**" escapava da conferência, e o trecho recusado saía cortado ("art. 5º, LV, da Constitui") no pedido de correção. Na re-verificação real, os 8 casos passaram de primeira.
+
+**Verificação final:** 97 testes Python e `radar:test` 49/49.
+

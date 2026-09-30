@@ -1,0 +1,887 @@
+[
+ {
+  "id": "anexo-I.acostamento",
+  "termo": "ACOSTAMENTO",
+  "definicao": "parte da via diferenciada da pista de rolamento destinada à parada ou estacionamento de veículos, em caso de emergência, e à circulação de pedestres e bicicletas, quando não houver local apropriado para esse fim.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.agente-da-autoridade-de-transito",
+  "termo": "AGENTE DA AUTORIDADE DE TRÂNSITO",
+  "definicao": "agente de trânsito e policial rodoviário federal que atuam na fiscalização, no controle e na operação de trânsito e no patrulhamento, competentes para a lavratura do auto de infração e para os procedimentos dele decorrentes, incluídos o policial militar ou os agentes referidos no art. 25-A deste Código, quando designados pela autoridade de trânsito com circunscrição sobre a via, mediante convênio, na forma prevista neste Código.",
+  "notas": [
+   {
+    "texto": "(Redação dada pela Lei nº 14.229, de 2021)",
+    "tipo": "redacao",
+    "url": "../_Ato2019-2022/2021/Lei/L14229.htm#art3",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.agente-de-transito",
+  "termo": "AGENTE DE TRÂNSITO",
+  "definicao": "servidor civil efetivo de carreira do órgão ou entidade executivos de trânsito ou rodoviário, com as atribuições de educação, operação e fiscalização de trânsito e de transporte no exercício regular do poder de polícia de trânsito para promover a segurança viária nos termos da Constituição Federal.",
+  "notas": [
+   {
+    "texto": "(Incluído pela Lei nº 14.229, de 2021)",
+    "tipo": "inclusao",
+    "url": "../_Ato2019-2022/2021/Lei/L14229.htm#art3",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.ar-alveolar",
+  "termo": "AR ALVEOLAR",
+  "definicao": "ar expirado pela boca de um indivíduo, originário dos alvéolos pulmonares.",
+  "notas": [
+   {
+    "texto": "(Incluído pela Lei nº 12.760, de 2012)",
+    "tipo": "inclusao",
+    "url": "../_Ato2011-2014/2012/Lei/L12760.htm#art2",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.area-de-espera",
+  "termo": "ÁREA DE ESPERA",
+  "definicao": "área delimitada por 2 (duas) linhas de retenção, destinada exclusivamente à espera de motocicletas, motonetas e ciclomotores, junto à aproximação semafórica, imediatamente à frente da linha de retenção dos demais veículos.",
+  "notas": [
+   {
+    "texto": "(Incluído pela Lei nº 14.071, de 2020)",
+    "tipo": "inclusao",
+    "url": "../_Ato2019-2022/2020/Lei/L14071.htm#art1",
+    "sem_efeito": false
+   },
+   {
+    "texto": "(Vigência)",
+    "tipo": "vigencia",
+    "url": "../_Ato2019-2022/2020/Lei/L14071.htm#art7",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.automovel",
+  "termo": "AUTOMÓVEL",
+  "definicao": "veículo automotor destinado ao transporte de passageiros, com capacidade para até oito pessoas, exclusive o condutor.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.autoridade-de-transito",
+  "termo": "AUTORIDADE DE TRÂNSITO",
+  "definicao": "dirigente máximo de órgão ou entidade executivo integrante do Sistema Nacional de Trânsito ou pessoa por ele expressamente credenciada.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.balanco-traseiro",
+  "termo": "BALANÇO TRASEIRO",
+  "definicao": "distância entre o plano vertical passando pelos centros das rodas traseiras extremas e o ponto mais recuado do veículo, considerando-se todos os elementos rigidamente fixados ao mesmo.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.bicicleta",
+  "termo": "BICICLETA",
+  "definicao": "veículo de propulsão humana, dotado de duas rodas, não sendo, para efeito deste Código, similar à motocicleta, motoneta e ciclomotor.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.bicicletario",
+  "termo": "BICICLETÁRIO",
+  "definicao": "local, na via ou fora dela, destinado ao estacionamento de bicicletas.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.bonde",
+  "termo": "BONDE",
+  "definicao": "veículo de propulsão elétrica que se move sobre trilhos.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.bordo-da-pista",
+  "termo": "BORDO DA PISTA",
+  "definicao": "margem da pista, podendo ser demarcada por linhas longitudinais de bordo que delineiam a parte da via destinada à circulação de veículos.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.calcada",
+  "termo": "CALÇADA",
+  "definicao": "parte da via, normalmente segregada e em nível diferente, não destinada à circulação de veículos, reservada ao trânsito de pedestres e, quando possível, à implantação de mobiliário urbano, sinalização, vegetação e outros fins.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.caminhao-trator",
+  "termo": "CAMINHÃO-TRATOR",
+  "definicao": "veículo automotor destinado a tracionar ou arrastar outro.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.caminhonete",
+  "termo": "CAMINHONETE",
+  "definicao": "veículo destinado ao transporte de carga com peso bruto total de até três mil e quinhentos quilogramas.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.camioneta",
+  "termo": "CAMIONETA",
+  "definicao": "veículo misto destinado ao transporte de passageiros e carga no mesmo compartimento.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.caminhao",
+  "termo": "CAMINHÃO",
+  "definicao": "veículo automotor destinado ao transporte de carga com peso bruto total superior a 3.500 kg (três mil e quinhentos quilogramas), podendo tracionar ou arrastar outro veículo, respeitada a capacidade máxima de tração.",
+  "notas": [
+   {
+    "texto": "(Incluído pela Lei nº 14.440, de 2022)",
+    "tipo": "inclusao",
+    "url": "../_Ato2019-2022/2022/Lei/L14440.htm#art15",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.canteiro-central",
+  "termo": "CANTEIRO CENTRAL",
+  "definicao": "obstáculo físico construído como separador de duas pistas de rolamento, eventualmente substituído por marcas viárias (canteiro fictício).",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.capacidade-maxima-de-tracao",
+  "termo": "CAPACIDADE MÁXIMA DE TRAÇÃO",
+  "definicao": "máximo peso que a unidade de tração é capaz de tracionar, indicado pelo fabricante, baseado em condições sobre suas limitações de geração e multiplicação de momento de força e resistência dos elementos que compõem a transmissão.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.carreata",
+  "termo": "CARREATA",
+  "definicao": "deslocamento em fila na via de veículos automotores em sinal de regozijo, de reivindicação, de protesto cívico ou de uma classe.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.carro-de-mao",
+  "termo": "CARRO DE MÃO",
+  "definicao": "veículo de propulsão humana utilizado no transporte de pequenas cargas.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.carroca",
+  "termo": "CARROÇA",
+  "definicao": "veículo de tração animal destinado ao transporte de carga.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.catadioptrico",
+  "termo": "CATADIÓPTRICO",
+  "definicao": "dispositivo de reflexão e refração da luz utilizado na sinalização de vias e veículos (olho-de-gato).",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.charrete",
+  "termo": "CHARRETE",
+  "definicao": "veículo de tração animal destinado ao transporte de pessoas.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.ciclo",
+  "termo": "CICLO",
+  "definicao": "veículo de pelo menos duas rodas a propulsão humana.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.ciclofaixa",
+  "termo": "CICLOFAIXA",
+  "definicao": "parte da pista de rolamento destinada à circulação exclusiva de ciclos, delimitada por sinalização específica.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.ciclomotor",
+  "termo": "CICLOMOTOR",
+  "definicao": "veículo de 2 (duas) ou 3 (três) rodas, provido de motor de combustão interna, cuja cilindrada não exceda a 50 cm 3 (cinquenta centímetros cúbicos), equivalente a 3,05 pol 3 (três polegadas cúbicas e cinco centésimos), ou de motor de propulsão elétrica com potência máxima de 4 kW (quatro quilowatts), e cuja velocidade máxima de fabricação não exceda a 50 Km/h (cinquenta quilômetros por hora). (Redãção dada pela Lei nº 14.071, de 2020)",
+  "notas": [
+   {
+    "texto": "(Vigência)",
+    "tipo": "vigencia",
+    "url": "../_Ato2019-2022/2020/Lei/L14071.htm#art7",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.ciclovia",
+  "termo": "CICLOVIA",
+  "definicao": "pista própria destinada à circulação de ciclos, separada fisicamente do tráfego comum.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.circulacao",
+  "termo": "CIRCULAÇÃO",
+  "definicao": "movimentação de pessoas, animais e veículos em deslocamento, conduzidos ou não, em vias públicas ou privadas abertas ao público e de uso coletivo.",
+  "notas": [
+   {
+    "texto": "(Incluído pela Lei nº 14.229, de 2021)",
+    "tipo": "inclusao",
+    "url": "../_Ato2019-2022/2021/Lei/L14229.htm#art3",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.conversao",
+  "termo": "CONVERSÃO",
+  "definicao": "movimento em ângulo, à esquerda ou à direita, de mudança da direção original do veículo.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.cruzamento",
+  "termo": "CRUZAMENTO",
+  "definicao": "interseção de duas vias em nível.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.dispositivo-de-seguranca",
+  "termo": "DISPOSITIVO DE SEGURANÇA",
+  "definicao": "qualquer elemento que tenha a função específica de proporcionar maior segurança ao usuário da via, alertando-o sobre situações de perigo que possam colocar em risco sua integridade física e dos demais usuários da via, ou danificar seriamente o veículo.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.estacionamento",
+  "termo": "ESTACIONAMENTO",
+  "definicao": "imobilização de veículos por tempo superior ao necessário para embarque ou desembarque de passageiros.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.estrada",
+  "termo": "ESTRADA",
+  "definicao": "via rural não pavimentada.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.etilometro",
+  "termo": "ETILÔMETRO",
+  "definicao": "aparelho destinado à medição do teor alcoólico no ar alveolar.",
+  "notas": [
+   {
+    "texto": "(Incluído pela Lei nº 12.760, de 2012)",
+    "tipo": "inclusao",
+    "url": "../_Ato2011-2014/2012/Lei/L12760.htm#art2",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.faixas-de-dominio",
+  "termo": "FAIXAS DE DOMÍNIO",
+  "definicao": "superfície lindeira às vias rurais, delimitada por lei específica e sob responsabilidade do órgão ou entidade de trânsito competente com circunscrição sobre a via.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.faixas-de-transito",
+  "termo": "FAIXAS DE TRÂNSITO",
+  "definicao": "qualquer uma das áreas longitudinais em que a pista pode ser subdividida, sinalizada ou não por marcas viárias longitudinais, que tenham uma largura suficiente para permitir a circulação de veículos automotores.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.fiscalizacao",
+  "termo": "FISCALIZAÇÃO",
+  "definicao": "ato de controlar o cumprimento das normas estabelecidas na legislação de trânsito, por meio do poder de polícia administrativa de trânsito, no âmbito de circunscrição dos órgãos e entidades executivos de trânsito e de acordo com as competências definidas neste Código.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.foco-de-pedestres",
+  "termo": "FOCO DE PEDESTRES",
+  "definicao": "indicação luminosa de permissão ou impedimento de locomoção na faixa apropriada.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.freio-de-estacionamento",
+  "termo": "FREIO DE ESTACIONAMENTO",
+  "definicao": "dispositivo destinado a manter o veículo imóvel na ausência do condutor ou, no caso de um reboque, se este se encontra desengatado.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.freio-de-seguranca-ou-motor",
+  "termo": "FREIO DE SEGURANÇA OU MOTOR",
+  "definicao": "dispositivo destinado a diminuir a marcha do veículo no caso de falha do freio de serviço.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.freio-de-servico",
+  "termo": "FREIO DE SERVIÇO",
+  "definicao": "dispositivo destinado a provocar a diminuição da marcha do veículo ou pará-lo.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.gestos-de-agentes",
+  "termo": "GESTOS DE AGENTES",
+  "definicao": "movimentos convencionais de braço, adotados exclusivamente pelos agentes de autoridades de trânsito nas vias, para orientar, indicar o direito de passagem dos veículos ou pedestres ou emitir ordens, sobrepondo-se ou completando outra sinalização ou norma constante deste Código.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.gestos-de-condutores",
+  "termo": "GESTOS DE CONDUTORES",
+  "definicao": "movimentos convencionais de braço, adotados exclusivamente pelos condutores, para orientar ou indicar que vão efetuar uma manobra de mudança de direção, redução brusca de velocidade ou parada.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.ilha",
+  "termo": "ILHA",
+  "definicao": "obstáculo físico, colocado na pista de rolamento, destinado à ordenação dos fluxos de trânsito em uma interseção.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.infracao",
+  "termo": "INFRAÇÃO",
+  "definicao": "inobservância a qualquer preceito da legislação de trânsito, às normas emanadas do Código de Trânsito, do Conselho Nacional de Trânsito e a regulamentação estabelecida pelo órgão ou entidade executiva do trânsito.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.intersecao",
+  "termo": "INTERSEÇÃO",
+  "definicao": "todo cruzamento em nível, entroncamento ou bifurcação, incluindo as áreas formadas por tais cruzamentos, entroncamentos ou bifurcações.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.interrupcao-de-marcha",
+  "termo": "INTERRUPÇÃO DE MARCHA",
+  "definicao": "imobilização do veículo para atender circunstância momentânea do trânsito.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.licenciamento",
+  "termo": "LICENCIAMENTO",
+  "definicao": "procedimento anual, relativo a obrigações do proprietário de veículo, comprovado por meio de documento específico (Certificado de Licenciamento Anual).",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.logradouro-publico",
+  "termo": "LOGRADOURO PÚBLICO",
+  "definicao": "espaço livre destinado pela municipalidade à circulação, parada ou estacionamento de veículos, ou à circulação de pedestres, tais como calçada, parques, áreas de lazer, calçadões.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.lotacao",
+  "termo": "LOTAÇÃO",
+  "definicao": "carga útil máxima, incluindo condutor e passageiros, que o veículo transporta, expressa em quilogramas para os veículos de carga, ou número de pessoas, para os veículos de passageiros.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.lote-lindeiro",
+  "termo": "LOTE LINDEIRO",
+  "definicao": "aquele situado ao longo das vias urbanas ou rurais e que com elas se limita.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.luz-alta",
+  "termo": "LUZ ALTA",
+  "definicao": "facho de luz do veículo destinado a iluminar a via até uma grande distância do veículo.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.luz-baixa",
+  "termo": "LUZ BAIXA",
+  "definicao": "facho de luz do veículo destinada a iluminar a via diante do veículo, sem ocasionar ofuscamento ou incômodo injustificáveis aos condutores e outros usuários da via que venham em sentido contrário.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.luz-de-freio",
+  "termo": "LUZ DE FREIO",
+  "definicao": "luz do veículo destinada a indicar aos demais usuários da via, que se encontram atrás do veículo, que o condutor está aplicando o freio de serviço.\nLUZ INDICADORA DE DIREÇÃO (pisca-pisca) - luz do veículo destinada a indicar aos demais usuários da via que o condutor tem o propósito de mudar de direção para a direita ou para a esquerda.\nLUZ DE MARCHA À RÉ - luz do veículo destinada a iluminar atrás do veículo e advertir aos demais usuários da via que o veículo está efetuando ou a ponto de efetuar uma manobra de marcha à ré.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.luz-de-neblina",
+  "termo": "LUZ DE NEBLINA",
+  "definicao": "luz do veículo destinada a aumentar a iluminação da via em caso de neblina, chuva forte ou nuvens de pó.\nLUZ DE POSIÇÃO (lanterna) - luz do veículo destinada a indicar a presença e a largura do veículo.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.manobra",
+  "termo": "MANOBRA",
+  "definicao": "movimento executado pelo condutor para alterar a posição em que o veículo está no momento em relação à via.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.marcas-viarias",
+  "termo": "MARCAS VIÁRIAS",
+  "definicao": "conjunto de sinais constituídos de linhas, marcações, símbolos ou legendas, em tipos e cores diversas, apostos ao pavimento da via.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.microonibus",
+  "termo": "MICROÔNIBUS",
+  "definicao": "veículo automotor de transporte coletivo com capacidade para até vinte passageiros.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.motocicleta",
+  "termo": "MOTOCICLETA",
+  "definicao": "veículo automotor de duas rodas, com ou sem side-car, dirigido por condutor em posição montada.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.motoneta",
+  "termo": "MOTONETA",
+  "definicao": "veículo automotor de duas rodas, dirigido por condutor em posição sentada.\nMOTOR-CASA (MOTOR-HOME) - veículo automotor cuja carroçaria seja fechada e destinada a alojamento, escritório, comércio ou finalidades análogas.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.noite",
+  "termo": "NOITE",
+  "definicao": "período do dia compreendido entre o pôr-do-sol e o nascer do sol.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.onibus",
+  "termo": "ÔNIBUS",
+  "definicao": "veículo automotor de transporte coletivo com capacidade para mais de vinte passageiros, ainda que, em virtude de adaptações com vista à maior comodidade destes, transporte número menor.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.operacao-de-carga-e-descarga",
+  "termo": "OPERAÇÃO DE CARGA E DESCARGA",
+  "definicao": "imobilização do veículo, pelo tempo estritamente necessário ao carregamento ou descarregamento de animais ou carga, na forma disciplinada pelo órgão ou entidade executivo de trânsito competente com circunscrição sobre a via.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.operacao-de-transito",
+  "termo": "OPERAÇÃO DE TRÂNSITO",
+  "definicao": "monitoramento técnico, baseado nos conceitos de engenharia de tráfego, das condições de fluidez, de estacionamento e de parada na via, de forma a reduzir as interferências, tais como veículos quebrados, sinistrados, estacionados irregularmente atrapalhando o trânsito, prestando socorros imediatos e informações aos pedestres e condutores.",
+  "notas": [
+   {
+    "texto": "(Redação dada pela Lei nº 14.599, de 2023)",
+    "tipo": "redacao",
+    "url": "../_Ato2023-2026/2023/Lei/L14599.htm#art2",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.parada",
+  "termo": "PARADA",
+  "definicao": "imobilização do veículo com a finalidade e pelo tempo estritamente necessário para efetuar embarque ou desembarque de passageiros.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.passagem-de-nivel",
+  "termo": "PASSAGEM DE NÍVEL",
+  "definicao": "todo cruzamento de nível entre uma via e uma linha férrea ou trilho de bonde com pista própria.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.passagem-por-outro-veiculo",
+  "termo": "PASSAGEM POR OUTRO VEÍCULO",
+  "definicao": "movimento de passagem à frente de outro veículo que se desloca no mesmo sentido, em menor velocidade, mas em faixas distintas da via.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.passagem-subterranea",
+  "termo": "PASSAGEM SUBTERRÂNEA",
+  "definicao": "obra de arte destinada à transposição de vias, em desnível subterrâneo, e ao uso de pedestres ou veículos.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.passarela",
+  "termo": "PASSARELA",
+  "definicao": "obra de arte destinada à transposição de vias, em desnível aéreo, e ao uso de pedestres.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.passeio",
+  "termo": "PASSEIO",
+  "definicao": "parte da calçada ou da pista de rolamento, neste último caso, separada por pintura ou elemento físico separador, livre de interferências, destinada à circulação exclusiva de pedestres e, excepcionalmente, de ciclistas.\nPATRULHAMENTO -",
+  "notas": [
+   {
+    "texto": "Revogado pela Lei nº 14.599, de 2023",
+    "tipo": "revogacao",
+    "url": "../_Ato2023-2026/2023/Lei/L14599.htm#art6",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.patrulhamento-ostensivo",
+  "termo": "PATRULHAMENTO OSTENSIVO",
+  "definicao": "função exercida pela Polícia Rodoviária Federal com o objetivo de prevenir e reprimir infrações penais no âmbito de sua competência e de garantir obediência às normas relativas à segurança de trânsito, de forma a assegurar a livre circulação e a prevenir sinistros.",
+  "notas": [
+   {
+    "texto": "(Redação dada pela Lei nº 14.599, de 2023)",
+    "tipo": "redacao",
+    "url": "../_Ato2023-2026/2023/Lei/L14599.htm#art2",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.patrulhamento-viario",
+  "termo": "PATRULHAMENTO VIÁRIO",
+  "definicao": "função exercida pelos agentes de trânsito dos órgãos e entidades executivos de trânsito e rodoviário, no âmbito de suas competências, com o objetivo de garantir a segurança viária nos termos do § 10 do art. 144 da Constituição Federal.",
+  "notas": [
+   {
+    "texto": "(Incluído pela Lei nº 14.229, de 2021)",
+    "tipo": "inclusao",
+    "url": "../_Ato2019-2022/2021/Lei/L14229.htm#art3",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.perimetro-urbano",
+  "termo": "PERÍMETRO URBANO",
+  "definicao": "limite entre área urbana e área rural.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.peso-bruto-total",
+  "termo": "PESO BRUTO TOTAL",
+  "definicao": "peso máximo que o veículo transmite ao pavimento, constituído da soma da tara mais a lotação.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.peso-bruto-total-combinado",
+  "termo": "PESO BRUTO TOTAL COMBINADO",
+  "definicao": "peso máximo transmitido ao pavimento pela combinação de um caminhão-trator mais seu semi-reboque ou do caminhão mais o seu reboque ou reboques.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.pisca-alerta",
+  "termo": "PISCA-ALERTA",
+  "definicao": "luz intermitente do veículo, utilizada em caráter de advertência, destinada a indicar aos demais usuários da via que o veículo está imobilizado ou em situação de emergência.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.pista",
+  "termo": "PISTA",
+  "definicao": "parte da via normalmente utilizada para a circulação de veículos, identificada por elementos separadores ou por diferença de nível em relação às calçadas, ilhas ou aos canteiros centrais.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.placas",
+  "termo": "PLACAS",
+  "definicao": "elementos colocados na posição vertical, fixados ao lado ou suspensos sobre a pista, transmitindo mensagens de caráter permanente e, eventualmente, variáveis, mediante símbolo ou legendas pré-reconhecidas e legalmente instituídas como sinais de trânsito.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.policiamento-ostensivo-de-transito",
+  "termo": "POLICIAMENTO OSTENSIVO DE TRÂNSITO",
+  "definicao": "função exercida pelas Polícias Militares com o objetivo de prevenir e reprimir atos relacionados com a segurança pública e de garantir obediência às normas relativas à segurança de trânsito, assegurando a livre circulação e evitando sinistros.",
+  "notas": [
+   {
+    "texto": "(Redação dada pela Lei nº 14.599, de 2023)",
+    "tipo": "redacao",
+    "url": "../_Ato2023-2026/2023/Lei/L14599.htm#art2",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.ponte",
+  "termo": "PONTE",
+  "definicao": "obra de construção civil destinada a ligar margens opostas de uma superfície líquida qualquer.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.quadriciclo",
+  "termo": "QUADRICICLO",
+  "definicao": "veículo automotor de 4 (quatro) rodas, com ou sem cabine, com massa em ordem de marcha não superior a 450 kg (quatrocentos e cinquenta quilogramas) para o transporte de passageiros, ou não superior a 600 kg (seiscentos quilogramas) para o transporte de cargas.",
+  "notas": [
+   {
+    "texto": "(Incluído pela Lei nº 14.599, de 2023)",
+    "tipo": "inclusao",
+    "url": "../_Ato2023-2026/2023/Lei/L14599.htm#art2",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.reboque",
+  "termo": "REBOQUE",
+  "definicao": "veículo destinado a ser engatado atrás de um veículo automotor.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.regulamentacao-da-via",
+  "termo": "REGULAMENTAÇÃO DA VIA",
+  "definicao": "implantação de sinalização de regulamentação pelo órgão ou entidade competente com circunscrição sobre a via, definindo, entre outros, sentido de direção, tipo de estacionamento, horários e dias.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.refugio",
+  "termo": "REFÚGIO",
+  "definicao": "parte da via, devidamente sinalizada e protegida, destinada ao uso de pedestres durante a travessia da mesma.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.renach",
+  "termo": "RENACH",
+  "definicao": "Registro Nacional de Carteiras de Habilitação.",
+  "notas": [
+   {
+    "texto": "(Redação dada pela Lei nº 14.440, de 2022)",
+    "tipo": "redacao",
+    "url": "../_Ato2019-2022/2022/Lei/L14440.htm#art15",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.renavam",
+  "termo": "RENAVAM",
+  "definicao": "Registro Nacional de Veículos Automotores.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.retorno",
+  "termo": "RETORNO",
+  "definicao": "movimento de inversão total de sentido da direção original de veículos.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.rodovia",
+  "termo": "RODOVIA",
+  "definicao": "via rural pavimentada.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.semi-reboque",
+  "termo": "SEMI-REBOQUE",
+  "definicao": "veículo de um ou mais eixos que se apóia na sua unidade tratora ou é a ela ligado por meio de articulação.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.sinais-de-transito",
+  "termo": "SINAIS DE TRÂNSITO",
+  "definicao": "elementos de sinalização viária que se utilizam de placas, marcas viárias, equipamentos de controle luminosos, dispositivos auxiliares, apitos e gestos, destinados exclusivamente a ordenar ou dirigir o trânsito dos veículos e pedestres.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.sinalizacao",
+  "termo": "SINALIZAÇÃO",
+  "definicao": "conjunto de sinais de trânsito e dispositivos de segurança colocados na via pública com o objetivo de garantir sua utilização adequada, possibilitando melhor fluidez no trânsito e maior segurança dos veículos e pedestres que nela circulam.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.sinistro-de-transito",
+  "termo": "SINISTRO DE TRÂNSITO",
+  "definicao": "evento que resulta em dano ao veículo ou à sua carga e/ou em lesões a pessoas ou animais e que pode trazer dano material ou prejuízo ao trânsito, à via ou ao meio ambiente, em que pelo menos uma das partes está em movimento nas vias terrestres ou em áreas abertas ao público.",
+  "notas": [
+   {
+    "texto": "(Incluído pela Lei nº 14.599, de 2023)",
+    "tipo": "inclusao",
+    "url": "../_Ato2023-2026/2023/Lei/L14599.htm#art2",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.sons-por-apito",
+  "termo": "SONS POR APITO",
+  "definicao": "sinais sonoros, emitidos exclusivamente pelos agentes da autoridade de trânsito nas vias, para orientar ou indicar o direito de passagem dos veículos ou pedestres, sobrepondo-se ou completando sinalização existente no local ou norma estabelecida neste Código.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.tara",
+  "termo": "TARA",
+  "definicao": "peso próprio do veículo, acrescido dos pesos da carroçaria e equipamento, do combustível, das ferramentas e acessórios, da roda sobressalente, do extintor de incêndio e do fluido de arrefecimento, expresso em quilogramas.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.trailer",
+  "termo": "TRAILER",
+  "definicao": "reboque ou semi-reboque tipo casa, com duas, quatro, ou seis rodas, acoplado ou adaptado à traseira de automóvel ou camionete, utilizado em geral em atividades turísticas como alojamento, ou para atividades comerciais.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.transito",
+  "termo": "TRÂNSITO",
+  "definicao": "movimentação e imobilização de veículos, pessoas e animais nas vias terrestres.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.transposicao-de-faixas",
+  "termo": "TRANSPOSIÇÃO DE FAIXAS",
+  "definicao": "passagem de um veículo de uma faixa demarcada para outra.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.trator",
+  "termo": "TRATOR",
+  "definicao": "veículo automotor construído para realizar trabalho agrícola, de construção e pavimentação e tracionar outros veículos e equipamentos.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.triciclo",
+  "termo": "TRICICLO",
+  "definicao": "veículo automotor de 3 (três) rodas, com ou sem cabine, dirigido por condutor em posição sentada ou montada, que não possui as características de ciclomotor.",
+  "notas": [
+   {
+    "texto": "(Incluído pela Lei nº 14.599, de 2023)",
+    "tipo": "inclusao",
+    "url": "../_Ato2023-2026/2023/Lei/L14599.htm#art2",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.ultrapassagem",
+  "termo": "ULTRAPASSAGEM",
+  "definicao": "movimento de passar à frente de outro veículo que se desloca no mesmo sentido, em menor velocidade e na mesma faixa de tráfego, necessitando sair e retornar à faixa de origem.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.utilitario",
+  "termo": "UTILITÁRIO",
+  "definicao": "veículo misto caracterizado pela versatilidade do seu uso, inclusive fora de estrada.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.veiculo-articulado",
+  "termo": "VEÍCULO ARTICULADO",
+  "definicao": "combinação de veículos acoplados, sendo um deles automotor.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.veiculo-automotor",
+  "termo": "VEÍCULO AUTOMOTOR",
+  "definicao": "veículo a motor de propulsão a combustão, elétrica ou híbrida que circula por seus próprios meios e que serve normalmente para o transporte viário de pessoas e coisas ou para a tração viária de veículos utilizados para o transporte de pessoas e coisas, compreendidos na definição os veículos conectados a uma linha elétrica e que não circulam sobre trilhos (ônibus elétrico).",
+  "notas": [
+   {
+    "texto": "(Redação dada pela Lei nº 14.599, de 2023)",
+    "tipo": "redacao",
+    "url": "../_Ato2023-2026/2023/Lei/L14599.htm#art2",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.veiculo-de-carga",
+  "termo": "VEÍCULO DE CARGA",
+  "definicao": "veículo destinado ao transporte de carga, podendo transportar dois passageiros, exclusive o condutor.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.veiculo-de-colecao",
+  "termo": "VEÍCULO DE COLEÇÃO",
+  "definicao": "veículo fabricado há mais de 30 (trinta) anos, original ou modificado, que possui valor histórico próprio.",
+  "notas": [
+   {
+    "texto": "(Redação dada pela Lei nº 14.071, de 2020)",
+    "tipo": "redacao",
+    "url": "../_Ato2019-2022/2020/Lei/L14071.htm#art1",
+    "sem_efeito": false
+   },
+   {
+    "texto": "(Vigência)",
+    "tipo": "vigencia",
+    "url": "../_Ato2019-2022/2020/Lei/L14071.htm#art7",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.veiculo-conjugado",
+  "termo": "VEÍCULO CONJUGADO",
+  "definicao": "combinação de veículos, sendo o primeiro um veículo automotor e os demais reboques ou equipamentos de trabalho agrícola, construção, terraplenagem ou pavimentação.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.veiculo-de-grande-porte",
+  "termo": "VEÍCULO DE GRANDE PORTE",
+  "definicao": "veículo automotor destinado ao transporte de carga com peso bruto total máximo superior a dez mil quilogramas e de passageiros, superior a vinte passageiros.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.veiculo-de-passageiros",
+  "termo": "VEÍCULO DE PASSAGEIROS",
+  "definicao": "veículo destinado ao transporte de pessoas e suas bagagens.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.veiculo-misto",
+  "termo": "VEÍCULO MISTO",
+  "definicao": "veículo automotor destinado ao transporte simultâneo de carga e passageiro.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.veiculo-em-estado-de-abandono",
+  "termo": "VEÍCULO EM ESTADO DE ABANDONO",
+  "definicao": "veículo estacionado na via ou em estacionamento público, sem capacidade de locomoção por meios próprios e que, devido a seu estado de conservação e processo de deterioração, ofereça risco à saúde pública, à segurança pública ou ao meio ambiente, independentemente de encontrar-se estacionado em local permitido.",
+  "notas": [
+   {
+    "texto": "(Incluído pela Lei nº 14.440, de 2022)",
+    "tipo": "inclusao",
+    "url": "../_Ato2019-2022/2022/Lei/L14440.htm#art15",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.veiculo-especial",
+  "termo": "VEÍCULO ESPECIAL",
+  "definicao": "veículo de passageiro, de carga, de tração, de coleção ou misto que possui características diferenciadas para realização de função especial para a qual são necessários arranjos específicos da carroceria e/ou equipamento.",
+  "notas": [
+   {
+    "texto": "(Incluído pela Lei nº 14.599, de 2023)",
+    "tipo": "inclusao",
+    "url": "../_Ato2023-2026/2023/Lei/L14599.htm#art2",
+    "sem_efeito": false
+   }
+  ]
+ },
+ {
+  "id": "anexo-I.via",
+  "termo": "VIA",
+  "definicao": "superfície por onde transitam veículos, pessoas e animais, compreendendo a pista, a calçada, o acostamento, ilha e canteiro central.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.via-de-transito-rapido",
+  "termo": "VIA DE TRÂNSITO RÁPIDO",
+  "definicao": "aquela caracterizada por acessos especiais com trânsito livre, sem interseções em nível, sem acessibilidade direta aos lotes lindeiros e sem travessia de pedestres em nível.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.via-arterial",
+  "termo": "VIA ARTERIAL",
+  "definicao": "aquela caracterizada por interseções em nível, geralmente controlada por semáforo, com acessibilidade aos lotes lindeiros e às vias secundárias e locais, possibilitando o trânsito entre as regiões da cidade.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.via-coletora",
+  "termo": "VIA COLETORA",
+  "definicao": "aquela destinada a coletar e distribuir o trânsito que tenha necessidade de entrar ou sair das vias de trânsito rápido ou arteriais, possibilitando o trânsito dentro das regiões da cidade.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.via-local",
+  "termo": "VIA LOCAL",
+  "definicao": "aquela caracterizada por interseções em nível não semaforizadas, destinada apenas ao acesso local ou a áreas restritas.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.via-rural",
+  "termo": "VIA RURAL",
+  "definicao": "estradas e rodovias.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.via-urbana",
+  "termo": "VIA URBANA",
+  "definicao": "ruas, avenidas, vielas, ou caminhos e similares abertos à circulação pública, situados na área urbana, caracterizados principalmente por possuírem imóveis edificados ao longo de sua extensão.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.vias-e-areas-de-pedestres",
+  "termo": "VIAS E ÁREAS DE PEDESTRES",
+  "definicao": "vias ou conjunto de vias destinadas à circulação prioritária de pedestres.",
+  "notas": []
+ },
+ {
+  "id": "anexo-I.viaduto",
+  "termo": "VIADUTO",
+  "definicao": "obra de construção civil destinada a transpor uma depressão de terreno ou servir de passagem superior.\n*",
+  "notas": []
+ }
+]

@@ -26,8 +26,21 @@ SYSTEM_PROMPT_BASE = (
     "nem assinatura: termine no pedido, com \"Nestes termos, pede deferimento.\""
 )
 
+# Em toda peça, desde a integração do CTB (29/09/2026): a base normativa vai na
+# mensagem do usuário, e a conferencia.py recusa o que estiver fora dela.
+REGRA_BASE_LEGAL = (
+    " Base legal: use exclusivamente a base normativa do CTB fornecida junto com os "
+    "dados do caso; cite apenas dispositivos que constem dela e apenas o que o texto "
+    "deles diz. Não cite outras leis, códigos, resoluções, portarias nem jurisprudência."
+)
+# Quando o amparo legal digitado não foi reconhecido: nada é adivinhado.
+REGRA_SEM_ENQUADRAMENTO = (
+    " O dispositivo da infração não pôde ser confirmado: não cite o artigo da infração; "
+    "defenda pelos dispositivos da base."
+)
+
 # Só entram com RADAR_TESE_ATIVA ligada. Base legal conferida no texto oficial
-# do CTB (CTB-compilado_files/L9503Compilado.html); o número da resolução do
+# do CTB (CTB-compilado_files/l9503compilado.htm → saida/ctb.json); o número da resolução do
 # CONTRAN sobre verificação metrológica NÃO foi confirmado e fica proibido.
 #
 # O texto do art. 280 vai TRANSCRITO: na primeira rodada real (24/09/2026), o
@@ -79,11 +92,16 @@ CAMPOS_INTERNOS = frozenset(
 )
 
 
-def system_prompt(tese_ativa: bool, verificacao: Any = None) -> str:
+def system_prompt(tese_ativa: bool, verificacao: Any = None, sem_enquadramento: bool = False) -> str:
     # As regras do radar só entram quando há bloco: sem ele, qualquer menção
     # ao tema no prompt bastou para o modelo discutir o tema (24/09/2026).
     com_bloco = tese_ativa and bloco_verificacao(verificacao) is not None
-    return SYSTEM_PROMPT_BASE + (REGRAS_RADAR if com_bloco else "")
+    return (
+        SYSTEM_PROMPT_BASE
+        + REGRA_BASE_LEGAL
+        + (REGRA_SEM_ENQUADRAMENTO if sem_enquadramento else "")
+        + (REGRAS_RADAR if com_bloco else "")
+    )
 
 
 def build_case_context(case: dict[str, Any], tese_ativa: bool = False) -> str:
@@ -108,12 +126,16 @@ class RespostaDoModeloInvalida(RuntimeError):
     """
 
 
-def argumentos_da_chamada(modelo: str, sistema: str, contexto: str) -> dict[str, Any]:
+def argumentos_da_chamada(
+    modelo: str, sistema: str, contexto: str, historico: list[dict[str, str]] | None = None
+) -> dict[str, Any]:
     return {
         "model": modelo,
         "messages": [
             {"role": "system", "content": sistema},
             {"role": "user", "content": contexto},
+            # No refazer: a peça recusada (assistant) e o pedido de correção (user).
+            *(historico or []),
         ],
         "max_tokens": 1200,
         "temperature": 0.4,
@@ -133,3 +155,11 @@ def texto_da_resposta(conteudo: str | None, finish_reason: str | None) -> str:
         raise RespostaDoModeloInvalida("resposta cortada pelo limite de tokens")
     return texto
 
+
+def pedido_de_correcao(recusas) -> str:
+    """Mensagem do refazer: diz exatamente o que foi recusado e por quê."""
+    itens = "; ".join(f"'{r.trecho}' ({r.motivo})" for r in recusas)
+    return (
+        "Reescreva a peça inteira sem estas citações, mantendo o restante e as mesmas "
+        f"regras de antes: {itens}."
+    )

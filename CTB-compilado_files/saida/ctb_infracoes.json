@@ -1,0 +1,3147 @@
+[
+ {
+  "artigo": "162",
+  "dispositivos": [
+   "art. 162, I"
+  ],
+  "ids": [
+   "art-162.inc-I"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Dirigir veículo: I - sem possuir Carteira Nacional de Habilitação, Permissão para Dirigir ou Autorização para Conduzir Ciclomotor:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 13.281, de 2016)",
+   "(Redação dada pela Lei nº 13.281, de 2016)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (três vezes)",
+  "medida_administrativa": "retenção do veículo até a apresentação de condutor habilitado"
+ },
+ {
+  "artigo": "162",
+  "dispositivos": [
+   "art. 162, II"
+  ],
+  "ids": [
+   "art-162.inc-II"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Dirigir veículo: II - com Carteira Nacional de Habilitação, Permissão para Dirigir ou Autorização para Conduzir Ciclomotor cassada ou com suspensão do direito de dirigir:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 13.281, de 2016)",
+   "(Redação dada pela Lei nº 13.281, de 2016)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (três vezes)",
+  "medida_administrativa": "recolhimento do documento de habilitação e retenção do veículo até a apresentação de condutor habilitado"
+ },
+ {
+  "artigo": "162",
+  "dispositivos": [
+   "art. 162, III"
+  ],
+  "ids": [
+   "art-162.inc-III"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Dirigir veículo: III - com Carteira Nacional de Habilitação ou Permissão para Dirigir de categoria diferente da do veículo que esteja conduzindo:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 13.281, de 2016)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (duas vezes)",
+  "medida_administrativa": "retenção do veículo até a apresentação de condutor habilitado"
+ },
+ {
+  "artigo": "162",
+  "dispositivos": [
+   "art. 162, V"
+  ],
+  "ids": [
+   "art-162.inc-V"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Dirigir veículo: V - com Carteira Nacional de Habilitação vencida há mais de 30 (trinta) dias:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 14.440, de 2022)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo até a apresentação de condutor habilitado"
+ },
+ {
+  "artigo": "162",
+  "dispositivos": [
+   "art. 162, VI"
+  ],
+  "ids": [
+   "art-162.inc-VI"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Dirigir veículo: VI - sem usar lentes corretoras de visão, aparelho auxiliar de audição, de prótese física ou as adaptações do veículo impostas por ocasião da concessão ou da renovação da licença para conduzir:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo até o saneamento da irregularidade ou apresentação de condutor habilitado"
+ },
+ {
+  "artigo": "162",
+  "dispositivos": [
+   "art. 162, VII"
+  ],
+  "ids": [
+   "art-162.inc-VII"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Dirigir veículo: VII - sem possuir os cursos especializados ou específicos obrigatórios:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído dad",
+   "(Incluído dada pela Lei nº 14.440, de 2022)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo até a apresentação de condutor habilitado"
+ },
+ {
+  "artigo": "163",
+  "dispositivos": [
+   "art. 163"
+  ],
+  "ids": [
+   "art-163.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Entregar a direção do veículo a pessoa nas condições previstas no artigo anterior:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "as mesmas previstas no artigo anterior",
+  "penalidade": "as mesmas previstas no artigo anterior",
+  "medida_administrativa": "a mesma prevista no inciso III do artigo anterior"
+ },
+ {
+  "artigo": "164",
+  "dispositivos": [
+   "art. 164"
+  ],
+  "ids": [
+   "art-164.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Permitir que pessoa nas condições referidas nos incisos do art. 162 tome posse do veículo automotor e passe a conduzi-lo na via:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "as mesmas previstas nos incisos do art. 162",
+  "penalidade": "as mesmas previstas no art. 162",
+  "medida_administrativa": "a mesma prevista no inciso III do art. 162"
+ },
+ {
+  "artigo": "165",
+  "dispositivos": [
+   "art. 165"
+  ],
+  "ids": [
+   "art-165.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Dirigir sob a influência de álcool ou de qualquer outra substância psicoativa que determine dependência:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 11.705, de 2008)",
+   "(Redação dada pela Lei nº 12.760, de 2012)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (dez vezes) e suspensão do direito de dirigir por 12 (doze) meses",
+  "medida_administrativa": "recolhimento do documento de habilitação e retenção do veículo, observado o disposto no § 4o do art. 270 da Lei no 9.503, de 23 de setembro de 1997 - do Código de Trânsito Brasileiro"
+ },
+ {
+  "artigo": "165-A",
+  "dispositivos": [
+   "art. 165-A"
+  ],
+  "ids": [
+   "art-165-A.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Recusar-se a ser submetido a teste, exame clínico, perícia ou outro procedimento que permita certificar influência de álcool ou outra substância psicoativa, na forma estabelecida pelo art. 277:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 13.281, de 2016)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (dez vezes) e suspensão do direito de dirigir por 12 (doze) meses",
+  "medida_administrativa": "recolhimento do documento de habilitação e retenção do veículo, observado o disposto no § 4º do art. 270"
+ },
+ {
+  "artigo": "165-B",
+  "dispositivos": [
+   "art. 165-B"
+  ],
+  "ids": [
+   "art-165-B.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Dirigir veículo sem realizar o exame toxicológico previsto no art. 148-A deste Código:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 14.071, de 2020)",
+   "(Redação dada pela Lei nº 14.599, de 2023)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (cinco vezes) e, em caso de reincidência no período de até 12 (doze) meses, multa (dez vezes) e suspensão do direito de dirigir"
+ },
+ {
+  "artigo": "165-C",
+  "dispositivos": [
+   "art. 165-C"
+  ],
+  "ids": [
+   "art-165-C.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Dirigir veículo tendo obtido resultado positivo no exame toxicológico previsto no caput do art. 148-A deste Código:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 14.599, de 2023)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (cinco vezes) e, em caso de reincidência no período de até 12 (doze) meses, multa (dez vezes) e suspensão do direito de dirigir"
+ },
+ {
+  "artigo": "165-D",
+  "dispositivos": [
+   "art. 165-D"
+  ],
+  "ids": [
+   "art-165-D.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de realizar o exame toxicológico previsto no § 2º do art. 148-A deste Código, após 30 (trinta) dias do vencimento do prazo estabelecido:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 14.599, de 2023)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (cinco vezes)"
+ },
+ {
+  "artigo": "166",
+  "dispositivos": [
+   "art. 166"
+  ],
+  "ids": [
+   "art-166.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Confiar ou entregar a direção de veículo a pessoa que, mesmo habilitada, por seu estado físico ou psíquico, não estiver em condições de dirigi-lo com segurança:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "167",
+  "dispositivos": [
+   "art. 167"
+  ],
+  "ids": [
+   "art-167.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar o condutor ou passageiro de usar o cinto de segurança, conforme previsto no art. 65:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo até colocação do cinto pelo infrator"
+ },
+ {
+  "artigo": "168",
+  "dispositivos": [
+   "art. 168"
+  ],
+  "ids": [
+   "art-168.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transportar crianças em veículo automotor sem observância das normas de segurança especiais estabelecidas neste Código:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo até que a irregularidade seja sanada"
+ },
+ {
+  "artigo": "169",
+  "dispositivos": [
+   "art. 169"
+  ],
+  "ids": [
+   "art-169.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Dirigir sem atenção ou sem os cuidados indispensáveis à segurança:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "leve",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "170",
+  "dispositivos": [
+   "art. 170"
+  ],
+  "ids": [
+   "art-170.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Dirigir ameaçando os pedestres que estejam atravessando a via pública, ou os demais veículos:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa e suspensão do direito de dirigir",
+  "medida_administrativa": "retenção do veículo e recolhimento do documento de habilitação"
+ },
+ {
+  "artigo": "171",
+  "dispositivos": [
+   "art. 171"
+  ],
+  "ids": [
+   "art-171.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Usar o veículo para arremessar, sobre os pedestres ou veículos, água ou detritos:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "172",
+  "dispositivos": [
+   "art. 172"
+  ],
+  "ids": [
+   "art-172.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Atirar do veículo ou abandonar na via objetos ou substâncias:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "173",
+  "dispositivos": [
+   "art. 173"
+  ],
+  "ids": [
+   "art-173.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Disputar corrida:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 12.971, de 2014)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (dez vezes), suspensão do direito de dirigir e apreensão do veículo",
+  "medida_administrativa": "recolhimento do documento de habilitação e remoção do veículo"
+ },
+ {
+  "artigo": "174",
+  "dispositivos": [
+   "art. 174"
+  ],
+  "ids": [
+   "art-174.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Promover, na via, competição, eventos organizados, exibição e demonstração de perícia em manobra de veículo, ou deles participar, como condutor, sem permissão da autoridade de trânsito com circunscrição sobre a via:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 12.971, de 2014)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (dez vezes), suspensão do direito de dirigir e apreensão do veículo",
+  "medida_administrativa": "recolhimento do documento de habilitação e remoção do veículo"
+ },
+ {
+  "artigo": "175",
+  "dispositivos": [
+   "art. 175"
+  ],
+  "ids": [
+   "art-175.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Utilizar-se de veículo para demonstrar ou exibir manobra perigosa, mediante arrancada brusca, derrapagem ou frenagem com deslizamento ou arrastamento de pneus:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 12.971, de 2014)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (dez vezes), suspensão do direito de dirigir e apreensão do veículo",
+  "medida_administrativa": "recolhimento do documento de habilitação e remoção do veículo"
+ },
+ {
+  "artigo": "176",
+  "dispositivos": [
+   "art. 176, I",
+   "art. 176, II",
+   "art. 176, III",
+   "art. 176, IV",
+   "art. 176, V"
+  ],
+  "ids": [
+   "art-176.inc-I",
+   "art-176.inc-II",
+   "art-176.inc-III",
+   "art-176.inc-IV",
+   "art-176.inc-V"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar o condutor envolvido em sinistro com vítima: I - de prestar ou providenciar socorro à vítima, podendo fazê-lo; II - de adotar providências, podendo fazê-lo, no sentido de evitar perigo para o trânsito no local; III - de preservar o local, de forma a facilitar os trabalhos da polícia e da perícia; IV - de adotar providências para remover o veículo do local, quando determinadas por policial ou agente da autoridade de trânsito; V - de identificar-se ao policial e de lhe prestar informações necessárias à confecção do boletim de ocorrência:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa (cinco vezes) e suspensão do direito de dirigir",
+  "medida_administrativa": "recolhimento do documento de habilitação"
+ },
+ {
+  "artigo": "177",
+  "dispositivos": [
+   "art. 177"
+  ],
+  "ids": [
+   "art-177.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar o condutor de prestar socorro à vítima de sinistro de trânsito quando solicitado pela autoridade e seus agentes:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 14.599, de 2023)"
+  ],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "178",
+  "dispositivos": [
+   "art. 178"
+  ],
+  "ids": [
+   "art-178.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar o condutor envolvido em sinistro sem vítima de adotar providências para remover o veículo do local, quando necessária tal medida para assegurar a segurança e a fluidez do trânsito:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 14.599, de 2023)"
+  ],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "179",
+  "dispositivos": [
+   "art. 179, I"
+  ],
+  "ids": [
+   "art-179.inc-I"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Fazer ou deixar que se faça reparo em veículo na via pública, salvo nos casos de impedimento absoluto de sua remoção e em que o veículo esteja devidamente sinalizado: I - em pista de rolamento de rodovias e vias de trânsito rápido:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "179",
+  "dispositivos": [
+   "art. 179, II"
+  ],
+  "ids": [
+   "art-179.inc-II"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Fazer ou deixar que se faça reparo em veículo na via pública, salvo nos casos de impedimento absoluto de sua remoção e em que o veículo esteja devidamente sinalizado: II - nas demais vias:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "leve",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "180",
+  "dispositivos": [
+   "art. 180"
+  ],
+  "ids": [
+   "art-180.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Ter seu veículo imobilizado na via por falta de combustível:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, I"
+  ],
+  "ids": [
+   "art-181.inc-I"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: I - nas esquinas e a menos de cinco metros do bordo do alinhamento da via transversal:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, II"
+  ],
+  "ids": [
+   "art-181.inc-II"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: II - afastado da guia da calçada (meio-fio) de cinqüenta centímetros a um metro:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "leve",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, III"
+  ],
+  "ids": [
+   "art-181.inc-III"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: III - afastado da guia da calçada (meio-fio) a mais de um metro:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, IV"
+  ],
+  "ids": [
+   "art-181.inc-IV"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: IV - em desacordo com as posições estabelecidas neste Código:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, V"
+  ],
+  "ids": [
+   "art-181.inc-V"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: V - na pista de rolamento das estradas, das rodovias, das vias de trânsito rápido e das vias dotadas de acostamento:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, VI"
+  ],
+  "ids": [
+   "art-181.inc-VI"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: VI - junto ou sobre hidrantes de incêndio, registro de água ou tampas de poços de visita de galerias subterrâneas, desde que devidamente identificados, conforme especificação do CONTRAN:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, VII"
+  ],
+  "ids": [
+   "art-181.inc-VII"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: VII - nos acostamentos, salvo motivo de força maior:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "leve",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, VIII"
+  ],
+  "ids": [
+   "art-181.inc-VIII"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: VIII - no passeio ou sobre faixa destinada a pedestre, sobre ciclovia ou ciclofaixa, bem como nas ilhas, refúgios, ao lado ou sobre canteiros centrais, divisores de pista de rolamento, marcas de canalização, gramados ou jardim público:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, IX"
+  ],
+  "ids": [
+   "art-181.inc-IX"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: IX - onde houver guia de calçada (meio-fio) rebaixada destinada à entrada ou saída de veículos:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, X"
+  ],
+  "ids": [
+   "art-181.inc-X"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: X - impedindo a movimentação de outro veículo:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, XI"
+  ],
+  "ids": [
+   "art-181.inc-XI"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: XI - ao lado de outro veículo em fila dupla:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, XII"
+  ],
+  "ids": [
+   "art-181.inc-XII"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: XII - na área de cruzamento de vias, prejudicando a circulação de veículos e pedestres:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, XIII"
+  ],
+  "ids": [
+   "art-181.inc-XIII"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: XIII - onde houver sinalização horizontal delimitadora de ponto de embarque ou desembarque de passageiros de transporte coletivo ou, na inexistência desta sinalização, no intervalo compreendido entre dez metros antes e depois do marco do ponto:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, XIV"
+  ],
+  "ids": [
+   "art-181.inc-XIV"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: XIV - nos viadutos, pontes e túneis:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, XV"
+  ],
+  "ids": [
+   "art-181.inc-XV"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: XV - na contramão de direção:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, XVI"
+  ],
+  "ids": [
+   "art-181.inc-XVI"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: XVI - em aclive ou declive, não estando devidamente freado e sem calço de segurança, quando se tratar de veículo com peso bruto total superior a três mil e quinhentos quilogramas:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, XVII"
+  ],
+  "ids": [
+   "art-181.inc-XVII"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: XVII - em desacordo com as condições regulamentadas especificamente pela sinalização (placa - Estacionamento Regulamentado):",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 13.146, de 2015)"
+  ],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, XVIII"
+  ],
+  "ids": [
+   "art-181.inc-XVIII"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: XVIII - em locais e horários proibidos especificamente pela sinalização (placa - Proibido Estacionar):",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, XIX"
+  ],
+  "ids": [
+   "art-181.inc-XIX"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: XIX - em locais e horários de estacionamento e parada proibidos pela sinalização (placa - Proibido Parar e Estacionar):",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "181",
+  "dispositivos": [
+   "art. 181, XX"
+  ],
+  "ids": [
+   "art-181.inc-XX"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Estacionar o veículo: XX - nas vagas reservadas às pessoas com deficiência ou idosos, sem credencial que comprove tal condição:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 13.281, de 2016)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "182",
+  "dispositivos": [
+   "art. 182, I"
+  ],
+  "ids": [
+   "art-182.inc-I"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Parar o veículo: I - nas esquinas e a menos de cinco metros do bordo do alinhamento da via transversal:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "182",
+  "dispositivos": [
+   "art. 182, II"
+  ],
+  "ids": [
+   "art-182.inc-II"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Parar o veículo: II - afastado da guia da calçada (meio-fio) de cinqüenta centímetros a um metro:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "leve",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "182",
+  "dispositivos": [
+   "art. 182, III"
+  ],
+  "ids": [
+   "art-182.inc-III"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Parar o veículo: III - afastado da guia da calçada (meio-fio) a mais de um metro:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "182",
+  "dispositivos": [
+   "art. 182, IV"
+  ],
+  "ids": [
+   "art-182.inc-IV"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Parar o veículo: IV - em desacordo com as posições estabelecidas neste Código:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "leve",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "182",
+  "dispositivos": [
+   "art. 182, V"
+  ],
+  "ids": [
+   "art-182.inc-V"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Parar o veículo: V - na pista de rolamento das estradas, das rodovias, das vias de trânsito rápido e das demais vias dotadas de acostamento:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "182",
+  "dispositivos": [
+   "art. 182, VI"
+  ],
+  "ids": [
+   "art-182.inc-VI"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Parar o veículo: VI - no passeio ou sobre faixa destinada a pedestres, nas ilhas, refúgios, canteiros centrais e divisores de pista de rolamento e marcas de canalização:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "leve",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "182",
+  "dispositivos": [
+   "art. 182, VII"
+  ],
+  "ids": [
+   "art-182.inc-VII"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Parar o veículo: VII - na área de cruzamento de vias, prejudicando a circulação de veículos e pedestres:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "182",
+  "dispositivos": [
+   "art. 182, VIII"
+  ],
+  "ids": [
+   "art-182.inc-VIII"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Parar o veículo: VIII - nos viadutos, pontes e túneis:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "182",
+  "dispositivos": [
+   "art. 182, IX"
+  ],
+  "ids": [
+   "art-182.inc-IX"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Parar o veículo: IX - na contramão de direção:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "182",
+  "dispositivos": [
+   "art. 182, X"
+  ],
+  "ids": [
+   "art-182.inc-X"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Parar o veículo: X - em local e horário proibidos especificamente pela sinalização (placa - Proibido Parar):",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "182",
+  "dispositivos": [
+   "art. 182, XI"
+  ],
+  "ids": [
+   "art-182.inc-XI"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Parar o veículo: XI - sobre ciclovia ou ciclofaixa:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 14.071, de 2020)"
+  ],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "183",
+  "dispositivos": [
+   "art. 183"
+  ],
+  "ids": [
+   "art-183.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Parar o veículo sobre a faixa de pedestres na mudança de sinal luminoso:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "184",
+  "dispositivos": [
+   "art. 184, I"
+  ],
+  "ids": [
+   "art-184.inc-I"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar com o veículo: I - na faixa ou pista da direita, regulamentada como de circulação exclusiva para determinado tipo de veículo, exceto para acesso a imóveis lindeiros ou conversões à direita:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "leve",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "184",
+  "dispositivos": [
+   "art. 184, II"
+  ],
+  "ids": [
+   "art-184.inc-II"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar com o veículo: II - na faixa ou pista da esquerda regulamentada como de circulação exclusiva para determinado tipo de veículo:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "184",
+  "dispositivos": [
+   "art. 184, III"
+  ],
+  "ids": [
+   "art-184.inc-III"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar com o veículo: III - na faixa ou via de trânsito exclusivo, regulamentada com circulação destinada aos veículos de transporte público coletivo de passageiros, salvo casos de força maior e com autorização do poder público competente:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 13.154, de 2015)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa e apreensão do veículo",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "185",
+  "dispositivos": [
+   "art. 185, I",
+   "art. 185, II"
+  ],
+  "ids": [
+   "art-185.inc-I",
+   "art-185.inc-II"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Quando o veículo estiver em movimento, deixar de conservá-lo: I - na faixa a ele destinada pela sinalização de regulamentação, exceto em situações de emergência; II - nas faixas da direita, os veículos lentos e de maior porte:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "186",
+  "dispositivos": [
+   "art. 186, I"
+  ],
+  "ids": [
+   "art-186.inc-I"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar pela contramão de direção em: I - vias com duplo sentido de circulação, exceto para ultrapassar outro veículo e apenas pelo tempo necessário, respeitada a preferência do veículo que transitar em sentido contrário:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "186",
+  "dispositivos": [
+   "art. 186, II"
+  ],
+  "ids": [
+   "art-186.inc-II"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar pela contramão de direção em: II - vias com sinalização de regulamentação de sentido único de circulação:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "187",
+  "dispositivos": [
+   "art. 187, I"
+  ],
+  "ids": [
+   "art-187.inc-I"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar em locais e horários não permitidos pela regulamentação estabelecida pela autoridade competente: I - para todos os tipos de veículos:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "188",
+  "dispositivos": [
+   "art. 188"
+  ],
+  "ids": [
+   "art-188.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar ao lado de outro veículo, interrompendo ou perturbando o trânsito:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "189",
+  "dispositivos": [
+   "art. 189"
+  ],
+  "ids": [
+   "art-189.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de dar passagem aos veículos precedidos de batedores, de socorro de incêndio e salvamento, de polícia, de operação e fiscalização de trânsito e às ambulâncias, quando em serviço de urgência e devidamente identificados por dispositivos regulamentados de alarme sonoro e iluminação intermitente:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 14.440, de 2022)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "190",
+  "dispositivos": [
+   "art. 190"
+  ],
+  "ids": [
+   "art-190.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Seguir veículo em serviço de urgência, estando este com prioridade de passagem devidamente identificada por dispositivos regulamentares de alarme sonoro e iluminação intermitente:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 14.440, de 2022)"
+  ],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "191",
+  "dispositivos": [
+   "art. 191"
+  ],
+  "ids": [
+   "art-191.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Forçar passagem entre veículos que, transitando em sentidos opostos, estejam na iminência de passar um pelo outro ao realizar operação de ultrapassagem:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 12.971, de 2014)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (dez vezes) e suspensão do direito de dirigir"
+ },
+ {
+  "artigo": "192",
+  "dispositivos": [
+   "art. 192"
+  ],
+  "ids": [
+   "art-192.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de guardar distância de segurança lateral e frontal entre o seu veículo e os demais, bem como em relação ao bordo da pista, considerando-se, no momento, a velocidade, as condições climáticas do local da circulação e do veículo:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "193",
+  "dispositivos": [
+   "art. 193"
+  ],
+  "ids": [
+   "art-193.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar com o veículo em calçadas, passeios, passarelas, ciclovias, ciclofaixas, ilhas, refúgios, ajardinamentos, canteiros centrais e divisores de pista de rolamento, acostamentos, marcas de canalização, gramados e jardins públicos:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa (três vezes)"
+ },
+ {
+  "artigo": "194",
+  "dispositivos": [
+   "art. 194"
+  ],
+  "ids": [
+   "art-194.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar em marcha à ré, salvo na distância necessária a pequenas manobras e de forma a não causar riscos à segurança:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "195",
+  "dispositivos": [
+   "art. 195"
+  ],
+  "ids": [
+   "art-195.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Desobedecer às ordens emanadas da autoridade competente de trânsito ou de seus agentes:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "196",
+  "dispositivos": [
+   "art. 196"
+  ],
+  "ids": [
+   "art-196.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de indicar com antecedência, mediante gesto regulamentar de braço ou luz indicadora de direção do veículo, o início da marcha, a realização da manobra de parar o veículo, a mudança de direção ou de faixa de circulação:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "197",
+  "dispositivos": [
+   "art. 197"
+  ],
+  "ids": [
+   "art-197.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de deslocar, com antecedência, o veículo para a faixa mais à esquerda ou mais à direita, dentro da respectiva mão de direção, quando for manobrar para um desses lados:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "198",
+  "dispositivos": [
+   "art. 198"
+  ],
+  "ids": [
+   "art-198.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de dar passagem pela esquerda, quando solicitado:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "199",
+  "dispositivos": [
+   "art. 199"
+  ],
+  "ids": [
+   "art-199.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Ultrapassar pela direita, salvo quando o veículo da frente estiver colocado na faixa apropriada e der sinal de que vai entrar à esquerda:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "200",
+  "dispositivos": [
+   "art. 200"
+  ],
+  "ids": [
+   "art-200.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Ultrapassar pela direita veículo de transporte coletivo ou de escolares, parado para embarque ou desembarque de passageiros, salvo quando houver refúgio de segurança para o pedestre:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "201",
+  "dispositivos": [
+   "art. 201"
+  ],
+  "ids": [
+   "art-201.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de guardar a distância lateral de um metro e cinqüenta centímetros ao passar ou ultrapassar bicicleta:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "202",
+  "dispositivos": [
+   "art. 202, I",
+   "art. 202, II"
+  ],
+  "ids": [
+   "art-202.inc-I",
+   "art-202.inc-II"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Ultrapassar outro veículo: I - pelo acostamento; II - em interseções e passagens de nível;",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 12.971, de 2014)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (cinco vezes)"
+ },
+ {
+  "artigo": "203",
+  "dispositivos": [
+   "art. 203, I",
+   "art. 203, II",
+   "art. 203, III",
+   "art. 203, IV",
+   "art. 203, V"
+  ],
+  "ids": [
+   "art-203.inc-I",
+   "art-203.inc-II",
+   "art-203.inc-III",
+   "art-203.inc-IV",
+   "art-203.inc-V"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Ultrapassar pela contramão outro veículo: I - nas curvas, aclives e declives, sem visibilidade suficiente; II - nas faixas de pedestre; III - nas pontes, viadutos ou túneis; IV - parado em fila junto a sinais luminosos, porteiras, cancelas, cruzamentos ou qualquer outro impedimento à livre circulação; V - onde houver marcação viária longitudinal de divisão de fluxos opostos do tipo linha dupla contínua ou simples contínua amarela:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 12.971, de 2014)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (cinco vezes)"
+ },
+ {
+  "artigo": "204",
+  "dispositivos": [
+   "art. 204"
+  ],
+  "ids": [
+   "art-204.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de parar o veículo no acostamento à direita, para aguardar a oportunidade de cruzar a pista ou entrar à esquerda, onde não houver local apropriado para operação de retorno:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "205",
+  "dispositivos": [
+   "art. 205"
+  ],
+  "ids": [
+   "art-205.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Ultrapassar veículo em movimento que integre cortejo, préstito, desfile e formações militares, salvo com autorização da autoridade de trânsito ou de seus agentes:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "leve",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "206",
+  "dispositivos": [
+   "art. 206, I",
+   "art. 206, II",
+   "art. 206, III",
+   "art. 206, IV",
+   "art. 206, V"
+  ],
+  "ids": [
+   "art-206.inc-I",
+   "art-206.inc-II",
+   "art-206.inc-III",
+   "art-206.inc-IV",
+   "art-206.inc-V"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Executar operação de retorno: I - em locais proibidos pela sinalização; II - nas curvas, aclives, declives, pontes, viadutos e túneis; III - passando por cima de calçada, passeio, ilhas, ajardinamento ou canteiros de divisões de pista de rolamento, refúgios e faixas de pedestres e nas de veículos não motorizados; IV - nas interseções, entrando na contramão de direção da via transversal; V - com prejuízo da livre circulação ou da segurança, ainda que em locais permitidos:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "207",
+  "dispositivos": [
+   "art. 207"
+  ],
+  "ids": [
+   "art-207.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Executar operação de conversão à direita ou à esquerda em locais proibidos pela sinalização:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "208",
+  "dispositivos": [
+   "art. 208"
+  ],
+  "ids": [
+   "art-208.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Avançar o sinal vermelho do semáforo ou o de parada obrigatória, exceto onde houver sinalização que permita a livre conversão à direita prevista no art. 44-A deste Código:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 14.071, de 2020)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "209",
+  "dispositivos": [
+   "art. 209"
+  ],
+  "ids": [
+   "art-209.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transpor, sem autorização, bloqueio viário com ou sem sinalização ou dispositivos auxiliares, ou deixar de adentrar as áreas destinadas à pesagem de veículos:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 14.157, de 2021)"
+  ],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "209-A",
+  "dispositivos": [
+   "art. 209-A"
+  ],
+  "ids": [
+   "art-209-A.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Evadir-se da cobrança pelo uso de rodovias e vias urbanas para não efetuar o seu pagamento, ou deixar de efetuá-lo na forma estabelecida:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 14.157, de 2021)"
+  ],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "210",
+  "dispositivos": [
+   "art. 210"
+  ],
+  "ids": [
+   "art-210.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transpor, sem autorização, bloqueio viário policial:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa, apreensão do veículo e suspensão do direito de dirigir",
+  "medida_administrativa": "remoção do veículo e recolhimento do documento de habilitação"
+ },
+ {
+  "artigo": "211",
+  "dispositivos": [
+   "art. 211"
+  ],
+  "ids": [
+   "art-211.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Ultrapassar veículos em fila, parados em razão de sinal luminoso, cancela, bloqueio viário parcial ou qualquer outro obstáculo, com exceção dos veículos não motorizados:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "212",
+  "dispositivos": [
+   "art. 212"
+  ],
+  "ids": [
+   "art-212.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de parar o veículo antes de transpor linha férrea:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "213",
+  "dispositivos": [
+   "art. 213, I"
+  ],
+  "ids": [
+   "art-213.inc-I"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de parar o veículo sempre que a respectiva marcha for interceptada: I - por agrupamento de pessoas, como préstitos, passeatas, desfiles e outros:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "213",
+  "dispositivos": [
+   "art. 213, II"
+  ],
+  "ids": [
+   "art-213.inc-II"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de parar o veículo sempre que a respectiva marcha for interceptada: II - por agrupamento de veículos, como cortejos, formações militares e outros:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "214",
+  "dispositivos": [
+   "art. 214, I",
+   "art. 214, II",
+   "art. 214, III"
+  ],
+  "ids": [
+   "art-214.inc-I",
+   "art-214.inc-II",
+   "art-214.inc-III"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de dar preferência de passagem a pedestre e a veículo não motorizado: I - que se encontre na faixa a ele destinada; II - que não haja concluído a travessia mesmo que ocorra sinal verde para o veículo; III - portadores de deficiência física, crianças, idosos e gestantes:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "214",
+  "dispositivos": [
+   "art. 214, IV",
+   "art. 214, V"
+  ],
+  "ids": [
+   "art-214.inc-IV",
+   "art-214.inc-V"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de dar preferência de passagem a pedestre e a veículo não motorizado: IV - quando houver iniciado a travessia mesmo que não haja sinalização a ele destinada; V - que esteja atravessando a via transversal para onde se dirige o veículo:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "215",
+  "dispositivos": [
+   "art. 215, I",
+   "art. 215, I, \"a\"",
+   "art. 215, I, \"b\"",
+   "art. 215, II"
+  ],
+  "ids": [
+   "art-215.inc-I",
+   "art-215.inc-I.ali-a",
+   "art-215.inc-I.ali-b",
+   "art-215.inc-II"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de dar preferência de passagem: I - em interseção não sinalizada: II - nas interseções com sinalização de regulamentação de Dê a Preferência: a) a veículo que estiver circulando por rodovia ou rotatória; II - nas interseções com sinalização de regulamentação de Dê a Preferência: b) a veículo que vier da direita; II - nas interseções com sinalização de regulamentação de Dê a Preferência:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "216",
+  "dispositivos": [
+   "art. 216"
+  ],
+  "ids": [
+   "art-216.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Entrar ou sair de áreas lindeiras sem estar adequadamente posicionado para ingresso na via e sem as precauções com a segurança de pedestres e de outros veículos:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "217",
+  "dispositivos": [
+   "art. 217"
+  ],
+  "ids": [
+   "art-217.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Entrar ou sair de fila de veículos estacionados sem dar preferência de passagem a pedestres e a outros veículos:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "218",
+  "dispositivos": [
+   "art. 218, I"
+  ],
+  "ids": [
+   "art-218.inc-I"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar em velocidade superior à máxima permitida para o local, medida por instrumento ou equipamento hábil, em rodovias, vias de trânsito rápido, vias arteriais e demais vias: I - quando a velocidade for superior à máxima em até 20% (vinte por cento):",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 11.334, de 2006)"
+  ],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "218",
+  "dispositivos": [
+   "art. 218, II"
+  ],
+  "ids": [
+   "art-218.inc-II"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar em velocidade superior à máxima permitida para o local, medida por instrumento ou equipamento hábil, em rodovias, vias de trânsito rápido, vias arteriais e demais vias: II - quando a velocidade for superior à máxima em mais de 20% (vinte por cento) até 50% (cinqüenta por cento):",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 11.334, de 2006)"
+  ],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "218",
+  "dispositivos": [
+   "art. 218, III"
+  ],
+  "ids": [
+   "art-218.inc-III"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar em velocidade superior à máxima permitida para o local, medida por instrumento ou equipamento hábil, em rodovias, vias de trânsito rápido, vias arteriais e demais vias: III - quando a velocidade for superior à máxima em mais de 50% (cinqüenta por cento):",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 11.334, de 2006)",
+   "(Redação dada pela Lei nº 14.071, de 2020)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (três vezes) e suspensão do direito de dirigir"
+ },
+ {
+  "artigo": "219",
+  "dispositivos": [
+   "art. 219"
+  ],
+  "ids": [
+   "art-219.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar com o veículo em velocidade inferior à metade da velocidade máxima estabelecida para a via, retardando ou obstruindo o trânsito, a menos que as condições de tráfego e meteorológicas não o permitam, salvo se estiver na faixa da direita:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "220",
+  "dispositivos": [
+   "art. 220, I"
+  ],
+  "ids": [
+   "art-220.inc-I"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de reduzir a velocidade do veículo de forma compatível com a segurança do trânsito: I - quando se aproximar de passeatas, aglomerações, cortejos, préstitos e desfiles:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "220",
+  "dispositivos": [
+   "art. 220, II",
+   "art. 220, III",
+   "art. 220, IV",
+   "art. 220, V",
+   "art. 220, VI",
+   "art. 220, VII",
+   "art. 220, VIII",
+   "art. 220, IX",
+   "art. 220, X",
+   "art. 220, XI",
+   "art. 220, XII"
+  ],
+  "ids": [
+   "art-220.inc-II",
+   "art-220.inc-III",
+   "art-220.inc-IV",
+   "art-220.inc-V",
+   "art-220.inc-VI",
+   "art-220.inc-VII",
+   "art-220.inc-VIII",
+   "art-220.inc-IX",
+   "art-220.inc-X",
+   "art-220.inc-XI",
+   "art-220.inc-XII"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de reduzir a velocidade do veículo de forma compatível com a segurança do trânsito: II - nos locais onde o trânsito esteja sendo controlado pelo agente da autoridade de trânsito, mediante sinais sonoros ou gestos; III - ao aproximar-se da guia da calçada (meio-fio) ou acostamento; IV - ao aproximar-se de ou passar por interseção não sinalizada; V - nas vias rurais cuja faixa de domínio não esteja cercada; VI - nos trechos em curva de pequeno raio; VII - ao aproximar-se de locais sinalizados com advertência de obras ou trabalhadores na pista; VIII - sob chuva, neblina, cerração ou ventos fortes; IX - quando houver má visibilidade; X - quando o pavimento se apresentar escorregadio, defeituoso ou avariado; XI - à aproximação de animais na pista; XII - em declive;",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 14.071, de 2020)"
+  ],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "220",
+  "dispositivos": [
+   "art. 220, XIII"
+  ],
+  "ids": [
+   "art-220.inc-XIII"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de reduzir a velocidade do veículo de forma compatível com a segurança do trânsito: XIII - ao ultrapassar ciclista:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 14.071, de 2020)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "220",
+  "dispositivos": [
+   "art. 220, XIV"
+  ],
+  "ids": [
+   "art-220.inc-XIV"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de reduzir a velocidade do veículo de forma compatível com a segurança do trânsito: XIV - nas proximidades de escolas, hospitais, estações de embarque e desembarque de passageiros ou onde haja intensa movimentação de pedestres:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "221",
+  "dispositivos": [
+   "art. 221"
+  ],
+  "ids": [
+   "art-221.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Portar no veículo placas de identificação em desacordo com as especificações e modelos estabelecidos pelo CONTRAN:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo para regularização e apreensão das placas irregulares"
+ },
+ {
+  "artigo": "222",
+  "dispositivos": [
+   "art. 222"
+  ],
+  "ids": [
+   "art-222.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de manter ligado, nas situações de atendimento de emergência, o sistema de iluminação intermitente dos veículos de polícia, de socorro de incêndio e salvamento, de fiscalização de trânsito e das ambulâncias, ainda que parados:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 14.440, de 2022)"
+  ],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "223",
+  "dispositivos": [
+   "art. 223"
+  ],
+  "ids": [
+   "art-223.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar com o farol desregulado ou com o facho de luz alta de forma a perturbar a visão de outro condutor:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo para regularização"
+ },
+ {
+  "artigo": "224",
+  "dispositivos": [
+   "art. 224"
+  ],
+  "ids": [
+   "art-224.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Fazer uso do facho de luz alta dos faróis em vias providas de iluminação pública:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "leve",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "225",
+  "dispositivos": [
+   "art. 225, I",
+   "art. 225, II"
+  ],
+  "ids": [
+   "art-225.inc-I",
+   "art-225.inc-II"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de sinalizar a via, de forma a prevenir os demais condutores e, à noite, não manter acesas as luzes externas ou omitir-se quanto a providências necessárias para tornar visível o local, quando: I - tiver de remover o veículo da pista de rolamento ou permanecer no acostamento; II - a carga for derramada sobre a via e não puder ser retirada imediatamente:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "226",
+  "dispositivos": [
+   "art. 226"
+  ],
+  "ids": [
+   "art-226.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de retirar todo e qualquer objeto que tenha sido utilizado para sinalização temporária da via:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "227",
+  "dispositivos": [
+   "art. 227, I",
+   "art. 227, II",
+   "art. 227, III",
+   "art. 227, IV",
+   "art. 227, V"
+  ],
+  "ids": [
+   "art-227.inc-I",
+   "art-227.inc-II",
+   "art-227.inc-III",
+   "art-227.inc-IV",
+   "art-227.inc-V"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Usar buzina: I - em situação que não a de simples toque breve como advertência ao pedestre ou a condutores de outros veículos; II - prolongada e sucessivamente a qualquer pretexto; III - entre as vinte e duas e as seis horas; IV - em locais e horários proibidos pela sinalização; V - em desacordo com os padrões e freqüências estabelecidas pelo CONTRAN:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "leve",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "228",
+  "dispositivos": [
+   "art. 228"
+  ],
+  "ids": [
+   "art-228.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Usar no veículo equipamento com som em volume ou freqüência que não sejam autorizados pelo CONTRAN:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo para regularização"
+ },
+ {
+  "artigo": "229",
+  "dispositivos": [
+   "art. 229"
+  ],
+  "ids": [
+   "art-229.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Usar indevidamente no veículo aparelho de alarme ou que produza sons e ruído que perturbem o sossego público, em desacordo com normas fixadas pelo CONTRAN:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa e apreensão do veículo",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "230",
+  "dispositivos": [
+   "art. 230, I",
+   "art. 230, II",
+   "art. 230, III",
+   "art. 230, IV",
+   "art. 230, V",
+   "art. 230, VI"
+  ],
+  "ids": [
+   "art-230.inc-I",
+   "art-230.inc-II",
+   "art-230.inc-III",
+   "art-230.inc-IV",
+   "art-230.inc-V",
+   "art-230.inc-VI"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Conduzir o veículo: I - com o lacre, a inscrição do chassi, o selo, a placa ou qualquer outro elemento de identificação do veículo violado ou falsificado; II - transportando passageiros em compartimento de carga, salvo por motivo de força maior, com permissão da autoridade competente e na forma estabelecida pelo CONTRAN; III - com dispositivo anti-radar; IV - sem qualquer uma das placas de identificação; V - que não esteja registrado e devidamente licenciado; VI - com qualquer uma das placas de identificação sem condições de legibilidade e visibilidade:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa e apreensão do veículo",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "230",
+  "dispositivos": [
+   "art. 230, VII",
+   "art. 230, VIII",
+   "art. 230, IX",
+   "art. 230, X",
+   "art. 230, XI",
+   "art. 230, XII",
+   "art. 230, XIII",
+   "art. 230, XIV",
+   "art. 230, XV",
+   "art. 230, XVI",
+   "art. 230, XVII",
+   "art. 230, XVIII",
+   "art. 230, XIX"
+  ],
+  "ids": [
+   "art-230.inc-VII",
+   "art-230.inc-VIII",
+   "art-230.inc-IX",
+   "art-230.inc-X",
+   "art-230.inc-XI",
+   "art-230.inc-XII",
+   "art-230.inc-XIII",
+   "art-230.inc-XIV",
+   "art-230.inc-XV",
+   "art-230.inc-XVI",
+   "art-230.inc-XVII",
+   "art-230.inc-XVIII",
+   "art-230.inc-XIX"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Conduzir o veículo: VII - com a cor ou característica alterada; VIII - sem ter sido submetido à inspeção de segurança veicular, quando obrigatória; IX - sem equipamento obrigatório ou estando este ineficiente ou inoperante; X - com equipamento obrigatório em desacordo com o estabelecido pelo CONTRAN; XI - com descarga livre ou silenciador de motor de explosão defeituoso, deficiente ou inoperante; XII - com equipamento ou acessório proibido; XIII - com o equipamento do sistema de iluminação e de sinalização alterados; XIV - com registrador instantâneo inalterável de velocidade e tempo viciado ou defeituoso, quando houver exigência desse aparelho; XV - com inscrições, adesivos, legendas e símbolos de caráter publicitário afixados ou pintados no pára-brisa e em toda a extensão da parte traseira do veículo, excetuadas as hipóteses previstas neste Código; XVI - com vidros total ou parcialmente cobertos por películas refletivas ou não, painéis decorativos ou pinturas; XVII - com cortinas ou persianas fechadas, não autorizadas pela legislação; XVIII - em mau estado de conservação, comprometendo a segurança, ou reprovado na avaliação de inspeção de segurança e de emissão de poluentes e ruído, prevista no art. 104; XIX - sem acionar o limpador de pára-brisa sob chuva:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo para regularização"
+ },
+ {
+  "artigo": "230",
+  "dispositivos": [
+   "art. 230, XX"
+  ],
+  "ids": [
+   "art-230.inc-XX"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Conduzir o veículo: XX - sem portar a autorização para condução de escolares, na forma estabelecida no art. 136:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 13.855, de 2019)",
+   "(Redação dada pela Lei nº 13.855, de 2019)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (cinco vezes)",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "230",
+  "dispositivos": [
+   "art. 230, XXI",
+   "art. 230, XXII"
+  ],
+  "ids": [
+   "art-230.inc-XXI",
+   "art-230.inc-XXII"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Conduzir o veículo: XXI - de carga, com falta de inscrição da tara e demais inscrições previstas neste Código; XXII - com defeito no sistema de iluminação, de sinalização ou com lâmpadas queimadas:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "230",
+  "dispositivos": [
+   "art. 230, XXIII"
+  ],
+  "ids": [
+   "art-230.inc-XXIII"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Conduzir o veículo: XXIII - em desacordo com as condições estabelecidas no art. 67-C, relativamente ao tempo de permanência do condutor ao volante e aos intervalos para descanso, quando se tratar de veículo de transporte de carga ou coletivo de passageiros:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 13.103, de 2015)"
+  ],
+  "infracao": "média",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo para cumprimento do tempo de descanso aplicável"
+ },
+ {
+  "artigo": "231",
+  "dispositivos": [
+   "art. 231, I",
+   "art. 231, II",
+   "art. 231, II, \"a\"",
+   "art. 231, II, \"b\"",
+   "art. 231, II, \"c\""
+  ],
+  "ids": [
+   "art-231.inc-I",
+   "art-231.inc-II",
+   "art-231.inc-II.ali-a",
+   "art-231.inc-II.ali-b",
+   "art-231.inc-II.ali-c"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar com o veículo: I - danificando a via, suas instalações e equipamentos; II - derramando, lançando ou arrastando sobre a via: II - derramando, lançando ou arrastando sobre a via: a) carga que esteja transportando; II - derramando, lançando ou arrastando sobre a via: b) combustível ou lubrificante que esteja utilizando; II - derramando, lançando ou arrastando sobre a via: c) qualquer objeto que possa acarretar risco de sinistro:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 14.599, de 2023)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo para regularização"
+ },
+ {
+  "artigo": "231",
+  "dispositivos": [
+   "art. 231, III",
+   "art. 231, IV"
+  ],
+  "ids": [
+   "art-231.inc-III",
+   "art-231.inc-IV"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar com o veículo: III - produzindo fumaça, gases ou partículas em níveis superiores aos fixados pelo CONTRAN; IV - com suas dimensões ou de sua carga superiores aos limites estabelecidos legalmente ou pela sinalização, sem autorização:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo para regularização"
+ },
+ {
+  "artigo": "231",
+  "dispositivos": [
+   "art. 231, V"
+  ],
+  "ids": [
+   "art-231.inc-V"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar com o veículo: V - com excesso de peso, admitido percentual de tolerância quando aferido por equipamento, na forma a ser estabelecida pelo CONTRAN:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa acrescida a cada duzentos quilogramas ou fração de excesso de peso apurado, constante na seguinte tabela:"
+ },
+ {
+  "artigo": "231",
+  "dispositivos": [
+   "art. 231, V, \"a\"",
+   "art. 231, V, \"b\"",
+   "art. 231, V, \"c\"",
+   "art. 231, V, \"d\"",
+   "art. 231, V, \"e\"",
+   "art. 231, V, \"f\""
+  ],
+  "ids": [
+   "art-231.inc-V.ali-a",
+   "art-231.inc-V.ali-b",
+   "art-231.inc-V.ali-c",
+   "art-231.inc-V.ali-d",
+   "art-231.inc-V.ali-e",
+   "art-231.inc-V.ali-f"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar com o veículo: V - com excesso de peso, admitido percentual de tolerância quando aferido por equipamento, na forma a ser estabelecida pelo CONTRAN: a) até 600 kg (seiscentos quilogramas) - R$ 5,32 (cinco reais e trinta e dois centavos); V - com excesso de peso, admitido percentual de tolerância quando aferido por equipamento, na forma a ser estabelecida pelo CONTRAN: b) de 601 (seiscentos e um) a 800 kg (oitocentos quilogramas) - R$ 10,64 (dez reais e sessenta e quatro centavos); V - com excesso de peso, admitido percentual de tolerância quando aferido por equipamento, na forma a ser estabelecida pelo CONTRAN: c) de 801 (oitocentos e um) a 1.000 kg (mil quilogramas) - R$ 21,28 (vinte e um reais e vinte e oito centavos); V - com excesso de peso, admitido percentual de tolerância quando aferido por equipamento, na forma a ser estabelecida pelo CONTRAN: d) de 1.001 (mil e um) a 3.000 kg (três mil quilogramas) - R$ 31,92 (trinta e um reais e noventa e dois centavos); V - com excesso de peso, admitido percentual de tolerância quando aferido por equipamento, na forma a ser estabelecida pelo CONTRAN: e) de 3.001 (três mil e um) a 5.000 kg (cinco mil quilogramas) - R$ 42,56 (quarenta e dois reais e cinquenta e seis centavos); V - com excesso de peso, admitido percentual de tolerância quando aferido por equipamento, na forma a ser estabelecida pelo CONTRAN: f) acima de 5.001 kg (cinco mil e um quilogramas) - R$ 53,20 (cinquenta e três reais e vinte centavos);",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 13.281, de 2016)"
+  ],
+  "medida_administrativa": "retenção do veículo e transbordo da carga excedente"
+ },
+ {
+  "artigo": "231",
+  "dispositivos": [
+   "art. 231, VI"
+  ],
+  "ids": [
+   "art-231.inc-VI"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar com o veículo: VI - em desacordo com a autorização especial, expedida pela autoridade competente para transitar com dimensões excedentes, ou quando a mesma estiver vencida:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa e apreensão do veículo",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "231",
+  "dispositivos": [
+   "art. 231, VII",
+   "art. 231, VIII"
+  ],
+  "ids": [
+   "art-231.inc-VII",
+   "art-231.inc-VIII"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar com o veículo: VII - com lotação excedente; VIII - efetuando transporte remunerado de pessoas ou bens, quando não for licenciado para esse fim, salvo casos de força maior ou com permissão da autoridade competente:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 13.855, de 2019)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "231",
+  "dispositivos": [
+   "art. 231, IX"
+  ],
+  "ids": [
+   "art-231.inc-IX"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar com o veículo: IX - desligado ou desengrenado, em declive:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo"
+ },
+ {
+  "artigo": "231",
+  "dispositivos": [
+   "art. 231, X"
+  ],
+  "ids": [
+   "art-231.inc-X"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar com o veículo: X - excedendo a capacidade máxima de tração:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "de média a gravíssima, a depender da relação entre o excesso de peso apurado e a capacidade máxima de tração, a ser regulamentada pelo CONTRAN",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo e transbordo de carga excedente"
+ },
+ {
+  "artigo": "232",
+  "dispositivos": [
+   "art. 232"
+  ],
+  "ids": [
+   "art-232.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Conduzir veículo sem os documentos de porte obrigatório referidos neste Código:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "leve",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo até a apresentação do documento"
+ },
+ {
+  "artigo": "233",
+  "dispositivos": [
+   "art. 233"
+  ],
+  "ids": [
+   "art-233.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de efetuar o registro de veículo no prazo de trinta dias, junto ao órgão executivo de trânsito, ocorridas as hipóteses previstas no art. 123:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 14.071, de 2020)"
+  ],
+  "infracao": "média",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "234",
+  "dispositivos": [
+   "art. 234"
+  ],
+  "ids": [
+   "art-234.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Falsificar ou adulterar documento de habilitação e de identificação do veículo:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa e apreensão do veículo",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "235",
+  "dispositivos": [
+   "art. 235"
+  ],
+  "ids": [
+   "art-235.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Conduzir pessoas, animais ou carga nas partes externas do veículo, salvo nos casos devidamente autorizados:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo para transbordo"
+ },
+ {
+  "artigo": "236",
+  "dispositivos": [
+   "art. 236"
+  ],
+  "ids": [
+   "art-236.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Rebocar outro veículo com cabo flexível ou corda, salvo em casos de emergência:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "237",
+  "dispositivos": [
+   "art. 237"
+  ],
+  "ids": [
+   "art-237.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transitar com o veículo em desacordo com as especificações, e com falta de inscrição e simbologia necessárias à sua identificação, quando exigidas pela legislação:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo para regularização"
+ },
+ {
+  "artigo": "238",
+  "dispositivos": [
+   "art. 238"
+  ],
+  "ids": [
+   "art-238.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Recusar-se a entregar à autoridade de trânsito ou a seus agentes, mediante recibo, os documentos de habilitação, de registro, de licenciamento de veículo e outros exigidos por lei, para averiguação de sua autenticidade:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa e apreensão do veículo",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "239",
+  "dispositivos": [
+   "art. 239"
+  ],
+  "ids": [
+   "art-239.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Retirar do local veículo legalmente retido para regularização, sem permissão da autoridade competente ou de seus agentes:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa e apreensão do veículo",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "240",
+  "dispositivos": [
+   "art. 240"
+  ],
+  "ids": [
+   "art-240.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar o responsável de promover a baixa do registro de veículo irrecuperável ou definitivamente desmontado:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "Recolhimento do Certificado de Registro e do Certificado de Licenciamento Anual"
+ },
+ {
+  "artigo": "241",
+  "dispositivos": [
+   "art. 241"
+  ],
+  "ids": [
+   "art-241.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de atualizar o cadastro de registro do veículo ou de habilitação do condutor:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "leve",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "242",
+  "dispositivos": [
+   "art. 242"
+  ],
+  "ids": [
+   "art-242.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Fazer falsa declaração de domicílio para fins de registro, licenciamento ou habilitação:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "243",
+  "dispositivos": [
+   "art. 243"
+  ],
+  "ids": [
+   "art-243.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar a empresa seguradora de comunicar ao órgão executivo de trânsito competente a ocorrência de perda total do veículo e de lhe devolver as respectivas placas e documentos:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "Recolhimento das placas e dos documentos"
+ },
+ {
+  "artigo": "244",
+  "dispositivos": [
+   "art. 244, I",
+   "art. 244, II",
+   "art. 244, III",
+   "art. 244, V"
+  ],
+  "ids": [
+   "art-244.inc-I",
+   "art-244.inc-II",
+   "art-244.inc-III",
+   "art-244.inc-V"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Conduzir motocicleta, motoneta ou ciclomotor: I - sem usar capacete de segurança ou vestuário de acordo com as normas e as especificações aprovadas pelo Contran; II - transportando passageiro sem o capacete de segurança, na forma estabelecida no inciso anterior, ou fora do assento suplementar colocado atrás do condutor ou em carro lateral; III - fazendo malabarismo ou equilibrando-se apenas em uma roda; V - transportando criança menor de 10 (dez) anos de idade ou que não tenha, nas circunstâncias, condições de cuidar da própria segurança:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Redação dada pela Lei nº 14.071, de 2020)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa e suspensão do direito de dirigir",
+  "medida_administrativa": "retenção do veículo até regularização e recolhimento do documento de habilitação"
+ },
+ {
+  "artigo": "244",
+  "dispositivos": [
+   "art. 244, VI",
+   "art. 244, VII",
+   "art. 244, VIII",
+   "art. 244, IX"
+  ],
+  "ids": [
+   "art-244.inc-VI",
+   "art-244.inc-VII",
+   "art-244.inc-VIII",
+   "art-244.inc-IX"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Conduzir motocicleta, motoneta ou ciclomotor: VI - rebocando outro veículo; VII - sem segurar o guidom com ambas as mãos, salvo eventualmente para indicação de manobras; VIII - transportando carga incompatível com suas especificações ou em desacordo com o previsto no § 2o do art. 139-A desta Lei; IX - efetuando transporte remunerado de mercadorias em desacordo com o previsto no art. 139-A desta Lei ou com as normas que regem a atividade profissional dos mototaxistas:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 12.009, de 2009)"
+  ],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "apreensão do veículo para regularização"
+ },
+ {
+  "artigo": "244",
+  "dispositivos": [
+   "art. 244, X",
+   "art. 244, XI"
+  ],
+  "ids": [
+   "art-244.inc-X",
+   "art-244.inc-XI"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Conduzir motocicleta, motoneta ou ciclomotor: X - com a utilização de capacete de segurança sem viseira ou óculos de proteção ou com viseira ou óculos de proteção em desacordo com a regulamentação do Contran; XI - transportando passageiro com o capacete de segurança utilizado na forma prevista no inciso X do caput deste artigo:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 14.071, de 2020)"
+  ],
+  "infracao": "média",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo até regularização"
+ },
+ {
+  "artigo": "244",
+  "dispositivos": [
+   "art. 244, § 1º",
+   "art. 244, § 1º, \"a\"",
+   "art. 244, § 1º, \"b\"",
+   "art. 244, § 1º, \"c\"",
+   "art. 244, § 2º"
+  ],
+  "ids": [
+   "art-244.par-1",
+   "art-244.par-1.ali-a",
+   "art-244.par-1.ali-b",
+   "art-244.par-1.ali-c",
+   "art-244.par-2"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Conduzir motocicleta, motoneta ou ciclomotor: § 1º Para ciclos aplica-se o disposto nos incisos III, VII e VIII, além de: a) conduzir passageiro fora da garupa ou do assento especial a ele destinado; b) transitar em vias de trânsito rápido ou rodovias, salvo onde houver acostamento ou faixas de rolamento próprias; c) transportar crianças que não tenham, nas circunstâncias, condições de cuidar de sua própria segurança. § 2º Aplica-se aos ciclomotores o disposto na alínea b do parágrafo anterior:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "245",
+  "dispositivos": [
+   "art. 245"
+  ],
+  "ids": [
+   "art-245.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Utilizar a via para depósito de mercadorias, materiais ou equipamentos, sem autorização do órgão ou entidade de trânsito com circunscrição sobre a via:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção da mercadoria ou do material"
+ },
+ {
+  "artigo": "246",
+  "dispositivos": [
+   "art. 246"
+  ],
+  "ids": [
+   "art-246.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de sinalizar qualquer obstáculo à livre circulação, à segurança de veículo e pedestres, tanto no leito da via terrestre como na calçada, ou obstaculizar a via indevidamente:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa, agravada em até cinco vezes, a critério da autoridade de trânsito, conforme o risco à segurança"
+ },
+ {
+  "artigo": "247",
+  "dispositivos": [
+   "art. 247"
+  ],
+  "ids": [
+   "art-247.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de conduzir pelo bordo da pista de rolamento, em fila única, os veículos de tração ou propulsão humana e os de tração animal, sempre que não houver acostamento ou faixa a eles destinados:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "248",
+  "dispositivos": [
+   "art. 248"
+  ],
+  "ids": [
+   "art-248.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Transportar em veículo destinado ao transporte de passageiros carga excedente em desacordo com o estabelecido no art. 109:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "grave",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção para o transbordo"
+ },
+ {
+  "artigo": "249",
+  "dispositivos": [
+   "art. 249"
+  ],
+  "ids": [
+   "art-249.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Deixar de manter acesas, à noite, as luzes de posição, quando o veículo estiver parado, para fins de embarque ou desembarque de passageiros e carga ou descarga de mercadorias:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "250",
+  "dispositivos": [
+   "art. 250, I",
+   "art. 250, I, \"a\"",
+   "art. 250, I, \"b\"",
+   "art. 250, I, \"c\"",
+   "art. 250, I, \"d\"",
+   "art. 250, I, \"e\"",
+   "art. 250, III"
+  ],
+  "ids": [
+   "art-250.inc-I",
+   "art-250.inc-I.ali-a",
+   "art-250.inc-I.ali-b",
+   "art-250.inc-I.ali-c",
+   "art-250.inc-I.ali-d",
+   "art-250.inc-I.ali-e",
+   "art-250.inc-III"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Quando o veículo estiver em movimento: I - deixar de manter acesa a luz baixa: III - deixar de manter a placa traseira iluminada, à noite; a) durante a noite; III - deixar de manter a placa traseira iluminada, à noite; b) de dia, em túneis e sob chuva, neblina ou cerração; III - deixar de manter a placa traseira iluminada, à noite; c) de dia, no caso de veículos de transporte coletivo de passageiros em circulação em faixas ou pistas a eles destinadas; III - deixar de manter a placa traseira iluminada, à noite; d) de dia, no caso de motocicletas, motonetas e ciclomotores; III - deixar de manter a placa traseira iluminada, à noite; e) de dia, em rodovias de pista simples situadas fora dos perímetros urbanos, no caso de veículos desprovidos de luzes de rodagem diurna; III - deixar de manter a placa traseira iluminada, à noite;",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 14.071, de 2020)",
+   "(Redação dada pela Lei nº 14.071, de 2020)"
+  ],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "250",
+  "dispositivos": [
+   "art. 250, IV"
+  ],
+  "ids": [
+   "art-250.inc-IV"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Quando o veículo estiver em movimento: IV - deixar o veículo de transporte público coletivo de passageiros ou de escolares de manter a porta fechada:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 14.440, de 2022)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa",
+  "medida_administrativa": "retenção do veículo até a regularização"
+ },
+ {
+  "artigo": "251",
+  "dispositivos": [
+   "art. 251, I",
+   "art. 251, II",
+   "art. 251, II, \"a\"",
+   "art. 251, II, \"b\"",
+   "art. 251, II, \"c\""
+  ],
+  "ids": [
+   "art-251.inc-I",
+   "art-251.inc-II",
+   "art-251.inc-II.ali-a",
+   "art-251.inc-II.ali-b",
+   "art-251.inc-II.ali-c"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Utilizar as luzes do veículo: I - o pisca-alerta, exceto em imobilizações ou situações de emergência; II - baixa e alta de forma intermitente, exceto nas seguintes situações: II - baixa e alta de forma intermitente, exceto nas seguintes situações: a) a curtos intervalos, quando for conveniente advertir a outro condutor que se tem o propósito de ultrapassá-lo; II - baixa e alta de forma intermitente, exceto nas seguintes situações: b) em imobilizações ou situação de emergência, como advertência, utilizando pisca-alerta; II - baixa e alta de forma intermitente, exceto nas seguintes situações: c) quando a sinalização de regulamentação da via determinar o uso do pisca-alerta:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "252",
+  "dispositivos": [
+   "art. 252, I",
+   "art. 252, II",
+   "art. 252, III",
+   "art. 252, IV",
+   "art. 252, V",
+   "art. 252, VI"
+  ],
+  "ids": [
+   "art-252.inc-I",
+   "art-252.inc-II",
+   "art-252.inc-III",
+   "art-252.inc-IV",
+   "art-252.inc-V",
+   "art-252.inc-VI"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Dirigir o veículo: I - com o braço do lado de fora; II - transportando pessoas, animais ou volume à sua esquerda ou entre os braços e pernas; III - com incapacidade física ou mental temporária que comprometa a segurança do trânsito; IV - usando calçado que não se firme nos pés ou que comprometa a utilização dos pedais; V - com apenas uma das mãos, exceto quando deva fazer sinais regulamentares de braço, mudar a marcha do veículo, ou acionar equipamentos e acessórios do veículo; VI - utilizando-se de fones nos ouvidos conectados a aparelhagem sonora ou de telefone celular;",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "252",
+  "dispositivos": [
+   "art. 252, VII"
+  ],
+  "ids": [
+   "art-252.inc-VII"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Dirigir o veículo: VII - realizando a cobrança de tarifa com o veículo em movimento:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 13.154, de 2015)"
+  ],
+  "infracao": "média",
+  "penalidade": "multa"
+ },
+ {
+  "artigo": "253",
+  "dispositivos": [
+   "art. 253"
+  ],
+  "ids": [
+   "art-253.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Bloquear a via com veículo:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "gravíssima",
+  "penalidade": "multa e apreensão do veículo",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "253-A",
+  "dispositivos": [
+   "art. 253-A"
+  ],
+  "ids": [
+   "art-253-A.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Usar qualquer veículo para, deliberadamente, interromper, restringir ou perturbar a circulação na via sem autorização do órgão ou entidade de trânsito com circunscrição sobre ela:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [
+   "(Incluído pela Lei nº 13. 281, de 2016)",
+   "(Incluído pela Lei nº 13.281, de 2016)"
+  ],
+  "infracao": "gravíssima",
+  "penalidade": "multa (vinte vezes) e suspensão do direito de dirigir por 12 (doze) meses",
+  "medida_administrativa": "remoção do veículo"
+ },
+ {
+  "artigo": "254",
+  "dispositivos": [
+   "art. 254, I",
+   "art. 254, II",
+   "art. 254, III",
+   "art. 254, IV",
+   "art. 254, V",
+   "art. 254, VI"
+  ],
+  "ids": [
+   "art-254.inc-I",
+   "art-254.inc-II",
+   "art-254.inc-III",
+   "art-254.inc-IV",
+   "art-254.inc-V",
+   "art-254.inc-VI"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "É proibido ao pedestre: I - permanecer ou andar nas pistas de rolamento, exceto para cruzá-las onde for permitido; II - cruzar pistas de rolamento nos viadutos, pontes, ou túneis, salvo onde exista permissão; III - atravessar a via dentro das áreas de cruzamento, salvo quando houver sinalização para esse fim; IV - utilizar-se da via em agrupamentos capazes de perturbar o trânsito, ou para a prática de qualquer folguedo, esporte, desfiles e similares, salvo em casos especiais e com a devida licença da autoridade competente; V - andar fora da faixa própria, passarela, passagem aérea ou subterrânea; VI - desobedecer à sinalização de trânsito específica;",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "leve",
+  "penalidade": "multa, em 50% (cinqüenta por cento) do valor da infração de natureza leve"
+ },
+ {
+  "artigo": "255",
+  "dispositivos": [
+   "art. 255"
+  ],
+  "ids": [
+   "art-255.caput"
+  ],
+  "tipo": "infracao_administrativa",
+  "conduta": "Conduzir bicicleta em passeios onde não seja permitida a circulação desta, ou de forma agressiva, em desacordo com o disposto no parágrafo único do art. 59:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XV — DAS INFRAÇÕES",
+  "notas": [],
+  "infracao": "média",
+  "penalidade": "multa",
+  "medida_administrativa": "remoção da bicicleta, mediante recibo para o pagamento da multa"
+ },
+ {
+  "artigo": "302",
+  "dispositivos": [
+   "art. 302"
+  ],
+  "ids": [
+   "art-302.caput"
+  ],
+  "tipo": "crime",
+  "conduta": "Praticar homicídio culposo na direção de veículo automotor:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XIX — DOS CRIMES DE TRÂNSITO",
+  "notas": [],
+  "penas": "detenção, de dois a quatro anos, e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor"
+ },
+ {
+  "artigo": "302",
+  "dispositivos": [
+   "art. 302, § 1º",
+   "art. 302, § 1º, I",
+   "art. 302, § 1º, II",
+   "art. 302, § 1º, III",
+   "art. 302, § 1º, IV",
+   "art. 302, § 2º",
+   "art. 302, § 3º"
+  ],
+  "ids": [
+   "art-302.par-1",
+   "art-302.par-1.inc-I",
+   "art-302.par-1.inc-II",
+   "art-302.par-1.inc-III",
+   "art-302.par-1.inc-IV",
+   "art-302.par-2",
+   "art-302.par-3"
+  ],
+  "tipo": "crime",
+  "conduta": "Praticar homicídio culposo na direção de veículo automotor: § 1º No homicídio culposo cometido na direção de veículo automotor, a pena é aumentada de 1/3 (um terço) à metade, se o agente: I - não possuir Permissão para Dirigir ou Carteira de Habilitação; II - praticá-lo em faixa de pedestres ou na calçada; III - deixar de prestar socorro, quando possível fazê-lo sem risco pessoal, à vítima do sinistro; IV - no exercício de sua profissão ou atividade, estiver conduzindo veículo de transporte de passageiros. § 2º o § 3º Se o agente conduz veículo automotor sob a influência de álcool ou de qualquer outra substância psicoativa que determine dependência:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XIX — DOS CRIMES DE TRÂNSITO",
+  "notas": [
+   "(Incluído pela Lei nº 12.971, de 2014)",
+   "(Incluído pela Lei nº 13.546, de 2017)",
+   "(Redação dada pela Lei nº 14.599, de 2023)"
+  ],
+  "penas": "reclusão, de cinco a oito anos, e suspensão ou proibição do direito de se obter a permissão ou a habilitação para dirigir veículo automotor"
+ },
+ {
+  "artigo": "303",
+  "dispositivos": [
+   "art. 303"
+  ],
+  "ids": [
+   "art-303.caput"
+  ],
+  "tipo": "crime",
+  "conduta": "Praticar lesão corporal culposa na direção de veículo automotor:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XIX — DOS CRIMES DE TRÂNSITO",
+  "notas": [],
+  "penas": "detenção, de seis meses a dois anos e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor"
+ },
+ {
+  "artigo": "304",
+  "dispositivos": [
+   "art. 304"
+  ],
+  "ids": [
+   "art-304.caput"
+  ],
+  "tipo": "crime",
+  "conduta": "Deixar o condutor do veículo, na ocasião do sinistro, de prestar imediato socorro à vítima, ou, não podendo fazê-lo diretamente, por justa causa, deixar de solicitar auxílio da autoridade pública:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XIX — DOS CRIMES DE TRÂNSITO",
+  "notas": [
+   "(Redação dada pela Lei nº 14.599, de 2023)"
+  ],
+  "penas": "detenção, de seis meses a um ano, ou multa, se o fato não constituir elemento de crime mais grave"
+ },
+ {
+  "artigo": "305",
+  "dispositivos": [
+   "art. 305"
+  ],
+  "ids": [
+   "art-305.caput"
+  ],
+  "tipo": "crime",
+  "conduta": "Afastar-se o condutor do veículo do local do sinistro, para fugir à responsabilidade penal ou civil que lhe possa ser atribuída:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XIX — DOS CRIMES DE TRÂNSITO",
+  "notas": [
+   "(Redação dada pela Lei nº 14.599, de 2023)"
+  ],
+  "penas": "detenção, de seis meses a um ano, ou multa"
+ },
+ {
+  "artigo": "306",
+  "dispositivos": [
+   "art. 306"
+  ],
+  "ids": [
+   "art-306.caput"
+  ],
+  "tipo": "crime",
+  "conduta": "Conduzir veículo automotor com capacidade psicomotora alterada em razão da influência de álcool ou de outra substância psicoativa que determine dependência:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XIX — DOS CRIMES DE TRÂNSITO",
+  "notas": [
+   "(Redação dada pela Lei nº 12.760, de 2012)"
+  ],
+  "penas": "detenção, de seis meses a três anos, multa e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor"
+ },
+ {
+  "artigo": "307",
+  "dispositivos": [
+   "art. 307"
+  ],
+  "ids": [
+   "art-307.caput"
+  ],
+  "tipo": "crime",
+  "conduta": "Violar a suspensão ou a proibição de se obter a permissão ou a habilitação para dirigir veículo automotor imposta com fundamento neste Código:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XIX — DOS CRIMES DE TRÂNSITO",
+  "notas": [],
+  "penas": "detenção, de seis meses a um ano e multa, com nova imposição adicional de idêntico prazo de suspensão ou de proibição"
+ },
+ {
+  "artigo": "308",
+  "dispositivos": [
+   "art. 308"
+  ],
+  "ids": [
+   "art-308.caput"
+  ],
+  "tipo": "crime",
+  "conduta": "Participar, na direção de veículo automotor, em via pública, de corrida, disputa ou competição automobilística ou ainda de exibição ou demonstração de perícia em manobra de veículo automotor, não autorizada pela autoridade competente, gerando situação de risco à incolumidade pública ou privada:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XIX — DOS CRIMES DE TRÂNSITO",
+  "notas": [
+   "(Redação dada pela Lei nº 12.971, de 2014)",
+   "(Redação dada pela Lei nº 13.546, de 2017)"
+  ],
+  "penas": "detenção, de 6 (seis) meses a 3 (três) anos, multa e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor"
+ },
+ {
+  "artigo": "309",
+  "dispositivos": [
+   "art. 309"
+  ],
+  "ids": [
+   "art-309.caput"
+  ],
+  "tipo": "crime",
+  "conduta": "Dirigir veículo automotor, em via pública, sem a devida Permissão para Dirigir ou Habilitação ou, ainda, se cassado o direito de dirigir, gerando perigo de dano:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XIX — DOS CRIMES DE TRÂNSITO",
+  "notas": [],
+  "penas": "detenção, de seis meses a um ano, ou multa"
+ },
+ {
+  "artigo": "310",
+  "dispositivos": [
+   "art. 310"
+  ],
+  "ids": [
+   "art-310.caput"
+  ],
+  "tipo": "crime",
+  "conduta": "Permitir, confiar ou entregar a direção de veículo automotor a pessoa não habilitada, com habilitação cassada ou com o direito de dirigir suspenso, ou, ainda, a quem, por seu estado de saúde, física ou mental, ou por embriaguez, não esteja em condições de conduzi-lo com segurança:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XIX — DOS CRIMES DE TRÂNSITO",
+  "notas": [],
+  "penas": "detenção, de seis meses a um ano, ou multa"
+ },
+ {
+  "artigo": "311",
+  "dispositivos": [
+   "art. 311"
+  ],
+  "ids": [
+   "art-311.caput"
+  ],
+  "tipo": "crime",
+  "conduta": "Trafegar em velocidade incompatível com a segurança nas proximidades de escolas, hospitais, estações de embarque e desembarque de passageiros, logradouros estreitos, ou onde haja grande movimentação ou concentração de pessoas, gerando perigo de dano:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XIX — DOS CRIMES DE TRÂNSITO",
+  "notas": [],
+  "penas": "detenção, de seis meses a um ano, ou multa"
+ },
+ {
+  "artigo": "312",
+  "dispositivos": [
+   "art. 312"
+  ],
+  "ids": [
+   "art-312.caput"
+  ],
+  "tipo": "crime",
+  "conduta": "Inovar artificiosamente, em caso de sinistro automobilístico com vítima, na pendência do respectivo procedimento policial preparatório, inquérito policial ou processo penal, o estado de lugar, de coisa ou de pessoa, a fim de induzir a erro o agente policial, o perito ou o juiz:",
+  "status": "vigente",
+  "capitulo": "CAPÍTULO XIX — DOS CRIMES DE TRÂNSITO",
+  "notas": [
+   "(Redação dada pela Lei nº 14.599, de 2023)"
+  ],
+  "penas": "detenção, de seis meses a um ano, ou multa"
+ }
+]

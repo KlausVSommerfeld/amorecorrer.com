@@ -8,7 +8,7 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 - `#N` é o número estável da pendência em `PROGRESSO.md › Pendências e decisões em aberto`. Item sem número não tem entrada lá.
 - Sem explicação aqui: uma linha por item.
 
-*Atualizado em 2026-09-25.*
+*Atualizado em 2026-09-29.*
 
 ---
 
@@ -49,13 +49,17 @@ Plano: `PLANO-verificacao-radar-inmetro.md`. Fases 0, 1, 3 entregues; Fase 2 só
 - **Fase 4: publicar o front** — migration e `form-submit` v63 já estão em produção; falta o build do `Form.tsx` novo (código em `main` desde 24/09). → Sessão de 24/09/2026
   - Confirmar com uma notificação real a dica de "onde encontrar" os números no formulário (texto genérico hoje). → Sessão de 24/09/2026
 - **Ligar `RADAR_TESE_ATIVA`** — só depois da Fase 0.5 assinada. → Sessão de 24/09/2026 (Fase 5)
-  - **Condição antes de ligar:** casos sem bloco (`nao_aplicavel`, comprovado) vão sem as regras do radar, logo sem a trava de base legal. Acrescentar uma trava neutra ao prompt base com a chave ligada (ex.: "não cite resolução, portaria ou certificado que não conste nos dados do caso"). → Sessão de 24/09/2026 (Fase 5, revisão final)
+  - **Condição antes de ligar:** casos sem bloco (`nao_aplicavel`, comprovado) vão sem as regras do radar, logo sem a trava de base legal. Acrescentar uma trava neutra ao prompt base com a chave ligada (ex.: "não cite resolução, portaria ou certificado que não conste nos dados do caso"). → Sessão de 24/09/2026 (Fase 5, revisão final) Com a base legal do CTB (29/09), a trava existe para todo caso — reavaliar se a condição ainda se aplica.
   - Oito achados menores da revisão final (fuso do "capturada em", robustez a formatos impossíveis hoje, reenvio só com nº do medidor não reverifica, reenvio em `generating` diverge da auditoria…) — lista no `PROGRESSO.md`. → Sessão de 24/09/2026 (Fase 5, revisão final)
   - Confirmar o dispositivo do CONTRAN antes de acrescentá-lo a `REGRAS_RADAR` (risco 3). → plano §7
   - *Decisão do Klaus:* com vigência comprovada, o DeepSeek ainda pede o certificado por conta própria ao ver `medidor_numero_serie` no formulário. Omitir os campos `medidor_*` do contexto nesse caso? → Sessão de 24/09/2026 (Fase 5)
 - **Peça endereçada ao destinatário errado** — numa rodada real, uma *defesa prévia* saiu endereçada à JARI, que só julga recurso. O prompt não diz a quem cada estágio (`especie_documento`) se dirige. → Sessão de 25/09/2026 (peça limpa)
-- **Base legal sem conferência fora do radar** — a IA citou o art. 24 do Código Penal (estado de necessidade) e o art. 90 do CTB sem que ninguém os tenha conferido (o 90 foi conferido depois: existe e foi bem aplicado). Mesma solução da trava neutra pendente do radar, mas vale para todo caso. → Sessão de 25/09/2026 (peça limpa)
-  - Spike feito: ferramenta de consulta ao CTB (`ler_artigo`/`buscar_ctb`) é viável — o arquivo do Planalto tem 389 artigos, só a redação vigente — mas **sozinha não trava**: precisa de conferência em código de que todo artigo citado foi lido. Próximo passo: teste com código descartável (5–10 casos, no `deepseek-flash`). Com ferramentas, o `reasoning_content` precisa voltar em toda rodada se o raciocínio estiver ligado — hoje está desligado. → Sessão de 25/09/2026 (spike da ferramenta do CTB)
+- **"Modo sem IA" chega ao cliente** — com `DEEPSEEK_API_KEY` vazia, o worker gera um PDF-placeholder e o envia; em produção deveria falhar, como já faz o SMTP. Pré-existente, apontado na revisão final. → Sessão de 29/09/2026 (base legal do CTB)
+- *Menor:* conferência não confere o 29 em "arts. 280, § 2º, e 29", nem lê "art 29" sem ponto; base com JSON de forma errada sai como erro genérico (o caso vai a `failed` do mesmo jeito). → Sessão de 29/09/2026 (base legal do CTB)
+- **Tabela de códigos de enquadramento** — o auto traz um código ("7455-0") que o CTB não mapeia; hoje esses casos ficam sem enquadramento (só o rito). Base separada, a construir. → Sessão de 29/09/2026 (base legal do CTB)
+- **Ferramenta de consulta ao CTB (caminho B)** — descartada por ora (teste de 26/09); voltaria só com uma busca de descoberta melhor que a atual (trecho exato). → Sessão de 26/09/2026 (spike: contexto × ferramenta)
+- **A peça pode argumentar contra o cliente na velocidade** — na verificação real, com 97 km/h num limite de 80, a IA sustentou que o caso "se amolda ao inciso II" do art. 218 (mais grave). O auto traz velocidade **medida** e **considerada** (com a tolerância do CONTRAN, fora da base), mas o formulário só coleta a aferida. *Decisão do Klaus:* coletar a velocidade considerada no formulário e/ou proibir no prompt qualquer tese de enquadramento mais grave. → Sessão de 29/09/2026 (base legal do CTB)
+- **Tese de "estado de necessidade" sem norma** — pedida pelo cliente, a IA deixou de citar o Código Penal (a conferência recusou) mas manteve o argumento de que "afasta a culpabilidade". A conferência olha citações, não teses. *Decisão do Klaus* se a tese pode entrar numa defesa de trânsito. → Sessão de 29/09/2026 (base legal do CTB)
 - *Menor:* o CPF aparece só com dígitos no corpo da peça quando o modelo o repete ("11144477735"); o fecho já formata. → Sessão de 25/09/2026 (peça limpa)
 - **Fase 6 — observabilidade** — alerta de `record_count`, frescor como métrica (fonte congelada), view `radar_revisao_pendente`, métricas mensais. → Sessão de 21/09/2026 · plano §6
 - **Fase 7 — OCR da notificação** — só abrir issue; fora desta branch. → plano §6

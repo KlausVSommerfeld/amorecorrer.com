@@ -15,6 +15,10 @@
 *.otf binary
 *.zip binary
 
+# Fonte oficial do CTB salva do Planalto: guardada byte a byte (tem CRLF e é
+# windows-1252). Normalizar mudaria o sha256 registrado em saida/ctb.json → meta.
+CTB-compilado_files/l9503compilado.htm -text
+
 # Common config files stay LF
 *.sh text eol=lf
 *.ps1 text eol=lf
