@@ -86,7 +86,7 @@ Mensagens assinadas: o corpo JSON **compacto** (`separators=(",",":")`) nos POST
 
 Invariantes: `attempt_dispatch` só cria dispatch se `payment_status = 'paid'` **e** `document_status = 'pending'` — caso contrário retorna conjunto vazio (não é erro). RLS habilitada em todas as tabelas com política permissiva para service role. O `id` de uma linha existente em `stripe_sessions` nunca é reescrito pelo webhook, para preservar a FK `dispatches.stripe_session_id`.
 
-**O schema vive em sete migrations**: uma baseline (09-10/09/2026) que consolidou as doze antigas e corrigiu o que elas deixaram errado, duas do radar, a do bucket, a dos campos do medidor em `form_submissions` a da verificação do medidor no fluxo (ambas de 24/09/2026) e a da velocidade considerada (30/09/2026). A baseline é um **retrato congelado** — toda mudança de schema entra como migration NOVA. Ela só voltaria a ser editada se o remoto fosse reconstruído de novo.
+**O schema vive em sete migrations**: uma baseline (09-10/09/2026) que consolidou as doze antigas e corrigiu o que elas deixaram errado, duas do radar, a do bucket, a dos campos do medidor em `form_submissions`, a da verificação do medidor no fluxo (ambas de 24/09/2026) e a da velocidade considerada (30/09/2026). A baseline é um **retrato congelado** — toda mudança de schema entra como migration NOVA. Ela só voltaria a ser editada se o remoto fosse reconstruído de novo.
 
 Sete invariantes que quebram em silêncio se forem desfeitas:
 
