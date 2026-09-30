@@ -5,11 +5,12 @@
 Nunca `unittest discover`: test_resend_smtp.py manda e-mail real ao ser importado.
 """
 
+import asyncio
 import unittest
 from pathlib import Path
 
 from base_legal import carregar_ctb, montar_base
-from conferencia import conferir_citacoes
+from conferencia import CitacaoForaDaBase, conferir_citacoes, gerar_com_conferencia
 
 CTB_DIR = str(Path(__file__).resolve().parent.parent / "CTB-compilado_files")
 
@@ -87,6 +88,46 @@ class TestConferencia(unittest.TestCase):
         r = self.conferir('O art. 281 diz que "no prazo máximo de trinta dias, não for expedida a notificação da autuação".')
         self.assertEqual(r.alertas, [])
 
+
+
+class TestRefazer(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.c = carregar_ctb(CTB_DIR)
+        cls.base = montar_base(cls.c, "Art. 218, III, do CTB")
+
+    def rodar(self, respostas):
+        chamadas = []
+
+        async def gerar(historico):
+            chamadas.append(historico)
+            return respostas[len(chamadas) - 1]
+
+        return asyncio.run(gerar_com_conferencia(gerar, self.base, self.c)), chamadas
+
+    def test_passa_de_primeira_sem_refazer(self):
+        (peca, res, recusas_1a), chamadas = self.rodar([PECA_BOA])
+        self.assertEqual(peca, PECA_BOA)
+        self.assertEqual(recusas_1a, [])
+        self.assertEqual(chamadas, [None])
+
+    def test_refaz_uma_vez_com_o_pedido_de_correcao(self):
+        ruim = PECA_BOA.replace("Nestes termos", "Aplica-se o art. 24 do Código Penal. Nestes termos")
+        (peca, res, recusas_1a), chamadas = self.rodar([ruim, PECA_BOA])
+        self.assertEqual(peca, PECA_BOA)
+        self.assertEqual([r.motivo for r in recusas_1a], ["norma fora do CTB"])
+        self.assertEqual(len(chamadas), 2)
+        self.assertEqual(chamadas[1][0], {"role": "assistant", "content": ruim})
+        self.assertEqual(chamadas[1][1]["role"], "user")
+        self.assertIn("Código Penal", chamadas[1][1]["content"])
+
+    def test_falha_de_novo_levanta_erro_com_as_recusas(self):
+        ruim = "Aplica-se o art. 24 do Código Penal. Nestes termos, pede deferimento."
+        with self.assertRaises(CitacaoForaDaBase) as ctx:
+            self.rodar([ruim, ruim])
+        self.assertTrue(isinstance(ctx.exception, RuntimeError))
+        self.assertIn("Código Penal", str(ctx.exception))
+        self.assertEqual(ctx.exception.recusas[0].motivo, "norma fora do CTB")
 
 if __name__ == "__main__":
     unittest.main()

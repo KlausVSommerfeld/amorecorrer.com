@@ -12,8 +12,10 @@ from __future__ import annotations
 import re
 import unicodedata
 from dataclasses import dataclass, field
+from typing import Awaitable, Callable
 
 from base_legal import BaseLegal, Ctb
+from prompt import pedido_de_correcao
 
 # Sufixo ("-A") colado ao número: com espaço permitido, "art. 280 - A infração"
 # virava "280-A" (mesmo defeito achado na remissão da base_legal).
@@ -105,3 +107,33 @@ def conferir_citacoes(peca: str, base: BaseLegal, c: Ctb) -> Resultado:
     base_norm = _normalizar(base.texto)
     alertas = [q for q in _ASPAS.findall(peca) if _normalizar(q) not in base_norm]
     return Resultado(recusas=recusas, alertas=alertas)
+
+
+class CitacaoForaDaBase(RuntimeError):
+    """Recusada duas vezes: o caso vai a `failed`, sem e-mail ao cliente."""
+
+    def __init__(self, recusas: list[Recusa]):
+        self.recusas = recusas
+        itens = "; ".join(f"{r.trecho} ({r.motivo})" for r in recusas)
+        super().__init__(f"citação fora da base normativa após nova tentativa: {itens}")
+
+
+async def gerar_com_conferencia(
+    gerar: Callable[[list[dict[str, str]] | None], Awaitable[str]],
+    base: BaseLegal,
+    c: Ctb,
+) -> tuple[str, Resultado, list[Recusa]]:
+    """Gera, confere e refaz UMA vez. Devolve (peça, resultado final, recusas da 1ª)."""
+    peca = await gerar(None)
+    primeiro = conferir_citacoes(peca, base, c)
+    if not primeiro.recusas:
+        return peca, primeiro, []
+    historico = [
+        {"role": "assistant", "content": peca},
+        {"role": "user", "content": pedido_de_correcao(primeiro.recusas)},
+    ]
+    segunda = await gerar(historico)
+    resultado = conferir_citacoes(segunda, base, c)
+    if resultado.recusas:
+        raise CitacaoForaDaBase(resultado.recusas)
+    return segunda, resultado, primeiro.recusas

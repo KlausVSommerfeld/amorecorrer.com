@@ -21,6 +21,8 @@ from supabase import create_client
 from config import settings
 from hmac_utils import hmac_sha256_hex
 from peca import paragrafo_para_pdf, texto_da_peca
+from base_legal import carregar_ctb, montar_base
+from conferencia import gerar_com_conferencia
 from prompt import argumentos_da_chamada, build_case_context, system_prompt, texto_da_resposta
 from verificacao import bloco_verificacao
 
@@ -107,7 +109,9 @@ async def notify_finish(
     r.raise_for_status()
 
 
-async def call_deepseek(text_context: str, sistema: str | None = None) -> str:
+async def call_deepseek(
+    text_context: str, sistema: str | None = None, historico: list[dict[str, str]] | None = None
+) -> str:
     if not settings.deepseek_api_key:
         return (
             "[Modo sem IA: defina DEEPSEEK_API_KEY] Rascunho automático indisponível. "
@@ -119,7 +123,9 @@ async def call_deepseek(text_context: str, sistema: str | None = None) -> str:
         base_url=settings.deepseek_api_base,
     )
     completion = await client.chat.completions.create(
-        **argumentos_da_chamada(settings.deepseek_model, sistema or system_prompt(False), text_context)
+        **argumentos_da_chamada(
+            settings.deepseek_model, sistema or system_prompt(False), text_context, historico
+        )
     )
     escolha = completion.choices[0]
     # Vazia ou cortada lança erro: o caso vai a `failed` em vez de o cliente
@@ -263,8 +269,33 @@ async def run_dispatch_pipeline(body_text: str) -> None:
                 bloco = bloco_verificacao(case.get("verificacao_medidor"))
                 # Só dados do equipamento: nenhum dado pessoal do cliente.
                 log.info("verificação do medidor no prompt case_id=%s bloco=%r", payload.case_id, bloco)
-            sistema = system_prompt(settings.radar_tese_ativa, case.get("verificacao_medidor"))
-            draft = await call_deepseek(context, sistema)
+            # Base normativa do CTB: sem ela não há peça (BaseLegalIndisponivel → failed).
+            ctb = carregar_ctb(settings.ctb_dir)
+            base = montar_base(ctb, case.get("amparo_legal"))
+            log.info(
+                "base legal case_id=%s ctb_sha256=%s obtido_em=%s enquadramento=%s artigos=%s",
+                payload.case_id, base.sha256[:12], base.obtido_em,
+                base.enquadramento or "não reconhecido", sorted(base.artigos),
+            )
+            usuario = f"{context}\n\n{base.texto}"
+            sistema = system_prompt(
+                settings.radar_tese_ativa,
+                case.get("verificacao_medidor"),
+                sem_enquadramento=base.enquadramento is None,
+            )
+
+            async def gerar(historico: list[dict[str, str]] | None) -> str:
+                return await call_deepseek(usuario, sistema, historico)
+
+            # Citação fora da base: refaz uma vez; de novo → CitacaoForaDaBase → failed.
+            draft, conferido, recusas_1a = await gerar_com_conferencia(gerar, base, ctb)
+            if recusas_1a:
+                log.warning(
+                    "peça refeita case_id=%s recusas=%s",
+                    payload.case_id, [(r.trecho, r.motivo) for r in recusas_1a],
+                )
+            if conferido.alertas:
+                log.info("aspas não literais case_id=%s alertas=%r", payload.case_id, conferido.alertas)
 
             pdf_title = f"Recurso — {payload.case_id}"
             pdf_body = (
