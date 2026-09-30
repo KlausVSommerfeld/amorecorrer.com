@@ -390,6 +390,7 @@ Deno.serve(async (req) => {
       descricao_infracao: norm.descricao_infracao ?? null,
       velocidade_permitida: norm.velocidade_permitida ?? null,
       velocidade_aferida: norm.velocidade_aferida ?? null,
+      velocidade_considerada: norm.velocidade_considerada ?? null,
       medidor_numero_serie: norm.medidor_numero_serie ?? null,
       medidor_numero_inmetro: norm.medidor_numero_inmetro ?? null,
       medidor_numero_certificado: norm.medidor_numero_certificado ?? null,

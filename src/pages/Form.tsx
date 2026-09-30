@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getCaseIdFromUrl } from '../lib/caseId';
 import { submitForm } from '../lib/api';
 import { normalizarNumeroDigitos, normalizarNumeroSerie } from '../lib/medidor';
+import { consideradaMaiorQueAferida } from '../lib/velocidade';
 import PageShell from '../components/PageShell';
 
 /** O envio dispara a Edge Function, que por sua vez chama o pipeline. É mais
@@ -63,6 +64,7 @@ interface FormData {
   justificativa: string;
   velocidade_permitida: string;
   velocidade_aferida: string;
+  velocidade_considerada: string;
   // Medidor de velocidade — todos opcionais; alimentam `verificar_medidor`.
   medidor_numero_serie: string;
   medidor_numero_inmetro: string;
@@ -235,6 +237,7 @@ const INITIAL_FORM: FormData = {
   justificativa: '',
   velocidade_permitida: '',
   velocidade_aferida: '',
+  velocidade_considerada: '',
   medidor_numero_serie: '',
   medidor_numero_inmetro: '',
   medidor_numero_certificado: '',
@@ -295,7 +298,7 @@ const FIELD_ORDER = [
   'nomeCompleto', 'cpf', 'email', 'emailConfirma', 'telefone', 'cep', 'cidade', 'endereco',
   'placa', 'renainf', 'estagio', 'orgaoAutuador', 'autoInfracao',
   'notificacaoPenalidade', 'dataHora', 'localSentido',
-  'velocidade_permitida', 'velocidade_aferida',
+  'velocidade_permitida', 'velocidade_aferida', 'velocidade_considerada',
   'medidor_numero_serie', 'medidor_numero_inmetro', 'medidor_numero_certificado',
   'justificativa'
 ];
@@ -649,11 +652,18 @@ const Form = () => {
      * órgão. 400 km/h é folgado o bastante para qualquer caso real e barra o
      * dígito repetido sem querer.
      */
-    for (const campo of ['velocidade_permitida', 'velocidade_aferida'] as const) {
+    for (const campo of ['velocidade_permitida', 'velocidade_aferida', 'velocidade_considerada'] as const) {
       const bruto = formData[campo].trim();
       if (bruto && Number(bruto) > 400) {
         newErrors[campo] = 'Confira este valor: acima de 400 km/h não passa por um caso real.';
       }
+    }
+
+    // A considerada é a aferida menos a tolerância: nunca passa dela num auto real.
+    if (!newErrors.velocidade_considerada &&
+        consideradaMaiorQueAferida(formData.velocidade_aferida, formData.velocidade_considerada)) {
+      newErrors.velocidade_considerada =
+        'A velocidade considerada não pode ser maior que a aferida. Confira os números no auto.';
     }
 
     // Data e hora: nada de infração no futuro.
@@ -696,6 +706,7 @@ const Form = () => {
   const normalizeData = (data: FormData) => {
     const vPermitida = data.velocidade_permitida.trim() ? parseInt(data.velocidade_permitida, 10) : NaN;
     const vAferida = data.velocidade_aferida.trim() ? parseInt(data.velocidade_aferida, 10) : NaN;
+    const vConsiderada = data.velocidade_considerada.trim() ? parseInt(data.velocidade_considerada, 10) : NaN;
 
     return {
       case_id: data.case_id,
@@ -732,6 +743,7 @@ const Form = () => {
 
       velocidade_permitida: Number.isFinite(vPermitida) ? vPermitida : null,
       velocidade_aferida: Number.isFinite(vAferida) ? vAferida : null,
+      velocidade_considerada: Number.isFinite(vConsiderada) ? vConsiderada : null,
 
       medidor_numero_serie: normalizarNumeroSerie(data.medidor_numero_serie),
       medidor_numero_inmetro: normalizarNumeroDigitos(data.medidor_numero_inmetro),
@@ -901,7 +913,7 @@ const Form = () => {
       return;
     }
     // `type="number"` ainda aceita "e", "+" e "-" digitados.
-    if (name === 'velocidade_permitida' || name === 'velocidade_aferida') {
+    if (name === 'velocidade_permitida' || name === 'velocidade_aferida' || name === 'velocidade_considerada') {
       setFormData(prev => ({ ...prev, [name]: onlyDigits(value).slice(0, 3) }));
       return;
     }
@@ -1568,7 +1580,7 @@ const Form = () => {
                 </p>
               </div>
 
-              <div>
+              <div className="form-field--wide">
                 <label className="form-label" htmlFor="amparoLegal">
                   Amparo legal da autuação
                 </label>
@@ -1584,57 +1596,88 @@ const Form = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-x-3">
-                <div>
-                  <label className="form-label" htmlFor="velocidade_permitida">
-                    Vel. permitida
-                  </label>
-                  <input
-                    type="text"
-                    id="velocidade_permitida"
-                    name="velocidade_permitida"
-                    value={formData.velocidade_permitida}
-                    onChange={handleInputChange}
-                    className="form-input form-input--code"
-                    inputMode="numeric"
-                    maxLength={3}
-                    placeholder="km/h"
-                    aria-invalid={Boolean(errors.velocidade_permitida)}
-                    aria-describedby={
-                      errors.velocidade_permitida ? 'err-velocidade_permitida' : undefined
-                    }
-                  />
-                  {errors.velocidade_permitida && (
-                    <p className="form-error" id="err-velocidade_permitida">
-                      {errors.velocidade_permitida}
-                    </p>
-                  )}
+              <div className="form-field--wide">
+                <div className="grid grid-cols-1 gap-x-3 gap-y-4 sm:grid-cols-3">
+                  <div>
+                    <label className="form-label" htmlFor="velocidade_permitida">
+                      Vel. permitida
+                    </label>
+                    <input
+                      type="text"
+                      id="velocidade_permitida"
+                      name="velocidade_permitida"
+                      value={formData.velocidade_permitida}
+                      onChange={handleInputChange}
+                      className="form-input form-input--code"
+                      inputMode="numeric"
+                      maxLength={3}
+                      placeholder="km/h"
+                      aria-invalid={Boolean(errors.velocidade_permitida)}
+                      aria-describedby={
+                        errors.velocidade_permitida ? 'err-velocidade_permitida' : undefined
+                      }
+                    />
+                    {errors.velocidade_permitida && (
+                      <p className="form-error" id="err-velocidade_permitida">
+                        {errors.velocidade_permitida}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="form-label" htmlFor="velocidade_aferida">
+                      Vel. aferida
+                    </label>
+                    <input
+                      type="text"
+                      id="velocidade_aferida"
+                      name="velocidade_aferida"
+                      value={formData.velocidade_aferida}
+                      onChange={handleInputChange}
+                      className="form-input form-input--code"
+                      inputMode="numeric"
+                      maxLength={3}
+                      placeholder="km/h"
+                      aria-invalid={Boolean(errors.velocidade_aferida)}
+                      aria-describedby={
+                        errors.velocidade_aferida ? 'err-velocidade_aferida' : undefined
+                      }
+                    />
+                    {errors.velocidade_aferida && (
+                      <p className="form-error" id="err-velocidade_aferida">
+                        {errors.velocidade_aferida}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="form-label" htmlFor="velocidade_considerada">
+                      Vel. considerada
+                    </label>
+                    <input
+                      type="text"
+                      id="velocidade_considerada"
+                      name="velocidade_considerada"
+                      value={formData.velocidade_considerada}
+                      onChange={handleInputChange}
+                      className="form-input form-input--code"
+                      inputMode="numeric"
+                      maxLength={3}
+                      placeholder="km/h"
+                      aria-invalid={Boolean(errors.velocidade_considerada)}
+                      aria-describedby={
+                        errors.velocidade_considerada ? 'err-velocidade_considerada' : 'hint-velocidades'
+                      }
+                    />
+                    {errors.velocidade_considerada && (
+                      <p className="form-error" id="err-velocidade_considerada">
+                        {errors.velocidade_considerada}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <label className="form-label" htmlFor="velocidade_aferida">
-                    Vel. aferida
-                  </label>
-                  <input
-                    type="text"
-                    id="velocidade_aferida"
-                    name="velocidade_aferida"
-                    value={formData.velocidade_aferida}
-                    onChange={handleInputChange}
-                    className="form-input form-input--code"
-                    inputMode="numeric"
-                    maxLength={3}
-                    placeholder="km/h"
-                    aria-invalid={Boolean(errors.velocidade_aferida)}
-                    aria-describedby={
-                      errors.velocidade_aferida ? 'err-velocidade_aferida' : undefined
-                    }
-                  />
-                  {errors.velocidade_aferida && (
-                    <p className="form-error" id="err-velocidade_aferida">
-                      {errors.velocidade_aferida}
-                    </p>
-                  )}
-                </div>
+                <p className="form-hint" id="hint-velocidades">
+                  No auto de radar vêm a velocidade medida e a considerada, que já desconta a
+                  tolerância. Copie as duas como estão.
+                </p>
               </div>
 
               {/*
