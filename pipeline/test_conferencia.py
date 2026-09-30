@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 
 from base_legal import carregar_ctb, montar_base
-from conferencia import CitacaoForaDaBase, conferir_citacoes, gerar_com_conferencia
+from conferencia import CitacaoForaDaBase, conferir_citacoes, gerar_com_conferencia, resumo_alertas
 
 CTB_DIR = str(Path(__file__).resolve().parent.parent / "CTB-compilado_files")
 
@@ -128,6 +128,100 @@ class TestRefazer(unittest.TestCase):
         self.assertTrue(isinstance(ctx.exception, RuntimeError))
         self.assertIn("Código Penal", str(ctx.exception))
         self.assertEqual(ctx.exception.recusas[0].motivo, "norma fora do CTB")
+
+class TestRevisaoFinal(unittest.TestCase):
+    """Achados da revisão final (29/09/2026): cada falso positivo gasta o único
+    refazer e pode mandar um caso pago para failed; cada falso negativo deixa
+    uma norma proibida chegar ao PDF."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.c = carregar_ctb(CTB_DIR)
+        cls.base = montar_base(cls.c, "Art. 218, III, do CTB")
+
+    def recusas(self, texto, base=None):
+        return [(r.trecho, r.motivo) for r in conferir_citacoes(texto, base or self.base, self.c).recusas]
+
+    def test_palavras_comuns_do_cliente_nao_sao_norma(self):
+        for texto in ("A autuada reside na Rua da Constituição, 45.",
+                      "A fotografia do radar tem baixa resolução e não identifica a placa.",
+                      "O veículo saía da portaria do condomínio.",
+                      "Nos termos do art. 281 (cf. art. 280), requer-se o arquivamento.",
+                      "Consta o auto nº CF-004512."):
+            with self.subTest(texto=texto):
+                self.assertEqual(self.recusas(texto), [])
+
+    def test_normas_com_contexto_legal_continuam_recusadas(self):
+        for texto in ("Conforme resolução do CONTRAN, a tolerância é aplicável.",
+                      "A Resolução nº 798/2020 exige a verificação.",
+                      "A Portaria nº 544/2014 do Inmetro regula o equipamento.",
+                      "O art. 5º, LV, da Constituição garante a ampla defesa.",
+                      "A Constituição Federal garante o contraditório.",
+                      "Nos termos da CF/88."):
+            with self.subTest(texto=texto):
+                self.assertIn("norma fora do CTB", [m for _, m in self.recusas(texto)])
+
+    def test_normas_que_escapavam(self):
+        for texto in ("A Res. 798/2020 do CONTRAN disciplina o tema.",
+                      "O Manual Brasileiro de Fiscalização de Trânsito (MBFT) orienta a autuação.",
+                      "É o entendimento do STJ no REsp 1.234.567.",
+                      "A Lei Complementar nº 95/1998 rege a matéria.",
+                      "A Lei número 9.784 regula o processo administrativo.",
+                      "Há acórdão do TJRJ nesse sentido."):
+            with self.subTest(texto=texto):
+                self.assertIn("norma fora do CTB", [m for _, m in self.recusas(texto)])
+
+    def test_numeros_depois_da_citacao_nao_sao_artigos(self):
+        for texto in ("Nos termos do art. 218, 20% acima do limite configura a infração.",
+                      "O art. 61, 80 km/h nas vias arteriais, fixa o limite.",
+                      "O art. 218, 30 dias após a infração, não foi observado."):
+            with self.subTest(texto=texto):
+                self.assertEqual(self.recusas(texto), [])
+
+    def test_a_propria_base_passa_na_conferencia(self):
+        # A base cita os arts. 256, 258 e 259 (decadência do art. 282, § 6º; art. 257, § 9º):
+        # uma citação fiel do próprio texto entregue não pode ser recusada.
+        for amparo in (None, "Art. 218, I", "Art. 208", "Art. 165-A", "Art. 230, V"):
+            with self.subTest(amparo=amparo):
+                b = montar_base(self.c, amparo)
+                # O que importa aqui é "não consta": a base citar artigo que não traz.
+                # Artigo VETADO mencionado no texto (ex.: 233-A) continua recusado — a
+                # peça não deve citá-lo.
+                fora = [r for r in self.recusas(b.texto, b) if r[1] == "não consta da base normativa fornecida"]
+                self.assertEqual(fora, [])
+                self.assertTrue({"256", "258", "259"} <= b.artigos)
+
+    def test_artigo_de_outra_lei_da_base_nao_e_artigo_do_ctb(self):
+        # A base cita "art. 10 da Lei nº 13.103"; repetir isso não é citar o art. 10 do CTB.
+        b = montar_base(self.c, None)
+        self.assertIn("art. 10 da Lei nº 13.103", b.texto)
+        self.assertEqual(self.recusas("Conforme o art. 10 da Lei nº 13.103, de 2015.", b), [])
+
+    def test_citacao_do_ctb_por_extenso_continua_conferida(self):
+        # "do Código de Trânsito" não é outra norma: o artigo tem que ser conferido.
+        self.assertEqual(self.recusas("Conforme o art. 999 do Código de Trânsito Brasileiro."),
+                         [("art. 999", "não existe no CTB")])
+        self.assertEqual(self.recusas("Conforme o art. 281 do Código de Trânsito Brasileiro."), [])
+        self.assertEqual(self.recusas("Conforme o art. 29 da Lei nº 9.503/1997."),
+                         [("art. 29", "não consta da base normativa fornecida")])
+
+    def test_trecho_recusado_vem_inteiro(self):
+        # O trecho vai no pedido de correção: cortado, o modelo não sabe o que remover.
+        self.assertEqual(self.recusas("O art. 5º, LV, da Constituição garante a ampla defesa."),
+                         [("art. 5º, LV, da Constituição", "norma fora do CTB")])
+        self.assertEqual(self.recusas("Aplica-se o art. 24 do Código Penal. Fim."),
+                         [("art. 24 do Código Penal", "norma fora do CTB")])
+
+    def test_lei_sem_numero_abreviado(self):
+        self.assertIn("norma fora do CTB", [m for _, m in self.recusas("Conforme a Lei 9.784, de 1999.")])
+
+    def test_resumo_de_alertas_sem_dados_pessoais(self):
+        r = resumo_alertas(["Mariana Souza Lima levava a filha ao hospital", "outro trecho qualquer longo"])
+        self.assertEqual(r["quantidade"], 2)
+        self.assertNotIn("Mariana", repr(r))
+        self.assertEqual(len(r["hashes"]), 2)
+        self.assertTrue(all(len(h) == 12 for h in r["hashes"]))
+
 
 if __name__ == "__main__":
     unittest.main()

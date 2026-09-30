@@ -9,26 +9,39 @@ Puro, sem dependências fora da stdlib.
 
 from __future__ import annotations
 
+import hashlib
 import re
 import unicodedata
 from dataclasses import dataclass, field
 from typing import Awaitable, Callable
 
-from base_legal import BaseLegal, Ctb
+from base_legal import CITACAO, OUTRA_NORMA_A_SEGUIR, BaseLegal, Ctb, numeros_citados
 from prompt import pedido_de_correcao
 
-# Sufixo ("-A") colado ao número: com espaço permitido, "art. 280 - A infração"
-# virava "280-A" (mesmo defeito achado na remissão da base_legal).
-_NUM = r"\d+[ \t]*[º°]?(?:-[A-Za-z]\b)?"
-_CITACAO = re.compile(rf"\b(?:arts?\.|artigos?)\s*({_NUM}(?:\s*(?:,|\be\b|\ba\b)\s*{_NUM})*)", re.I)
-_UM_NUMERO = re.compile(r"(\d+)[ \t]*[º°]?(?:-([A-Za-z])\b)?")
+# Norma externa. Cada palavra comum exige CONTEXTO JURÍDICO (número, órgão,
+# "Federal"…): a peça repete dados do cliente, e "Rua da Constituição", "baixa
+# resolução da foto" e "portaria do condomínio" gastavam o único refazer
+# (revisão final, 29/09/2026). Só "Lei nº X" tem grupo de captura: a lei que
+# aparece na própria base passa (notas "Redação dada pela Lei nº …").
+_ORGAO = r"(?:contran|denatran|senatran|inmetro|detran|minist[ée]rio|cetran)"
 _EXTERNA = re.compile(
-    r"c[óo]digo\s+penal|c[óo]digo\s+civil|c[óo]digo\s+de\s+processo|constitui[çc][ãa]o|\bCF(?:/88)?\b"
-    r"|resolu[çc](?:[ãa]o|[õo]es)|portarias?|delibera[çc](?:[ãa]o|[õo]es)|instru[çc][ãa]o\s+normativa"
-    r"|s[úu]mulas?|jurisprud[êe]ncia|\bdecreto\b"
-    r"|\blei\s+(?:federal\s+)?n[º°o.]*\s*(\d[\d.]*)",
+    r"c[óo]digo\s+penal|c[óo]digo\s+civil|c[óo]digo\s+de\s+processo"
+    r"|constitui[çc][ãa]o\s+(?:federal|da\s+rep[úu]blica|brasileira|de\s+1988)"
+    r"|\bCF/88\b|\bda\s+CF\b"
+    rf"|resolu[çc](?:[ãa]o|[õo]es)\s+(?:n[º°o.]*\s*\d|n[úu]mero|\d|d[oa]s?\s+{_ORGAO}|{_ORGAO})"
+    rf"|\bres\.\s*(?:{_ORGAO}\s*)?(?:n[º°o.]*\s*)?\d"
+    rf"|portarias?\s+(?:n[º°o.]*\s*\d|n[úu]mero|\d|d[oa]s?\s+{_ORGAO}|{_ORGAO})"
+    rf"|delibera[çc](?:[ãa]o|[õo]es)\s+(?:n[º°o.]*\s*\d|n[úu]mero|\d|d[oa]s?\s+{_ORGAO}|{_ORGAO})"
+    r"|instru[çc][ãa]o\s+normativa|s[úu]mulas?\b|jurisprud[êe]ncia"
+    r"|\bdecreto(?:-lei)?\s+(?:n[º°o.]*\s*\d|n[úu]mero|\d|federal|estadual|municipal)"
+    r"|\bMBFT\b|manual\s+brasileiro\s+de\s+fiscaliza"
+    r"|\b(?:STJ|STF|TST|REsp|AgRg|TJ[A-Z]{2}|TRF\s?\d?)\b|\bac[óo]rd[ãa]os?\b"
+    r"|\blei\s+complementar\b"
+    r"|\blei\s+(?:federal\s+|estadual\s+|municipal\s+)?(?:(?:n[º°o.]*|n[úu]mero)\s*)?(\d[\d.]*)",
     re.I,
 )
+# Palavras que completam o nome de uma norma: "Penal", "Federal", "nº 1.234".
+_RESTO_DO_NOME = re.compile(r"[^\S\n]*(?:(?:[A-ZÁÉÍÓÚÂÊÔÃÕÇ][\wÀ-ú]*|de|da|do|n[º°o.]*|\d[\d./]*)[^\S\n]*){0,4}")
 _ASPAS = re.compile(r"[“\"]([^”\"]{25,})[”\"]")
 _JANELA_EXTERNA = 60
 
@@ -74,13 +87,26 @@ def conferir_citacoes(peca: str, base: BaseLegal, c: Ctb) -> Resultado:
     recusas: list[Recusa] = []
     externas = _externas(peca, base)
     ja = set()
+    consumidos: list[tuple[int, int]] = []  # trechos já recusados junto com o artigo
 
-    for m in _CITACAO.finditer(peca):
-        # "art. 24 do Código Penal": a citação é da outra norma, não do CTB.
-        if any(0 <= ini - m.end() <= _JANELA_EXTERNA for ini, _, _ in externas):
+    for m in CITACAO.finditer(peca):
+        # "art. 24 do Código Penal", "art. 10 da Lei nº 13.103": a citação é da
+        # outra norma, não do CTB — conferida à parte, em `externas` (a lei que
+        # aparece na própria base passa; as demais são recusadas lá).
+        outra = OUTRA_NORMA_A_SEGUIR.match(peca[m.end():])
+        if outra:
+            # Lei: o número é conferido em `externas`. Código, Constituição e
+            # decreto: recusados aqui ("art. 5º, LV, da Constituição").
+            if not outra.group(2).lower().startswith("lei"):
+                fim = m.end() + outra.end()
+                # Completa o nome da norma: "do Código" → "do Código Penal".
+                fim += _RESTO_DO_NOME.match(peca[fim:]).end()
+                recusas.append(Recusa(peca[m.start():fim].strip(), "norma fora do CTB"))
+                consumidos.append((m.start(), fim))
             continue
-        for n in _UM_NUMERO.finditer(m.group(1)):
-            bruto = n.group(1) + (f"-{n.group(2).upper()}" if n.group(2) else "")
+        if any(ini <= m.end() + _JANELA_EXTERNA and fim > m.start() for ini, fim, _ in externas):
+            continue
+        for bruto in numeros_citados(m.group(1)):
             if bruto in ja:
                 continue
             ja.add(bruto)
@@ -98,7 +124,9 @@ def conferir_citacoes(peca: str, base: BaseLegal, c: Ctb) -> Resultado:
                 recusas.append(Recusa(f"art. {numero}", "não consta da base normativa fornecida"))
 
     vistos = set()
-    for _, _, trecho in externas:
+    for ini, _, trecho in externas:
+        if any(a <= ini <= b for a, b in consumidos):
+            continue  # "Código Penal" já saiu como "art. 24 do Código Penal"
         chave = trecho.lower()
         if chave not in vistos:
             vistos.add(chave)
@@ -137,3 +165,13 @@ async def gerar_com_conferencia(
     if resultado.recusas:
         raise CitacaoForaDaBase(resultado.recusas)
     return segunda, resultado, primeiro.recusas
+
+
+def resumo_alertas(alertas: list[str]) -> dict[str, object]:
+    """Para o log: o trecho entre aspas pode ser o nome ou a justificativa do
+    cliente, e o log não leva dado pessoal (spec §5). Vai a contagem e um hash."""
+    return {
+        "quantidade": len(alertas),
+        "hashes": [hashlib.sha256(a.encode("utf-8")).hexdigest()[:12] for a in alertas],
+    }
+

@@ -22,7 +22,7 @@ from config import settings
 from hmac_utils import hmac_sha256_hex
 from peca import paragrafo_para_pdf, texto_da_peca
 from base_legal import carregar_ctb, montar_base
-from conferencia import gerar_com_conferencia
+from conferencia import gerar_com_conferencia, resumo_alertas
 from prompt import argumentos_da_chamada, build_case_context, system_prompt, texto_da_resposta
 from verificacao import bloco_verificacao
 
@@ -295,7 +295,9 @@ async def run_dispatch_pipeline(body_text: str) -> None:
                     payload.case_id, [(r.trecho, r.motivo) for r in recusas_1a],
                 )
             if conferido.alertas:
-                log.info("aspas não literais case_id=%s alertas=%r", payload.case_id, conferido.alertas)
+                # O trecho entre aspas pode ser o nome ou a justificativa do cliente:
+                # no log vão só a contagem e um hash (spec §5, "log sem dados pessoais").
+                log.info("aspas não literais case_id=%s %s", payload.case_id, resumo_alertas(conferido.alertas))
 
             pdf_title = f"Recurso — {payload.case_id}"
             pdf_body = (
