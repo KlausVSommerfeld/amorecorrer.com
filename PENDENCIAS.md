@@ -8,7 +8,7 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 - `#N` é o número estável da pendência em `PROGRESSO.md › Pendências e decisões em aberto`. Item sem número não tem entrada lá.
 - Sem explicação aqui: uma linha por item.
 
-*Atualizado em 2026-09-29.*
+*Atualizado em 2026-09-30.*
 
 ---
 
@@ -65,7 +65,8 @@ Plano: `PLANO-verificacao-radar-inmetro.md`. Fases 0, 1, 3 entregues; Fase 2 só
 
 Decisões jurídicas do Klaus primeiro; o pipeline só chega ao cliente depois do #11.
 
-- **A peça pode argumentar contra o cliente na velocidade** — na verificação real, com 97 km/h num limite de 80, a IA sustentou que o caso "se amolda ao inciso II" do art. 218 (mais grave). O auto traz velocidade **medida** e **considerada** (com a tolerância do CONTRAN, fora da base), mas o formulário só coleta a aferida. *Decisão do Klaus:* coletar a velocidade considerada no formulário e/ou proibir no prompt qualquer tese de enquadramento mais grave. → Sessão de 29/09/2026 (base legal do CTB)
+- **Confirmar com um auto real a dica do campo "Vel. considerada"** (texto genérico hoje) e se todo auto de radar do RJ imprime a considerada. → Sessão de 30/09/2026 (velocidade considerada)
+- **Publicar a velocidade considerada** — `db push` da migration `20260930000000`, **depois** `functions deploy form-submit`, depois o front. Pelo Klaus. → Sessão de 30/09/2026 (velocidade considerada)
 - **Tese de "estado de necessidade" sem norma** — pedida pelo cliente, a IA deixou de citar o Código Penal (a conferência recusou) mas manteve o argumento de que "afasta a culpabilidade". A conferência olha citações, não teses. *Decisão do Klaus* se a tese pode entrar numa defesa de trânsito. → Sessão de 29/09/2026 (base legal do CTB)
 - **Peça endereçada ao destinatário errado** — numa rodada real, uma *defesa prévia* saiu endereçada à JARI, que só julga recurso. O prompt não diz a quem cada estágio (`especie_documento`) se dirige. → Sessão de 25/09/2026 (peça limpa)
 - **Tabela de códigos de enquadramento** — o auto traz um código ("7455-0") que o CTB não mapeia; hoje esses casos ficam sem enquadramento (só o rito). Base separada, a construir. → Sessão de 29/09/2026 (base legal do CTB)

@@ -38,7 +38,7 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 ## Estado atual
 
 
-*Atualizado em 2026-09-29.*
+*Atualizado em 2026-09-30.*
 
 **Produto e produção**
 
@@ -52,7 +52,8 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 - **Modelo `deepseek-flash`, com raciocínio desligado** (25/09). O `deepseek-chat` foi aposentado pela DeepSeek. Com o raciocínio no padrão (ligado), a peça voltava vazia. Resposta vazia ou cortada leva o caso a `failed`, e não a um PDF sem peça. Escolha do Klaus "até o OCR".
 - **A forma da peça é garantida por código** (25/09, `pipeline/peca.py`): sem markdown, sem prefácio, sem data inventada (ela fica em branco, para o dia do protocolo), fecho montado a partir do caso e dado ausente como linha em branco.
 - **Toda peça recebe a base normativa do CTB** (29/09, `pipeline/base_legal.py` + `conferencia.py`): o texto oficial do enquadramento, das remissões seguidas até o fim, do art. 61 no 218 e do rito. Uma citação fora dessa base, ou de norma externa, faz a peça ser refeita uma vez; recusada de novo, o caso vai a `failed`. A base vem de `CTB-compilado_files/`, o parser do Klaus, versionado (compilado do Planalto obtido em 24/09, sha256 `e8b6414d…`).
-- **Três decisões jurídicas do Klaus estão abertas** (ver `PENDENCIAS.md`, seção "A peça"). A peça pode argumentar **contra o cliente** na velocidade, porque o formulário não coleta a velocidade *considerada*. A tese de "estado de necessidade" sobrevive sem norma. E a defesa prévia pode sair endereçada à JARI.
+- **A peça não sustenta mais enquadramento mais grave que o do auto** (30/09, `pipeline/velocidade.py`). O formulário coleta a velocidade *considerada*; o código calcula o inciso do art. 218 sobre ela e só fala quando os números favorecem o cliente (arquivamento ou desclassificação). A migration e a Edge ainda não foram publicadas.
+- **Duas decisões jurídicas do Klaus estão abertas** (ver `PENDENCIAS.md`, seção "A peça"). A tese de "estado de necessidade" sobrevive sem norma. E a defesa prévia pode sair endereçada à JARI.
 
 **Radar INMETRO (RJ)**
 
@@ -1428,3 +1429,36 @@ Dois defeitos novos apareceram durante a própria correção e também foram fec
 
 **Verificação final:** 97 testes Python e `radar:test` 49/49.
 
+## Sessão de 30/09/2026 — Velocidade considerada: a peça não argumenta mais contra o cliente
+
+**Feito:** o achado de 29/09 (97 km/h num limite de 80 virou "se amolda ao inciso II", contra o cliente) foi resolvido na causa. O modelo fazia a conta do art. 218 sobre a velocidade **aferida**; o enquadramento sai da **considerada** (a medida menos a tolerância), que o formulário não coletava.
+- **Formulário:** campo "Vel. considerada" (opcional, só dígitos, teto 400) ao lado da permitida e da aferida, com dica e erro quando a considerada passa da aferida (`src/lib/velocidade.ts`, testado com `node --test`).
+- **Banco e Edge:** coluna `form_submissions.velocidade_considerada integer` (migration `20260930000000`); a `form-submit` a grava, fora do `dup_guard`.
+- **Pipeline:** `pipeline/velocidade.py` calcula o excesso com `Fraction` (sem arredondar antes de comparar) e decide o bloco. Considerada ≤ permitida → arquivamento pelo art. 281, § 1º, I. Inciso do auto mais grave que a conta → desclassificação, com arquivamento subsidiário. Casos neutros → silêncio, como no radar. `REGRA_ENQUADRAMENTO` vai em **toda** peça: nunca sustentar inciso ou gravidade mais severos que os do auto, nunca calcular percentual de velocidade.
+
+Spec: `docs/superpowers/specs/2026-09-30-velocidade-considerada-design.md`. Plano: `docs/superpowers/plans/2026-09-30-velocidade-considerada.md`.
+
+**Decisão do Klaus:** campo novo + conta feita pelo código (o código decide, o modelo redige). O sistema **não calcula a tolerância**: ela vem de resolução do CONTRAN que não está na base; o cliente copia a considerada impressa no auto.
+
+**Um engano corrigido:** o plano da Fase 4 do radar previa um `velocidadeConsiderada` e o descartou como "duplicata semântica" da aferida. Não era — são números diferentes, e o enquadramento depende justamente do que foi descartado.
+
+**Verificação local** (Supabase em Docker + `functions serve` + Vite): envio com considerada gravou `97|90`, sem ela `97|null`; no navegador, a mensagem de erro aparece com a considerada maior que a aferida, e a linha de três campos fica boa a 1280 e a 390 px. Dois contornos do WSL: o CLI 2.118.0 pedia uma imagem nova do edge-runtime cujo *pull* falha no helper de credenciais — usado `npx supabase@2.117.0 functions serve` (imagem em cache); e o encaminhamento de porta até o 54321 falhou, então os POSTs saíram de dentro de um container da rede do Supabase.
+
+**Verificação real** (`deepseek-flash` e as funções do worker, até o PDF):
+
+| Caso | Bloco | Resultado |
+|---|---|---|
+| 1. o que falhou: 97/90, limite 80, auto "218, I" | nenhum | não fala em inciso II nem calcula excesso (o único "%" é o "em até 20%" do texto legal); pede arquivamento pelo 280/281 e art. 90 |
+| 2. 125/118, limite 80, auto "218, III" | desclassificação | pede o inciso II (47,5%) e, subsidiariamente, o arquivamento pelo 281, § 1º, I |
+| 3. considerada 78, limite 80 | sem infração | pede arquivamento pelo 281, § 1º, I |
+| 4. sem considerada, 97, limite 80 | nenhum | sem percentual e sem outro inciso |
+
+PDFs dos casos 1 e 2 abertos: limpos, fecho montado pelo código.
+
+**Verificação:** 113 testes Python (15 novos de velocidade, 1 de prompt), `radar:test` 53/53, lint no baseline, build verde.
+
+**Ficou de fora:**
+- calcular a tolerância;
+- velocidade fora do art. 218;
+- publicar: `db push` da migration, **depois** `functions deploy form-submit`, depois o front (pelo Klaus);
+- confirmar a dica do campo com um auto real.
