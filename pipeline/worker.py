@@ -23,6 +23,7 @@ from hmac_utils import hmac_sha256_hex
 from peca import paragrafo_para_pdf, texto_da_peca
 from base_legal import carregar_ctb, montar_base
 from conferencia import gerar_com_conferencia, resumo_alertas
+from velocidade import bloco_velocidade
 from prompt import argumentos_da_chamada, build_case_context, system_prompt, texto_da_resposta
 from verificacao import bloco_verificacao
 
@@ -277,7 +278,15 @@ async def run_dispatch_pipeline(body_text: str) -> None:
                 payload.case_id, base.sha256[:12], base.obtido_em,
                 base.enquadramento or "não reconhecido", sorted(base.artigos),
             )
-            usuario = f"{context}\n\n{base.texto}"
+            # Enquadramento da velocidade decidido em código (sobre a considerada);
+            # sem bloco nos casos neutros — a REGRA_ENQUADRAMENTO protege.
+            bloco_vel = bloco_velocidade(case, base.enquadramento)
+            log.info(
+                "velocidade case_id=%s situacao=%s",
+                payload.case_id, bloco_vel.situacao if bloco_vel else "nenhuma",
+            )
+            partes = [context] + ([bloco_vel.texto] if bloco_vel else []) + [base.texto]
+            usuario = "\n\n".join(partes)
             sistema = system_prompt(
                 settings.radar_tese_ativa,
                 case.get("verificacao_medidor"),

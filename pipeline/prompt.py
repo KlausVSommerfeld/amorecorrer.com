@@ -39,6 +39,15 @@ REGRA_SEM_ENQUADRAMENTO = (
     "defenda pelos dispositivos da base."
 )
 
+# Em toda peça (spec 2026-09-30): a IA calculou 97/80 = 21,25% sobre a
+# velocidade aferida e sustentou o inciso II do art. 218 — mais grave — contra o
+# cliente. O percentual é do código (velocidade.py), sobre a considerada.
+REGRA_ENQUADRAMENTO = (
+    " Nunca sustente que a conduta se enquadra em dispositivo, inciso ou gravidade mais "
+    "severos do que os indicados no auto, e não calcule percentuais de excesso de "
+    "velocidade: use apenas o que vier no bloco sobre o enquadramento, quando houver."
+)
+
 # Só entram com RADAR_TESE_ATIVA ligada. Base legal conferida no texto oficial
 # do CTB (CTB-compilado_files/l9503compilado.htm → saida/ctb.json); o número da resolução do
 # CONTRAN sobre verificação metrológica NÃO foi confirmado e fica proibido.
@@ -99,6 +108,7 @@ def system_prompt(tese_ativa: bool, verificacao: Any = None, sem_enquadramento: 
     return (
         SYSTEM_PROMPT_BASE
         + REGRA_BASE_LEGAL
+        + REGRA_ENQUADRAMENTO
         + (REGRA_SEM_ENQUADRAMENTO if sem_enquadramento else "")
         + (REGRAS_RADAR if com_bloco else "")
     )

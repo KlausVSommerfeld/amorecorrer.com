@@ -12,6 +12,7 @@ from prompt import (
     REGRAS_RADAR,
     SYSTEM_PROMPT_BASE,
     REGRA_BASE_LEGAL,
+    REGRA_ENQUADRAMENTO,
     REGRA_SEM_ENQUADRAMENTO,
     RespostaDoModeloInvalida,
     argumentos_da_chamada,
@@ -24,7 +25,7 @@ from verificacao import INSTRUCAO_EXIBICAO
 
 # Sem bloco do radar, o system prompt é a base mais a regra de base legal —
 # que entra em toda peça desde a integração do CTB (29/09/2026).
-PROMPT_ANTIGO = SYSTEM_PROMPT_BASE + REGRA_BASE_LEGAL
+PROMPT_ANTIGO = SYSTEM_PROMPT_BASE + REGRA_BASE_LEGAL + REGRA_ENQUADRAMENTO
 
 CASO = {
     "id": "uuid",
@@ -122,17 +123,25 @@ class TestBaseLegalNoPrompt(unittest.TestCase):
     def test_regra_de_base_legal_em_toda_peca(self):
         self.assertIn("exclusivamente a base normativa do CTB", REGRA_BASE_LEGAL)
         self.assertIn("Não cite outras leis, códigos, resoluções, portarias nem jurisprudência", REGRA_BASE_LEGAL)
-        self.assertEqual(system_prompt(False), SYSTEM_PROMPT_BASE + REGRA_BASE_LEGAL)
+        self.assertEqual(system_prompt(False), SYSTEM_PROMPT_BASE + REGRA_BASE_LEGAL + REGRA_ENQUADRAMENTO)
+
+    def test_regra_de_enquadramento_em_toda_peca(self):
+        # 29/09/2026: a IA calculou 97/80 = 21,25% e sustentou o inciso II contra o cliente.
+        self.assertIn("mais severos do que os indicados no auto", REGRA_ENQUADRAMENTO)
+        self.assertIn("não calcule percentuais de excesso de velocidade", REGRA_ENQUADRAMENTO)
+        for args in ((False,), (True, CASO["verificacao_medidor"])):
+            with self.subTest(args=args):
+                self.assertIn(REGRA_ENQUADRAMENTO, system_prompt(*args))
 
     def test_sem_enquadramento_proibe_o_artigo_da_infracao(self):
         self.assertIn("não cite o artigo da infração", REGRA_SEM_ENQUADRAMENTO)
         self.assertEqual(system_prompt(False, sem_enquadramento=True),
-                         SYSTEM_PROMPT_BASE + REGRA_BASE_LEGAL + REGRA_SEM_ENQUADRAMENTO)
+                         SYSTEM_PROMPT_BASE + REGRA_BASE_LEGAL + REGRA_ENQUADRAMENTO + REGRA_SEM_ENQUADRAMENTO)
 
     def test_ordem_com_radar(self):
         v = CASO["verificacao_medidor"]
         self.assertEqual(system_prompt(True, v, sem_enquadramento=True),
-                         SYSTEM_PROMPT_BASE + REGRA_BASE_LEGAL + REGRA_SEM_ENQUADRAMENTO + REGRAS_RADAR)
+                         SYSTEM_PROMPT_BASE + REGRA_BASE_LEGAL + REGRA_ENQUADRAMENTO + REGRA_SEM_ENQUADRAMENTO + REGRAS_RADAR)
 
     def test_pedido_de_correcao_lista_cada_recusa(self):
         class R:
