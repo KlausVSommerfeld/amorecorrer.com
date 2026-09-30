@@ -120,7 +120,16 @@ RUN pip install --no-cache-dir --upgrade pip
 COPY pipeline/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY pipeline/main.py pipeline/worker.py pipeline/config.py pipeline/hmac_utils.py ./
+# Todos os módulos do pipeline (a Fase 5 e a base legal acrescentaram prompt.py,
+# verificacao.py, peca.py, base_legal.py e conferencia.py); testes ficam de fora.
+COPY pipeline/*.py ./
+RUN rm -f test_*.py
+
+# Base normativa do CTB: o pipeline só lê consulta.py e saida/ctb.json
+# (+ ctb_infracoes.json, que a consulta usa para a sanção). CTB_DIR aponta para cá.
+COPY CTB-compilado_files/consulta.py /app/ctb/consulta.py
+COPY CTB-compilado_files/saida/ctb.json CTB-compilado_files/saida/ctb_infracoes.json /app/ctb/saida/
+ENV CTB_DIR=/app/ctb
 
 EXPOSE 8000
 CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
@@ -473,7 +482,7 @@ STORAGE_BUCKET=generated-recursos
 
 DEEPSEEK_API_KEY=<chave do DeepSeek>
 DEEPSEEK_API_BASE=https://api.deepseek.com
-DEEPSEEK_MODEL=deepseek-chat
+DEEPSEEK_MODEL=deepseek-flash
 
 SMTP_HOST=smtp.resend.com
 SMTP_PORT=587
