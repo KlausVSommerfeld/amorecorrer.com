@@ -38,23 +38,42 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 ## Estado atual
 
 
-*Atualizado em 2026-09-24.*
+*Atualizado em 2026-09-29.*
 
-- **O merge aconteceu.** Em 20/09/2026 o Klaus mergeou `feat/verificacao-radar-inmetro-rj` em `main` (`f155c4e`, merge de `a3b2142` com `c89d0c4`): **115 arquivos, +23.526 / −1.408**. `main` deixou de estar parada em 2025-10-29 e `origin/main` já tem tudo, sem divergência. Todo o produto — pagamento, Edge Functions, pipeline, redesenho e o schema do radar — passou a viver no tronco. Sobrou uma branch não mergeada, `chore/limpeza-dependencias`. **Encerra as pendências 1 e 7.**
-- **O redesenho "Notificação e Resposta" está completo** — Fases 0 a 4. Todas as páginas usam o mesmo casco, a mesma tipografia e os mesmos tokens.
-- **O site não para mais de vender depois de 30 minutos.** O fim da promoção agora só tira a moldura promocional; o CTA continua ativo.
-- **O fluxo funciona ponta a ponta**, com a peça redigida por IA — provado em ambiente local (03/09, por dois caminhos independentes) e **em produção** (18/09): Edge publicada → internet → pipeline, `document_status = completed`, `dispatches.status = sent`, PDF no Storage de produção com sha256 conferido e e-mail **entregue a partir de `no-reply@amorecorrer.com`** via `sa-east-1`. O domínio está verificado na Resend desde 17/09 e `Active` até 2027, com auto-renovação ligada.
-- **O que falta para produção é onde o pipeline mora, não se ele funciona.** `DISPATCH_PIPELINE_URL` aponta para um túnel `trycloudflare` morto. O plano escrito em 17/09 — `docs/superpowers/plans/2026-09-17-endereco-estavel-do-pipeline.md`, seis tasks, Express e pipeline em contêineres num VPS da Hostinger atrás de um Caddy — **ainda não teve nenhuma task executada**, e não há artefato de deploy no repositório. O frontend também segue sem hospedagem, explicitamente fora daquele escopo.
-- **Produção roda o schema e as Edge Functions corrigidos** (11/09): `form-submit` v60, `stripe-webhook` v53 e as quatro migrations com impressão digital idêntica à do local. As tabelas do fluxo estão **zeradas** — o caso do teste de 18/09 foi removido.
-- **O teste em produção deixou uma correção e uma pendência:** `supabase-py` subiu para 2.31.0 (a versão fixada recusava a chave `sb_secret_…` antes de qualquer requisição), e a divergência de precedência de `.env` entre Express e pipeline virou a **pendência 26**, ainda aberta.
-- **O schema são quatro migrations** (09-10/09): a baseline que consolida as doze antigas e as corrige, as duas do radar e a do bucket `generated-recursos`. Quinze anomalias levantadas, quatorze fechadas.
-- **A verificação de radar deixou de ser inerte em 22/09/2026.** As tabelas `radar_*` de produção, que tinham 0 linhas desde 06/09, agora carregam o parque do RJ: **1.971 instrumentos, 3.346 faixas e 9.652 verificações** (7.814 de origem `historico`, 1.838 de `topo`), mais o arquivo bruto de 3.661.867 bytes arquivado em `evidencias/radares/RJ/2026-09-22-4dcb3d35ee37.json`. A RPC `verificar_medidor`, escrita em 06/09 e testada só contra fixture, **respondeu com dado real pela primeira vez**: para o série `2000065` em 01/09/2026 devolveu `comprovado_valido`, confiança alta, match por número de série, com `sha256` e `snapshot_id` no bloco de evidência.
-- **A Fase 2 foi entregue pela metade, e de propósito.** A ingestão existe (`scripts/ingest-radares-rj.ts` + `scripts/lib/psie.ts` e `retry.ts`, 34 testes), mas roda **manualmente, da máquina do Klaus**, porque é a rede dele que o RBMLQ aceita — a saída (a) que a §5.1.2 do plano já previa. **Não existe `pg_cron` nem poda de retenção**, e isso deixa a pendência 19 intocada. **As Fases 4, 5 e 6 não começaram:** a coluna `form_submissions.verificacao_medidor`, que é o contrato de saída da feature, **não existe em migration nenhuma**, e `src/`, `server/` e `pipeline/` seguem sem uma linha sobre o assunto. O dado está no banco e ainda **não tem consumidor**.
-- **O que trava o radar agora são duas coisas, não três.** A pendência 21 (de onde a ingestão busca o arquivo) deixou de bloquear a carga — passou-se a conviver com ela, rodando à mão —, mas continua aberta para qualquer ingestão *recorrente*. Seguem travando: a Fase 0.5 (pendência 18), que exige 8 a 10 casos reais de excesso de velocidade no RJ, e `form_submissions` está **vazia** em produção; e a decisão de retenção (pendência 19), agora só quando houver cron. **O VPS do passo 7 continua podendo resolver a 21 de carona:** um `curl` ao arquivo do RJ a partir dele custa um minuto e é a regra que o próprio plano escreveu.
-- **A fonte do INMETRO está parada há três semanas.** Medido em 21/09: o arquivo do RJ responde `200` com `Last-Modified: 01/09/2026` e **os mesmos 3.661.867 bytes, sha256 `4dcb3d35…648fb9b`** — byte a byte o snapshot de 03/09. Não é "atualização irregular, apesar de nominalmente diária": são **21 dias sem regenerar**. Isso derruba a premissa de custo da pendência 19 e é um risco de produto, porque a prova de vigência envelhece junto com a fonte. A mesma requisição prova que o endpoint está no ar e aceita a rede do Klaus — o que reforça que a pendência 21 é bloqueio de ASN de nuvem, e não fonte fora do ar.
-- **As Fases 4 e 5 do radar estão prontas** (24/09). A 4 (campos do medidor no formulário) tem migration e `form-submit` v63 em produção e falta publicar o front. A 5 está **em produção desde 25/09** (migration `20260924000001` e `form-submit` v64): todo envio grava a verificação do medidor e o log de auditoria, e a tese está pronta **atrás de `RADAR_TESE_ATIVA=false`**. Para ligá-la, falta a Fase 0.5 e a trava neutra de base legal (ver `PENDENCIAS.md`).
-- **O projeto Supabase da nuvem está ativo** desde 06/09, despausado para o teste de alcance. Continua consumindo recursos.
-- **Sem suíte automatizada.** A verificação é manual, via os 4 scripts PowerShell em `tests/edge-functions/` — que param no formulário —, mais os 24 testes pgTAP do radar e a asserção de Storage.
+**Produto e produção**
+
+- **O fluxo funciona ponta a ponta**, com a peça redigida por IA. Isso foi provado em ambiente local (03/09, por dois caminhos independentes) e **em produção** (18/09): Edge publicada → internet → pipeline, `document_status = completed`, `dispatches.status = sent`, PDF no Storage com sha256 conferido e e-mail **entregue a partir de `no-reply@amorecorrer.com`**. O domínio está verificado na Resend desde 17/09.
+- **O que falta para produção é onde o pipeline mora, não se ele funciona.** `DISPATCH_PIPELINE_URL` aponta para um túnel `trycloudflare` morto (pendência 11). O plano de 17/09 (VPS na Hostinger, contêineres de Express e pipeline atrás de um Caddy) **não teve nenhuma task executada**, mas foi **corrigido em 29/09** para levar os módulos novos do pipeline, a base do CTB e o `deepseek-flash`. O frontend também segue sem hospedagem, fora daquele escopo. Até isso ser resolvido, **nada do que mudou no pipeline chega ao cliente**.
+- **Produção** roda `form-submit` v64 e **seis migrations**: a baseline, as duas do radar, a do bucket, a dos campos do medidor e a da verificação do medidor (as duas últimas de 24/09). As tabelas do fluxo estão zeradas desde o teste de 18/09.
+- **O redesenho "Notificação e Resposta" está completo**, e o site não para mais de vender depois de 30 minutos.
+
+**O pipeline (pronto em `main`, ainda sem endereço)**
+
+- **Modelo `deepseek-flash`, com raciocínio desligado** (25/09). O `deepseek-chat` foi aposentado pela DeepSeek. Com o raciocínio no padrão (ligado), a peça voltava vazia. Resposta vazia ou cortada leva o caso a `failed`, e não a um PDF sem peça. Escolha do Klaus "até o OCR".
+- **A forma da peça é garantida por código** (25/09, `pipeline/peca.py`): sem markdown, sem prefácio, sem data inventada (ela fica em branco, para o dia do protocolo), fecho montado a partir do caso e dado ausente como linha em branco.
+- **Toda peça recebe a base normativa do CTB** (29/09, `pipeline/base_legal.py` + `conferencia.py`): o texto oficial do enquadramento, das remissões seguidas até o fim, do art. 61 no 218 e do rito. Uma citação fora dessa base, ou de norma externa, faz a peça ser refeita uma vez; recusada de novo, o caso vai a `failed`. A base vem de `CTB-compilado_files/`, o parser do Klaus, versionado (compilado do Planalto obtido em 24/09, sha256 `e8b6414d…`).
+- **Três decisões jurídicas do Klaus estão abertas** (ver `PENDENCIAS.md`, seção "A peça"). A peça pode argumentar **contra o cliente** na velocidade, porque o formulário não coleta a velocidade *considerada*. A tese de "estado de necessidade" sobrevive sem norma. E a defesa prévia pode sair endereçada à JARI.
+
+**Radar INMETRO (RJ)**
+
+- **O parque do RJ está em produção desde 22/09**: 1.971 instrumentos, 3.346 faixas e 9.652 verificações. A ingestão roda **à mão, da máquina do Klaus**, porque o RBMLQ recusa IP de nuvem (pendência 21). Não há `pg_cron` nem poda (pendência 19).
+- **As Fases 4 e 5 estão em produção.** A 4 (campos do medidor no formulário) só falta publicar o front. A 5 grava a verificação e o log de auditoria em todo envio desde 25/09, e a tese fica **atrás de `RADAR_TESE_ATIVA=false`**.
+- **O que trava ligar a tese:** a Fase 0.5 (pendência 18), que precisa de 8 a 10 notificações reais do RJ, e `form_submissions` está vazia em produção.
+- **A fonte do INMETRO está parada:** em 21/09 fazia 21 dias sem regenerar (mesmo sha256 `4dcb3d35…`). A prova de vigência envelhece junto com a fonte.
+
+**Ambiente e testes**
+
+- **Testes:**
+  - Python do pipeline: 97 (`test_verificacao test_prompt test_peca test_base_legal test_conferencia`), rodados fora do venv;
+  - `npm run radar:test`: 49;
+  - pgTAP do radar: 26;
+  - a asserção de Storage;
+  - os 41 testes do parser do CTB.
+
+  Nenhum deles cobre o fluxo inteiro. Os scripts PowerShell de `tests/edge-functions/` param no formulário.
+- **O projeto Supabase da nuvem está ativo** desde 06/09 e continua consumindo recursos.
+- **Pendência 26 aberta:** a precedência de `.env` diverge entre Express e pipeline (`override: true` no Express).
+- Sobrou uma branch não mergeada, `chore/limpeza-dependencias`.
 
 ---
 
