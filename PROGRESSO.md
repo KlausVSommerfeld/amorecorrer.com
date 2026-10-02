@@ -38,12 +38,12 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 ## Estado atual
 
 
-*Atualizado em 2026-09-30.*
+*Atualizado em 2026-10-01.*
 
 **Produto e produção**
 
 - **O fluxo funciona ponta a ponta**, com a peça redigida por IA. Isso foi provado em ambiente local (03/09, por dois caminhos independentes) e **em produção** (18/09): Edge publicada → internet → pipeline, `document_status = completed`, `dispatches.status = sent`, PDF no Storage com sha256 conferido e e-mail **entregue a partir de `no-reply@amorecorrer.com`**. O domínio está verificado na Resend desde 17/09.
-- **O que falta para produção é onde o pipeline mora, não se ele funciona.** `DISPATCH_PIPELINE_URL` aponta para um túnel `trycloudflare` morto (pendência 11). O plano de 17/09 (VPS na Hostinger, contêineres de Express e pipeline atrás de um Caddy) **não teve nenhuma task executada**, mas foi **corrigido em 29/09** para levar os módulos novos do pipeline, a base do CTB e o `deepseek-flash`. O frontend também segue sem hospedagem, fora daquele escopo. Até isso ser resolvido, **nada do que mudou no pipeline chega ao cliente**.
+- **O que falta para produção é onde o pipeline mora, não se ele funciona.** `DISPATCH_PIPELINE_URL` aponta para um túnel `trycloudflare` morto (pendência 11). O plano de 17/09 (VPS na Hostinger, contêineres de Express e pipeline atrás de um Caddy) **não teve nenhuma task executada**, mas foi **corrigido em 29/09** para levar os módulos novos do pipeline, a base do CTB e o `deepseek-flash`. O **frontend nunca foi ao ar** (`amorecorrer.com` e `www` não resolvem, conferido em 01/10) e está fora daquele escopo; a recomendação é servi-lo do mesmo VPS, e ele só deve ir ao ar junto com o pipeline ou depois. Até isso ser resolvido, **nada do que mudou no pipeline chega ao cliente**.
 - **Produção** roda `form-submit` v64 e **seis migrations**: a baseline, as duas do radar, a do bucket, a dos campos do medidor e a da verificação do medidor (as duas últimas de 24/09). As tabelas do fluxo estão zeradas desde o teste de 18/09.
 - **O redesenho "Notificação e Resposta" está completo**, e o site não para mais de vender depois de 30 minutos.
 
@@ -58,7 +58,7 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 **Radar INMETRO (RJ)**
 
 - **O parque do RJ está em produção desde 22/09**: 1.971 instrumentos, 3.346 faixas e 9.652 verificações. A ingestão roda **à mão, da máquina do Klaus**, porque o RBMLQ recusa IP de nuvem (pendência 21). Não há `pg_cron` nem poda (pendência 19).
-- **As Fases 4 e 5 estão em produção.** A 4 (campos do medidor no formulário) só falta publicar o front. A 5 grava a verificação e o log de auditoria em todo envio desde 25/09, e a tese fica **atrás de `RADAR_TESE_ATIVA=false`**.
+- **As Fases 4 e 5 estão em produção.** A 4 (campos do medidor no formulário) está no banco e na Edge; o formulário novo chega ao cliente com a hospedagem do frontend, que ainda não existe. A 5 grava a verificação e o log de auditoria em todo envio desde 25/09, e a tese fica **atrás de `RADAR_TESE_ATIVA=false`**.
 - **O que trava ligar a tese:** a Fase 0.5 (pendência 18), que precisa de 8 a 10 notificações reais do RJ, e `form_submissions` está vazia em produção.
 - **A fonte do INMETRO está parada:** em 21/09 fazia 21 dias sem regenerar (mesmo sha256 `4dcb3d35…`). A prova de vigência envelhece junto com a fonte.
 
@@ -1462,3 +1462,12 @@ PDFs dos casos 1 e 2 abertos: limpos, fecho montado pelo código.
 - velocidade fora do art. 218;
 - publicar: `db push` da migration, **depois** `functions deploy form-submit`, depois o front (pelo Klaus);
 - confirmar a dica do campo com um auto real.
+
+## Sessão de 01/10/2026 — O frontend nunca esteve no ar
+
+**Feito:** correção de registro, sem código. Dois documentos se contradiziam. A sessão de 24/09 (Fase 4) diz que "o front antigo, que ainda está no ar, não manda os campos". O plano do VPS (17/09, "Notas de execução") diz que a zona não tem registro `A` na raiz e que o site não está hospedado em lugar nenhum. Conferido em 01/10: `amorecorrer.com` e `www.amorecorrer.com` **não resolvem no DNS**. Quem estava certo era o plano; a frase de 24/09 estava errada. A conclusão daquela sessão continua de pé — a ordem migration → Edge não abriu janela de quebra —, mas porque não havia formulário publicado nenhum, e não por causa de um front antigo.
+
+**Consequência:** "publicar o front" (Fase 4), o último passo da velocidade considerada e a "hospedagem do frontend" eram o mesmo trabalho com três nomes. No `PENDENCIAS.md` viraram um item só, a **hospedagem do frontend**: é o primeiro deploy do site e precisa de lugar com HTTPS, build com as `VITE_*` de produção, fallback de SPA (o `public/.htaccess`, de 2025, já o faz em Apache; no Caddy seria um `try_files`), DNS e `ORIGIN_WHITELIST`/`FRONTEND_URL` batendo com o domínio. Ele **só pode ir ao ar junto com o #11 ou depois**: com o pipeline num túnel morto, o cliente pagaria e não receberia nada. Recomendação: servir o `dist/` do mesmo VPS do #11, pelo Caddy que o plano já prevê.
+
+**Ficou de fora:** a decisão de onde hospedar e a inclusão do front no plano do VPS.
+
