@@ -1473,3 +1473,19 @@ PDFs dos casos 1 e 2 abertos: limpos, fecho montado pelo código.
 
 **Deploy da velocidade considerada, no mesmo dia:** o Klaus rodou `db push` e `functions deploy form-submit` no terminal dele, nessa ordem. Conferido pelo conector: a migration `20260930000000` está no histórico remoto; a coluna `velocidade_considerada` existe (`integer`, anulável, sem default, com o comentário); `form-submit` passou da v64 para a v65, e o código publicado grava o campo.
 
+## Sessão de 02/10/2026 — O fluxo na nuvem com pagamento real de teste, e duas lacunas que ele achou
+
+**Feito:** o primeiro teste ponta a ponta com **pagamento pelo Stripe** contra a nuvem: site local na porta 4173 (a única que a `ORIGIN_WHITELIST` e o `FRONTEND_URL` publicados aceitam), Edge Functions de produção, Express e pipeline locais lendo o `.env`, pipeline exposto por túnel `trycloudflare` no `DISPATCH_PIPELINE_URL`. O `CASO_6b03e11a…` fechou: `completed`, dispatch `sent`, documento `emailed` com `Message-ID` do domínio próprio, PDF no Storage.
+
+**Ambiente:** o `.venv` de Windows do pipeline ainda tinha o `supabase-py` 2.15.1, que recusa a chave `sb_secret_…` (o defeito de 18/09); atualizado pelo pip do próprio venv no Windows. O teste local que veio antes falhou porque o `STRIPE_WEBHOOK_SECRET` do `.env.local` é o do endpoint da nuvem, não o que o `stripe listen` gera.
+
+**O desvio da sessão — e uma conclusão minha que estava errada.** Comparei o segredo publicado com um segredo colado do painel, vi que não batiam e afirmei um "defeito de produção". O segredo colado era de um endpoint da conta **AMO RECORRER**; o sistema usa a **sandbox** "Área restrita de New business" (`acct_1RrARwPyoFJoyBNV`), de onde vem a `sk_test`. O Klaus criou um endpoint novo na conta errada e publicou o segredo dele; os eventos reais, que saem do endpoint da sandbox, passaram a ser recusados (`No signatures found matching…`, duas entregas às 03:15 e 03:16 UTC). Diagnóstico pelos logs da função e pela API do Stripe (conta dona da `sk_test` e endpoints de cada conta). Com o segredo do endpoint da sandbox de volta — o mesmo `6a8d539c…` que já estava publicado —, o reenvio do evento passou com 200. **A produção estava certa antes**; quem a quebrou foi a correção baseada na minha conclusão. Registrado no `CLAUDE.md`, com a forma de conferir o segredo sem expô-lo.
+
+**Duas lacunas de verdade, as duas no `PENDENCIAS.md`:**
+1. **Formulário antes do pagamento fica preso.** O `CASO_fb6f9eca…` teve o formulário enviado enquanto o webhook falhava; quando o pagamento foi confirmado, a `stripe-webhook` criou o dispatch (`ccdb8770…`) e parou — ela só chama `attempt_dispatch`, e quem entrega ao pipeline é só a `form-submit`. O caso segue em `pending`. Em produção acontece com webhook atrasado ou reenviado, pagamento assíncrono ou cliente rápido; o cliente paga e não recebe nada.
+2. **O servidor confia no `stripe_session_id` do navegador.** O `CASO_6b03e11a…` foi gravado com a sessão do `CASO_fb6f9eca…` (`cs_test_a1q3…`, e não a dele, `cs_test_a1zr…`), e o `attempt_dispatch` checa o pagamento por esse valor antes do `case_id`. Os dois estavam pagos; um caso não pago poderia ser despachado por outra sessão paga. Como o valor velho ficou no `localStorage` não foi reproduzido — o checkout grava a sessão nova a cada compra, e o rascunho exclui o campo.
+
+**Pergunta do Klaus no fim da sessão:** há um template para o PDF? Não há — o reportlab usa o estilo padrão, o título é o `case_id` e o modelo escreve endereçamento e qualificação soltos. Virou pendência (template da peça), ligada à do endereçamento por estágio.
+
+**Ficou de fora:** as duas correções (a primeira pede spec, porque mexe no contrato do dispatch); a limpeza dos casos de teste em produção (`CASO_484b1cf6…`, `CASO_fb6f9eca…`, `CASO_6b03e11a…`); apagar o endpoint `we_1ULwcv…` da conta AMO RECORRER; restaurar o `.env.local` e trocar nele o segredo do webhook pelo do `stripe listen` quando o teste for local.
+

@@ -8,7 +8,7 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 - `#N` é o número estável da pendência em `PROGRESSO.md › Pendências e decisões em aberto`. Item sem número não tem entrada lá.
 - Sem explicação aqui: uma linha por item.
 
-*Atualizado em 2026-10-01.*
+*Atualizado em 2026-10-02.*
 
 ---
 
@@ -31,6 +31,8 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 
 ## Robustez do fluxo
 
+- **Formulário enviado antes da confirmação do pagamento fica preso para sempre** — só a `form-submit` entrega ao pipeline; a `stripe-webhook` chama `attempt_dispatch`, que só **cria** o dispatch, e ninguém o entrega. O cliente paga e não recebe nada, sem alerta. Acontece com webhook atrasado ou reenviado, pagamento assíncrono (Pix/boleto) ou cliente rápido. Visto em produção no `CASO_fb6f9eca…` (dispatch `ccdb8770…` parado em `pending`). Correção proposta: um módulo compartilhado de entrega usado pelas duas funções, com trava atômica `pending → generating` antes do POST (sem ela, duas entregas simultâneas mandam dois e-mails). *Spec e plano antes do código.* → Sessão de 02/10/2026 (teste do fluxo na nuvem)
+- **O servidor confia no `stripe_session_id` mandado pelo navegador** — a `form-submit` grava o valor do `localStorage` sem conferir se a sessão é do caso, e o `attempt_dispatch` checa o pagamento por ele **antes** do `case_id`. Visto em produção: o `CASO_6b03e11a…` saiu com a sessão do `CASO_fb6f9eca…` (os dois pagos, sem dano). Risco: caso com o próprio pagamento pendente despachado por outra sessão paga; auditoria apontando para o pagamento errado. Como o valor velho ficou no navegador não foi reproduzido. → Sessão de 02/10/2026 (teste do fluxo na nuvem)
 - **#26 `.env.local` sobrescreve variáveis reais de ambiente no Express** (`override: true`) — corrigir e documentar a regra no `CLAUDE.md`. → Sessão de 18/09/2026
 - **#6 Sem fila durável no pipeline** — processo morto entre `202` e `finish` deixa o caso em `generating`. → Sessão de 31/08/2026
 - **Caminho legado do `202`** — pipeline respondendo `200` deixa `document_status` preso em `generating`. → Sessão de 09/09/2026 ("Ficou de fora")
@@ -67,6 +69,7 @@ Decisões jurídicas do Klaus primeiro; o pipeline só chega ao cliente depois d
 - **Confirmar com um auto real a dica do campo "Vel. considerada"** (texto genérico hoje) e se todo auto de radar do RJ imprime a considerada. → Sessão de 30/09/2026 (velocidade considerada)
 - **Tese de "estado de necessidade" sem norma** — pedida pelo cliente, a IA deixou de citar o Código Penal (a conferência recusou) mas manteve o argumento de que "afasta a culpabilidade". A conferência olha citações, não teses. *Decisão do Klaus* se a tese pode entrar numa defesa de trânsito. → Sessão de 29/09/2026 (base legal do CTB)
 - **Peça endereçada ao destinatário errado** — numa rodada real, uma *defesa prévia* saiu endereçada à JARI, que só julga recurso. O prompt não diz a quem cada estágio (`especie_documento`) se dirige. → Sessão de 25/09/2026 (peça limpa)
+- **Template da peça** — hoje não há: o PDF é o estilo padrão do reportlab, com o `case_id` como título (`Recurso — CASO_…`), e o modelo escreve endereçamento, qualificação e corpo num bloco corrido (nas peças de teste, sem endereçamento algum). Proposta: o código monta a moldura — endereçamento pela `especie_documento` (resolve o item acima), qualificação a partir do formulário, títulos das seções, pedido padrão por estágio e fecho — e o DeepSeek redige só fatos e fundamentos; visual com Source Serif 4, margens de peça, número de página e título de verdade ("DEFESA PRÉVIA", "RECURSO À JARI"…). *Depende da decisão do Klaus sobre o endereçamento de cada estágio.* Spec e plano antes do código. → Sessão de 02/10/2026 (teste do fluxo na nuvem)
 - **Tabela de códigos de enquadramento** — o auto traz um código ("7455-0") que o CTB não mapeia; hoje esses casos ficam sem enquadramento (só o rito). Base separada, a construir. → Sessão de 29/09/2026 (base legal do CTB)
 - **"Modo sem IA" chega ao cliente** — com `DEEPSEEK_API_KEY` vazia, o worker gera um PDF-placeholder e o envia; em produção deveria falhar, como já faz o SMTP. Pré-existente, apontado na revisão final. → Sessão de 29/09/2026 (base legal do CTB)
 - **Ferramenta de consulta ao CTB (caminho B)** — descartada por ora (teste de 26/09); voltaria só com uma busca de descoberta melhor que a atual (trecho exato). → Sessão de 26/09/2026 (spike: contexto × ferramenta)
