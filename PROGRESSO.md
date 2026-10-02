@@ -1487,5 +1487,7 @@ PDFs dos casos 1 e 2 abertos: limpos, fecho montado pelo código.
 
 **Pergunta do Klaus no fim da sessão:** há um template para o PDF? Não há — o reportlab usa o estilo padrão, o título é o `case_id` e o modelo escreve endereçamento e qualificação soltos. Virou pendência (template da peça), ligada à do endereçamento por estágio.
 
-**Ficou de fora:** as duas correções (a primeira pede spec, porque mexe no contrato do dispatch); a limpeza dos casos de teste em produção (`CASO_484b1cf6…`, `CASO_fb6f9eca…`, `CASO_6b03e11a…`); apagar o endpoint `we_1ULwcv…` da conta AMO RECORRER; restaurar o `.env.local` e trocar nele o segredo do webhook pelo do `stripe listen` quando o teste for local.
+**Limpeza, no mesmo dia:** os três casos de teste (`CASO_484b1cf6…`, `CASO_fb6f9eca…`, `CASO_6b03e11a…`) eram todas as linhas das tabelas do fluxo; apagadas numa transação só, na ordem das chaves (`generated_documents` → `dispatches` → `radar_consultas_log` → `form_submissions` → `stripe_sessions`) — 10 linhas, e as cinco tabelas conferidas com zero numa consulta separada. O endpoint `we_1ULwcv…` da conta AMO RECORRER foi **desativado** pelo MCP do Stripe, que não expõe a exclusão; apagar é pelo painel.
+
+**Ficou de fora:** as duas correções (a primeira pede spec, porque mexe no contrato do dispatch); apagar o endpoint `we_1ULwcv…` pelo painel; o PDF do `CASO_6b03e11a…`, que segue no bucket `generated-recursos`; trocar no `.env.local` (já restaurado) o segredo do webhook pelo do `stripe listen` quando o teste for local.
 
