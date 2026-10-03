@@ -25,12 +25,25 @@ import re
 from typing import Any
 
 LINHA_EM_BRANCO = "______________________"
+LINHA_CURTA = "__________"  # no quadro de campos: a linha longa não cabe na célula
+ABERTURA_PEDIDO = "Diante do exposto, requer:"
+_ADVERTENCIA = (
+    "subsidiariamente, não havendo outra infração cometida nos últimos 12 (doze) meses, a "
+    "aplicação da penalidade de advertência por escrito em substituição à multa, nos termos "
+    "do art. 267 do CTB"
+)
 
 _PEDIDO = re.compile(r"\b(pede|requer|espera|aguarda|peço)\s+deferimento\b[^\n]*", re.IGNORECASE)
 _NOTA = re.compile(r"^[*_\s]*(observa[çc][ãa]o|obs\.?|nota)\b", re.IGNORECASE)
 # Os dois valores que o formulário grava em `especie_documento` (Form.tsx, ESTAGIOS).
 DEFESA_PREVIA = "Notificação de autuação — defesa prévia"
 RECURSO_JARI = "Notificação de penalidade — recurso à JARI"
+# Título na peça, nome no metadado do PDF, prefixo do arquivo.
+_NOMES = {
+    DEFESA_PREVIA: ("DEFESA PRÉVIA", "Defesa prévia", "defesa-previa"),
+    RECURSO_JARI: ("RECURSO À JARI", "Recurso à JARI", "recurso-jari"),
+}
+_DATA = re.compile(r"^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?")
 _VOCATIVO = re.compile(
     r"^(excelent[ií]ssim|ilustr[ií]ssim|exm[oa]s?\b|ilm[oa]s?\b|senhora?\b|sra?\.|"
     r"presidente\b|à\s|às\s|ao\s|aos\s)",
@@ -106,16 +119,179 @@ def _cpf(valor: Any) -> str:
     return str(valor).strip() if valor else "______________"
 
 
-def fecho(case: dict[str, Any]) -> str:
+def _local(case: dict[str, Any]) -> str:
     cidade = str(case.get("cidade") or "").strip()
     uf = str(case.get("estado") or "").strip().upper()
-    local = f"{cidade}/{uf}" if cidade and uf else (cidade or LINHA_EM_BRANCO)
+    return f"{cidade}/{uf}" if cidade and uf else (cidade or LINHA_EM_BRANCO)
+
+
+def fecho(case: dict[str, Any]) -> str:
     nome = str(case.get("nome") or "").strip() or LINHA_EM_BRANCO
     return (
-        f"{local}, ____ de ______________ de ________.\n\n"
+        f"{_local(case)}, ____ de ______________ de ________.\n\n"
         "______________________________\n"
         f"{nome}\n"
         f"CPF {_cpf(case.get('cpf'))}"
+    )
+
+
+def _txt(case: dict[str, Any], chave: str) -> str:
+    return str(case.get(chave) or "").strip()
+
+
+def _estagio(case: dict[str, Any]) -> str | None:
+    estagio = _txt(case, "especie_documento")
+    return estagio if estagio in _NOMES else None
+
+
+def titulo(case: dict[str, Any]) -> str | None:
+    estagio = _estagio(case)
+    return _NOMES[estagio][0] if estagio else None
+
+
+def data_da_infracao(valor: Any) -> str:
+    """O relógio de parede do auto (`timestamp` sem fuso): nunca se converte."""
+    texto = str(valor or "").strip()
+    m = _DATA.match(texto)
+    if not m:
+        return texto
+    ano, mes, dia, hora, minuto = m.groups()
+    return f"{dia}/{mes}/{ano}" + (f" {hora}:{minuto}" if hora else "")
+
+
+def campos(case: dict[str, Any]) -> tuple[tuple[str, str], ...]:
+    auto = ("Auto de infração", _txt(case, "numero_auto") or LINHA_CURTA)
+    placa = ("Placa", _txt(case, "placa").upper() or LINHA_CURTA)
+    data = ("Data da infração", data_da_infracao(case.get("data_infracao")) or LINHA_CURTA)
+    if _estagio(case) == RECURSO_JARI:
+        notificacao = ("Notificação de penalidade", _txt(case, "notificacao_penalidade") or LINHA_CURTA)
+        return (auto, notificacao, placa, data)
+    return (auto, placa, data)
+
+
+def _cep(valor: Any) -> str:
+    texto = str(valor or "").strip()
+    digitos = re.sub(r"\D", "", texto)
+    if len(digitos) == 8:
+        return f"{digitos[:5]}-{digitos[5:]}"
+    return texto or LINHA_CURTA
+
+
+def qualificacao(case: dict[str, Any]) -> str:
+    """Sem marca de gênero: o formulário não pergunta (spec 2026-10-02, §3.2)."""
+    estagio = _estagio(case)
+    auto = _txt(case, "numero_auto") or LINHA_EM_BRANCO
+    partes = [
+        _txt(case, "nome").upper() or LINHA_EM_BRANCO,
+        f"CPF nº {_cpf(case.get('cpf'))}",
+    ]
+    cnh = _txt(case, "cnh")
+    if cnh:  # quem recorre pode ser o proprietário que não dirigia
+        partes.append(f"CNH nº {cnh}")
+    partes.append(
+        f"com endereço em {_txt(case, 'endereco') or LINHA_EM_BRANCO}, "
+        f"CEP {_cep(case.get('cep'))}, {_local(case)}"
+    )
+    partes.append(f"e-mail {_txt(case, 'email') or LINHA_EM_BRANCO}")
+    if estagio == RECURSO_JARI:
+        notificacao = _txt(case, "notificacao_penalidade") or LINHA_EM_BRANCO
+        ato = (
+            f"interpor RECURSO contra a penalidade imposta na Notificação de Penalidade nº "
+            f"{notificacao}, referente ao Auto de Infração nº {auto}"
+        )
+    else:
+        peca = "DEFESA PRÉVIA" if estagio == DEFESA_PREVIA else LINHA_EM_BRANCO
+        ato = f"apresentar {peca} em face do Auto de Infração nº {auto}"
+    return ", ".join(partes) + f", vem, respeitosamente, {ato}, pelos fundamentos a seguir expostos."
+
+
+def pedido(
+    case: dict[str, Any],
+    situacao_velocidade: str | None,
+    inciso_da_conta: str | None,
+    cabe_advertencia: bool,
+) -> tuple[str, ...]:
+    """O pedido é do código (spec 2026-10-02, §3.3): o modelo nunca formula um
+    pedido contra o cliente nem esquece o principal. A ordem da desclassificação
+    é a da spec de 30/09/2026."""
+    recurso = _estagio(case) == RECURSO_JARI
+    auto = _txt(case, "numero_auto") or LINHA_EM_BRANCO
+    inconsistencia = (
+        f"o arquivamento do Auto de Infração nº {auto} por inconsistência, nos termos do "
+        "art. 281, § 1º, I, do CTB"
+    )
+    itens: list[str] = []
+    if situacao_velocidade == "sem_infracao":
+        motivo = "uma vez que a velocidade considerada no próprio auto não supera a máxima permitida"
+        if recurso:
+            itens.append(
+                f"o provimento deste recurso, com o cancelamento da penalidade imposta e {inconsistencia}, {motivo}"
+            )
+        else:
+            itens.append(f"{inconsistencia}, {motivo}")
+    elif situacao_velocidade == "desclassificacao" and inciso_da_conta:
+        alvo = (
+            f"para o art. 218, {inciso_da_conta}, do CTB, compatível com a velocidade "
+            "considerada no próprio auto"
+        )
+        if recurso:
+            itens.append(
+                f"o provimento deste recurso, para desclassificar a infração {alvo}, com a "
+                "readequação da penalidade"
+            )
+        else:
+            itens.append(f"a desclassificação da infração {alvo}")
+        itens.append(f"subsidiariamente, {inconsistencia}")
+    elif recurso:
+        itens.append(
+            "o conhecimento e o provimento deste recurso, com o cancelamento da penalidade "
+            f"imposta e o arquivamento do Auto de Infração nº {auto}"
+        )
+    elif _estagio(case) == DEFESA_PREVIA:
+        itens.append(
+            f"o acolhimento desta defesa prévia, com o arquivamento do Auto de Infração nº {auto} "
+            "e a declaração de insubsistência do seu registro"
+        )
+    else:
+        itens.append(f"o acolhimento desta peça, com o arquivamento do Auto de Infração nº {auto}")
+    if cabe_advertencia:
+        itens.append(_ADVERTENCIA)
+    ultimo = len(itens) - 1
+    return tuple(
+        f"{'abcdefgh'[i]}) {item}{'.' if i == ultimo else ';'}" for i, item in enumerate(itens)
+    )
+
+
+def nome_arquivo(case: dict[str, Any]) -> str:
+    estagio = _estagio(case)
+    auto = re.sub(r"[^A-Za-z0-9-]", "", _txt(case, "numero_auto"))
+    if estagio and auto:
+        return f"{_NOMES[estagio][2]}-{auto}.pdf"
+    case_id = re.sub(r"[^A-Za-z0-9_-]", "", _txt(case, "case_id"))
+    return f"peca-{case_id}.pdf" if case_id else "peca.pdf"
+
+
+def titulo_documento(case: dict[str, Any]) -> str:
+    estagio = _estagio(case)
+    nome = _NOMES[estagio][1] if estagio else "Peça"
+    auto = _txt(case, "numero_auto")
+    return f"{nome} — Auto nº {auto}" if auto else nome
+
+
+def corpo_do_email(case_id: str) -> str:
+    """O aviso de revisão saiu da peça (o cliente protocola o PDF como está) e
+    veio para cá, em passos (spec 2026-10-02, §4.7)."""
+    return (
+        "Olá,\n\n"
+        "Sua peça está pronta, em anexo, para você imprimir e protocolar:\n\n"
+        "1. Confira os dados e preencha à mão as linhas em branco.\n"
+        "2. Assine no espaço indicado.\n"
+        "3. Protocole no órgão de trânsito até o prazo que consta da sua notificação — no "
+        "balcão, pelos Correios ou pelo site do órgão, conforme ele aceitar.\n\n"
+        "Revise o texto antes de protocolar: ele foi redigido com apoio de inteligência "
+        "artificial a partir das informações que você enviou.\n\n"
+        f"Identificação do pedido: {case_id}\n\n"
+        "Cordialmente,\nAmo Recorrer"
     )
 
 
