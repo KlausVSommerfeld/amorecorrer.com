@@ -36,3 +36,5 @@ secrets.json
 .claude/settings.json
 .claude/settings.local.json
 recursos testes/
+# Maquetes do brainstorm (visual companion)
+.superpowers/
