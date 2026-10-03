@@ -38,7 +38,7 @@ pedido e fecho, e o DeepSeek escreve só "Dos fatos" e "Dos fundamentos".
 | Visual | **Opção B, "Notificação e Resposta"** | Decisão do Klaus, sobre maquete: a forma forense com o filete e o quadro de campos rotulados do site — "um pouco de estilo" sem deixar de ser petição. |
 | Hifenização | **Sim, português (`pyphen`)** | Justificado sem hifenização abre rios de espaço entre palavras. |
 | Fontes | **TTFs versionados em `pipeline/fontes/`** | O repositório só tem `.woff` (web); o reportlab precisa de `.ttf`. Licença OFL permite. |
-| Gênero | **Qualificação sem marca de gênero** | O formulário não pergunta. "CPF nº…", "com endereço na…", nada de "portador(a)". |
+| Gênero | **Qualificação sem marca de gênero** | O formulário não pergunta. "CPF nº…", "com endereço em…" ("em" serve a Rua, Largo e Avenida), nada de "portador(a)". |
 
 ## 3. A peça, de cima a baixo
 
@@ -78,7 +78,7 @@ sem conversão de fuso. Placa em caixa alta.
 
 Defesa prévia:
 
-> MARIANA SOUZA LIMA, CPF nº 529.982.247-25, CNH nº 04512345678, com endereço na Rua das Laranjeiras,
+> MARIANA SOUZA LIMA, CPF nº 529.982.247-25, CNH nº 04512345678, com endereço em Rua das Laranjeiras,
 > 120, apto 302, CEP 22240-003, Rio de Janeiro/RJ, e-mail mariana@example.com, vem, respeitosamente,
 > apresentar DEFESA PRÉVIA em face do Auto de Infração nº E123456789, pelos fundamentos a seguir expostos.
 
@@ -137,14 +137,16 @@ Continua sem dependências e testável fora do venv. Ganha:
 
 - `@dataclass(frozen=True) Peca`: `enderecamento: str`, `titulo: str | None`,
   `campos: tuple[tuple[str, str], ...]`, `qualificacao: str`, `secoes: tuple[tuple[str, tuple[str, ...]], ...]`
-  (título, parágrafos), `pedido: tuple[str, ...]` (itens já com letra), `fecho: str`, `nome_arquivo: str`,
-  `titulo_documento: str`.
+  (título numerado, parágrafos), `titulo_pedido: str`, `abertura_pedido: str`, `pedido: tuple[str, ...]`
+  (itens já com letra), `fecho: str`, `nome_arquivo: str`, `titulo_documento: str`,
+  `pedido_do_modelo_removido: bool` (para o log).
+- `corpo_do_email(case_id)`: o texto do §4.7, puro e testável.
 - `separar_secoes(rascunho) -> tuple[tuple[str, tuple[str, ...]], ...]`: depois de `limpar_markdown` e
   `remover_prefacio`, corta pelos títulos. Aceita numeração (`I –`, `1.`, `I)`), caixa baixa, dois
   pontos e as variantes "DO DIREITO" e "DOS FUNDAMENTOS JURÍDICOS" para fundamentos. Descarta o que
   vier antes de "DOS FATOS" (qualificação escrita pelo modelo) e tudo a partir de um título de pedido
   ("DO PEDIDO", "DOS PEDIDOS", "DO REQUERIMENTO"). Sem títulos → seção única; nesse caso, descarta o
-  primeiro parágrafo se ele contiver o nome do cliente e "vem," nos primeiros 300 caracteres.
+  primeiro parágrafo se ele trouxer "vem" e começar pelo nome do cliente ou trouxer "CPF" (a qualificação real de 02/10/2026 só chega ao "vem," depois de 330 caracteres). Também descarta, no início, cabeçalhos soltos ("DEFESA PRÉVIA", "Auto de Infração nº: …"). Um título seguido de ":" ou "–" na mesma linha do texto conta como título.
 - `remover_pedido(paragrafos)`: tira, do fim, parágrafos que comecem por "Diante do exposto", "Ante o
   exposto", "Pelo exposto", "Por todo o exposto", "Isto posto" ou "Nestes termos" **e** contenham
   "requer" ou "deferimento"; e mantém o corte atual de tudo depois de "pede deferimento".
@@ -185,7 +187,7 @@ sem auto, sem o trecho do auto.
   `paragrafo_para_pdf`).
 
 **Fontes:** `pipeline/fontes/` com `SourceSerif4-Regular.ttf`, `-Semibold.ttf`, `-Bold.ttf`,
-`-It.ttf`, `IBMPlexMono-Regular.ttf`, `IBMPlexMono-Medium.ttf` e as licenças (`OFL-SourceSerif4.txt`,
+`-It.ttf`, `IBMPlexMono-Regular.ttf`, `IBMPlexMono-Medium.ttf` e as licenças (`OFL-SourceSerif4.md`,
 `OFL-IBMPlexMono.txt`), baixados das releases oficiais (adobe-fonts/source-serif, IBM/plex), com o
 `sha256` de cada arquivo registrado no `PROGRESSO.md`. `registrar_fontes()` roda uma vez por processo e
 lança erro claro se algum arquivo faltar; o `main.py` a chama no startup, para o pipeline **acusar ao
@@ -199,7 +201,7 @@ no `.venv` de Windows pelo pip do próprio venv — nunca do WSL.
 - `natureza(ctb, dispositivo) -> tuple[str, str] | None`: (`infracao`, `penalidade`) do
   `CTB.infracao(ref)`; `None` se não houver.
 - `cabe_advertencia(ctb, enquadramento, inciso_da_conta) -> bool`: as regras do §3.4.
-- `montar_base(ctb, amparo_legal, extras: tuple[str, ...] = ())`: os extras entram como os de
+- `montar_base(ctb, amparo_legal, artigos_do_pedido: tuple[str, ...] = ())`: entram como os de
   `EXTRAS_POR_ARTIGO` (com remissões seguidas). O worker passa `("267",)` quando cabe advertência — o
   pedido cita o art. 267, e a invariante "nenhuma citação fora da base chega ao PDF" continua valendo.
   Com o 267 na base, o modelo também pode usá-lo nos fundamentos.
@@ -231,7 +233,7 @@ Ordem nova no `run_dispatch_pipeline`:
 1. `base = montar_base(ctb, amparo)`; `bloco_vel = bloco_velocidade(case, base.enquadramento)`.
 2. `cabe = cabe_advertencia(ctb, base.enquadramento, bloco_vel.inciso_da_conta if bloco_vel else None)`
    (em `base_legal.py`; com inciso da conta, consulta `art. 218, <inciso>`; sem ele, o enquadramento);
-   se cabe, `base = montar_base(ctb, amparo, extras=("267",))`.
+   se cabe, `base = montar_base(ctb, amparo, artigos_do_pedido=("267",))`.
 3. Prompt e conferência como hoje.
 4. `peca = montar_peca(draft, case, situacao, inciso, cabe)`; `pdf = gerar_pdf(peca)`.
 5. Log: `peca case_id=… secoes=2|1 pedido_itens=N advertencia=sim|nao pedido_do_modelo_removido=sim|nao`
@@ -293,7 +295,7 @@ Nenhuma questão de forma derruba um caso pago.
     scratchpad da sessão) copiados para o teste como constantes: nada de conteúdo perdido além do que
     deve sair.
 - **`test_base_legal`:** `natureza` do 218 I, II e III; `cabe_advertencia(ctb, enquadramento, inciso_da_conta)` com e sem desclassificação,
-  com enquadramento não reconhecido; `montar_base(..., extras=("267",))` traz o 267.
+  com enquadramento não reconhecido; `montar_base(..., artigos_do_pedido=("267",))` traz o 267.
 - **`test_velocidade`:** o texto do bloco não manda mais "Requeira"; `inciso_da_conta` certo.
 - **`test_prompt`:** os dois títulos exatos no prompt; proibição de pedido e qualificação; núcleo novo.
 - **`test_pdf_peca`** (precisa de `reportlab` e `pyphen`; `skipUnless` quando ausentes, para o comando
