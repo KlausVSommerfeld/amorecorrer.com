@@ -22,7 +22,10 @@ from __future__ import annotations
 
 import html
 import re
+from dataclasses import dataclass
 from typing import Any
+
+from prompt import RespostaDoModeloInvalida
 
 LINHA_EM_BRANCO = "______________________"
 LINHA_CURTA = "__________"  # no quadro de campos: a linha longa não cabe na célula
@@ -49,6 +52,32 @@ _VOCATIVO = re.compile(
     r"presidente\b|à\s|às\s|ao\s|aos\s)",
     re.IGNORECASE,
 )
+# Título de seção (spec 2026-10-02, §4.1): numeração opcional ("I –", "1.", "I)"),
+# caixa qualquer, dois pontos; e o texto pode vir na mesma linha depois de ":" ou "–".
+_TITULO_SECAO = re.compile(
+    r"^\s*(?:(?:[IVX]+|\d+)\s*[-–—.)]\s*)?"
+    r"(?P<nome>(?:d[oa]s?\s+)?fatos\s+e\s+(?:d[oa]s?\s+)?fundamentos(?:\s+jur[ií]dicos)?"
+    r"|d[oa]s?\s+fatos"
+    r"|d[oa]s?\s+fundamentos(?:\s+jur[ií]dicos)?"
+    r"|d[oa]\s+direito"
+    r"|d[oa]s?\s+pedidos?"
+    r"|d[oa]s?\s+requerimentos?)"
+    r"\s*(?:$|[:–—-]\s*(?P<resto>.*)$)",
+    re.IGNORECASE,
+)
+# Fecho de pedido que o modelo escreve no fim, apesar do prompt.
+_PEDIDO_FINAL = re.compile(
+    r"^(?:diante do exposto|ante o exposto|pelo exposto|por todo o exposto|ante todo o exposto|"
+    r"isto posto|posto isso|assim sendo|nestes termos|termos em que)\b",
+    re.IGNORECASE,
+)
+_PEDE_DEFERIMENTO_NO_FIM = re.compile(
+    r"\s*(?:nestes termos|termos em que),?\s*(?:pede|espera|aguarda|requer)\s+deferimento\.?\s*$",
+    re.IGNORECASE,
+)
+_VEM = re.compile(r"\bvem\b,?\s", re.IGNORECASE)
+_CAMPO_SOLTO = re.compile(r"^[^:\n]{2,40}:\s*\S.{0,80}$")
+_ROMANOS = ("I", "II", "III", "IV")
 _PREFACIO = re.compile(
     r"^(com base nos dados|segue|abaixo|a seguir|conforme solicitado)\b", re.IGNORECASE
 )
@@ -110,6 +139,114 @@ def cortar_depois_do_pedido(texto: str) -> str:
     while paragrafos and _NOTA.match(paragrafos[-1]):
         paragrafos.pop()
     return "\n\n".join(paragrafos).strip()
+
+
+def remover_pedido(paragrafos: list[str]) -> tuple[list[str], bool]:
+    """Tira do fim o pedido e o "pede deferimento" que o modelo escrever: o pedido
+    é do código. Fundamento que começa por "Ante o exposto" sem requerer nada fica."""
+    pars = list(paragrafos)
+    removido = False
+    while pars and _PEDIDO_FINAL.match(pars[-1]) and re.search(r"requer|deferimento", pars[-1], re.I):
+        pars.pop()
+        removido = True
+    if pars:
+        sem_fecho = _PEDE_DEFERIMENTO_NO_FIM.sub("", pars[-1]).strip()
+        if sem_fecho != pars[-1]:
+            removido = True
+            if sem_fecho:
+                pars[-1] = sem_fecho
+            else:
+                pars.pop()
+    return pars, removido
+
+
+def _tipo_de_secao(nome: str) -> str:
+    n = nome.lower()
+    if "pedido" in n or "requerimento" in n:
+        return "pedido"
+    if "fatos" in n and "fundamentos" in n:
+        return "ambos"
+    return "fatos" if "fatos" in n else "fundamentos"
+
+
+def _blocos(linhas: list[str]) -> list[str]:
+    return [b for b in re.split(r"\n[ \t]*\n", "\n".join(linhas)) if b.strip()]
+
+
+def _juntar(bloco: str) -> str:
+    # Linhas quebradas pelo modelo dentro de um parágrafo: no PDF justificado,
+    # cada "\n" viraria quebra forçada.
+    return " ".join(linha.strip() for linha in bloco.split("\n") if linha.strip())
+
+
+def _cabecalho_solto(bloco: str) -> bool:
+    """"DEFESA PRÉVIA", "Auto de Infração nº: E123" — o que o modelo antigo punha no topo."""
+    linhas = [l.strip() for l in bloco.split("\n") if l.strip()]
+    # Frase terminada em ponto é texto, não cabeçalho ("[Modo sem IA: …] Rascunho indisponível.").
+    return all(
+        len(l) <= 80 and not l.endswith(".")
+        and (not re.search(r"[a-zà-ÿ]", l) or _CAMPO_SOLTO.match(l))
+        for l in linhas
+    )
+
+
+def _e_qualificacao(paragrafo: str, nome_cliente: str) -> bool:
+    inicio = paragrafo[:700]
+    pelo_nome = bool(nome_cliente) and paragrafo.lower().startswith(nome_cliente.lower())
+    return bool(_VEM.search(inicio)) and (pelo_nome or "CPF" in inicio)
+
+
+def separar_secoes(
+    rascunho: str, nome_cliente: str = ""
+) -> tuple[tuple[tuple[str, tuple[str, ...]], ...], bool]:
+    """Corta o rascunho em DOS FATOS / DOS FUNDAMENTOS; sem os títulos, seção única.
+    Devolve (seções sem numeração, houve pedido do modelo removido)."""
+    t = remover_prefacio(limpar_markdown(rascunho))
+    t = cortar_depois_do_pedido(remover_enderecamento(t))
+    linhas: dict[str, list[str]] = {"antes": [], "fatos": [], "fundamentos": [], "ambos": []}
+    atual, titulos, removido = "antes", set(), False
+    for linha in t.split("\n"):
+        m = _TITULO_SECAO.match(linha)
+        if m:
+            tipo = _tipo_de_secao(m.group("nome"))
+            if tipo == "pedido":
+                removido = True
+                break
+            atual = tipo
+            titulos.add(tipo)
+            if (m.group("resto") or "").strip():
+                linhas[atual].append(m.group("resto").strip())
+            continue
+        linhas[atual].append(linha)
+
+    antes = _blocos(linhas["antes"])
+    while antes and _cabecalho_solto(antes[0]):
+        antes.pop(0)
+    antes = [_juntar(b) for b in antes]
+    if antes and _e_qualificacao(antes[0], nome_cliente):
+        antes.pop(0)
+
+    def pars(chave: str) -> list[str]:
+        return [_juntar(b) for b in _blocos(linhas[chave])]
+
+    if titulos & {"fatos", "fundamentos"}:
+        secoes = [
+            ("DOS FATOS", pars("fatos") if "fatos" in titulos else antes),
+            ("DOS FUNDAMENTOS", pars("fundamentos") + pars("ambos")),
+        ]
+    else:
+        secoes = [("DOS FATOS E DOS FUNDAMENTOS", pars("ambos") if "ambos" in titulos else antes)]
+
+    secoes = [(nome, p) for nome, p in secoes if p]
+    if secoes:
+        nome, ultimos = secoes[-1]
+        ultimos, r = remover_pedido(ultimos)
+        removido = removido or r
+        secoes[-1] = (nome, ultimos)
+        secoes = [(nome, p) for nome, p in secoes if p]
+    if not secoes:
+        raise RespostaDoModeloInvalida("peça sem fatos nem fundamentos depois da limpeza")
+    return tuple((nome, tuple(p)) for nome, p in secoes), removido
 
 
 def _cpf(valor: Any) -> str:
@@ -301,6 +438,48 @@ def texto_da_peca(rascunho: str, case: dict[str, Any]) -> str:
     t = remover_enderecamento(t)
     t = cortar_depois_do_pedido(t)
     return f"{enderecamento(case)}\n\n{t}\n\n{fecho(case)}"
+
+
+@dataclass(frozen=True)
+class Peca:
+    """Tudo o que o PDF desenha, já em texto (pdf_peca.gerar_pdf só desenha)."""
+
+    enderecamento: str
+    titulo: str | None
+    campos: tuple[tuple[str, str], ...]
+    qualificacao: str
+    secoes: tuple[tuple[str, tuple[str, ...]], ...]
+    titulo_pedido: str
+    abertura_pedido: str
+    pedido: tuple[str, ...]
+    fecho: str
+    nome_arquivo: str
+    titulo_documento: str
+    pedido_do_modelo_removido: bool
+
+
+def montar_peca(
+    rascunho: str,
+    case: dict[str, Any],
+    situacao_velocidade: str | None = None,
+    inciso_da_conta: str | None = None,
+    cabe_advertencia: bool = False,
+) -> Peca:
+    secoes, removido = separar_secoes(rascunho, _txt(case, "nome"))
+    return Peca(
+        enderecamento=enderecamento(case),
+        titulo=titulo(case),
+        campos=campos(case),
+        qualificacao=qualificacao(case),
+        secoes=tuple((f"{_ROMANOS[i]} – {nome}", p) for i, (nome, p) in enumerate(secoes)),
+        titulo_pedido=f"{_ROMANOS[len(secoes)]} – DO PEDIDO",
+        abertura_pedido=ABERTURA_PEDIDO,
+        pedido=pedido(case, situacao_velocidade, inciso_da_conta, cabe_advertencia),
+        fecho=fecho(case),
+        nome_arquivo=nome_arquivo(case),
+        titulo_documento=titulo_documento(case),
+        pedido_do_modelo_removido=removido,
+    )
 
 
 def paragrafo_para_pdf(texto: str) -> str:

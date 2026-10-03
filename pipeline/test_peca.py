@@ -7,7 +7,12 @@ Nunca `unittest discover`: test_resend_smtp.py manda e-mail real ao ser importad
 
 import unittest
 
+from prompt import RespostaDoModeloInvalida
 from peca import (
+    Peca,
+    montar_peca,
+    remover_pedido,
+    separar_secoes,
     ABERTURA_PEDIDO,
     LINHA_CURTA,
     LINHA_EM_BRANCO,
@@ -434,6 +439,150 @@ class TestCorpoDoEmail(unittest.TestCase):
             with self.subTest(trecho=trecho):
                 self.assertIn(trecho, corpo)
         self.assertNotIn("rascunho", corpo.lower())
+
+
+# Rodada real de 02/10/2026 (prompt anterior, defesa, caso fictício), resumida:
+# qualificação no 1º parágrafo, pedido com "pede deferimento" no último.
+RASCUNHO_SEM_TITULOS = (
+    "Mariana Souza Lima, portadora do CPF 52998224725, titular da Carteira Nacional de "
+    "Habilitação nº 04512345678, residente e domiciliada na Rua das Laranjeiras, 120, apto 302, "
+    "CEP 22240003, Rio de Janeiro/RJ, telefone 21987654321, endereço eletrônico "
+    "mariana@example.com, vem, tempestivamente, apresentar defesa prévia contra a Notificação "
+    "de autuação nº E123456789.\n\n"
+    "Conforme se extrai da notificação, a velocidade considerada foi de 90 km/h e a velocidade "
+    "máxima permitida no local era de 80 km/h.\n\n"
+    "Com efeito, a condutora dirigia-se ao hospital acompanhando sua filha, que apresentava "
+    "crise de asma, e não havia placa de velocidade visível no trecho percorrido.\n\n"
+    "Diante do exposto, requer o acolhimento da presente defesa prévia, com o consequente "
+    "arquivamento do auto de infração. Nestes termos, pede deferimento."
+)
+FATO = "No dia 14/08/2026, às 07h52, o veículo foi autuado na Av. Brasil."
+FUNDAMENTO = "O art. 90 do CTB afasta a sanção quando a sinalização é insuficiente."
+RASCUNHO_COM_TITULOS = (
+    f"**DOS FATOS**\n\n{FATO}\n\n**DOS FUNDAMENTOS**\n\n{FUNDAMENTO}\n\n"
+    "Ante o exposto, resta demonstrado que a sinalização era insuficiente.\n\n"
+    "DO PEDIDO\n\nRequer o arquivamento.\n\nNestes termos, pede deferimento."
+)
+
+
+class TestRemoverPedido(unittest.TestCase):
+    def test_tira_o_pedido_do_fim(self):
+        pars, removido = remover_pedido(
+            ["Fato.", "Diante do exposto, requer o arquivamento.", "Nestes termos, pede deferimento."])
+        self.assertEqual(pars, ["Fato."])
+        self.assertTrue(removido)
+
+    def test_pede_deferimento_colado_no_ultimo_fundamento(self):
+        pars, removido = remover_pedido(["O art. 90 afasta a sanção. Nestes termos, pede deferimento."])
+        self.assertEqual(pars, ["O art. 90 afasta a sanção."])
+        self.assertTrue(removido)
+
+    def test_fundamento_que_comeca_por_ante_o_exposto_fica(self):
+        pars, removido = remover_pedido(["Ante o exposto, resta claro que não havia placa."])
+        self.assertEqual(pars, ["Ante o exposto, resta claro que não havia placa."])
+        self.assertFalse(removido)
+
+
+class TestSepararSecoes(unittest.TestCase):
+    def test_com_titulos(self):
+        secoes, removido = separar_secoes(RASCUNHO_COM_TITULOS, "Mariana Souza Lima")
+        self.assertEqual(secoes, (
+            ("DOS FATOS", (FATO,)),
+            ("DOS FUNDAMENTOS", (FUNDAMENTO, "Ante o exposto, resta demonstrado que a sinalização era insuficiente.")),
+        ))
+        self.assertTrue(removido)
+
+    def test_variantes_de_titulo(self):
+        for fatos, fundamentos in (("I – DOS FATOS", "II – DOS FUNDAMENTOS"),
+                                   ("1. Dos fatos", "2. Do direito"),
+                                   ("DOS FATOS:", "DOS FUNDAMENTOS JURÍDICOS:"),
+                                   ("I) DOS FATOS", "II) Dos Fundamentos"),
+                                   ("## DOS FATOS", "## DOS FUNDAMENTOS")):
+            with self.subTest(fatos=fatos):
+                secoes, _ = separar_secoes(f"{fatos}\n{FATO}\n\n{fundamentos}\n{FUNDAMENTO}")
+                self.assertEqual(secoes, (("DOS FATOS", (FATO,)), ("DOS FUNDAMENTOS", (FUNDAMENTO,))))
+
+    def test_titulo_na_mesma_linha_do_texto(self):
+        secoes, _ = separar_secoes(f"DOS FATOS: {FATO}\n\nDOS FUNDAMENTOS – {FUNDAMENTO}")
+        self.assertEqual(secoes, (("DOS FATOS", (FATO,)), ("DOS FUNDAMENTOS", (FUNDAMENTO,))))
+
+    def test_paragrafo_que_comeca_por_dos_fatos_nao_e_titulo(self):
+        secoes, _ = separar_secoes(f"Dos fatos narrados no auto não se extrai a placa.\n\n{FUNDAMENTO}")
+        self.assertEqual(secoes, (("DOS FATOS E DOS FUNDAMENTOS",
+                                   ("Dos fatos narrados no auto não se extrai a placa.", FUNDAMENTO)),))
+
+    def test_sem_titulos_vira_secao_unica_sem_qualificacao_nem_pedido(self):
+        secoes, removido = separar_secoes(RASCUNHO_SEM_TITULOS, "Mariana Souza Lima")
+        self.assertEqual(len(secoes), 1)
+        titulo_secao, pars = secoes[0]
+        self.assertEqual(titulo_secao, "DOS FATOS E DOS FUNDAMENTOS")
+        self.assertEqual(len(pars), 2)
+        self.assertTrue(pars[0].startswith("Conforme se extrai"))
+        self.assertTrue(pars[1].startswith("Com efeito"))
+        self.assertTrue(removido)
+
+    def test_qualificacao_antes_de_dos_fatos_sai(self):
+        secoes, _ = separar_secoes(
+            "Mariana Souza Lima, CPF 52998224725, vem apresentar defesa.\n\n"
+            f"DOS FATOS\n\n{FATO}\n\nDOS FUNDAMENTOS\n\n{FUNDAMENTO}", "Mariana Souza Lima")
+        self.assertEqual(secoes[0], ("DOS FATOS", (FATO,)))
+
+    def test_titulo_unico_dos_fatos_e_dos_fundamentos(self):
+        secoes, _ = separar_secoes(f"DOS FATOS E DOS FUNDAMENTOS\n\n{FATO}\n\n{FUNDAMENTO}")
+        self.assertEqual(secoes, (("DOS FATOS E DOS FUNDAMENTOS", (FATO, FUNDAMENTO)),))
+
+    def test_linhas_quebradas_viram_um_paragrafo(self):
+        secoes, _ = separar_secoes(f"DOS FATOS\nNo dia 14/08/2026,\nàs 07h52.\n\nDOS FUNDAMENTOS\n{FUNDAMENTO}")
+        self.assertEqual(secoes[0], ("DOS FATOS", ("No dia 14/08/2026, às 07h52.",)))
+
+    # Fixture de 25/09/2026: cabeçalho solto, qualificação e pedido — nada de fatos.
+    def test_sem_fatos_nem_fundamentos_e_resposta_invalida(self):
+        with self.assertRaises(RespostaDoModeloInvalida):
+            separar_secoes(RASCUNHO_REAL, "Mariana Souza Lima")
+
+    def test_cabecalho_solto_no_inicio_sai(self):
+        secoes, _ = separar_secoes(f"DEFESA PRÉVIA\n\nAuto de Infração nº: E123\nÓrgão: CET-RIO\n\n{FATO}")
+        self.assertEqual(secoes, (("DOS FATOS E DOS FUNDAMENTOS", (FATO,)),))
+
+
+class TestMontarPeca(unittest.TestCase):
+    def test_peca_completa(self):
+        p = montar_peca(RASCUNHO_COM_TITULOS, dict(DEFESA, orgao_autuador="CET-RIO"),
+                        "desclassificacao", "I", True)
+        self.assertIsInstance(p, Peca)
+        self.assertEqual(p.enderecamento, "À Autoridade de Trânsito do órgão autuador CET-RIO")
+        self.assertEqual(p.titulo, "DEFESA PRÉVIA")
+        self.assertEqual(p.campos, campos(DEFESA))
+        self.assertEqual(p.qualificacao, qualificacao(DEFESA))
+        self.assertEqual([t for t, _ in p.secoes], ["I – DOS FATOS", "II – DOS FUNDAMENTOS"])
+        self.assertEqual(p.titulo_pedido, "III – DO PEDIDO")
+        self.assertEqual(p.abertura_pedido, ABERTURA_PEDIDO)
+        self.assertEqual(p.pedido, pedido(DEFESA, "desclassificacao", "I", True))
+        self.assertEqual(p.fecho, fecho(DEFESA))
+        self.assertEqual(p.nome_arquivo, "defesa-previa-E123456789.pdf")
+        self.assertEqual(p.titulo_documento, "Defesa prévia — Auto nº E123456789")
+        self.assertTrue(p.pedido_do_modelo_removido)
+
+    def test_secao_unica_renumera_o_pedido(self):
+        p = montar_peca(RASCUNHO_SEM_TITULOS, RECURSO)
+        self.assertEqual([t for t, _ in p.secoes], ["I – DOS FATOS E DOS FUNDAMENTOS"])
+        self.assertEqual(p.titulo_pedido, "II – DO PEDIDO")
+
+    # Rodada 3 de 25/09/2026: a defesa prévia que o modelo endereçou à JARI.
+    def test_enderecamento_do_modelo_e_trocado_pelo_do_codigo(self):
+        rascunho = (
+            "Excelentíssimo Senhor Presidente da Junta Administrativa de Recursos de "
+            "Infrações (JARI) do órgão autuador CET-RIO,\n\n"
+            f"DOS FATOS\n\n{FATO}\n\nDOS FUNDAMENTOS\n\n{FUNDAMENTO}"
+        )
+        p = montar_peca(rascunho, DEFESA)
+        self.assertEqual(p.enderecamento, "À Autoridade de Trânsito do órgão autuador CET-RIO")
+        self.assertNotIn("JARI", " ".join(par for _, pars in p.secoes for par in pars))
+
+    def test_sem_ia_continua_funcionando(self):
+        p = montar_peca("[Modo sem IA: defina DEEPSEEK_API_KEY] Rascunho indisponível.", DEFESA)
+        self.assertEqual(p.secoes, (("I – DOS FATOS E DOS FUNDAMENTOS",
+                                     ("[Modo sem IA: defina DEEPSEEK_API_KEY] Rascunho indisponível.",)),))
 
 
 class TestParagrafoParaPdf(unittest.TestCase):
