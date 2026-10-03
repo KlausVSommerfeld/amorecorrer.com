@@ -201,7 +201,7 @@ npm run lint
 npm run build
 
 # Pipeline, de dentro de pipeline/
-python -m unittest test_verificacao test_prompt test_peca test_base_legal test_conferencia test_velocidade
+.\.venv\Scripts\python -m unittest test_verificacao test_prompt test_peca test_base_legal test_conferencia test_velocidade test_pdf_peca
 ```
 
 **Nunca rode `unittest discover`** no pipeline: o `test_resend_smtp.py` casa com o padrão e manda um e-mail real ao ser importado.

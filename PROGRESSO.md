@@ -38,7 +38,7 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 ## Estado atual
 
 
-*Atualizado em 2026-10-01.*
+*Atualizado em 2026-10-02.*
 
 **Produto e produção**
 
@@ -50,7 +50,7 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 **O pipeline (pronto em `main`, ainda sem endereço)**
 
 - **Modelo `deepseek-flash`, com raciocínio desligado** (25/09). O `deepseek-chat` foi aposentado pela DeepSeek. Com o raciocínio no padrão (ligado), a peça voltava vazia. Resposta vazia ou cortada leva o caso a `failed`, e não a um PDF sem peça. Escolha do Klaus "até o OCR".
-- **A forma da peça é garantida por código** (25/09, `pipeline/peca.py`): sem markdown, sem prefácio, sem data inventada (ela fica em branco, para o dia do protocolo), fecho montado a partir do caso e dado ausente como linha em branco.
+- **A peça é a peça final, com moldura escrita pelo código** (02/10, `pipeline/peca.py` + `pdf_peca.py`): o modelo escreve só "Dos fatos" e "Dos fundamentos"; endereçamento, título, quadro de campos do auto, qualificação, pedido (com o subsidiário de advertência do art. 267) e fecho são do código, no estilo "Notificação e Resposta" (Source Serif 4, IBM Plex Mono, hifenização, "1/N"). Sem marca nossa: o cliente imprime, assina e protocola. Data sempre em branco e dado ausente como linha em branco, como desde 25/09.
 - **Toda peça recebe a base normativa do CTB** (29/09, `pipeline/base_legal.py` + `conferencia.py`): o texto oficial do enquadramento, das remissões seguidas até o fim, do art. 61 no 218 e do rito. Uma citação fora dessa base, ou de norma externa, faz a peça ser refeita uma vez; recusada de novo, o caso vai a `failed`. A base vem de `CTB-compilado_files/`, o parser do Klaus, versionado (compilado do Planalto obtido em 24/09, sha256 `e8b6414d…`).
 - **A peça não sustenta mais enquadramento mais grave que o do auto** (30/09, `pipeline/velocidade.py`). O formulário coleta a velocidade *considerada*; o código calcula o inciso do art. 218 sobre ela e só fala quando os números favorecem o cliente (arquivamento ou desclassificação). Banco e Edge publicados em 01/10; o campo chega ao cliente com a hospedagem do frontend, e a peça com o #11.
 - **Uma decisão jurídica do Klaus está aberta** (ver `PENDENCIAS.md`, seção "A peça"): a tese de "estado de necessidade" sobrevive sem norma. O endereçamento por estágio, que era a outra, foi decidido e implementado em 02/10/2026.
@@ -1525,5 +1525,41 @@ O prompt base ganhou "Não escreva endereçamento nem vocativo: comece pela qual
 - o filtro de vocativo não altera nenhuma das 18 peças reais das duas rodadas do dia.
 
 **Arquivos:** `pipeline/peca.py`, `pipeline/test_peca.py`, `pipeline/prompt.py`, `pipeline/test_prompt.py`, `CLAUDE.md`, `PENDENCIAS.md`.
+
+Sem deploy: o pipeline não roda em produção (#11).
+
+## Sessão de 02/10/2026 — O template da peça
+
+**Feito:** o PDF virou a peça final que o cliente imprime, assina e protocola (decisão do Klaus), pela spec `docs/superpowers/specs/2026-10-02-template-da-peca-design.md` e pelo plano de mesmo nome, executado nesta sessão em 8 tarefas na branch `feat/template-da-peca`. Decisões do Klaus no caminho: o **pedido é do código**; a **advertência do art. 267** entra como último pedido subsidiário quando a infração é leve ou média, com a condição dos 12 meses escrita no pedido (sem pergunta nova no formulário — quem confere o histórico é o órgão); o modelo entrega fatos e fundamentos **com dois títulos fixos**, e sem eles a peça sai com seção única; o visual é a **opção B, "Notificação e Resposta"**, escolhida sobre maquete.
+
+O que mudou:
+- `pipeline/peca.py` monta uma `Peca`: endereçamento (de 02/10), título ("DEFESA PRÉVIA", "RECURSO À JARI"), quadro de campos do auto, qualificação sem marca de gênero ("com endereço em"; CNH só se houver), as seções cortadas do rascunho (com qualificação, cabeçalhos soltos e pedido escritos pelo modelo removidos) e o pedido. O pedido segue o `velocidade.py`: sem infração pela conta → arquivamento por inconsistência; desclassificação → desclassificar, com arquivamento subsidiário (ordem da spec de 30/09). Abre com "Isto posto, requer:" — ajuste do Klaus na aprovação, porque o modelo costuma fechar os fundamentos com "Diante do exposto".
+- `pipeline/base_legal.py` lê a natureza da infração (`ctb_infracoes.json`), decide `cabe_advertencia` (com desclassificação, vale o inciso da conta) e põe o art. 267 na base quando o pedido o cita — a invariante "nenhuma citação fora da base" continua de pé.
+- `pipeline/velocidade.py`: o bloco informa o inciso da conta e manda **sustentar nos fundamentos**, não mais requerer.
+- `pipeline/prompt.py`: o modelo escreve só `DOS FATOS` e `DOS FUNDAMENTOS`; o núcleo passou a "defesas e recursos" e o contexto a "Dados do caso:" (o enquadramento em "recurso" foi uma das causas da defesa endereçada à JARI).
+- `pipeline/pdf_peca.py`, novo: A4 com margens de petição, Source Serif 4 12 pt justificado e hifenizado (`pyphen`), quadro em IBM Plex Mono, títulos de seção com filete, fecho inteiro numa página, "1/N" no rodapé, nenhuma marca nossa. As fontes estão em `pipeline/fontes/`, com as licenças OFL; sem elas, o pipeline não sobe.
+- E-mail: o aviso de revisão saiu da peça e virou passos no corpo da mensagem (conferir e preencher as linhas em branco, assinar, protocolar no prazo); o anexo se chama `defesa-previa-<auto>.pdf` ou `recurso-jari-<auto>.pdf`.
+
+**Verificação:**
+- 178 testes Python fora do venv (6 do PDF, que se pulam sem reportlab/pyphen e passam com eles em `PYTHONPATH`), worker e `main.py` compilando;
+- o plano foi ensaiado a seco numa cópia descartável antes da aprovação, o que achou dois defeitos dele (a mensagem "Modo sem IA" tomada por cabeçalho; Helvetica declarada no PDF);
+- rodada real no DeepSeek com a montagem do worker, três peças por estágio: **6 de 6 com os dois títulos e 0 de 6 com pedido escrito pelo modelo**; advertência nos dois casos (defesa com desclassificação do inciso II para o I; recurso comum no inciso I);
+- os dois PDFs de exemplo, abertos e aprovados pelo Klaus, com a troca da abertura do pedido.
+
+**Fontes** (sha256):
+- `SourceSerif4-Regular.ttf` e5a4ee6a3d87bb9024796be390c6771e2a0eb1883dae25effaf57ca01668e24b
+- `SourceSerif4-Semibold.ttf` 36db62940cb5728b12b1802476dc7fcf4c6c519a7bdd476ba23a4e555fc4655f
+- `SourceSerif4-Bold.ttf` 7cf4f4e1ad74f45058d5bc61716b82560442fbdcd9d3654d2dea96bf6c683d86
+- `SourceSerif4-It.ttf` 9d2950a8f1da66e21502c35d646a1d2148e79f9ea43fd2158cf02f5232e7f430
+- `IBMPlexMono-Regular.ttf` 6a3412f058c7d8dfd9170c41e85ade48e5156ecb89356110ca57a0a27734af46
+- `IBMPlexMono-Medium.ttf` a9b4c49bb299e05b5f6c481e7fb5e78943d2793249a0c8874ab574a2d1ea6755
+
+Origem: release 4.005R de adobe-fonts/source-serif (TTF do pacote Desktop) e google/fonts `ofl/ibmplexmono`.
+
+**Antes do próximo teste ponta a ponta, o Klaus precisa** instalar o `pyphen` no `.venv` de Windows, de `pipeline/` no PowerShell: `uv pip install -r requirements.txt` (o venv é gerido por uv) ou `.venv\Scripts\python -m pip install -r requirements.txt`.
+
+**Ficou de fora:** a conferência de citações não passou pela sonda (roda dentro do worker; só o teste ponta a ponta a exercita junto com o PDF novo); a tese de "estado de necessidade" segue nos fundamentos, à espera da decisão do Klaus.
+
+**Arquivos:** `pipeline/peca.py`, `pipeline/pdf_peca.py`, `pipeline/base_legal.py`, `pipeline/velocidade.py`, `pipeline/prompt.py`, `pipeline/worker.py`, `pipeline/main.py`, `pipeline/requirements.txt`, `pipeline/fontes/`, os testes de cada um, `CLAUDE.md`, `README.md`, `PENDENCIAS.md`.
 
 Sem deploy: o pipeline não roda em produção (#11).
