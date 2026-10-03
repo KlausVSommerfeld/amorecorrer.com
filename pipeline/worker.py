@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import hmac
-import io
 import json
 import logging
 import re
@@ -20,10 +19,11 @@ from supabase import create_client
 
 from config import settings
 from hmac_utils import hmac_sha256_hex
-from peca import paragrafo_para_pdf, texto_da_peca
-from base_legal import carregar_ctb, montar_base
+from peca import corpo_do_email, montar_peca
+from base_legal import cabe_advertencia, carregar_ctb, montar_base
 from conferencia import gerar_com_conferencia, resumo_alertas
 from velocidade import bloco_velocidade
+from pdf_peca import gerar_pdf
 from prompt import argumentos_da_chamada, build_case_context, system_prompt, texto_da_resposta
 from verificacao import bloco_verificacao
 
@@ -134,28 +134,6 @@ async def call_deepseek(
     return texto_da_resposta(escolha.message.content, escolha.finish_reason)
 
 
-def build_pdf_bytes(title: str, body_text: str) -> bytes:
-    import html
-
-    from reportlab.lib.pagesizes import A4
-    from reportlab.lib.styles import getSampleStyleSheet
-    from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
-
-    buf = io.BytesIO()
-    doc = SimpleDocTemplate(buf, pagesize=A4, title=title[:80])
-    styles = getSampleStyleSheet()
-    story: list = [Paragraph(html.escape(title), styles["Title"]), Spacer(1, 12)]
-    for para in body_text.split("\n\n"):
-        if not para.strip():
-            continue
-        # Com `\n` virando <br/>: sem isso o reportlab junta o cabeçalho e o
-        # bloco de assinatura (nome, CPF) numa linha só.
-        story.append(Paragraph(paragrafo_para_pdf(para), styles["BodyText"]))
-        story.append(Spacer(1, 8))
-    doc.build(story)
-    return buf.getvalue()
-
-
 def _message_id_domain(mail_from: str) -> str:
     m = re.search(r"@([^>\s]+)", mail_from)
     return m.group(1) if m else "localhost"
@@ -166,7 +144,8 @@ async def send_email_pdf(
     pdf_bytes: bytes,
     case_id: str,
     dispatch_key: str,
-    body_intro: str,
+    corpo: str,
+    nome_arquivo: str,
 ) -> str | None:
     """Returns Message-ID used as provider_message_id when SMTP is configured."""
     if not settings.smtp_host or not settings.mail_from:
@@ -184,16 +163,12 @@ async def send_email_pdf(
     msg["To"] = to_email
     msg["Message-ID"] = msg_id
     msg["Resend-Idempotency-Key"] = f"dispatch/{case_id}/{dispatch_key}"
-    msg.set_content(
-        body_intro
-        + f"\n\nIdentificação do caso: {case_id}\n"
-          "Segue em anexo o PDF com o texto produzido."
-    )
+    msg.set_content(corpo)
     msg.add_attachment(
         pdf_bytes,
         maintype="application",
         subtype="pdf",
-        filename=f"recurso-{case_id}.pdf",
+        filename=nome_arquivo,
     )
 
     await aiosmtplib.send(
@@ -273,14 +248,19 @@ async def run_dispatch_pipeline(body_text: str) -> None:
             # Base normativa do CTB: sem ela não há peça (BaseLegalIndisponivel → failed).
             ctb = carregar_ctb(settings.ctb_dir)
             base = montar_base(ctb, case.get("amparo_legal"))
+            # Enquadramento da velocidade decidido em código (sobre a considerada);
+            # sem bloco nos casos neutros — a REGRA_ENQUADRAMENTO protege.
+            bloco_vel = bloco_velocidade(case, base.enquadramento)
+            inciso = bloco_vel.inciso_da_conta if bloco_vel else None
+            advertencia = cabe_advertencia(ctb, base.enquadramento, inciso)
+            if advertencia:
+                # O pedido cita o art. 267: ele entra na base (spec 2026-10-02, §4.3).
+                base = montar_base(ctb, case.get("amparo_legal"), artigos_do_pedido=("267",))
             log.info(
                 "base legal case_id=%s ctb_sha256=%s obtido_em=%s enquadramento=%s artigos=%s",
                 payload.case_id, base.sha256[:12], base.obtido_em,
                 base.enquadramento or "não reconhecido", sorted(base.artigos),
             )
-            # Enquadramento da velocidade decidido em código (sobre a considerada);
-            # sem bloco nos casos neutros — a REGRA_ENQUADRAMENTO protege.
-            bloco_vel = bloco_velocidade(case, base.enquadramento)
             log.info(
                 "velocidade case_id=%s situacao=%s",
                 payload.case_id, bloco_vel.situacao if bloco_vel else "nenhuma",
@@ -308,12 +288,16 @@ async def run_dispatch_pipeline(body_text: str) -> None:
                 # no log vão só a contagem e um hash (spec §5, "log sem dados pessoais").
                 log.info("aspas não literais case_id=%s %s", payload.case_id, resumo_alertas(conferido.alertas))
 
-            pdf_title = f"Recurso — {payload.case_id}"
-            pdf_body = (
-                "Rascunho gerado para apreciação. Revise antes de protocolar.\n\n"
-                f"{texto_da_peca(draft, case)}"
+            # A moldura é do código; o modelo escreveu só fatos e fundamentos (spec 2026-10-02).
+            peca = montar_peca(
+                draft, case, bloco_vel.situacao if bloco_vel else None, inciso, advertencia
             )
-            pdf_bytes = build_pdf_bytes(pdf_title, pdf_body)
+            log.info(
+                "peca case_id=%s secoes=%d pedido_itens=%d advertencia=%s pedido_do_modelo_removido=%s",
+                payload.case_id, len(peca.secoes), len(peca.pedido),
+                "sim" if advertencia else "nao", "sim" if peca.pedido_do_modelo_removido else "nao",
+            )
+            pdf_bytes = gerar_pdf(peca)
             sha256_hex = hashlib.sha256(pdf_bytes).hexdigest()
 
             safe_key = re.sub(r"[^a-zA-Z0-9._-]", "_", dk)[:120]
@@ -338,17 +322,13 @@ async def run_dispatch_pipeline(body_text: str) -> None:
             )
             log.info("generated_documents registered dispatch_key=%s path=%s", dk, storage_path)
 
-            intro = (
-                "Olá,\n\n"
-                "Este é um e-mail automático com o rascunho do seu recurso de multa em anexo.\n\n"
-                "Cordialmente,\nAmo Recorrer"
-            )
+            intro = corpo_do_email(payload.case_id)
             msg_id: str | None = None
             email_failed = False
             email_error: str | None = None
             try:
                 msg_id = await send_email_pdf(
-                    official_email, pdf_bytes, payload.case_id, dk, intro
+                    official_email, pdf_bytes, payload.case_id, dk, intro, peca.nome_arquivo
                 )
             except Exception as mail_exc:
                 email_failed = True

@@ -33,7 +33,6 @@ from peca import (
     paragrafo_para_pdf,
     remover_enderecamento,
     remover_prefacio,
-    texto_da_peca,
 )
 
 CASO = {
@@ -140,43 +139,6 @@ class TestFecho(unittest.TestCase):
         self.assertIn("CPF 123", fecho(dict(CASO, cpf="123")))
 
 
-class TestTextoDaPeca(unittest.TestCase):
-    def test_rascunho_real_sai_limpo_e_com_fecho_do_codigo(self):
-        t = texto_da_peca(RASCUNHO_REAL, CASO)
-        self.assertNotIn("**", t)
-        self.assertNotIn("---", t)
-        self.assertNotIn("20 de agosto de 2026", t)
-        self.assertEqual(t.count("Nestes termos, pede deferimento."), 1)
-        self.assertTrue(t.endswith("Mariana Souza Lima\nCPF 529.982.247-25"))
-        self.assertIn("pede deferimento.\n\nRio de Janeiro/RJ, ____ de", t)
-
-    def test_sem_ia_continua_funcionando(self):
-        t = texto_da_peca("[Modo sem IA: defina DEEPSEEK_API_KEY] Rascunho indisponível.", CASO)
-        self.assertIn("[Modo sem IA", t)
-        self.assertTrue(t.endswith("CPF 529.982.247-25"))
-
-    def test_enderecamento_do_codigo_abre_a_peca(self):
-        caso = dict(CASO, especie_documento=DEFESA_PREVIA, orgao_autuador="CET-RIO")
-        t = texto_da_peca(RASCUNHO_REAL, caso)
-        self.assertTrue(t.startswith(
-            "À Autoridade de Trânsito do órgão autuador CET-RIO\n\nDEFESA PRÉVIA"))
-
-    # Rodada 3 de 25/09/2026: a defesa prévia que o modelo endereçou à JARI.
-    def test_enderecamento_do_modelo_e_trocado_pelo_do_codigo(self):
-        rascunho = (
-            "Excelentíssimo Senhor Presidente da Junta Administrativa de Recursos de "
-            "Infrações (JARI) do órgão autuador CET-RIO,\n\n"
-            "MARIANA SOUZA LIMA vem apresentar DEFESA PRÉVIA.\n\n"
-            "Nestes termos, pede deferimento."
-        )
-        caso = dict(CASO, especie_documento=DEFESA_PREVIA, orgao_autuador="CET-RIO")
-        t = texto_da_peca(rascunho, caso)
-        self.assertNotIn("JARI", t)
-        self.assertTrue(t.startswith(
-            "À Autoridade de Trânsito do órgão autuador CET-RIO\n\nMARIANA SOUZA LIMA"))
-
-
-# Os dois valores que o formulário grava em `especie_documento` (Form.tsx, ESTAGIOS).
 class TestEnderecamento(unittest.TestCase):
     def test_defesa_previa_vai_a_autoridade_do_orgao_autuador(self):
         caso = {"especie_documento": "Notificação de autuação — defesa prévia",

@@ -432,14 +432,6 @@ def corpo_do_email(case_id: str) -> str:
     )
 
 
-def texto_da_peca(rascunho: str, case: dict[str, Any]) -> str:
-    t = limpar_markdown(rascunho)
-    t = remover_prefacio(t)
-    t = remover_enderecamento(t)
-    t = cortar_depois_do_pedido(t)
-    return f"{enderecamento(case)}\n\n{t}\n\n{fecho(case)}"
-
-
 @dataclass(frozen=True)
 class Peca:
     """Tudo o que o PDF desenha, já em texto (pdf_peca.gerar_pdf só desenha)."""
