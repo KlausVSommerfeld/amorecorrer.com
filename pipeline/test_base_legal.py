@@ -11,7 +11,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from base_legal import BaseLegalIndisponivel, carregar_ctb, montar_base, numero_vigente
+from base_legal import (
+    BaseLegalIndisponivel,
+    cabe_advertencia,
+    carregar_ctb,
+    montar_base,
+    natureza,
+    numero_vigente,
+)
 
 CTB_DIR = str(Path(__file__).resolve().parent.parent / "CTB-compilado_files")
 
@@ -83,6 +90,58 @@ class TestMontarBase(unittest.TestCase):
         self.assertEqual(numero_vigente(self.c, "90"), "90")
         self.assertEqual(numero_vigente(self.c, "281-a"), "281-A")
         self.assertIsNone(numero_vigente(self.c, "9999"))
+
+
+class TestAdvertencia(unittest.TestCase):
+    """Spec 2026-10-02, §3.4: art. 267 — leve ou média, punida com multa."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.c = carregar_ctb(CTB_DIR)
+
+    def test_natureza_do_218(self):
+        self.assertEqual(natureza(self.c, "art. 218, I"), ("média", "multa"))
+        self.assertEqual(natureza(self.c, "art. 218, II"), ("grave", "multa"))
+        self.assertEqual(natureza(self.c, "art. 218, III")[0], "gravíssima")
+
+    def test_natureza_desconhecida(self):
+        for ref in ("art. 218", "7455-0", "", "art. 9999"):
+            with self.subTest(ref=ref):
+                self.assertIsNone(natureza(self.c, ref))
+
+    def test_media_cabe(self):
+        self.assertTrue(cabe_advertencia(self.c, "art. 218, I", None))
+
+    def test_grave_e_gravissima_nao_cabem(self):
+        self.assertFalse(cabe_advertencia(self.c, "art. 218, II", None))
+        self.assertFalse(cabe_advertencia(self.c, "art. 218, III", None))
+
+    def test_desclassificacao_usa_o_inciso_da_conta(self):
+        # Auto no II (grave), conta no I (média): vale a natureza depois da desclassificação.
+        self.assertTrue(cabe_advertencia(self.c, "art. 218, II", "I"))
+        self.assertFalse(cabe_advertencia(self.c, "art. 218, III", "II"))
+
+    def test_enquadramento_nao_reconhecido_nao_cabe(self):
+        for enq in (None, ""):
+            with self.subTest(enq=enq):
+                self.assertFalse(cabe_advertencia(self.c, enq, None))
+                self.assertFalse(cabe_advertencia(self.c, enq, "I"))
+
+    def test_leve_fora_do_218_cabe(self):
+        self.assertTrue(cabe_advertencia(self.c, "art. 181, II", None))
+
+    def test_267_entra_na_base_quando_pedido(self):
+        sem = montar_base(self.c, "Art. 218, I, do CTB")
+        com = montar_base(self.c, "Art. 218, I, do CTB", artigos_do_pedido=("267",))
+        self.assertNotIn("267", sem.artigos)
+        self.assertIn("267", com.artigos)
+        self.assertIn("Art. 267", com.texto)
+        self.assertTrue(sem.artigos <= com.artigos)
+        self.assertEqual(com.enquadramento, "art. 218, I")
+
+    def test_artigo_do_pedido_inexistente_e_ignorado(self):
+        b = montar_base(self.c, "Art. 218, I, do CTB", artigos_do_pedido=("9999",))
+        self.assertNotIn("9999", b.artigos)
 
 
 if __name__ == "__main__":

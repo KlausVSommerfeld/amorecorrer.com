@@ -150,12 +150,16 @@ def _fecho(c: Ctb, inicio: list[str]) -> list[str]:
     return vistos
 
 
-def montar_base(c: Ctb, amparo_legal: str | None) -> BaseLegal:
+def montar_base(c: Ctb, amparo_legal: str | None, artigos_do_pedido: tuple[str, ...] = ()) -> BaseLegal:
+    """`artigos_do_pedido`: artigos que o pedido escrito pelo código cita (hoje só o
+    267, quando cabe advertência) — entram com remissões, para que nenhuma citação
+    fora da base chegue ao PDF (spec 2026-10-02, §4.3)."""
     processuais = [n for n in c.consulta.PROCESSUAIS_PADRAO if numero_vigente(c, n)]
     enq = _enquadramento(c, amparo_legal)
     citacao, proprio = enq if enq else (None, None)
     tabela = [n for n in EXTRAS_POR_ARTIGO.get(proprio, ()) if numero_vigente(c, n)] if proprio else []
-    inicio = ([proprio] if proprio else []) + tabela + processuais
+    do_pedido = [n for n in (numero_vigente(c, a) for a in artigos_do_pedido) if n]
+    inicio = ([proprio] if proprio else []) + tabela + do_pedido + processuais
     # O que o rito e o enquadramento já trazem não se repete: o contexto_peticao
     # renderizaria o artigo duas vezes.
     extras = [n for n in _fecho(c, inicio) if n != proprio and n not in processuais]
@@ -168,3 +172,31 @@ def montar_base(c: Ctb, amparo_legal: str | None) -> BaseLegal:
         sha256=c.ctb.meta["sha256"],
         obtido_em=str(c.ctb.meta.get("obtido_em", "")),
     )
+
+
+def natureza(c: Ctb, dispositivo: str) -> tuple[str, str] | None:
+    """(natureza, penalidade) do bloco de sanção do dispositivo, ou None."""
+    if not dispositivo or not str(dispositivo).strip():
+        return None
+    try:
+        inf = c.ctb.infracao(str(dispositivo))
+    except (c.consulta.ReferenciaInvalida, KeyError, ValueError):
+        return None
+    if not inf or not inf.get("infracao"):
+        return None
+    return str(inf["infracao"]), str(inf.get("penalidade") or "")
+
+
+# CTB, art. 267: "Deverá ser imposta a penalidade de advertência por escrito à
+# infração de natureza leve ou média, passível de ser punida com multa…"
+_NATUREZAS_COM_ADVERTENCIA = frozenset({"leve", "média"})
+
+
+def cabe_advertencia(c: Ctb, enquadramento: str | None, inciso_da_conta: str | None) -> bool:
+    """Spec 2026-10-02, §3.4. Com desclassificação, vale a natureza do inciso da
+    conta; sem enquadramento reconhecido, nada é adivinhado."""
+    if not enquadramento:
+        return False
+    alvo = f"art. 218, {inciso_da_conta}" if inciso_da_conta else enquadramento
+    nat = natureza(c, alvo)
+    return bool(nat) and nat[0] in _NATUREZAS_COM_ADVERTENCIA and "multa" in nat[1].lower()
