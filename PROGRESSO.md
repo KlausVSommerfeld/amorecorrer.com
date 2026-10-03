@@ -1541,10 +1541,19 @@ O que mudou:
 - E-mail: o aviso de revisão saiu da peça e virou passos no corpo da mensagem (conferir e preencher as linhas em branco, assinar, protocolar no prazo); o anexo se chama `defesa-previa-<auto>.pdf` ou `recurso-jari-<auto>.pdf`.
 
 **Verificação:**
-- 178 testes Python fora do venv (6 do PDF, que se pulam sem reportlab/pyphen e passam com eles em `PYTHONPATH`), worker e `main.py` compilando;
+- 188 testes Python fora do venv (9 do PDF, que se pulam sem reportlab/pyphen e passam com eles em `PYTHONPATH`), worker e `main.py` compilando;
 - o plano foi ensaiado a seco numa cópia descartável antes da aprovação, o que achou dois defeitos dele (a mensagem "Modo sem IA" tomada por cabeçalho; Helvetica declarada no PDF);
 - rodada real no DeepSeek com a montagem do worker, três peças por estágio: **6 de 6 com os dois títulos e 0 de 6 com pedido escrito pelo modelo**; advertência nos dois casos (defesa com desclassificação do inciso II para o I; recurso comum no inciso I);
 - os dois PDFs de exemplo, abertos e aprovados pelo Klaus, com a troca da abertura do pedido.
+
+**Revisão final da branch** (revisor independente): 1 achado crítico e 5 importantes, todos em heurísticas que o caminho feliz da rodada real não exercita. Corrigidos, cada um com teste visto falhando antes:
+- um último fundamento começado por "Nota-se…" era apagado como "nota ao cliente" — efeito colateral do prompt novo, que faz o modelo terminar nos fundamentos;
+- "requerente" e "requerimento" contavam como pedido; pedido enumerado, "Pede deferimento." solto e títulos como "PEDIDO" ou "CONCLUSÃO" passavam;
+- qualquer "vem" com o nome do cliente apagava um parágrafo de fatos no caminho sem títulos (agora exige verbo de qualificação);
+- no PDF, um título de seção podia ficar sozinho no pé da página, e "Nestes termos" separado do fecho;
+- sem o `pyphen`, o reportlab só deixava de hifenizar, calado; agora o `pdf_peca` não importa sem ele.
+
+O conflito entre as instruções de exibição do radar ("requeira a juntada do certificado") e o pedido do código ficou como condição para ligar `RADAR_TESE_ATIVA` (`PENDENCIAS.md`). Cinco achados menores ficaram anotados: títulos de fundamentos não reconhecidos ("DA FUNDAMENTAÇÃO", "DO MÉRITO"), rascunho com parágrafos separados por uma só quebra de linha, linha curta de fato com horário tomada por cabeçalho, colunas do quadro que quebram placa e data quando os valores são longos, e o título espaçado que atrapalha copiar e colar.
 
 **Fontes** (sha256):
 - `SourceSerif4-Regular.ttf` e5a4ee6a3d87bb9024796be390c6771e2a0eb1883dae25effaf57ca01668e24b
