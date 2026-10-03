@@ -48,7 +48,7 @@ CASO = {
 # O contexto exato que a implementação de antes produzia para CASO, sem a
 # coluna nova (que não existia).
 CONTEXTO_ANTIGO = (
-    "Dados do caso para o recurso:\n"
+    "Dados do caso:\n"
     "medidor_numero_serie: 2000065\n"
     "nome: Fulana\n"
     "placa: ABC1D23\n"
@@ -69,20 +69,30 @@ class TestPromptBase(unittest.TestCase):
         self.assertIn("________", SYSTEM_PROMPT_BASE)
         self.assertIn("colchetes", SYSTEM_PROMPT_BASE)
 
-    def test_termina_no_pedido_sem_local_data_nem_assinatura(self):
-        self.assertIn("Não escreva local, data nem assinatura", SYSTEM_PROMPT_BASE)
-        self.assertIn("Nestes termos, pede deferimento.", SYSTEM_PROMPT_BASE)
+    # Spec 2026-10-02: o código escreve a moldura (peca.montar_peca); o modelo,
+    # só as duas seções, com títulos que o código usa para cortar.
+    def test_pede_as_duas_secoes_com_titulos_fixos(self):
+        self.assertIn("DOS FATOS (1 a 2 parágrafos)", SYSTEM_PROMPT_BASE)
+        self.assertIn("DOS FUNDAMENTOS (2 a 4 parágrafos)", SYSTEM_PROMPT_BASE)
+        self.assertIn("cada uma aberta pelo título em linha própria", SYSTEM_PROMPT_BASE)
 
-    # Diagnóstico de 02/10/2026: o endereçamento é do código (peca.enderecamento).
-    def test_nao_escreve_enderecamento(self):
-        self.assertIn("Não escreva endereçamento nem vocativo", SYSTEM_PROMPT_BASE)
+    def test_nao_escreve_a_moldura(self):
+        for proibido in ("endereçamento", "vocativo", "qualificação", "pedido",
+                         "\"pede deferimento\"", "local, data nem assinatura"):
+            with self.subTest(proibido=proibido):
+                self.assertIn(proibido, SYSTEM_PROMPT_BASE)
+        self.assertIn("termine no último parágrafo dos fundamentos", SYSTEM_PROMPT_BASE)
+        self.assertNotIn("Nestes termos, pede deferimento.", SYSTEM_PROMPT_BASE)
 
-    def test_mantem_o_nucleo_antigo(self):
+    # Diagnóstico de 02/10/2026: tudo dizia "recurso" e o modelo endereçou uma
+    # defesa prévia à JARI.
+    def test_nucleo_fala_em_defesas_e_recursos(self):
         self.assertTrue(SYSTEM_PROMPT_BASE.startswith(
-            "Você é um assistente jurídico que redige rascunhos de recurso de multa de trânsito "
+            "Você é um assistente jurídico que redige defesas e recursos de multa de trânsito "
             "em português do Brasil. Seja formal, claro e cite fatos do formulário. "
             "Não invente dados ausentes"))
-        self.assertIn("Produza 2 a 4 parágrafos.", SYSTEM_PROMPT_BASE)
+        self.assertNotIn("Produza 2 a 4 parágrafos.", SYSTEM_PROMPT_BASE)
+        self.assertTrue(build_case_context({"nome": "X"}).startswith("Dados do caso:\n"))
 
 
 class TestChamadaAoModelo(unittest.TestCase):
@@ -210,7 +220,7 @@ class TestChaveLigada(unittest.TestCase):
 
     def test_bloco_logo_depois_do_cabecalho(self):
         ctx = build_case_context(CASO, True)
-        self.assertTrue(ctx.startswith("Dados do caso para o recurso:\nVerificação metrológica"))
+        self.assertTrue(ctx.startswith("Dados do caso:\nVerificação metrológica"))
         self.assertIn(INSTRUCAO_EXIBICAO, ctx)
         self.assertTrue(ctx.endswith("velocidade_aferida: 55"))
 

@@ -11,20 +11,24 @@ from typing import Any
 
 from verificacao import bloco_verificacao
 
-# O que vem depois do núcleo original saiu de uma rodada real (25/09/2026):
-# markdown impresso no PDF, prefácio e notas dirigidas ao cliente, e a data de
-# expedição da notificação usada como data da peça. O fecho (local, data em
-# branco, assinatura) é montado por código em peca.py — o modelo para no pedido.
+# A forma da peça é do código (peca.montar_peca, spec 2026-10-02): endereçamento,
+# título, quadro, qualificação, pedido e fecho. O modelo escreve só as duas
+# seções, com títulos fixos que o código usa para cortar. Da rodada de
+# 25/09/2026 ficaram o texto puro e a proibição de prefácio e notas; do
+# diagnóstico de 02/10/2026, o núcleo em "defesas e recursos" (só "recurso"
+# levou o modelo a endereçar uma defesa prévia à JARI).
 SYSTEM_PROMPT_BASE = (
-    "Você é um assistente jurídico que redige rascunhos de recurso de multa de trânsito "
+    "Você é um assistente jurídico que redige defesas e recursos de multa de trânsito "
     "em português do Brasil. Seja formal, claro e cite fatos do formulário. "
     "Não invente dados ausentes: quando um dado necessário não constar do formulário, "
     "deixe uma linha em branco para preenchimento (________), nunca um marcador entre "
-    "colchetes. Produza 2 a 4 parágrafos. Escreva apenas o texto da peça, em texto puro: "
-    "sem markdown (nada de asteriscos, cerquilhas ou linhas de traços), sem introdução "
-    "e sem observações ou notas dirigidas a quem pediu a peça. Não escreva endereçamento "
-    "nem vocativo: comece pela qualificação de quem apresenta a peça. Não escreva local, data "
-    "nem assinatura: termine no pedido, com \"Nestes termos, pede deferimento.\""
+    "colchetes. Escreva apenas duas seções, cada uma aberta pelo título em linha própria, "
+    "exatamente assim: DOS FATOS (1 a 2 parágrafos) e DOS FUNDAMENTOS (2 a 4 parágrafos). "
+    "Escreva em texto puro: sem markdown (nada de asteriscos, cerquilhas ou linhas de "
+    "traços), sem introdução e sem observações ou notas dirigidas a quem pediu a peça. "
+    "Não escreva endereçamento, vocativo, qualificação de quem apresenta a peça, pedido, "
+    "\"pede deferimento\", local, data nem assinatura: tudo isso é acrescentado depois; "
+    "termine no último parágrafo dos fundamentos."
 )
 
 # Em toda peça, desde a integração do CTB (29/09/2026): a base normativa vai na
@@ -121,7 +125,7 @@ def build_case_context(case: dict[str, Any], tese_ativa: bool = False) -> str:
         for k, v in sorted(case.items())
         if k not in CAMPOS_INTERNOS and v is not None and str(v).strip()
     ]
-    cabecalho = "Dados do caso para o recurso:\n"
+    cabecalho = "Dados do caso:\n"
     bloco = bloco_verificacao(case.get("verificacao_medidor")) if tese_ativa else None
     if bloco:
         # Fora do corte de 200 linhas: a verificação não pode ser a que some.
