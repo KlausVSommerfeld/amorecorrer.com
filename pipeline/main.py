@@ -12,9 +12,13 @@ from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
 from fastapi.responses import Response
 
 from worker import run_dispatch_pipeline, verify_incoming_hmac
+from pdf_peca import registrar_fontes
 
 log = logging.getLogger(__name__)
 app = FastAPI(title="Amo Recorrer dispatch pipeline", version="1.0")
+
+# Sem as fontes não há peça: acusar ao subir, não no meio de um caso pago.
+registrar_fontes()
 
 
 @app.post("/hooks/dispatch")

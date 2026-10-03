@@ -4,6 +4,7 @@ httpx==0.28.1
 pydantic-settings==2.8.1
 openai==1.65.0
 reportlab==4.4.0
+pyphen==0.18.1
 aiosmtplib==3.0.2
 python-dotenv==1.0.1
 supabase==2.31.0
