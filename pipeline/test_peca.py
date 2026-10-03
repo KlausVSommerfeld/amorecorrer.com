@@ -306,8 +306,10 @@ class TestQualificacao(unittest.TestCase):
 
 
 class TestPedido(unittest.TestCase):
+    # Aprovação dos PDFs (02/10/2026): o modelo costuma fechar os fundamentos com
+    # "Diante do exposto…", e a abertura igual logo depois ficava repetida.
     def test_abertura(self):
-        self.assertEqual(ABERTURA_PEDIDO, "Diante do exposto, requer:")
+        self.assertEqual(ABERTURA_PEDIDO, "Isto posto, requer:")
 
     def test_defesa_comum(self):
         self.assertEqual(pedido(DEFESA, None, None, False), (

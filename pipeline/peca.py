@@ -29,7 +29,7 @@ from prompt import RespostaDoModeloInvalida
 
 LINHA_EM_BRANCO = "______________________"
 LINHA_CURTA = "__________"  # no quadro de campos: a linha longa não cabe na célula
-ABERTURA_PEDIDO = "Diante do exposto, requer:"
+ABERTURA_PEDIDO = "Isto posto, requer:"
 _ADVERTENCIA = (
     "subsidiariamente, não havendo outra infração cometida nos últimos 12 (doze) meses, a "
     "aplicação da penalidade de advertência por escrito em substituição à multa, nos termos "

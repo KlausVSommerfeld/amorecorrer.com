@@ -116,7 +116,7 @@ desclassificação — desclassificar primeiro, arquivar subsidiariamente — é
 30/09/2026.
 
 O último item termina em ponto; os demais, em ponto e vírgula. Letras a), b), c) na ordem em que
-entram. Abre com "Diante do exposto, requer:".
+entram. Abre com "Isto posto, requer:" (ajuste do Klaus na aprovação dos PDFs: o modelo costuma fechar os fundamentos com "Diante do exposto").
 
 ### 3.4 Quando cabe a advertência
 
