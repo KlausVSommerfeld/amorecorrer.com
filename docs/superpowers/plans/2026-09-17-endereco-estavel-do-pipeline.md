@@ -125,6 +125,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY pipeline/*.py ./
 RUN rm -f test_*.py
 
+# Fontes da peça (template de 02/10/2026): o pdf_peca as procura em fontes/, ao
+# lado do próprio arquivo, e o main.py chama registrar_fontes() no import — sem
+# elas o uvicorn não sobe. O pyphen, que a peça também exige, vem do requirements.
+COPY pipeline/fontes ./fontes
+
 # Base normativa do CTB: o pipeline só lê consulta.py e saida/ctb.json
 # (+ ctb_infracoes.json, que a consulta usa para a sanção). CTB_DIR aponta para cá.
 COPY CTB-compilado_files/consulta.py /app/ctb/consulta.py
@@ -249,9 +254,10 @@ docker compose ps
 curl -s -o /dev/null -w 'express: %{http_code}\n' http://127.0.0.1:3001/health || echo "express: sem porta publicada (esperado)"
 docker compose exec pipeline python -c "import urllib.request;print('pipeline ->', urllib.request.urlopen('http://127.0.0.1:8000/health').status)"
 docker compose exec pipeline python -c "import urllib.request;print('express  ->', urllib.request.urlopen('http://express:3001/health').status)"
+docker compose exec pipeline python -c "import pdf_peca; pdf_peca.registrar_fontes(); print('fontes e pyphen ok')"
 ```
 
-Esperado: `pipeline -> 200` e `express -> 200`. O `curl` direto ao 3001 **deve falhar** — é a prova de que o Express não está publicado.
+Esperado: `pipeline -> 200`, `express -> 200` e `fontes e pyphen ok`. O `curl` direto ao 3001 **deve falhar** — é a prova de que o Express não está publicado.
 
 - [ ] **Step 9: Provar que o endpoint assinado funciona dentro do contêiner**
 
