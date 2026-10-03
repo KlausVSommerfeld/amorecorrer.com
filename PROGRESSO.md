@@ -53,7 +53,7 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 - **A forma da peça é garantida por código** (25/09, `pipeline/peca.py`): sem markdown, sem prefácio, sem data inventada (ela fica em branco, para o dia do protocolo), fecho montado a partir do caso e dado ausente como linha em branco.
 - **Toda peça recebe a base normativa do CTB** (29/09, `pipeline/base_legal.py` + `conferencia.py`): o texto oficial do enquadramento, das remissões seguidas até o fim, do art. 61 no 218 e do rito. Uma citação fora dessa base, ou de norma externa, faz a peça ser refeita uma vez; recusada de novo, o caso vai a `failed`. A base vem de `CTB-compilado_files/`, o parser do Klaus, versionado (compilado do Planalto obtido em 24/09, sha256 `e8b6414d…`).
 - **A peça não sustenta mais enquadramento mais grave que o do auto** (30/09, `pipeline/velocidade.py`). O formulário coleta a velocidade *considerada*; o código calcula o inciso do art. 218 sobre ela e só fala quando os números favorecem o cliente (arquivamento ou desclassificação). Banco e Edge publicados em 01/10; o campo chega ao cliente com a hospedagem do frontend, e a peça com o #11.
-- **Duas decisões jurídicas do Klaus estão abertas** (ver `PENDENCIAS.md`, seção "A peça"). A tese de "estado de necessidade" sobrevive sem norma. E a defesa prévia pode sair endereçada à JARI.
+- **Duas decisões jurídicas do Klaus estão abertas** (ver `PENDENCIAS.md`, seção "A peça"). A tese de "estado de necessidade" sobrevive sem norma. E o endereçamento de cada estágio: hoje a peça sai sem destinatário nenhum, e o erro de mandar defesa prévia à JARI só está latente (diagnóstico de 02/10/2026).
 
 **Radar INMETRO (RJ)**
 
@@ -1493,3 +1493,19 @@ PDFs dos casos 1 e 2 abertos: limpos, fecho montado pelo código.
 
 **README reescrito, no mesmo dia.** O anterior descrevia um projeto que não existe mais: autenticação bearer "protegendo todas as requisições" (está desligada), `supabase/.env.local`, `server/.env` e `pipeline/.env` (substituídos pelos três perfis na raiz), migrations de nomes antigos e "nenhum teste no repositório". O novo traz os dois roteiros de teste ponta a ponta desta sessão — local com `.env.local` e contra a nuvem com `.env`, com a tabela do que muda entre eles —, a regra de precedência dos perfis, a sandbox do Stripe e como a aplicação vai rodar em produção (VPS do #11, site estático, ordem de lançamento). Os detalhes continuam no `CLAUDE.md`; o README aponta para ele.
 
+## Sessão de 02/10/2026 — Diagnóstico: por que a defesa prévia saiu endereçada à JARI (sem código)
+
+**Pergunta:** a pendência de 25/09 dizia que uma *defesa prévia* saíra endereçada à JARI. Por quê, e o defeito ainda existe?
+
+**A rodada original**, recuperada do histórico da sessão de 25/09: o caso fictício da Mariana (CET-RIO, 97 km/h em via de 80, `especie_documento: "defesa_previa"`), três rodadas do `deepseek-chat` a 0.4. Uma saiu sem endereçamento, uma "À CET-RIO" e uma "Excelentíssimo Senhor Presidente da JARI do órgão autuador CET-RIO" — e as três se chamavam "DEFESA PRÉVIA". O modelo sabia o estágio e errou só o destinatário.
+
+**Causa:**
+- o endereçamento fica todo com o modelo, e nada liga o estágio a quem julga. O `especie_documento` é uma linha `chave: valor` entre umas vinte, e o texto do formulário que explica o destino ("a peça vai para o próprio órgão autuador", `ESTAGIOS` em `Form.tsx`) nunca chega ao prompt;
+- tudo o que o modelo lê diz "recurso": "redige rascunhos de recurso de multa" no system prompt, "Dados do caso para o recurso:" no contexto. Para o cabeçalho, ele completa com o padrão mais comum de recurso de multa, o da JARI;
+- a 0.4, cada rodada escolhe uma forma diferente, por isso o erro aparece numa de três, e não sempre.
+
+**Hoje, latente.** Rodei o mesmo caso com a montagem atual do worker (`deepseek-flash` sem raciocínio, base do CTB, bloco de velocidade) e os valores que o formulário envia de verdade, cinco vezes por estágio. O estágio veio certo nas dez — nenhuma defesa prévia fala da JARI, todo recurso fala —, mas **nenhuma peça tem linha de endereçamento**. Quatro dizem "à presença de Vossa Senhoria" sem vocativo, e um recurso saiu narrado em terceira pessoa ("A condutora… apresentou recurso à JARI"). O sumiço do cabeçalho deve vir do "sem introdução" de 25/09 ou da troca de modelo — não isolei qual. Qualquer ajuste de prompt que o traga de volta reabre o erro, e a peça de hoje já chega ao cliente sem destinatário.
+
+**Correção proposta**, dentro do template da peça: o código monta o endereçamento a partir de `especie_documento` e `orgao_autuador`, como o `peca.py` monta o fecho, e o prompt proíbe o modelo de escrevê-lo. O banco guarda o rótulo inteiro do formulário, então o mapa casa os dois textos exatos e qualquer outro valor vira linha em branco. Depende da decisão do Klaus sobre a fórmula de cada estágio — defesa prévia à autoridade de trânsito do órgão autuador (art. 281); recurso "ao Presidente da JARI do [órgão]" ou "à autoridade de trânsito do [órgão], para encaminhamento à JARI" (art. 285, *caput* e § 2º).
+
+**Arquivos:** `PENDENCIAS.md` (o item ganhou causa, estado atual e correção). Nenhum código mudou; a sonda rodou fora do repositório, com a chave do DeepSeek só como variável de processo.
