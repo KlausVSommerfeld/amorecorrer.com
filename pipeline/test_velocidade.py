@@ -40,26 +40,37 @@ class TestBlocoVelocidade(unittest.TestCase):
         # 29/09: aferida 97, limite 80, auto no inciso I. Com a considerada 90 (12,5%) o inciso bate.
         self.assertIsNone(bloco_velocidade(caso(80, 90, 97), "art. 218, I"))
 
-    def test_sem_infracao_pede_arquivamento(self):
+    def test_sem_infracao_mesmo_sem_inciso_no_auto(self):
+        self.assertEqual(bloco_velocidade(caso(80, 78, 85), "art. 218").situacao, "sem_infracao")
+
+    def test_sem_infracao_sustenta_inconsistencia(self):
         for considerada in (80, 78):
             with self.subTest(considerada=considerada):
                 b = bloco_velocidade(caso(80, considerada, 85), "art. 218, I")
                 self.assertEqual(b.situacao, "sem_infracao")
+                self.assertIsNone(b.inciso_da_conta)
                 self.assertIn(f"{considerada} km/h", b.texto)
                 self.assertIn("art. 281, § 1º, I", b.texto)
-                self.assertIn("arquivamento", b.texto)
+                self.assertIn("Sustente nos fundamentos", b.texto)
 
-    def test_sem_infracao_mesmo_sem_inciso_no_auto(self):
-        self.assertEqual(bloco_velocidade(caso(80, 78, 85), "art. 218").situacao, "sem_infracao")
-
-    def test_auto_mais_grave_pede_desclassificacao(self):
+    def test_auto_mais_grave_sustenta_desclassificacao(self):
         b = bloco_velocidade(caso(80, 118, 125), "art. 218, III")  # 47,5% → II
         self.assertEqual(b.situacao, "desclassificacao")
+        self.assertEqual(b.inciso_da_conta, "II")
         self.assertIn("47,5%", b.texto)
         self.assertIn("inciso II", b.texto)
         self.assertIn("inciso III", b.texto)
-        self.assertIn("desclassificação", b.texto)
         self.assertIn("art. 281, § 1º, I", b.texto)
+        self.assertIn("Sustente nos fundamentos", b.texto)
+
+    # Spec 2026-10-02: o pedido é do código (peca.pedido). Um bloco mandando
+    # "requerer" faria o modelo escrever um pedido que o código corta.
+    def test_bloco_nunca_manda_requerer(self):
+        for b in (bloco_velocidade(caso(80, 78, 85), "art. 218, I"),
+                  bloco_velocidade(caso(80, 118, 125), "art. 218, III")):
+            with self.subTest(situacao=b.situacao):
+                self.assertNotIn("Requeira", b.texto)
+                self.assertIn("o pedido é escrito à parte, não o escreva", b.texto)
 
     def test_auto_mais_leve_nunca_vira_tese(self):
         self.assertIsNone(bloco_velocidade(caso(80, 100, 105), "art. 218, I"))  # 25% → II

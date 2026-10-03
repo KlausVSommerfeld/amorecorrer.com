@@ -28,6 +28,7 @@ _ENQUADRAMENTO_218 = re.compile(r"^art\.\s*218(?:,\s*(III|II|I))?$", re.I)
 class Bloco:
     texto: str
     situacao: str  # "sem_infracao" | "desclassificacao"
+    inciso_da_conta: str | None = None  # o inciso que a conta mostra (só em desclassificacao)
 
 
 def _inteiro(valor: Any) -> int | None:
@@ -85,9 +86,10 @@ def bloco_velocidade(case: dict[str, Any], enquadramento: str | None) -> Bloco |
                 f"{cabecalho}\n"
                 f"- Velocidade considerada no auto: {considerada} km/h; máxima permitida: {permitida} km/h.\n"
                 "- Os próprios números do auto não mostram excesso de velocidade.\n"
-                "Instrução para a redação: Requeira o arquivamento do auto de infração por "
-                "inconsistência, nos termos do art. 281, § 1º, I, do CTB, porque a velocidade "
-                "considerada no próprio auto não supera a máxima permitida. Não calcule percentuais."
+                "Instrução para a redação: Sustente nos fundamentos que o auto é inconsistente "
+                "(art. 281, § 1º, I, do CTB), porque a velocidade considerada no próprio auto não "
+                "supera a máxima permitida; o pedido é escrito à parte, não o escreva. "
+                "Não calcule percentuais."
             ),
         )
 
@@ -96,14 +98,16 @@ def bloco_velocidade(case: dict[str, Any], enquadramento: str | None) -> Bloco |
         pct = _percentual(_excesso(permitida, considerada))
         return Bloco(
             situacao="desclassificacao",
+            inciso_da_conta=pela_conta,
             texto=(
                 f"{cabecalho}\n"
                 f"- Velocidade considerada de {considerada} km/h sobre a máxima de {permitida} km/h: "
                 f"excesso de {pct}, que corresponde ao inciso {pela_conta} do art. 218.\n"
                 f"- O auto enquadrou a conduta no inciso {do_auto} do art. 218.\n"
-                f"Instrução para a redação: Requeira a desclassificação da infração para o inciso "
-                f"{pela_conta} do art. 218 e, subsidiariamente, o arquivamento do auto por "
-                "inconsistência (art. 281, § 1º, I). Não calcule outros percentuais."
+                f"Instrução para a redação: Sustente nos fundamentos que a conduta corresponde ao "
+                f"inciso {pela_conta} do art. 218, e não ao inciso {do_auto} do auto, e que o auto é "
+                "inconsistente (art. 281, § 1º, I); o pedido é escrito à parte, não o escreva. "
+                "Não calcule outros percentuais."
             ),
         )
     return None
