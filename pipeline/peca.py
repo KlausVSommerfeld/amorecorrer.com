@@ -9,6 +9,9 @@ impressos, e as três assinaram com a data de expedição da notificação como 
 fosse a data do protocolo. Aqui a forma é garantida por código:
 
 - o markdown que escapar é removido;
+- o endereçamento é do código, pelo estágio do formulário: o modelo, sem saber a
+  quem cada estágio se dirige, endereçou uma defesa prévia à JARI (25/09/2026); o
+  que ele escrever de vocativo é trocado pelo `enderecamento()`;
 - tudo depois do "pede deferimento" (local, data, assinatura, "Observação…")
   é cortado, e o fecho é montado a partir dos dados do caso, com a data SEMPRE
   em branco — ela é o dia em que o cliente protocolar;
@@ -25,6 +28,14 @@ LINHA_EM_BRANCO = "______________________"
 
 _PEDIDO = re.compile(r"\b(pede|requer|espera|aguarda|peço)\s+deferimento\b[^\n]*", re.IGNORECASE)
 _NOTA = re.compile(r"^[*_\s]*(observa[çc][ãa]o|obs\.?|nota)\b", re.IGNORECASE)
+# Os dois valores que o formulário grava em `especie_documento` (Form.tsx, ESTAGIOS).
+DEFESA_PREVIA = "Notificação de autuação — defesa prévia"
+RECURSO_JARI = "Notificação de penalidade — recurso à JARI"
+_VOCATIVO = re.compile(
+    r"^(excelent[ií]ssim|ilustr[ií]ssim|exm[oa]s?\b|ilm[oa]s?\b|senhora?\b|sra?\.|"
+    r"presidente\b|à\s|às\s|ao\s|aos\s)",
+    re.IGNORECASE,
+)
 _PREFACIO = re.compile(
     r"^(com base nos dados|segue|abaixo|a seguir|conforme solicitado)\b", re.IGNORECASE
 )
@@ -49,6 +60,32 @@ def remover_prefacio(texto: str) -> str:
         p in primeiro.lower() for p in ("rascunho", "recurso", "peça", "defesa")
     )
     return resto.strip() if conversa and resto.strip() else texto
+
+
+def remover_enderecamento(texto: str) -> str:
+    """Tira as linhas de vocativo que o modelo puser no início ("Excelentíssimo…",
+    "À CET-RIO…"). Só linhas curtas: um parágrafo que começa por "Ao" é corpo."""
+    linhas = texto.strip().split("\n")
+    while linhas and len(linhas[0]) <= 200 and _VOCATIVO.match(linhas[0].strip()):
+        linhas.pop(0)
+        while linhas and not linhas[0].strip():
+            linhas.pop(0)
+    return "\n".join(linhas).strip()
+
+
+def enderecamento(case: dict[str, Any]) -> str:
+    """Defesa prévia: a autoridade que julga a autuação (CTB, art. 281). Recurso: a
+    JARI (art. 285, § 2º; art. 17). Estágio desconhecido não é adivinhado."""
+    orgao = str(case.get("orgao_autuador") or "").strip() or LINHA_EM_BRANCO
+    estagio = str(case.get("especie_documento") or "").strip()
+    if estagio == DEFESA_PREVIA:
+        return f"À Autoridade de Trânsito do órgão autuador {orgao}"
+    if estagio == RECURSO_JARI:
+        return (
+            "Ao Senhor Presidente da Junta Administrativa de Recursos de Infrações (JARI) "
+            f"do órgão autuador {orgao}"
+        )
+    return f"À {LINHA_EM_BRANCO}"
 
 
 def cortar_depois_do_pedido(texto: str) -> str:
@@ -85,8 +122,9 @@ def fecho(case: dict[str, Any]) -> str:
 def texto_da_peca(rascunho: str, case: dict[str, Any]) -> str:
     t = limpar_markdown(rascunho)
     t = remover_prefacio(t)
+    t = remover_enderecamento(t)
     t = cortar_depois_do_pedido(t)
-    return f"{t}\n\n{fecho(case)}"
+    return f"{enderecamento(case)}\n\n{t}\n\n{fecho(case)}"
 
 
 def paragrafo_para_pdf(texto: str) -> str:

@@ -8,10 +8,14 @@ Nunca `unittest discover`: test_resend_smtp.py manda e-mail real ao ser importad
 import unittest
 
 from peca import (
+    DEFESA_PREVIA,
+    RECURSO_JARI,
     cortar_depois_do_pedido,
+    enderecamento,
     fecho,
     limpar_markdown,
     paragrafo_para_pdf,
+    remover_enderecamento,
     remover_prefacio,
     texto_da_peca,
 )
@@ -132,8 +136,86 @@ class TestTextoDaPeca(unittest.TestCase):
 
     def test_sem_ia_continua_funcionando(self):
         t = texto_da_peca("[Modo sem IA: defina DEEPSEEK_API_KEY] Rascunho indisponível.", CASO)
-        self.assertTrue(t.startswith("[Modo sem IA"))
+        self.assertIn("[Modo sem IA", t)
         self.assertTrue(t.endswith("CPF 529.982.247-25"))
+
+    def test_enderecamento_do_codigo_abre_a_peca(self):
+        caso = dict(CASO, especie_documento=DEFESA_PREVIA, orgao_autuador="CET-RIO")
+        t = texto_da_peca(RASCUNHO_REAL, caso)
+        self.assertTrue(t.startswith(
+            "À Autoridade de Trânsito do órgão autuador CET-RIO\n\nDEFESA PRÉVIA"))
+
+    # Rodada 3 de 25/09/2026: a defesa prévia que o modelo endereçou à JARI.
+    def test_enderecamento_do_modelo_e_trocado_pelo_do_codigo(self):
+        rascunho = (
+            "Excelentíssimo Senhor Presidente da Junta Administrativa de Recursos de "
+            "Infrações (JARI) do órgão autuador CET-RIO,\n\n"
+            "MARIANA SOUZA LIMA vem apresentar DEFESA PRÉVIA.\n\n"
+            "Nestes termos, pede deferimento."
+        )
+        caso = dict(CASO, especie_documento=DEFESA_PREVIA, orgao_autuador="CET-RIO")
+        t = texto_da_peca(rascunho, caso)
+        self.assertNotIn("JARI", t)
+        self.assertTrue(t.startswith(
+            "À Autoridade de Trânsito do órgão autuador CET-RIO\n\nMARIANA SOUZA LIMA"))
+
+
+# Os dois valores que o formulário grava em `especie_documento` (Form.tsx, ESTAGIOS).
+class TestEnderecamento(unittest.TestCase):
+    def test_defesa_previa_vai_a_autoridade_do_orgao_autuador(self):
+        caso = {"especie_documento": "Notificação de autuação — defesa prévia",
+                "orgao_autuador": "DETRAN-RJ"}
+        self.assertEqual(enderecamento(caso),
+                         "À Autoridade de Trânsito do órgão autuador DETRAN-RJ")
+
+    def test_recurso_vai_ao_presidente_da_jari(self):
+        caso = {"especie_documento": "Notificação de penalidade — recurso à JARI",
+                "orgao_autuador": " CET-RIO "}
+        self.assertEqual(
+            enderecamento(caso),
+            "Ao Senhor Presidente da Junta Administrativa de Recursos de Infrações (JARI) "
+            "do órgão autuador CET-RIO")
+
+    def test_orgao_ausente_vira_linha_em_branco(self):
+        for orgao in (None, "", "   "):
+            caso = {"especie_documento": RECURSO_JARI, "orgao_autuador": orgao}
+            self.assertTrue(enderecamento(caso).endswith("do órgão autuador ______________________"))
+
+    def test_estagio_desconhecido_nao_adivinha(self):
+        for estagio in (None, "", "defesa_previa", "Recurso ao CETRAN"):
+            caso = {"especie_documento": estagio, "orgao_autuador": "CET-RIO"}
+            self.assertEqual(enderecamento(caso), "À ______________________")
+
+
+class TestRemoverEnderecamento(unittest.TestCase):
+    def test_vocativos_do_modelo_saem(self):
+        for vocativo in (
+            "Excelentíssimo Senhor Presidente da JARI,",
+            "Ilustríssimo Senhor Diretor do DETRAN-RJ",
+            "Ilmo. Sr. Presidente da JARI",
+            "À CET-RIO – Companhia de Engenharia de Tráfego do Rio de Janeiro",
+            "Ao Senhor Presidente da Junta Administrativa de Recursos de Infrações — JARI.",
+            "À Autoridade de Trânsito,",
+        ):
+            t = remover_enderecamento(f"{vocativo}\n\nMariana Souza Lima vem apresentar defesa.")
+            self.assertEqual(t, "Mariana Souza Lima vem apresentar defesa.", vocativo)
+
+    def test_vocativo_em_duas_linhas_sai_inteiro(self):
+        t = remover_enderecamento(
+            "Excelentíssimo Senhor\nPresidente da JARI do DETRAN-RJ\n\nMariana vem recorrer.")
+        self.assertEqual(t, "Mariana vem recorrer.")
+
+    def test_corpo_da_peca_fica(self):
+        for corpo in (
+            "Mariana Souza Lima, já qualificada, vem apresentar defesa prévia.",
+            "DEFESA PRÉVIA\n\nMariana vem apresentar defesa.",
+            "A condutora autuada, Mariana Souza Lima, apresentou recurso à JARI.",
+        ):
+            self.assertEqual(remover_enderecamento(corpo), corpo)
+
+    def test_paragrafo_longo_comecado_por_ao_fica(self):
+        corpo = "Ao contrário do que consta do auto, " + "a sinalização não existia. " * 15
+        self.assertEqual(remover_enderecamento(corpo), corpo.strip())
 
 
 class TestParagrafoParaPdf(unittest.TestCase):

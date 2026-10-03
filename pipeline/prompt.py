@@ -22,7 +22,8 @@ SYSTEM_PROMPT_BASE = (
     "deixe uma linha em branco para preenchimento (________), nunca um marcador entre "
     "colchetes. Produza 2 a 4 parágrafos. Escreva apenas o texto da peça, em texto puro: "
     "sem markdown (nada de asteriscos, cerquilhas ou linhas de traços), sem introdução "
-    "e sem observações ou notas dirigidas a quem pediu a peça. Não escreva local, data "
+    "e sem observações ou notas dirigidas a quem pediu a peça. Não escreva endereçamento "
+    "nem vocativo: comece pela qualificação de quem apresenta a peça. Não escreva local, data "
     "nem assinatura: termine no pedido, com \"Nestes termos, pede deferimento.\""
 )
 

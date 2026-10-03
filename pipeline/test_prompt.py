@@ -73,6 +73,10 @@ class TestPromptBase(unittest.TestCase):
         self.assertIn("Não escreva local, data nem assinatura", SYSTEM_PROMPT_BASE)
         self.assertIn("Nestes termos, pede deferimento.", SYSTEM_PROMPT_BASE)
 
+    # Diagnóstico de 02/10/2026: o endereçamento é do código (peca.enderecamento).
+    def test_nao_escreve_enderecamento(self):
+        self.assertIn("Não escreva endereçamento nem vocativo", SYSTEM_PROMPT_BASE)
+
     def test_mantem_o_nucleo_antigo(self):
         self.assertTrue(SYSTEM_PROMPT_BASE.startswith(
             "Você é um assistente jurídico que redige rascunhos de recurso de multa de trânsito "

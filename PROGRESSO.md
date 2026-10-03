@@ -53,7 +53,7 @@ Não registre aqui o que o `git log` já conta sozinho. O valor deste arquivo es
 - **A forma da peça é garantida por código** (25/09, `pipeline/peca.py`): sem markdown, sem prefácio, sem data inventada (ela fica em branco, para o dia do protocolo), fecho montado a partir do caso e dado ausente como linha em branco.
 - **Toda peça recebe a base normativa do CTB** (29/09, `pipeline/base_legal.py` + `conferencia.py`): o texto oficial do enquadramento, das remissões seguidas até o fim, do art. 61 no 218 e do rito. Uma citação fora dessa base, ou de norma externa, faz a peça ser refeita uma vez; recusada de novo, o caso vai a `failed`. A base vem de `CTB-compilado_files/`, o parser do Klaus, versionado (compilado do Planalto obtido em 24/09, sha256 `e8b6414d…`).
 - **A peça não sustenta mais enquadramento mais grave que o do auto** (30/09, `pipeline/velocidade.py`). O formulário coleta a velocidade *considerada*; o código calcula o inciso do art. 218 sobre ela e só fala quando os números favorecem o cliente (arquivamento ou desclassificação). Banco e Edge publicados em 01/10; o campo chega ao cliente com a hospedagem do frontend, e a peça com o #11.
-- **Duas decisões jurídicas do Klaus estão abertas** (ver `PENDENCIAS.md`, seção "A peça"). A tese de "estado de necessidade" sobrevive sem norma. E o endereçamento de cada estágio: hoje a peça sai sem destinatário nenhum, e o erro de mandar defesa prévia à JARI só está latente (diagnóstico de 02/10/2026).
+- **Uma decisão jurídica do Klaus está aberta** (ver `PENDENCIAS.md`, seção "A peça"): a tese de "estado de necessidade" sobrevive sem norma. O endereçamento por estágio, que era a outra, foi decidido e implementado em 02/10/2026.
 
 **Radar INMETRO (RJ)**
 
@@ -1509,3 +1509,21 @@ PDFs dos casos 1 e 2 abertos: limpos, fecho montado pelo código.
 **Correção proposta**, dentro do template da peça: o código monta o endereçamento a partir de `especie_documento` e `orgao_autuador`, como o `peca.py` monta o fecho, e o prompt proíbe o modelo de escrevê-lo. O banco guarda o rótulo inteiro do formulário, então o mapa casa os dois textos exatos e qualquer outro valor vira linha em branco. Depende da decisão do Klaus sobre a fórmula de cada estágio — defesa prévia à autoridade de trânsito do órgão autuador (art. 281); recurso "ao Presidente da JARI do [órgão]" ou "à autoridade de trânsito do [órgão], para encaminhamento à JARI" (art. 285, *caput* e § 2º).
 
 **Arquivos:** `PENDENCIAS.md` (o item ganhou causa, estado atual e correção). Nenhum código mudou; a sonda rodou fora do repositório, com a chave do DeepSeek só como variável de processo.
+
+## Sessão de 02/10/2026 — O endereçamento da peça passa ao código
+
+**Feito:** a decisão do Klaus fechou o diagnóstico da sessão anterior — recurso "Ao Senhor Presidente da JARI do [órgão]" —, e o endereçamento saiu das mãos do modelo, separado do template da peça (é a primeira linha da moldura dele, e entra lá como está). Em `pipeline/peca.py`:
+- `enderecamento(case)` monta o destinatário pelo `especie_documento`: defesa prévia → "À Autoridade de Trânsito do órgão autuador CET-RIO" (art. 281); recurso → "Ao Senhor Presidente da Junta Administrativa de Recursos de Infrações (JARI) do órgão autuador CET-RIO" (art. 285, § 2º; art. 17). "Do órgão autuador X" evita errar a contração ("do DETRAN", "da CET-RIO"). Órgão ausente vira linha em branco; estágio fora dos dois rótulos exatos do formulário vira "À ____", sem adivinhar;
+- `remover_enderecamento` tira o vocativo que o modelo escrever mesmo assim — só linhas curtas no início, para não comer um parágrafo que comece por "Ao";
+- `texto_da_peca` abre com o endereçamento do código.
+
+O prompt base ganhou "Não escreva endereçamento nem vocativo: comece pela qualificação de quem apresenta a peça". Atenção registrada no `CLAUDE.md`: os rótulos de `ESTAGIOS` em `Form.tsx` são a chave do mapa — mudar o texto lá sem mudar `peca.py` deixa todo destinatário em branco.
+
+**Verificação:**
+- 124 testes Python (11 novos e 1 ajustado no `test_peca` e no `test_prompt`), vistos falhando antes da implementação; worker compilando;
+- rodada real com o prompt novo e a montagem do worker, quatro por estágio, passada pelo `texto_da_peca`: as oito começam no destinatário certo, nenhuma defesa prévia menciona a JARI, e o "Vossa Senhoria" sem vocativo sumiu — o modelo agora abre na qualificação;
+- o filtro de vocativo não altera nenhuma das 18 peças reais das duas rodadas do dia.
+
+**Arquivos:** `pipeline/peca.py`, `pipeline/test_peca.py`, `pipeline/prompt.py`, `pipeline/test_prompt.py`, `CLAUDE.md`, `PENDENCIAS.md`.
+
+Sem deploy: o pipeline não roda em produção (#11).
