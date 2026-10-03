@@ -23,6 +23,8 @@ dist-ssr
 .env
 .env.local
 .env.production
+# Perfil renomeado para testar contra a nuvem (README › Testar o fluxo completo)
+.env*.off
 **/venv/
 .venv/
 __pycache__/

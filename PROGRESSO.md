@@ -1491,3 +1491,5 @@ PDFs dos casos 1 e 2 abertos: limpos, fecho montado pelo código.
 
 **Ficou de fora:** as duas correções (a primeira pede spec, porque mexe no contrato do dispatch); apagar o endpoint `we_1ULwcv…` pelo painel; o PDF do `CASO_6b03e11a…`, que segue no bucket `generated-recursos`; trocar no `.env.local` (já restaurado) o segredo do webhook pelo do `stripe listen` quando o teste for local.
 
+**README reescrito, no mesmo dia.** O anterior descrevia um projeto que não existe mais: autenticação bearer "protegendo todas as requisições" (está desligada), `supabase/.env.local`, `server/.env` e `pipeline/.env` (substituídos pelos três perfis na raiz), migrations de nomes antigos e "nenhum teste no repositório". O novo traz os dois roteiros de teste ponta a ponta desta sessão — local com `.env.local` e contra a nuvem com `.env`, com a tabela do que muda entre eles —, a regra de precedência dos perfis, a sandbox do Stripe e como a aplicação vai rodar em produção (VPS do #11, site estático, ordem de lançamento). Os detalhes continuam no `CLAUDE.md`; o README aponta para ele.
+
