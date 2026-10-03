@@ -72,6 +72,48 @@ class TestGerarPdf(unittest.TestCase):
                     notificacao_penalidade="P" + "9" * 40, numero_auto="", placa="")
         self.assertTrue(gerar_pdf(montar_peca(RASCUNHO, caso)).startswith(b"%PDF-"))
 
+    def _paginas(self, rascunho):
+        """Página em que cada parágrafo foi desenhado."""
+        from reportlab.platypus import Paragraph
+        paginas = {}
+        original = Paragraph.drawOn
+
+        def desenha(par, canv, *a, **k):
+            paginas.setdefault(par.getPlainText(), canv.getPageNumber())
+            return original(par, canv, *a, **k)
+
+        with mock.patch.object(Paragraph, "drawOn", desenha):
+            gerar_pdf(peca(rascunho))
+        return paginas
+
+    # Revisão final (02/10/2026): o título ia sozinho ao pé da página, com o filete.
+    def test_titulo_de_secao_nunca_fica_sozinho_no_pe_da_pagina(self):
+        for palavras in range(120, 300, 6):
+            with self.subTest(palavras=palavras):
+                fatos = " ".join(["palavra"] * palavras) + "."
+                pags = self._paginas(f"DOS FATOS\n\n{fatos}\n\nDOS FUNDAMENTOS\n\nO art. 90 afasta a sanção.")
+                self.assertEqual(pags["II – DOS FUNDAMENTOS"], pags["O art. 90 afasta a sanção."])
+                self.assertEqual(pags["III – DO PEDIDO"], pags["Isto posto, requer:"])
+
+    def test_pede_deferimento_fica_junto_do_fecho(self):
+        for palavras in range(60, 130, 3):
+            with self.subTest(palavras=palavras):
+                fatos = " ".join(["fato"] * palavras) + "."
+                pags = self._paginas(f"DOS FATOS\n\n{fatos}\n\nDOS FUNDAMENTOS\n\nO art. 90 afasta a sanção.")
+                assinatura = next(p for texto, p in pags.items() if texto.endswith("CPF 529.982.247-25"))
+                self.assertEqual(pags["Nestes termos, pede deferimento."], assinatura)
+
+    # Spec §5: sem pyphen, erro no import — o reportlab, sozinho, só deixa de hifenizar.
+    def test_pyphen_e_obrigatorio(self):
+        import os, subprocess, sys
+        with tempfile.TemporaryDirectory() as falso:
+            Path(falso, "pyphen.py").write_text("raise ImportError('pyphen ausente')\n")
+            env = dict(os.environ, PYTHONPATH=os.pathsep.join([falso] + sys.path))
+            r = subprocess.run([sys.executable, "-c", "import pdf_peca"], env=env,
+                               cwd=Path(__file__).resolve().parent, capture_output=True, text=True)
+        self.assertNotEqual(r.returncode, 0, "pdf_peca importou sem pyphen")
+        self.assertIn("pyphen", r.stderr)
+
     def test_fonte_ausente_acusa(self):
         with tempfile.TemporaryDirectory() as vazio, \
                 mock.patch.object(pdf_peca, "FONTES_DIR", Path(vazio)), \

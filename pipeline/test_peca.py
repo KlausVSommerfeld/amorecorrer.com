@@ -447,6 +447,33 @@ class TestRemoverPedido(unittest.TestCase):
         self.assertFalse(removido)
 
 
+class TestRemoverPedidoRevisaoFinal(unittest.TestCase):
+    """Revisão final da branch (02/10/2026): fundamento real apagado e pedido do
+    modelo que passava."""
+
+    def test_palavras_parecidas_com_requer_nao_sao_pedido(self):
+        for par in ("Assim sendo, o auto não atende ao art. 280 e o requerente não pode ser penalizado.",
+                    "Diante do exposto, resta claro o que o requerimento demonstra.",
+                    "Posto isso, o requerido não comprovou a sinalização."):
+            with self.subTest(par=par):
+                self.assertEqual(remover_pedido(["Fato.", par]), (["Fato.", par], False))
+
+    def test_pedido_enumerado_sai_inteiro(self):
+        pars = ["O art. 90 afasta a sanção.", "Diante do exposto, requer:",
+                "a) o arquivamento do auto;", "b) subsidiariamente, a advertência."]
+        self.assertEqual(remover_pedido(pars), (["O art. 90 afasta a sanção."], True))
+
+    def test_lista_no_fundamento_sem_pedido_fica(self):
+        pars = ["O auto tem dois vícios:", "a) não identifica o equipamento;", "b) não traz a placa."]
+        self.assertEqual(remover_pedido(pars), (pars, False))
+
+    def test_pede_deferimento_solto(self):
+        for fecho_ in ("Pede deferimento.", "Nesses termos, pede deferimento.",
+                       "Respeitosamente, pede deferimento.", "Termos em que, espera deferimento."):
+            with self.subTest(fecho=fecho_):
+                self.assertEqual(remover_pedido(["Fundamento.", fecho_]), (["Fundamento."], True))
+
+
 class TestSepararSecoes(unittest.TestCase):
     def test_com_titulos(self):
         secoes, removido = separar_secoes(RASCUNHO_COM_TITULOS, "Mariana Souza Lima")
@@ -507,6 +534,29 @@ class TestSepararSecoes(unittest.TestCase):
     def test_cabecalho_solto_no_inicio_sai(self):
         secoes, _ = separar_secoes(f"DEFESA PRÉVIA\n\nAuto de Infração nº: E123\nÓrgão: CET-RIO\n\n{FATO}")
         self.assertEqual(secoes, (("DOS FATOS E DOS FUNDAMENTOS", (FATO,)),))
+
+
+class TestSepararSecoesRevisaoFinal(unittest.TestCase):
+    # Com o prompt novo o modelo termina nos fundamentos: o último parágrafo é argumento.
+    def test_nota_se_no_ultimo_fundamento_fica(self):
+        ultimo = "Nota-se, ainda, que o auto não informa a data da última aferição."
+        secoes, removido = separar_secoes(f"DOS FATOS\n\n{FATO}\n\nDOS FUNDAMENTOS\n\n{FUNDAMENTO}\n\n{ultimo}")
+        self.assertEqual(secoes[1], ("DOS FUNDAMENTOS", (FUNDAMENTO, ultimo)))
+        self.assertFalse(removido)
+
+    def test_titulos_de_pedido_que_o_modelo_inventa(self):
+        for titulo_ in ("PEDIDO", "DOS PEDIDOS SUBSIDIÁRIOS", "CONCLUSÃO", "DA CONCLUSÃO"):
+            with self.subTest(titulo=titulo_):
+                secoes, removido = separar_secoes(
+                    f"DOS FATOS\n\n{FATO}\n\nDOS FUNDAMENTOS\n\n{FUNDAMENTO}\n\n{titulo_}\n\nRequer o arquivamento.")
+                self.assertEqual(secoes[1], ("DOS FUNDAMENTOS", (FUNDAMENTO,)))
+                self.assertTrue(removido)
+
+    def test_fato_com_vem_e_nome_do_cliente_fica(self):
+        fato = ("Mariana Souza Lima trafegava pela Av. Brasil quando foi autuada, e vem, desde então, "
+                "contestando a medição.")
+        secoes, _ = separar_secoes(f"{fato}\n\n{FUNDAMENTO}", "Mariana Souza Lima")
+        self.assertEqual(secoes, (("DOS FATOS E DOS FUNDAMENTOS", (fato, FUNDAMENTO)),))
 
 
 class TestMontarPeca(unittest.TestCase):

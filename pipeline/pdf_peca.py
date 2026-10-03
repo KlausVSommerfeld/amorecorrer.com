@@ -10,6 +10,9 @@ from __future__ import annotations
 import io
 from pathlib import Path
 
+# Obrigatório (spec 2026-10-02, §5): sem ele o reportlab só deixa de hifenizar, calado.
+import pyphen  # noqa: F401
+
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY, TA_LEFT
 from reportlab.lib.pagesizes import A4
@@ -169,14 +172,16 @@ def gerar_pdf(peca: Peca) -> bytes:
             HRFlowable(width="100%", thickness=0.4, color=colors.black, spaceBefore=2, spaceAfter=8),
         ]
 
+    # Título de seção nunca sozinho no pé da página: vai junto com o primeiro parágrafo.
     for titulo, paragrafos in peca.secoes:
-        story += secao(titulo) + [_p(par, e["corpo"]) for par in paragrafos]
-    story += secao(peca.titulo_pedido) + [_p(peca.abertura_pedido, e["corpo"])]
+        corpo = [_p(par, e["corpo"]) for par in paragrafos]
+        story += [KeepTogether(secao(titulo) + corpo[:1])] + corpo[1:]
+    story.append(KeepTogether(secao(peca.titulo_pedido) + [_p(peca.abertura_pedido, e["corpo"])]))
     story += [_p(item, e["item"]) for item in peca.pedido]
-    story.append(_p("Nestes termos, pede deferimento.", e["fecho"]))
     local, _, assinatura = peca.fecho.partition("\n\n")
-    # O fecho não se parte entre páginas.
+    # "Nestes termos" e o fecho não se separam entre páginas.
     story.append(KeepTogether([
+        _p("Nestes termos, pede deferimento.", e["fecho"]),
         Spacer(1, 6), _p(local, e["fecho"]), Spacer(1, 28), _p(assinatura, e["assinatura"]),
     ]))
 

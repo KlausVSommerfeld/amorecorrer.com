@@ -37,7 +37,9 @@ _ADVERTENCIA = (
 )
 
 _PEDIDO = re.compile(r"\b(pede|requer|espera|aguarda|peço)\s+deferimento\b[^\n]*", re.IGNORECASE)
-_NOTA = re.compile(r"^[*_\s]*(observa[çc][ãa]o|obs\.?|nota)\b", re.IGNORECASE)
+# Só rótulo com dois pontos: desde que o modelo termina nos fundamentos (02/10/2026),
+# "Nota-se, ainda, que…" é argumento, não nota ao cliente.
+_NOTA = re.compile(r"^[*_\s]*(observa[çc][ãa]o|obs\.?|nota)\s*:", re.IGNORECASE)
 # Os dois valores que o formulário grava em `especie_documento` (Form.tsx, ESTAGIOS).
 DEFESA_PREVIA = "Notificação de autuação — defesa prévia"
 RECURSO_JARI = "Notificação de penalidade — recurso à JARI"
@@ -60,22 +62,35 @@ _TITULO_SECAO = re.compile(
     r"|d[oa]s?\s+fatos"
     r"|d[oa]s?\s+fundamentos(?:\s+jur[ií]dicos)?"
     r"|d[oa]\s+direito"
-    r"|d[oa]s?\s+pedidos?"
-    r"|d[oa]s?\s+requerimentos?)"
+    r"|(?:d[oa]s?\s+)?pedidos?(?:\s+subsidi[aá]rios?)?"
+    r"|d[oa]s?\s+requerimentos?"
+    r"|(?:d[oa]\s+)?conclus[aã]o)"
     r"\s*(?:$|[:–—-]\s*(?P<resto>.*)$)",
     re.IGNORECASE,
 )
 # Fecho de pedido que o modelo escreve no fim, apesar do prompt.
 _PEDIDO_FINAL = re.compile(
-    r"^(?:diante do exposto|ante o exposto|pelo exposto|por todo o exposto|ante todo o exposto|"
-    r"isto posto|posto isso|assim sendo|nestes termos|termos em que)\b",
+    r"^(?:diante do exposto|ante o exposto|pelo exposto|por todo o exposto|isto posto|"
+    r"(?:nestes|nesses) termos|termos em que)\b",
     re.IGNORECASE,
+)
+# "requerente", "requerimento", "requerido" não são pedido (revisão final, 02/10/2026).
+_REQUER = re.compile(r"\brequer(?:-se|em)?\b|\bdeferimento\b", re.IGNORECASE)
+_ITEM = re.compile(r"^[a-h]\)\s")
+_DEFERIMENTO_SOLTO = re.compile(
+    r"^[^.]{0,40}?\b(?:pede|espera|aguarda|requer)\s+deferimento\.?$", re.IGNORECASE
 )
 _PEDE_DEFERIMENTO_NO_FIM = re.compile(
-    r"\s*(?:nestes termos|termos em que),?\s*(?:pede|espera|aguarda|requer)\s+deferimento\.?\s*$",
+    r"\s*(?:(?:nestes|nesses) termos|termos em que|respeitosamente),?\s*"
+    r"(?:pede|espera|aguarda|requer)\s+deferimento\.?\s*$",
     re.IGNORECASE,
 )
-_VEM = re.compile(r"\bvem\b,?\s", re.IGNORECASE)
+# A qualificação que o modelo escreve: "vem, respeitosamente, (…) apresentar/interpor".
+# Um "vem" qualquer ("vem, desde então, contestando") não basta.
+_QUALIFICACAO = re.compile(
+    r"\bvem,?\s+(?:[^\s,]+,?\s+){0,8}?(?:apresentar|interpor|requerer|opor|oferecer|impugnar)\b",
+    re.IGNORECASE,
+)
 _CAMPO_SOLTO = re.compile(r"^[^:\n]{2,40}:\s*\S.{0,80}$")
 _ROMANOS = ("I", "II", "III", "IV")
 _PREFACIO = re.compile(
@@ -141,12 +156,25 @@ def cortar_depois_do_pedido(texto: str) -> str:
     return "\n\n".join(paragrafos).strip()
 
 
+def _deferimento_solto(paragrafo: str) -> bool:
+    return len(paragrafo) <= 80 and bool(_DEFERIMENTO_SOLTO.search(paragrafo))
+
+
 def remover_pedido(paragrafos: list[str]) -> tuple[list[str], bool]:
     """Tira do fim o pedido e o "pede deferimento" que o modelo escrever: o pedido
     é do código. Fundamento que começa por "Ante o exposto" sem requerer nada fica."""
     pars = list(paragrafos)
     removido = False
-    while pars and _PEDIDO_FINAL.match(pars[-1]) and re.search(r"requer|deferimento", pars[-1], re.I):
+    # Pedido enumerado: "Diante do exposto, requer:" seguido só de itens a), b)… e do fecho.
+    for k in range(len(pars) - 1, -1, -1):
+        if _PEDIDO_FINAL.match(pars[k]) and _REQUER.search(pars[k]):
+            if all(_ITEM.match(p) or _deferimento_solto(p) for p in pars[k + 1:]):
+                del pars[k:]
+                removido = True
+            break
+    while pars and (
+        _deferimento_solto(pars[-1]) or (_PEDIDO_FINAL.match(pars[-1]) and _REQUER.search(pars[-1]))
+    ):
         pars.pop()
         removido = True
     if pars:
@@ -162,7 +190,7 @@ def remover_pedido(paragrafos: list[str]) -> tuple[list[str], bool]:
 
 def _tipo_de_secao(nome: str) -> str:
     n = nome.lower()
-    if "pedido" in n or "requerimento" in n:
+    if "pedido" in n or "requerimento" in n or "conclus" in n:
         return "pedido"
     if "fatos" in n and "fundamentos" in n:
         return "ambos"
@@ -193,7 +221,7 @@ def _cabecalho_solto(bloco: str) -> bool:
 def _e_qualificacao(paragrafo: str, nome_cliente: str) -> bool:
     inicio = paragrafo[:700]
     pelo_nome = bool(nome_cliente) and paragrafo.lower().startswith(nome_cliente.lower())
-    return bool(_VEM.search(inicio)) and (pelo_nome or "CPF" in inicio)
+    return bool(_QUALIFICACAO.search(inicio)) and (pelo_nome or "CPF" in inicio)
 
 
 def separar_secoes(
