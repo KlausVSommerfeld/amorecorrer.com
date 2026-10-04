@@ -1565,7 +1565,7 @@ O conflito entre as instruções de exibição do radar ("requeira a juntada do 
 
 Origem: release 4.005R de adobe-fonts/source-serif (TTF do pacote Desktop) e google/fonts `ofl/ibmplexmono`.
 
-**Antes do próximo teste ponta a ponta, o Klaus precisa** instalar o `pyphen` no `.venv` de Windows, de `pipeline/` no PowerShell: `uv pip install -r requirements.txt` (o venv é gerido por uv) ou `.venv\Scripts\python -m pip install -r requirements.txt`.
+**Antes do próximo teste ponta a ponta, o Klaus precisa** instalar o `pyphen` no `.venv` de Windows, de `pipeline/` no PowerShell: `uv pip install -r requirements.txt` (o venv é gerido por uv) ou `.venv\Scripts\python -m pip install -r requirements.txt`. **Feito em 03/10/2026:** `pyphen` 0.18.1 no `.venv`, conferido.
 
 **Ficou de fora:** a conferência de citações não passou pela sonda (roda dentro do worker; só o teste ponta a ponta a exercita junto com o PDF novo); a tese de "estado de necessidade" segue nos fundamentos, à espera da decisão do Klaus.
 
