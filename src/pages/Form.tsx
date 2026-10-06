@@ -595,7 +595,7 @@ const Form = () => {
     if (!formData.cliente_conduzia)
       newErrors.cliente_conduzia = 'Marque uma das opções.';
     if (!formData.justificativa.trim())
-      newErrors.justificativa ='Conte o que aconteceu: é esta parte que a peça vai defender.';
+      newErrors.justificativa = 'Conte o que aconteceu: é esta parte que a peça vai defender.';
 
     // Email validation
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -1772,6 +1772,7 @@ const Form = () => {
                 className="choice-group"
                 role="radiogroup"
                 aria-describedby="hint-cliente_conduzia"
+                aria-invalid={Boolean(errors.cliente_conduzia)}
               >
                 {[
                   { valor: 'sim', nome: 'Sim, eu dirigia' },
