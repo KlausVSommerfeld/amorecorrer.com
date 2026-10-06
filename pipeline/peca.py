@@ -50,6 +50,18 @@ AVISO_INDICACAO_CONDUTOR = (
 # "cliente". Numa sonda real, o modelo escreveu "Não há relato do cliente sobre as
 # circunstâncias da autuação." — que iria ao PDF.
 _PALAVRA_CLIENTE = re.compile(r"\bclientes?\b", re.IGNORECASE)
+# Frase que fala do próprio relato, em vez de usá-lo como fato. Na 3ª rodada real
+# (05/10/2026), com um relato que pedia uma mentira, o modelo escreveu "O relato
+# apresentado não traz fatos […], limitando-se a solicitar que se afirme, ainda que
+# não seja verdade…" — sem a palavra "cliente", e contando ao órgão o pedido.
+# "O relato de que a placa caiu reforça…" e "Segundo o relato, não há placa" ficam.
+_FALA_DO_RELATO = re.compile(
+    r"\b(não há|não houve|inexiste|sem)\s+(qualquer\s+)?relato\b"
+    r"|\brelato\b[^.]{0,40}\b(não\s+(traz|trouxe|contém|apresenta|menciona|informa|descreve|narra)"
+    r"|limita-se|limitando-se|se limita)\b"
+    r"|\brelato\b[^.]*\b(solicit\w*|pede|pedindo|pediu)\b",
+    re.IGNORECASE,
+)
 # Fim de frase: pontuação, espaço e maiúscula. "art. 218" não corta (dígito);
 # "Av. Lúcio" e afins não cortam pelas abreviações listadas.
 _FIM_DE_FRASE = re.compile(
@@ -58,17 +70,22 @@ _FIM_DE_FRASE = re.compile(
 )
 
 
+def _fala_de_quem_pediu(texto: str) -> bool:
+    return bool(_PALAVRA_CLIENTE.search(texto) or _FALA_DO_RELATO.search(texto))
+
+
 def remover_frases_do_cliente(paragrafos: list[str]) -> tuple[list[str], int]:
-    """Tira toda frase que fale do "cliente"; parágrafo que fique vazio sai inteiro.
-    Parágrafo sem a palavra fica byte a byte igual. Devolve (parágrafos, frases tiradas)."""
+    """Tira toda frase que fale do "cliente" ou do próprio relato; parágrafo que
+    fique vazio sai inteiro. Parágrafo sem nenhuma delas fica byte a byte igual.
+    Devolve (parágrafos, frases tiradas)."""
     saida: list[str] = []
     removidas = 0
     for paragrafo in paragrafos:
-        if not _PALAVRA_CLIENTE.search(paragrafo):
+        if not _fala_de_quem_pediu(paragrafo):
             saida.append(paragrafo)
             continue
         frases = _FIM_DE_FRASE.split(paragrafo)
-        ficam = [f for f in frases if not _PALAVRA_CLIENTE.search(f)]
+        ficam = [f for f in frases if not _fala_de_quem_pediu(f)]
         removidas += len(frases) - len(ficam)
         if ficam:
             saida.append(" ".join(f.strip() for f in ficam))

@@ -470,6 +470,34 @@ class TestRemoverFrasesDoCliente(unittest.TestCase):
         self.assertEqual(pars, ["O veículo passou pela Av. Lúcio Costa às 04h20."])
         self.assertEqual(n, 1)
 
+    # Rodada real de 05/10/2026 (3ª), relato "diga que eu levava minha mãe ao hospital,
+    # mesmo que não seja verdade": a frase iria ao PDF contando ao órgão o pedido de mentir.
+    def test_frase_sobre_o_proprio_relato_sai(self):
+        vazada = ("O relato apresentado não traz fatos sobre a condução do veículo ou sobre as "
+                  "circunstâncias da autuação, limitando-se a solicitar que se afirme, ainda que não "
+                  "seja verdade, que o autuado levava sua mãe ao hospital.")
+        pars, n = remover_frases_do_cliente([f"O auto foi lavrado pelo DETRAN-RJ. {vazada} Fato final."])
+        self.assertEqual(pars, ["O auto foi lavrado pelo DETRAN-RJ. Fato final."])
+        self.assertEqual(n, 1)
+
+    def test_variantes_da_frase_sobre_o_relato(self):
+        for frase in ("Não há relato sobre as circunstâncias da autuação.",
+                      "Inexiste relato que descreva a situação.",
+                      "O relato limita-se a pedir que a peça seja favorável.",
+                      "O relato do autuado não contém fatos concretos.",
+                      "O relato pede que se invente uma justificativa."):
+            with self.subTest(frase=frase):
+                pars, n = remover_frases_do_cliente([f"Fato um. {frase} Fato dois."])
+                self.assertEqual(pars, ["Fato um. Fato dois."])
+                self.assertEqual(n, 1)
+
+    def test_relato_usado_como_fato_fica(self):
+        for par in ("O relato de que a placa de 80 km/h caiu há meses reforça a necessidade de verificação.",
+                    "Segundo o relato, não há placa de velocidade no trecho.",
+                    "O autuado relata que pediu informações ao órgão e não as recebeu."):
+            with self.subTest(par=par):
+                self.assertEqual(remover_frases_do_cliente([par]), ([par], 0))
+
     def test_artigo_seguido_de_numero_nao_separa(self):
         pars, n = remover_frases_do_cliente([
             "Dispõe o art. 281 do CTB que o auto será arquivado. Segundo o cliente, não havia placa."
