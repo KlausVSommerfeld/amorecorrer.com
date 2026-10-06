@@ -517,6 +517,40 @@ class TestRemoverFrasesDoCliente(unittest.TestCase):
                 self.assertEqual(pars, ["A velocidade foi aferida pelo radar."])
                 self.assertEqual(n, 1)
 
+    # Revisão final: fim de frase depois de aspas, parêntese ou reticências, e antes de
+    # "§", dígito ou aspas — sem isso a frase vizinha saía junto com a do cliente.
+    def test_fins_de_frase_menos_comuns(self):
+        casos = (
+            ('A placa indicava "80 km/h." O cliente não informou nada. Fato final.',
+             'A placa indicava "80 km/h." Fato final.'),
+            ("O auto foi lavrado (conforme a foto.) O cliente não informou nada. Fato final.",
+             "O auto foi lavrado (conforme a foto.) Fato final."),
+            ("O veículo passou às 04h20… O cliente não informou nada. Fato final.",
+             "O veículo passou às 04h20… Fato final."),
+            ("O cliente não informou nada. § 2º do art. 280 exige comprovação.",
+             "§ 2º do art. 280 exige comprovação."),
+            ("O cliente não informou nada. 84 km/h foi a velocidade considerada.",
+             "84 km/h foi a velocidade considerada."),
+            ('O cliente não informou nada. "Velocidade considerada" consta do auto.',
+             '"Velocidade considerada" consta do auto.'),
+        )
+        for par, esperado in casos:
+            with self.subTest(par=par):
+                self.assertEqual(remover_frases_do_cliente([par]), ([esperado], 1))
+
+    def test_unidade_km_h_nao_e_letra_solta(self):
+        self.assertEqual(
+            remover_frases_do_cliente(["A velocidade considerada foi de 84 km/h. O cliente não informou nada."]),
+            (["A velocidade considerada foi de 84 km/h."], 1),
+        )
+
+    def test_relatos_no_plural(self):
+        for frase in ("Não há relatos sobre as circunstâncias.",
+                      "Os relatos apresentados não trazem fatos concretos."):
+            with self.subTest(frase=frase):
+                self.assertEqual(remover_frases_do_cliente([f"Fato um. {frase} Fato dois."]),
+                                 (["Fato um. Fato dois."], 1))
+
     def test_artigo_seguido_de_numero_nao_separa(self):
         pars, n = remover_frases_do_cliente([
             "Dispõe o art. 281 do CTB que o auto será arquivado. Segundo o cliente, não havia placa."

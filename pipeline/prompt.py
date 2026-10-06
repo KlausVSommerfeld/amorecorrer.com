@@ -119,7 +119,12 @@ REGRA_CONDUTOR_NAO = (
     "e ao autuado."
 )
 
-# Três ou mais "<" ou ">" seguidos: as marcas do bloco, ou uma tentativa de forjá-las.
+# As marcas inteiras, com ou sem os sinais e sem distinguir maiúsculas, e depois três
+# ou mais "<" ou ">" seguidos: uma tentativa de forjar o fim do bloco não sobra nem
+# como "FIM DO RELATO" solto numa linha (revisão final).
+_MARCAS = re.compile(
+    r"(?:<+\s*)?(?:relato\s+do\s+cliente|fim\s+do\s+relato)(?:\s*>+)?", re.IGNORECASE
+)
 _SINAIS_DE_MARCA = re.compile(r"<{3,}|>{3,}")
 
 
@@ -132,7 +137,7 @@ def limpar_relato(valor: Any) -> str:
     texto sairia do bloco. Um relato só de marcas, ou só de espaços, vira ''."""
     if valor is None:
         return ""
-    return _SINAIS_DE_MARCA.sub("", str(valor)).strip()
+    return _SINAIS_DE_MARCA.sub("", _MARCAS.sub("", str(valor))).strip()
 
 
 # Campos de controle interno. O read model do Express faz `select("*")`, então a

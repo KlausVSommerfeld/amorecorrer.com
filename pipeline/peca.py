@@ -58,18 +58,23 @@ _PALAVRA_CLIENTE = re.compile(r"\bclientes?\b", re.IGNORECASE)
 # sobre a redação ("pede que se…"): "Segundo o relato, o trecho não apresenta placa"
 # e "o autuado solicitou ao órgão cópia…" são fatos e ficam (revisão final).
 _FALA_DO_RELATO = re.compile(
-    r"\b(não há|não houve|inexiste|sem)\s+(qualquer\s+)?relato\b"
-    r"|\b(o|este|esse|tal)\s+relato(\s+[\wÀ-ÿ]+){0,3}?\s+"
-    r"(não\s+(traz|trouxe|contém|apresenta|menciona|informa|descreve|narra)|limita-se|se\s+limita|limitando-se)\b"
-    r"|\brelato\b[^.]*\b(solicit\w*|pede|pedindo|pediu)\s+(que\s+se|que\s+a\s+peça|para\s+que\s+se|que\s+seja)\b",
+    r"\b(não há|não houve|inexiste|sem)\s+(qualquer\s+)?relatos?\b"
+    r"|\b(os?|estes?|esses?|tal|tais)\s+relatos?(\s+[\wÀ-ÿ]+){0,3}?\s+"
+    r"(não\s+(traz|trazem|trouxe|trouxeram|contém|contêm|apresenta|apresentam|menciona|mencionam"
+    r"|informa|informam|descreve|descrevem|narra|narram)|limita-se|limitam-se|se\s+limitam?|limitando-se)\b"
+    r"|\brelatos?\b[^.]*\b(solicit\w*|pede|pedem|pedindo|pediu)\s+(que\s+se|que\s+a\s+peça|para\s+que\s+se|que\s+seja)\b",
     re.IGNORECASE,
 )
-# Fim de frase: pontuação, espaço e maiúscula ("art. 218" não corta: dígito). Não
-# corta depois de abreviação (sem distinguir maiúsculas: o auto escreve "AV. BRASIL")
-# nem de letra solta ("R.", "J."): na dúvida, a frase removida leva a vizinha junto,
-# o que mantém a gramática; o contrário deixaria a cauda solta no PDF (revisão final).
-_CANDIDATO_A_FIM = re.compile(r"(?<=[.!?])\s+(?=[A-ZÀ-Ý])")
-_PALAVRA_ANTES_DO_PONTO = re.compile(r"(\w+)\.$")
+# Fim de frase: pontuação (ponto, "!", "?", reticências), talvez seguida de aspas ou
+# parêntese de fechamento, espaço e o começo da frase seguinte (maiúscula, "§", dígito
+# ou aspas). Não corta depois de abreviação (sem distinguir maiúsculas: o auto escreve
+# "AV. BRASIL"; "art. 218" fica pela lista) nem de letra solta ("R.", "J."): na dúvida, a
+# frase removida leva a vizinha junto, o que mantém a gramática; o contrário deixaria a
+# cauda solta no PDF. "km/h." não é letra solta: a palavra é lida com a barra.
+_CANDIDATO_A_FIM = re.compile(
+    r"(?:(?<=[.!?…])|(?<=[.!?…][\"”')\]]))\s+(?=[A-ZÀ-Ý§\d\"“])"
+)
+_PALAVRA_ANTES_DO_PONTO = re.compile(r"([\w/]+)\.[\"”')\]]?$")
 _ABREVIACOES = frozenset({
     "av", "r", "rod", "est", "estr", "al", "trav", "pç", "pça", "sta", "sto", "mal", "gal",
     "gen", "cel", "cap", "ten", "gov", "pres", "eng", "des", "dep", "ver", "pe", "res",
