@@ -494,9 +494,28 @@ class TestRemoverFrasesDoCliente(unittest.TestCase):
     def test_relato_usado_como_fato_fica(self):
         for par in ("O relato de que a placa de 80 km/h caiu há meses reforça a necessidade de verificação.",
                     "Segundo o relato, não há placa de velocidade no trecho.",
-                    "O autuado relata que pediu informações ao órgão e não as recebeu."):
+                    "O autuado relata que pediu informações ao órgão e não as recebeu.",
+                    # Revisão final: o relato como fonte de um fato, com outro sujeito no verbo.
+                    "Segundo o relato, o trecho não apresenta placa de regulamentação de velocidade.",
+                    "Conforme o relato, a via não contém sinalização vertical de 80 km/h.",
+                    "De acordo com o relato, a placa não informa a velocidade máxima.",
+                    "Pelo relato do autuado, a sinalização não traz a velocidade.",
+                    "Segundo o relato, o autuado solicitou ao órgão cópia do certificado de verificação, sem resposta.",
+                    "Conforme o relato, o autuado pediu ao DETRAN a fotografia da autuação."):
             with self.subTest(par=par):
                 self.assertEqual(remover_frases_do_cliente([par]), ([par], 0))
+
+    # Revisão final: abreviação fora da lista, ou em caixa alta como vem no auto, deixava
+    # a cauda da frase removida solta no PDF.
+    def test_abreviacoes_de_logradouro_e_titulo_nao_separam(self):
+        for local in ("R. Barão de Mesquita", "Rod. Presidente Dutra", "Rua Sta. Clara",
+                      "AV. BRASIL", "av. Brasil", "Av. Mal. Floriano", "Est. dos Bandeirantes"):
+            with self.subTest(local=local):
+                pars, n = remover_frases_do_cliente([
+                    f"O cliente seguia pela {local} às 04h20. A velocidade foi aferida pelo radar."
+                ])
+                self.assertEqual(pars, ["A velocidade foi aferida pelo radar."])
+                self.assertEqual(n, 1)
 
     def test_artigo_seguido_de_numero_nao_separa(self):
         pars, n = remover_frases_do_cliente([

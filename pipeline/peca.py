@@ -54,20 +54,40 @@ _PALAVRA_CLIENTE = re.compile(r"\bclientes?\b", re.IGNORECASE)
 # (05/10/2026), com um relato que pedia uma mentira, o modelo escreveu "O relato
 # apresentado não traz fatos […], limitando-se a solicitar que se afirme, ainda que
 # não seja verdade…" — sem a palavra "cliente", e contando ao órgão o pedido.
-# "O relato de que a placa caiu reforça…" e "Segundo o relato, não há placa" ficam.
+# O relato precisa ser o SUJEITO ("O relato … não traz"), ou o pedido precisa ser
+# sobre a redação ("pede que se…"): "Segundo o relato, o trecho não apresenta placa"
+# e "o autuado solicitou ao órgão cópia…" são fatos e ficam (revisão final).
 _FALA_DO_RELATO = re.compile(
     r"\b(não há|não houve|inexiste|sem)\s+(qualquer\s+)?relato\b"
-    r"|\brelato\b[^.]{0,40}\b(não\s+(traz|trouxe|contém|apresenta|menciona|informa|descreve|narra)"
-    r"|limita-se|limitando-se|se limita)\b"
-    r"|\brelato\b[^.]*\b(solicit\w*|pede|pedindo|pediu)\b",
+    r"|\b(o|este|esse|tal)\s+relato(\s+[\wÀ-ÿ]+){0,3}?\s+"
+    r"(não\s+(traz|trouxe|contém|apresenta|menciona|informa|descreve|narra)|limita-se|se\s+limita|limitando-se)\b"
+    r"|\brelato\b[^.]*\b(solicit\w*|pede|pedindo|pediu)\s+(que\s+se|que\s+a\s+peça|para\s+que\s+se|que\s+seja)\b",
     re.IGNORECASE,
 )
-# Fim de frase: pontuação, espaço e maiúscula. "art. 218" não corta (dígito);
-# "Av. Lúcio" e afins não cortam pelas abreviações listadas.
-_FIM_DE_FRASE = re.compile(
-    r"(?<=[.!?])(?<!\bAv\.)(?<!\bDr\.)(?<!\bDra\.)(?<!\bSr\.)(?<!\bSra\.)"
-    r"(?<!\bArt\.)(?<!\bArts\.)(?<!\bProf\.)\s+(?=[A-ZÀ-Ý])"
-)
+# Fim de frase: pontuação, espaço e maiúscula ("art. 218" não corta: dígito). Não
+# corta depois de abreviação (sem distinguir maiúsculas: o auto escreve "AV. BRASIL")
+# nem de letra solta ("R.", "J."): na dúvida, a frase removida leva a vizinha junto,
+# o que mantém a gramática; o contrário deixaria a cauda solta no PDF (revisão final).
+_CANDIDATO_A_FIM = re.compile(r"(?<=[.!?])\s+(?=[A-ZÀ-Ý])")
+_PALAVRA_ANTES_DO_PONTO = re.compile(r"(\w+)\.$")
+_ABREVIACOES = frozenset({
+    "av", "r", "rod", "est", "estr", "al", "trav", "pç", "pça", "sta", "sto", "mal", "gal",
+    "gen", "cel", "cap", "ten", "gov", "pres", "eng", "des", "dep", "ver", "pe", "res",
+    "dr", "dra", "sr", "sra", "prof", "art", "arts", "km", "fl", "matr", "nº", "n",
+})
+
+
+def _frases(paragrafo: str) -> list[str]:
+    partes: list[str] = []
+    inicio = 0
+    for m in _CANDIDATO_A_FIM.finditer(paragrafo):
+        anterior = _PALAVRA_ANTES_DO_PONTO.search(paragrafo[inicio:m.start()])
+        if anterior and (anterior.group(1).lower() in _ABREVIACOES or len(anterior.group(1)) == 1):
+            continue
+        partes.append(paragrafo[inicio:m.start()])
+        inicio = m.end()
+    partes.append(paragrafo[inicio:])
+    return partes
 
 
 def _fala_de_quem_pediu(texto: str) -> bool:
@@ -84,7 +104,7 @@ def remover_frases_do_cliente(paragrafos: list[str]) -> tuple[list[str], int]:
         if not _fala_de_quem_pediu(paragrafo):
             saida.append(paragrafo)
             continue
-        frases = _FIM_DE_FRASE.split(paragrafo)
+        frases = _frases(paragrafo)
         ficam = [f for f in frases if not _fala_de_quem_pediu(f)]
         removidas += len(frases) - len(ficam)
         if ficam:
