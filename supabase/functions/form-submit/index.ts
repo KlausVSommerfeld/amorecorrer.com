@@ -11,6 +11,7 @@ import {
   naoAplicavel,
   type Verificacao,
 } from "./verificacao.ts";
+import { clienteConduzia } from "./campos.ts";
 
 const MAX_BODY_BYTES = 64 * 1024; // 64KB
 const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
@@ -398,6 +399,9 @@ Deno.serve(async (req) => {
       artigo_ctb: norm.artigo_ctb ?? null,
       amparo_legal: norm.amparo_legal ?? null,
       justificativa: norm.justificativa ?? null,
+      // Fora do dup_guard (o hash cobre só a identidade de quem envia): um
+      // reenvio que mude só esta resposta é duplicata, como a justificativa.
+      cliente_conduzia: clienteConduzia(norm.cliente_conduzia),
       dup_guard,
       stripe_session_id: norm.stripe_session_id ?? null,
       updated_at: new Date().toISOString()
