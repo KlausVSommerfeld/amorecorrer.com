@@ -62,6 +62,9 @@ interface FormData {
   descricaoInfracao: string;
   amparoLegal: string;
   justificativa: string;
+  // "Era você quem dirigia?" — '' até o cliente escolher; 'sim' | 'nao' depois.
+  // String, e não booleano, para o rascunho (só guarda strings) e o rádio.
+  cliente_conduzia: string;
   velocidade_permitida: string;
   velocidade_aferida: string;
   velocidade_considerada: string;
@@ -235,6 +238,7 @@ const INITIAL_FORM: FormData = {
   descricaoInfracao: '',
   amparoLegal: '',
   justificativa: '',
+  cliente_conduzia: '',
   velocidade_permitida: '',
   velocidade_aferida: '',
   velocidade_considerada: '',
@@ -300,7 +304,7 @@ const FIELD_ORDER = [
   'notificacaoPenalidade', 'dataHora', 'localSentido',
   'velocidade_permitida', 'velocidade_aferida', 'velocidade_considerada',
   'medidor_numero_serie', 'medidor_numero_inmetro', 'medidor_numero_certificado',
-  'justificativa'
+  'cliente_conduzia', 'justificativa'
 ];
 
 const Form = () => {
@@ -588,8 +592,10 @@ const Form = () => {
       newErrors.localSentido = 'Copie o local e o sentido da via, como está na notificação.';
     if (!formData.dataHora.trim())
       newErrors.dataHora = 'Informe a data e a hora que estão na notificação.';
+    if (!formData.cliente_conduzia)
+      newErrors.cliente_conduzia = 'Marque uma das opções.';
     if (!formData.justificativa.trim())
-      newErrors.justificativa = 'Conte o que aconteceu: é esta parte que a peça vai defender.';
+      newErrors.justificativa ='Conte o que aconteceu: é esta parte que a peça vai defender.';
 
     // Email validation
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -740,6 +746,8 @@ const Form = () => {
       descricao_infracao: data.descricaoInfracao.trim() || null,
       amparo_legal: data.amparoLegal.trim() || null,
       justificativa: data.justificativa.trim() || null,
+      cliente_conduzia:
+        data.cliente_conduzia === 'sim' ? true : data.cliente_conduzia === 'nao' ? false : null,
 
       velocidade_permitida: Number.isFinite(vPermitida) ? vPermitida : null,
       velocidade_aferida: Number.isFinite(vAferida) ? vAferida : null,
@@ -1753,6 +1761,48 @@ const Form = () => {
               <span className="fieldset__name">Sua versão</span>
               <span className="fieldset__rule" aria-hidden="true" />
             </legend>
+
+            {/* Não vai escrito na peça: decide a regra sobre a direção no prompt
+                e o aviso de indicação do condutor no e-mail (spec 2026-10-05). */}
+            <fieldset className="mb-5">
+              <legend className="form-label">
+                Era você quem dirigia o veículo no momento da infração? *
+              </legend>
+              <div
+                className="choice-group"
+                role="radiogroup"
+                aria-describedby="hint-cliente_conduzia"
+              >
+                {[
+                  { valor: 'sim', nome: 'Sim, eu dirigia' },
+                  { valor: 'nao', nome: 'Não, outra pessoa dirigia' }
+                ].map((opcao, i) => (
+                  <label className="choice" key={opcao.valor}>
+                    <input
+                      type="radio"
+                      className="choice__input"
+                      id={i === 0 ? 'cliente_conduzia' : undefined}
+                      name="cliente_conduzia"
+                      value={opcao.valor}
+                      checked={formData.cliente_conduzia === opcao.valor}
+                      onChange={handleInputChange}
+                      aria-invalid={Boolean(errors.cliente_conduzia)}
+                    />
+                    <span>
+                      <span className="choice__name">{opcao.nome}</span>
+                    </span>
+                  </label>
+                ))}
+              </div>
+              {errors.cliente_conduzia ? (
+                <p className="form-error" id="hint-cliente_conduzia">{errors.cliente_conduzia}</p>
+              ) : (
+                <p className="form-hint" id="hint-cliente_conduzia">
+                  Isto não vai escrito na peça. Serve para não afirmarmos que era você ao volante
+                  sem que você diga, e para avisar sobre a indicação do condutor.
+                </p>
+              )}
+            </fieldset>
 
             <label className="form-label" htmlFor="justificativa">
               O que aconteceu? *
