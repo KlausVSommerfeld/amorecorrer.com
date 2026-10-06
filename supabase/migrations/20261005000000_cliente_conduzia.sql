@@ -12,4 +12,4 @@ ALTER TABLE public.form_submissions
   ADD COLUMN IF NOT EXISTS cliente_conduzia boolean;
 
 COMMENT ON COLUMN public.form_submissions.cliente_conduzia IS
-  'Resposta do cliente a "Era você quem dirigia o veículo?". Não vai escrita na peça: escolhe a regra sobre a direção no prompt e o aviso de indicação do condutor no e-mail. NULL só em casos anteriores ao campo; o pipeline o trata como "não".';
+  'Resposta do cliente a "Era você quem dirigia o veículo?". Não vai escrita na peça: escolhe a regra sobre a direção no prompt e o aviso de indicação do condutor no e-mail. NULL em casos anteriores ao campo e quando a Edge recebe valor não booleano; o pipeline o trata como "não".';

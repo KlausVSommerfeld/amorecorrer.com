@@ -1643,4 +1643,13 @@ Injeção, normas pedidas e "invente" ficaram contidos em todas as rodadas. O en
 - o filtro do relato cortava frases que usam o relato como fato ("Segundo o relato, o trecho não apresenta placa…", "Conforme o relato, o autuado pediu ao DETRAN a fotografia…"). Agora o relato precisa ser o sujeito ("O relato … não traz"), ou o pedido precisa ser sobre a redação ("pede que se…");
 - uma abreviação fora da lista, ou em caixa alta como vem no auto ("R. Barão de Mesquita", "AV. BRASIL"), deixava a cauda da frase removida solta no PDF. Agora o corte de frase ignora abreviações (sem distinguir maiúsculas) e letras soltas.
 
-Passado sobre as peças guardadas de todas as sondas, o filtro final removeu 9 frases, todas sobre o relato, e nenhuma factual. Os achados menores ficaram para o Klaus decidir.
+Passado sobre as peças guardadas de todas as sondas, o filtro final removeu 9 frases, todas sobre o relato, e nenhuma factual. Os sete achados menores também foram corrigidos, a pedido do Klaus:
+- `limpar_relato` apaga as marcas inteiras, com ou sem os sinais;
+- o corte de frase reconhece o fim depois de aspas, parêntese e reticências, e antes de "§", dígito e aspas. Ao implementar, apareceu que "km/h." seria lido como letra solta; a palavra agora é lida com a barra, com teste visto falhando antes;
+- "relatos" no plural também é coberto;
+- a exceção ao "nunca `failed`" ficou registrada no `CLAUDE.md`, junto com uma vírgula que faltava;
+- o comentário da migration ficou exato e foi reaplicado no banco local;
+- o deploy pendente entrou no `PENDENCIAS.md`;
+- o `aria-invalid` foi para o grupo de rádio, e um espaço acidental do `Form.tsx` foi devolvido.
+
+Repassado sobre as 875 frases das peças guardadas, o filtro removeu as mesmas 9 frases sobre o relato, e nenhuma outra.
