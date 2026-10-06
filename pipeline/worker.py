@@ -267,10 +267,19 @@ async def run_dispatch_pipeline(body_text: str) -> None:
             )
             partes = [context] + ([bloco_vel.texto] if bloco_vel else []) + [base.texto]
             usuario = "\n\n".join(partes)
+            # A resposta sobre o condutor nunca vai crua ao modelo: escolhe o texto
+            # da regra (spec 2026-10-05). Sem resposta, vale a regra do "não".
+            conduzia = case.get("cliente_conduzia")
+            log.info(
+                "condutor case_id=%s condutor=%s",
+                payload.case_id,
+                "sim" if conduzia is True else "nao" if conduzia is False else "ausente",
+            )
             sistema = system_prompt(
                 settings.radar_tese_ativa,
                 case.get("verificacao_medidor"),
                 sem_enquadramento=base.enquadramento is None,
+                cliente_conduzia=conduzia if isinstance(conduzia, bool) else None,
             )
 
             async def gerar(historico: list[dict[str, str]] | None) -> str:
@@ -293,9 +302,11 @@ async def run_dispatch_pipeline(body_text: str) -> None:
                 draft, case, bloco_vel.situacao if bloco_vel else None, inciso, advertencia
             )
             log.info(
-                "peca case_id=%s secoes=%d pedido_itens=%d advertencia=%s pedido_do_modelo_removido=%s",
+                "peca case_id=%s secoes=%d pedido_itens=%d advertencia=%s "
+                "pedido_do_modelo_removido=%s frases_do_cliente_removidas=%d",
                 payload.case_id, len(peca.secoes), len(peca.pedido),
                 "sim" if advertencia else "nao", "sim" if peca.pedido_do_modelo_removido else "nao",
+                peca.frases_do_cliente_removidas,
             )
             pdf_bytes = gerar_pdf(peca)
             sha256_hex = hashlib.sha256(pdf_bytes).hexdigest()
@@ -322,7 +333,7 @@ async def run_dispatch_pipeline(body_text: str) -> None:
             )
             log.info("generated_documents registered dispatch_key=%s path=%s", dk, storage_path)
 
-            intro = corpo_do_email(payload.case_id)
+            intro = corpo_do_email({**case, "case_id": payload.case_id})
             msg_id: str | None = None
             email_failed = False
             email_error: str | None = None
