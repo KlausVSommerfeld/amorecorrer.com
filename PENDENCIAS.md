@@ -68,7 +68,9 @@ Plano: `PLANO-verificacao-radar-inmetro.md`. Fases 0, 1, 3 entregues; Fase 2 só
 
 Decisões jurídicas do Klaus primeiro; o pipeline só chega ao cliente depois do #11.
 
-- **Abrir o PDF do próximo teste ponta a ponta** — será a primeira peça com o template novo que passa pela conferência de citações e pelo worker inteiro (os exemplos de 02/10 saíram de uma sonda fora do worker). O `pyphen` já está no `.venv` (03/10). → Sessão de 02/10/2026 (template da peça)
+- **Cliente que dirigia, mas não é o dono do carro** (o filho com o carro do pai): a notificação vem no nome do dono e a peça sai no nome de quem preencheu, que ainda não foi indicado como condutor. Questão de legitimidade, com o rito da indicação no CONTRAN (não conferido). *Decisão do Klaus.* → Sessão de 05/10/2026 (relato e condutor)
+- **Perguntas-guia no texto de ajuda de "O que aconteceu?" e a opção "não tenho versão própria"**, que torna o relato opcional — itens 2 e 3 da análise de 05/10; só front e prompt. → Sessão de 05/10/2026 (relato e condutor)
+- **Falso positivo da conferência: "do Código determina" lido como "Código de…"** (norma externa). Visto numa rodada real de 05/10: "o art. 281, § 1º, I, do Código determina…" foi recusado. No worker custa uma refação e, se o modelo repetir, leva o caso a `failed`. Anterior à branch do relato. → Sessão de 05/10/2026 (relato e condutor)
 - **Confirmar com um auto real a dica do campo "Vel. considerada"** (texto genérico hoje) e se todo auto de radar do RJ imprime a considerada. → Sessão de 30/09/2026 (velocidade considerada)
 - **Tese de "estado de necessidade" sem norma** — pedida pelo cliente, a IA deixou de citar o Código Penal (a conferência recusou) mas manteve o argumento de que "afasta a culpabilidade". A conferência olha citações, não teses. *Decisão do Klaus* se a tese pode entrar numa defesa de trânsito. → Sessão de 29/09/2026 (base legal do CTB)
 - **Tabela de códigos de enquadramento** — o auto traz um código ("7455-0") que o CTB não mapeia; hoje esses casos ficam sem enquadramento (só o rito). Base separada, a construir. → Sessão de 29/09/2026 (base legal do CTB)
