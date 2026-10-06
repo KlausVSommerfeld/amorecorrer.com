@@ -9,7 +9,9 @@ import unittest
 
 from prompt import RespostaDoModeloInvalida
 from peca import (
+    AVISO_INDICACAO_CONDUTOR,
     Peca,
+    remover_frases_do_cliente,
     montar_peca,
     remover_pedido,
     separar_secoes,
@@ -394,7 +396,7 @@ class TestArquivoEDocumento(unittest.TestCase):
 
 class TestCorpoDoEmail(unittest.TestCase):
     def test_passos_aviso_e_identificacao(self):
-        corpo = corpo_do_email("CASO_abc")
+        corpo = corpo_do_email({"case_id": "CASO_abc"})
         for trecho in ("1. Confira os dados e preencha à mão as linhas em branco.",
                        "2. Assine no espaço indicado.",
                        "3. Protocole no órgão de trânsito até o prazo que consta da sua notificação",
@@ -404,6 +406,76 @@ class TestCorpoDoEmail(unittest.TestCase):
                 self.assertIn(trecho, corpo)
         self.assertNotIn("rascunho", corpo.lower())
 
+    def test_aviso_so_na_defesa_previa_com_outra_pessoa_dirigindo(self):
+        corpo = corpo_do_email({"case_id": "CASO_abc", "especie_documento": DEFESA_PREVIA,
+                                "cliente_conduzia": False})
+        self.assertIn(AVISO_INDICACAO_CONDUTOR, corpo)
+        # Depois dos três passos, antes do aviso de revisão.
+        self.assertLess(corpo.index("3. Protocole"), corpo.index(AVISO_INDICACAO_CONDUTOR))
+        self.assertLess(corpo.index(AVISO_INDICACAO_CONDUTOR), corpo.index("Revise o texto"))
+
+    def test_sem_aviso_nos_outros_casos(self):
+        for especie, conduzia in ((DEFESA_PREVIA, True), (DEFESA_PREVIA, None),
+                                  (RECURSO_JARI, False), ("defesa_previa", False), (None, False)):
+            with self.subTest(especie=especie, conduzia=conduzia):
+                corpo = corpo_do_email({"case_id": "CASO_abc", "especie_documento": especie,
+                                        "cliente_conduzia": conduzia})
+                self.assertNotIn(AVISO_INDICACAO_CONDUTOR, corpo)
+                self.assertIn("Identificação do pedido: CASO_abc", corpo)
+
+    def test_texto_do_aviso(self):
+        for trecho in ("Se outra pessoa dirigia o veículo:",
+                       "30 dias contados da notificação da autuação",
+                       "art. 257, § 7º, do CTB",
+                       "não substitui esta defesa"):
+            with self.subTest(trecho=trecho):
+                self.assertIn(trecho, AVISO_INDICACAO_CONDUTOR)
+        self.assertNotIn("*", AVISO_INDICACAO_CONDUTOR)
+        self.assertNotIn("contran", AVISO_INDICACAO_CONDUTOR.lower())
+
+
+class TestRemoverFrasesDoCliente(unittest.TestCase):
+    def test_frase_com_cliente_sai_e_o_resto_fica(self):
+        pars, n = remover_frases_do_cliente([
+            "O veículo foi autuado às 04h20. Não há relato do cliente sobre as circunstâncias. "
+            "A velocidade considerada foi de 84 km/h."
+        ])
+        self.assertEqual(pars, ["O veículo foi autuado às 04h20. A velocidade considerada foi de 84 km/h."])
+        self.assertEqual(n, 1)
+
+    def test_paragrafo_que_fica_vazio_sai_inteiro(self):
+        pars, n = remover_frases_do_cliente(["Primeiro parágrafo.", "O cliente não relatou fatos.", "Último."])
+        self.assertEqual(pars, ["Primeiro parágrafo.", "Último."])
+        self.assertEqual(n, 1)
+
+    def test_maiusculas_e_plural(self):
+        for frase in ("Cliente não informou.", "O CLIENTE não informou.", "Os clientes não informaram."):
+            with self.subTest(frase=frase):
+                pars, n = remover_frases_do_cliente([f"Fato um. {frase} Fato dois."])
+                self.assertEqual(pars, ["Fato um. Fato dois."])
+                self.assertEqual(n, 1)
+
+    def test_palavra_que_so_contem_cliente_fica(self):
+        par = "A clientela do comércio local transita pelo trecho."
+        self.assertEqual(remover_frases_do_cliente([par]), ([par], 0))
+
+    def test_sem_cliente_o_paragrafo_fica_igual_byte_a_byte(self):
+        par = "Na Av. Lúcio Costa, conforme o art. 218, I, do CTB.  Duas   frases. Três!"
+        self.assertEqual(remover_frases_do_cliente([par]), ([par], 0))
+
+    def test_abreviacao_antes_de_maiuscula_nao_separa_a_frase(self):
+        pars, n = remover_frases_do_cliente([
+            "O veículo passou pela Av. Lúcio Costa às 04h20. O cliente não relatou nada."
+        ])
+        self.assertEqual(pars, ["O veículo passou pela Av. Lúcio Costa às 04h20."])
+        self.assertEqual(n, 1)
+
+    def test_artigo_seguido_de_numero_nao_separa(self):
+        pars, n = remover_frases_do_cliente([
+            "Dispõe o art. 281 do CTB que o auto será arquivado. Segundo o cliente, não havia placa."
+        ])
+        self.assertEqual(pars, ["Dispõe o art. 281 do CTB que o auto será arquivado."])
+        self.assertEqual(n, 1)
 
 # Rodada real de 02/10/2026 (prompt anterior, defesa, caso fictício), resumida:
 # qualificação no 1º parágrafo, pedido com "pede deferimento" no último.
@@ -576,6 +648,29 @@ class TestMontarPeca(unittest.TestCase):
         self.assertEqual(p.nome_arquivo, "defesa-previa-E123456789.pdf")
         self.assertEqual(p.titulo_documento, "Defesa prévia — Auto nº E123456789")
         self.assertTrue(p.pedido_do_modelo_removido)
+
+    def test_frases_do_cliente_saem_e_sao_contadas(self):
+        rascunho = (
+            f"DOS FATOS\n\n{FATO} Não há relato do cliente sobre as circunstâncias.\n\n"
+            f"DOS FUNDAMENTOS\n\n{FUNDAMENTO}"
+        )
+        p = montar_peca(rascunho, DEFESA)
+        self.assertEqual(p.secoes[0], ("I – DOS FATOS", (FATO,)))
+        self.assertEqual(p.frases_do_cliente_removidas, 1)
+
+    def test_secao_que_fica_vazia_sai_e_o_pedido_renumera(self):
+        rascunho = f"DOS FATOS\n\nO cliente não relatou fatos.\n\nDOS FUNDAMENTOS\n\n{FUNDAMENTO}"
+        p = montar_peca(rascunho, DEFESA)
+        self.assertEqual([t for t, _ in p.secoes], ["I – DOS FUNDAMENTOS"])
+        self.assertEqual(p.titulo_pedido, "II – DO PEDIDO")
+
+    def test_sem_cliente_contagem_zero(self):
+        p = montar_peca(RASCUNHO_COM_TITULOS, DEFESA)
+        self.assertEqual(p.frases_do_cliente_removidas, 0)
+
+    def test_tudo_era_do_cliente_e_erro_de_resposta(self):
+        with self.assertRaises(RespostaDoModeloInvalida):
+            montar_peca("DOS FATOS\n\nO cliente não relatou fatos.", DEFESA)
 
     def test_secao_unica_renumera_o_pedido(self):
         p = montar_peca(RASCUNHO_SEM_TITULOS, RECURSO)

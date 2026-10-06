@@ -36,6 +36,44 @@ _ADVERTENCIA = (
     "do art. 267 do CTB"
 )
 
+# Aviso do e-mail (spec 2026-10-05, §4.4): só na defesa prévia e só quando o cliente
+# respondeu que outra pessoa dirigia. Sem formulário nem resolução do CONTRAN, que
+# não temos conferidos; o prazo é o do art. 257, § 7º, do CTB.
+AVISO_INDICACAO_CONDUTOR = (
+    "Se outra pessoa dirigia o veículo: indique o condutor ao órgão de trânsito em até "
+    "30 dias contados da notificação da autuação, pelo meio que consta da notificação. Sem a "
+    "indicação, a responsabilidade pela infração passa a ser sua (art. 257, § 7º, do CTB). A "
+    "indicação é feita à parte e não substitui esta defesa."
+)
+
+# Rede de segurança (spec 2026-10-05, §4.3): a peça fala do "autuado", nunca do
+# "cliente". Numa sonda real, o modelo escreveu "Não há relato do cliente sobre as
+# circunstâncias da autuação." — que iria ao PDF.
+_PALAVRA_CLIENTE = re.compile(r"\bclientes?\b", re.IGNORECASE)
+# Fim de frase: pontuação, espaço e maiúscula. "art. 218" não corta (dígito);
+# "Av. Lúcio" e afins não cortam pelas abreviações listadas.
+_FIM_DE_FRASE = re.compile(
+    r"(?<=[.!?])(?<!\bAv\.)(?<!\bDr\.)(?<!\bDra\.)(?<!\bSr\.)(?<!\bSra\.)"
+    r"(?<!\bArt\.)(?<!\bArts\.)(?<!\bProf\.)\s+(?=[A-ZÀ-Ý])"
+)
+
+
+def remover_frases_do_cliente(paragrafos: list[str]) -> tuple[list[str], int]:
+    """Tira toda frase que fale do "cliente"; parágrafo que fique vazio sai inteiro.
+    Parágrafo sem a palavra fica byte a byte igual. Devolve (parágrafos, frases tiradas)."""
+    saida: list[str] = []
+    removidas = 0
+    for paragrafo in paragrafos:
+        if not _PALAVRA_CLIENTE.search(paragrafo):
+            saida.append(paragrafo)
+            continue
+        frases = _FIM_DE_FRASE.split(paragrafo)
+        ficam = [f for f in frases if not _PALAVRA_CLIENTE.search(f)]
+        removidas += len(frases) - len(ficam)
+        if ficam:
+            saida.append(" ".join(f.strip() for f in ficam))
+    return saida, removidas
+
 _PEDIDO = re.compile(r"\b(pede|requer|espera|aguarda|peço)\s+deferimento\b[^\n]*", re.IGNORECASE)
 # Só rótulo com dois pontos: desde que o modelo termina nos fundamentos (02/10/2026),
 # "Nota-se, ainda, que…" é argumento, não nota ao cliente.
@@ -443,9 +481,15 @@ def titulo_documento(case: dict[str, Any]) -> str:
     return f"{nome} — Auto nº {auto}" if auto else nome
 
 
-def corpo_do_email(case_id: str) -> str:
+def corpo_do_email(case: dict[str, Any]) -> str:
     """O aviso de revisão saiu da peça (o cliente protocola o PDF como está) e
-    veio para cá, em passos (spec 2026-10-02, §4.7)."""
+    veio para cá, em passos (spec 2026-10-02, §4.7). O aviso de indicação do
+    condutor entra só na defesa prévia com outra pessoa dirigindo (spec 2026-10-05)."""
+    aviso = (
+        f"{AVISO_INDICACAO_CONDUTOR}\n\n"
+        if _estagio(case) == DEFESA_PREVIA and case.get("cliente_conduzia") is False
+        else ""
+    )
     return (
         "Olá,\n\n"
         "Sua peça está pronta, em anexo, para você imprimir e protocolar:\n\n"
@@ -453,9 +497,10 @@ def corpo_do_email(case_id: str) -> str:
         "2. Assine no espaço indicado.\n"
         "3. Protocole no órgão de trânsito até o prazo que consta da sua notificação — no "
         "balcão, pelos Correios ou pelo site do órgão, conforme ele aceitar.\n\n"
+        f"{aviso}"
         "Revise o texto antes de protocolar: ele foi redigido com apoio de inteligência "
         "artificial a partir das informações que você enviou.\n\n"
-        f"Identificação do pedido: {case_id}\n\n"
+        f"Identificação do pedido: {_txt(case, 'case_id')}\n\n"
         "Cordialmente,\nAmo Recorrer"
     )
 
@@ -476,6 +521,7 @@ class Peca:
     nome_arquivo: str
     titulo_documento: str
     pedido_do_modelo_removido: bool
+    frases_do_cliente_removidas: int = 0
 
 
 def montar_peca(
@@ -485,7 +531,17 @@ def montar_peca(
     inciso_da_conta: str | None = None,
     cabe_advertencia: bool = False,
 ) -> Peca:
-    secoes, removido = separar_secoes(rascunho, _txt(case, "nome"))
+    secoes_cruas, removido = separar_secoes(rascunho, _txt(case, "nome"))
+    limpas: list[tuple[str, tuple[str, ...]]] = []
+    frases_removidas = 0
+    for nome, paragrafos in secoes_cruas:
+        ficam, n = remover_frases_do_cliente(list(paragrafos))
+        frases_removidas += n
+        if ficam:
+            limpas.append((nome, tuple(ficam)))
+    if not limpas:
+        raise RespostaDoModeloInvalida("peça sem fatos nem fundamentos depois da limpeza")
+    secoes = tuple(limpas)
     return Peca(
         enderecamento=enderecamento(case),
         titulo=titulo(case),
@@ -499,6 +555,7 @@ def montar_peca(
         nome_arquivo=nome_arquivo(case),
         titulo_documento=titulo_documento(case),
         pedido_do_modelo_removido=removido,
+        frases_do_cliente_removidas=frases_removidas,
     )
 
 
