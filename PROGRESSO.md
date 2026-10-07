@@ -1653,3 +1653,5 @@ Passado sobre as peças guardadas de todas as sondas, o filtro final removeu 9 f
 - o `aria-invalid` foi para o grupo de rádio, e um espaço acidental do `Form.tsx` foi devolvido.
 
 Repassado sobre as 875 frases das peças guardadas, o filtro removeu as mesmas 9 frases sobre o relato, e nenhuma outra.
+
+**Advertência condicional, em 06/10/2026 (decisão do Klaus).** O revisor tinha deixado de lado um ponto, que um agente lateral trouxe de volta antes do deploy. Com "Não, outra pessoa dirigia", a peça pedia a advertência do art. 267 como se o autuado fosse o infrator, o que soaria como assumir a infração. Mas, se ele não indicar o condutor no prazo, passa a ser o responsável (art. 257, § 7º). Opção A, escolhida: com "não", o pedido fica condicionado ("caso o autuado venha a ser considerado responsável pela infração, não havendo outra infração…"). Com "sim" ou sem resposta, o texto continua como antes. A mudança está em `peca.pedido` (`_ADVERTENCIA_CONDICIONAL`), com três testes, o do caso novo visto falhando antes.

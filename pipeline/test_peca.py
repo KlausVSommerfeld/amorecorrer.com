@@ -373,6 +373,29 @@ class TestPedido(unittest.TestCase):
         self.assertTrue(p[0].startswith("a) o conhecimento") and p[0].endswith(";"))
         self.assertEqual(p[1], f"b) {ADVERTENCIA}.")
 
+    # 06/10/2026, decisão do Klaus: com "outra pessoa dirigia", pedir a advertência
+    # como se o autuado fosse o infrator soaria como assumir a infração; mas, se ele
+    # não indicar o condutor no prazo, passa a ser o responsável (art. 257, § 7º).
+    def test_advertencia_condicional_quando_outra_pessoa_dirigia(self):
+        p = pedido(dict(DEFESA, cliente_conduzia=False), "desclassificacao", "I", True)
+        self.assertEqual(
+            p[-1],
+            "c) subsidiariamente, caso o autuado venha a ser considerado responsável pela "
+            "infração, não havendo outra infração cometida nos últimos 12 (doze) meses, a "
+            "aplicação da penalidade de advertência por escrito em substituição à multa, nos "
+            "termos do art. 267 do CTB.",
+        )
+
+    def test_advertencia_como_antes_com_sim_ou_sem_resposta(self):
+        for conduzia in (True, None):
+            with self.subTest(conduzia=conduzia):
+                p = pedido(dict(RECURSO, cliente_conduzia=conduzia), None, None, True)
+                self.assertEqual(p[-1], f"b) {ADVERTENCIA}.")
+
+    def test_sem_advertencia_a_resposta_nao_muda_nada(self):
+        self.assertEqual(pedido(dict(DEFESA, cliente_conduzia=False), None, None, False),
+                         pedido(DEFESA, None, None, False))
+
     def test_sem_auto_linha_em_branco(self):
         self.assertIn(f"Auto de Infração nº {LINHA_EM_BRANCO}",
                       pedido({"especie_documento": DEFESA_PREVIA}, None, None, False)[0])

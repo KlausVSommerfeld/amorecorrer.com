@@ -35,6 +35,16 @@ _ADVERTENCIA = (
     "aplicação da penalidade de advertência por escrito em substituição à multa, nos termos "
     "do art. 267 do CTB"
 )
+# Com "outra pessoa dirigia" (06/10/2026, decisão do Klaus): pedir a advertência como
+# se o autuado fosse o infrator soaria como assumir a infração; mas, se ele não indicar
+# o condutor no prazo, passa a ser o responsável (art. 257, § 7º) — então o pedido fica,
+# condicionado a isso.
+_ADVERTENCIA_CONDICIONAL = (
+    "subsidiariamente, caso o autuado venha a ser considerado responsável pela infração, "
+    "não havendo outra infração cometida nos últimos 12 (doze) meses, a aplicação da "
+    "penalidade de advertência por escrito em substituição à multa, nos termos do art. 267 "
+    "do CTB"
+)
 
 # Aviso do e-mail (spec 2026-10-05, §4.4): só na defesa prévia e só quando o cliente
 # respondeu que outra pessoa dirigia. Sem formulário nem resolução do CONTRAN, que
@@ -500,7 +510,9 @@ def pedido(
     else:
         itens.append(f"o acolhimento desta peça, com o arquivamento do Auto de Infração nº {auto}")
     if cabe_advertencia:
-        itens.append(_ADVERTENCIA)
+        itens.append(
+            _ADVERTENCIA_CONDICIONAL if case.get("cliente_conduzia") is False else _ADVERTENCIA
+        )
     ultimo = len(itens) - 1
     return tuple(
         f"{'abcdefgh'[i]}) {item}{'.' if i == ultimo else ';'}" for i, item in enumerate(itens)
