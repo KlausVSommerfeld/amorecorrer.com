@@ -40,6 +40,10 @@ function preloadCritico(): Plugin {
       const formulario = Object.keys(bundle).find((f) =>
         /assets\/Form-[^.]*\.js$/.test(f)
       );
+      // O questionário é o passo seguinte a qualquer botão de compra da home.
+      const questionario = Object.keys(bundle).find((f) =>
+        /assets\/Questionario-[^.]*\.js$/.test(f)
+      );
 
       const links = [
         ...fontes.map(
@@ -48,6 +52,9 @@ function preloadCritico(): Plugin {
         ),
         ...(formulario
           ? [`    <link rel="prefetch" href="/${formulario}" as="script" crossorigin />`]
+          : []),
+        ...(questionario
+          ? [`    <link rel="prefetch" href="/${questionario}" as="script" crossorigin />`]
           : []),
       ].join("\n");
 

@@ -61,6 +61,7 @@ function lazyComRetentativa<T extends ComponentType<unknown>>(
  * prioridade mínima e não roda uma linha até a navegação acontecer.
  */
 const Form = lazyComRetentativa(() => import("./pages/Form"), "form");
+const Questionario = lazyComRetentativa(() => import("./pages/Questionario"), "questionario");
 const Cancel = lazyComRetentativa(() => import("./pages/Cancel"), "cancel");
 const Terms = lazyComRetentativa(() => import("./pages/Terms"), "terms");
 const Privacy = lazyComRetentativa(() => import("./pages/Privacy"), "privacy");
@@ -84,6 +85,7 @@ const Rotas = () => (
     <Suspense fallback={<Carregando />}>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/questionario" element={<Questionario />} />
         <Route path="/form" element={<Form />} />
         <Route path="/cancel" element={<Cancel />} />
         <Route path="/terms" element={<Terms />} />
