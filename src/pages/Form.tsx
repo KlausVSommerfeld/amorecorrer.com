@@ -4,7 +4,16 @@ import { v4 as uuidv4 } from 'uuid';
 import { getCaseIdFromUrl } from '../lib/caseId';
 import { submitForm } from '../lib/api';
 import { normalizarNumeroDigitos, normalizarNumeroSerie } from '../lib/medidor';
-import { ESTAGIOS } from '../lib/estagios';
+import { DEFESA_PREVIA, ESTAGIOS } from '../lib/estagios';
+import {
+  apagarRespostas,
+  armazenamentoDoNavegador,
+  chaveDoCaso,
+  lerRespostas,
+  mesclarComRascunho,
+  paraCamposDoFormulario
+} from '../lib/questionario';
+import AjudaSemVersao from '../components/questionario/AjudaSemVersao';
 import { consideradaMaiorQueAferida } from '../lib/velocidade';
 import PageShell from '../components/PageShell';
 
@@ -66,6 +75,10 @@ interface FormData {
   // "Era você quem dirigia?" — '' até o cliente escolher; 'sim' | 'nao' depois.
   // String, e não booleano, para o rascunho (só guarda strings) e o rádio.
   cliente_conduzia: string;
+  // Data-limite impressa na notificação, 'AAAA-MM-DD' (spec 2026-10-07).
+  data_limite: string;
+  // '' | 'propria' | 'sem_versao' — com 'sem_versao', a justificativa vai nula.
+  versao: string;
   velocidade_permitida: string;
   velocidade_aferida: string;
   velocidade_considerada: string;
@@ -222,6 +235,8 @@ const INITIAL_FORM: FormData = {
   amparoLegal: '',
   justificativa: '',
   cliente_conduzia: '',
+  data_limite: '',
+  versao: '',
   velocidade_permitida: '',
   velocidade_aferida: '',
   velocidade_considerada: '',
@@ -282,12 +297,12 @@ function apagarRascunho(caseId: string) {
 // Ordem dos campos na tela, para levar o foco ao primeiro erro de cima para
 // baixo — num formulário deste tamanho, avisar sem apontar não ajuda.
 const FIELD_ORDER = [
+  'estagio', 'data_limite', 'cliente_conduzia', 'amparoLegal',
+  'velocidade_permitida', 'velocidade_aferida', 'velocidade_considerada', 'versao', 'justificativa',
   'nomeCompleto', 'cpf', 'email', 'emailConfirma', 'telefone', 'cep', 'cidade', 'endereco',
-  'placa', 'renainf', 'estagio', 'orgaoAutuador', 'autoInfracao',
+  'placa', 'renainf', 'orgaoAutuador', 'autoInfracao',
   'notificacaoPenalidade', 'dataHora', 'localSentido',
-  'velocidade_permitida', 'velocidade_aferida', 'velocidade_considerada',
-  'medidor_numero_serie', 'medidor_numero_inmetro', 'medidor_numero_certificado',
-  'cliente_conduzia', 'justificativa'
+  'medidor_numero_serie', 'medidor_numero_inmetro', 'medidor_numero_certificado'
 ];
 
 const Form = () => {
@@ -398,13 +413,18 @@ const Form = () => {
     const rascunho = caseId ? lerRascunho(caseId) : null;
     if (rascunho && temConteudo(rascunho)) setTemRascunho(true);
 
-    setFormData(prev => ({
-      ...prev,
-      ...(rascunho ?? {}),
-      form_token: token!,
-      case_id: caseId ?? prev.case_id,
-      stripe_session_id: stripeSessionId ?? prev.stripe_session_id
-    }));
+    // As respostas do questionário (spec 2026-10-07, §6.1) entram primeiro; o
+    // rascunho, mais recente, prevalece — mas só campo preenchido.
+    const respostas = caseId ? lerRespostas(armazenamentoDoNavegador(), chaveDoCaso(caseId)) : null;
+    setFormData(prev => {
+      const comQuestionario = respostas ? { ...prev, ...paraCamposDoFormulario(respostas) } : prev;
+      return {
+        ...mesclarComRascunho(comQuestionario, rascunho),
+        form_token: token!,
+        case_id: caseId ?? prev.case_id,
+        stripe_session_id: stripeSessionId ?? prev.stripe_session_id
+      };
+    });
 
     restauradoRef.current = true;
     setPronto(true);
@@ -577,8 +597,12 @@ const Form = () => {
       newErrors.dataHora = 'Informe a data e a hora que estão na notificação.';
     if (!formData.cliente_conduzia)
       newErrors.cliente_conduzia = 'Marque uma das opções.';
-    if (!formData.justificativa.trim())
-      newErrors.justificativa = 'Conte o que aconteceu: é esta parte que a peça vai defender.';
+    if (!formData.data_limite)
+      newErrors.data_limite = 'Informe a data que está impressa na notificação.';
+    if (!formData.versao)
+      newErrors.versao = 'Escolha uma das opções.';
+    else if (formData.versao === 'propria' && !formData.justificativa.trim())
+      newErrors.justificativa = 'Conte o que aconteceu ou escolha a defesa pelos dados do auto.';
 
     // Email validation
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -728,7 +752,8 @@ const Form = () => {
       expedida_em: data.expedidaEm.trim() || null,
       descricao_infracao: data.descricaoInfracao.trim() || null,
       amparo_legal: data.amparoLegal.trim() || null,
-      justificativa: data.justificativa.trim() || null,
+      justificativa: data.versao === 'propria' ? data.justificativa.trim() || null : null,
+      data_limite_protocolo: data.data_limite || null,
       cliente_conduzia:
         data.cliente_conduzia === 'sim' ? true : data.cliente_conduzia === 'nao' ? false : null,
 
@@ -819,6 +844,7 @@ const Form = () => {
       }
 
       apagarRascunho(caseId);
+      apagarRespostas(armazenamentoDoNavegador(), caseId);
       setTemRascunho(false);
 
       const comprovante = { caseId, email: normalizedData.email };
@@ -1054,6 +1080,291 @@ const Form = () => {
         )}
 
         <form onSubmit={handleSubmit} noValidate>
+          {/* ---- Suas respostas (spec 2026-10-07, §8): vêm do questionário, editáveis ---- */}
+          <fieldset className="fieldset">
+            <legend className="fieldset__legend">
+              <span className="fieldset__name">Suas respostas</span>
+              <span className="fieldset__rule" aria-hidden="true" />
+            </legend>
+
+            {/* O estágio abre o bloco porque decide a peça inteira: a quem ela é
+                endereçada e qual artigo do CTB a fundamenta. */}
+            <fieldset className="mb-5">
+              <legend className="form-label">Em que estágio está o seu caso? *</legend>
+              <div className="choice-group" role="radiogroup" aria-describedby="hint-estagio">
+                {ESTAGIOS.map((estagio, i) => (
+                  <label className="choice" key={estagio.valor}>
+                    <input
+                      type="radio"
+                      className="choice__input"
+                      id={i === 0 ? 'estagio' : undefined}
+                      name="estagio"
+                      value={estagio.valor}
+                      checked={formData.estagio === estagio.valor}
+                      onChange={handleInputChange}
+                      aria-invalid={Boolean(errors.estagio)}
+                    />
+                    <span>
+                      <span className="choice__name">{estagio.nome}</span>
+                      <span className="choice__desc">{estagio.descricao}</span>
+                    </span>
+                  </label>
+                ))}
+              </div>
+              {errors.estagio ? (
+                <p className="form-error" id="hint-estagio">{errors.estagio}</p>
+              ) : (
+                <p className="form-hint" id="hint-estagio">
+                  Está escrito no alto do papel que você recebeu.
+                </p>
+              )}
+            </fieldset>
+
+            <div className="mb-5">
+              <label className="form-label" htmlFor="data_limite">Data-limite da notificação *</label>
+              <input
+                type="date"
+                id="data_limite"
+                name="data_limite"
+                value={formData.data_limite}
+                onChange={handleInputChange}
+                className="form-input max-w-xs"
+                aria-invalid={Boolean(errors.data_limite)}
+                aria-describedby={errors.data_limite ? 'err-data_limite' : 'hint-data_limite'}
+              />
+              {errors.data_limite ? (
+                <p className="form-error" id="err-data_limite">{errors.data_limite}</p>
+              ) : (
+                <p className="form-hint" id="hint-data_limite">
+                  {formData.estagio === DEFESA_PREVIA
+                    ? 'Na notificação de autuação, é a data-limite para apresentar defesa prévia ou indicar o condutor.'
+                    : 'Na notificação de penalidade, é a data-limite para recorrer — a mesma do vencimento da multa.'}
+                </p>
+              )}
+            </div>
+
+            {/* Não vai escrito na peça: decide a regra sobre a direção no prompt
+                e o aviso de indicação do condutor no e-mail (spec 2026-10-05). */}
+            <fieldset className="mb-5">
+              <legend className="form-label">
+                Era você quem dirigia o veículo no momento da infração? *
+              </legend>
+              <div
+                className="choice-group"
+                role="radiogroup"
+                aria-describedby="hint-cliente_conduzia"
+                aria-invalid={Boolean(errors.cliente_conduzia)}
+              >
+                {[
+                  { valor: 'sim', nome: 'Sim, eu dirigia' },
+                  { valor: 'nao', nome: 'Não, outra pessoa dirigia' }
+                ].map((opcao, i) => (
+                  <label className="choice" key={opcao.valor}>
+                    <input
+                      type="radio"
+                      className="choice__input"
+                      id={i === 0 ? 'cliente_conduzia' : undefined}
+                      name="cliente_conduzia"
+                      value={opcao.valor}
+                      checked={formData.cliente_conduzia === opcao.valor}
+                      onChange={handleInputChange}
+                      aria-invalid={Boolean(errors.cliente_conduzia)}
+                    />
+                    <span>
+                      <span className="choice__name">{opcao.nome}</span>
+                    </span>
+                  </label>
+                ))}
+              </div>
+              {errors.cliente_conduzia ? (
+                <p className="form-error" id="hint-cliente_conduzia">{errors.cliente_conduzia}</p>
+              ) : (
+                <p className="form-hint" id="hint-cliente_conduzia">
+                  Isto não vai escrito na peça. Serve para não afirmarmos que era você ao volante
+                  sem que você diga, e para avisar sobre a indicação do condutor.
+                </p>
+              )}
+            </fieldset>
+
+            <div className="form-grid mb-5">
+              <div className="form-field--wide">
+                <label className="form-label" htmlFor="amparoLegal">
+                  Amparo legal da autuação
+                </label>
+                <input
+                  type="text"
+                  id="amparoLegal"
+                  name="amparoLegal"
+                  value={formData.amparoLegal}
+                  onChange={handleInputChange}
+                  placeholder="Art. 218, II, do CTB"
+                  className="form-input"
+                  maxLength={120}
+                />
+              </div>
+
+              <div className="form-field--wide">
+                <div className="grid grid-cols-1 gap-x-3 gap-y-4 sm:grid-cols-3">
+                  <div>
+                    <label className="form-label" htmlFor="velocidade_permitida">
+                      Vel. permitida
+                    </label>
+                    <input
+                      type="text"
+                      id="velocidade_permitida"
+                      name="velocidade_permitida"
+                      value={formData.velocidade_permitida}
+                      onChange={handleInputChange}
+                      className="form-input form-input--code"
+                      inputMode="numeric"
+                      maxLength={3}
+                      placeholder="km/h"
+                      aria-invalid={Boolean(errors.velocidade_permitida)}
+                      aria-describedby={
+                        errors.velocidade_permitida ? 'err-velocidade_permitida' : undefined
+                      }
+                    />
+                    {errors.velocidade_permitida && (
+                      <p className="form-error" id="err-velocidade_permitida">
+                        {errors.velocidade_permitida}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="form-label" htmlFor="velocidade_aferida">
+                      Vel. aferida
+                    </label>
+                    <input
+                      type="text"
+                      id="velocidade_aferida"
+                      name="velocidade_aferida"
+                      value={formData.velocidade_aferida}
+                      onChange={handleInputChange}
+                      className="form-input form-input--code"
+                      inputMode="numeric"
+                      maxLength={3}
+                      placeholder="km/h"
+                      aria-invalid={Boolean(errors.velocidade_aferida)}
+                      aria-describedby={
+                        errors.velocidade_aferida ? 'err-velocidade_aferida' : undefined
+                      }
+                    />
+                    {errors.velocidade_aferida && (
+                      <p className="form-error" id="err-velocidade_aferida">
+                        {errors.velocidade_aferida}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="form-label" htmlFor="velocidade_considerada">
+                      Vel. considerada
+                    </label>
+                    <input
+                      type="text"
+                      id="velocidade_considerada"
+                      name="velocidade_considerada"
+                      value={formData.velocidade_considerada}
+                      onChange={handleInputChange}
+                      className="form-input form-input--code"
+                      inputMode="numeric"
+                      maxLength={3}
+                      placeholder="km/h"
+                      aria-invalid={Boolean(errors.velocidade_considerada)}
+                      aria-describedby={
+                        errors.velocidade_considerada ? 'err-velocidade_considerada' : 'hint-velocidades'
+                      }
+                    />
+                    {errors.velocidade_considerada && (
+                      <p className="form-error" id="err-velocidade_considerada">
+                        {errors.velocidade_considerada}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <p className="form-hint" id="hint-velocidades">
+                  No auto de radar vêm a velocidade medida e a considerada, que já desconta a
+                  tolerância. Copie as duas como estão.
+                </p>
+              </div>
+            </div>
+
+            <fieldset className="mb-5">
+              <legend className="form-label">Você quer contar o que aconteceu? *</legend>
+              <div className="choice-group" role="radiogroup" aria-invalid={Boolean(errors.versao)}>
+                <label className="choice">
+                  <input
+                    type="radio"
+                    className="choice__input"
+                    id="versao"
+                    name="versao"
+                    value="propria"
+                    checked={formData.versao === 'propria'}
+                    onChange={handleInputChange}
+                    aria-invalid={Boolean(errors.versao)}
+                  />
+                  <span><span className="choice__name">Quero contar o que aconteceu</span></span>
+                </label>
+                <label className="choice">
+                  <input
+                    type="radio"
+                    className="choice__input"
+                    name="versao"
+                    value="sem_versao"
+                    checked={formData.versao === 'sem_versao'}
+                    onChange={handleInputChange}
+                    aria-invalid={Boolean(errors.versao)}
+                  />
+                  <span>
+                    <span className="choice__name">
+                      Não tenho uma versão própria — quero a defesa pelos dados do auto
+                    </span>
+                  </span>
+                </label>
+                <AjudaSemVersao />
+              </div>
+              {errors.versao && <p className="form-error">{errors.versao}</p>}
+            </fieldset>
+
+            {formData.versao === 'propria' && (
+              <div className="mb-5">
+                <label className="form-label" htmlFor="justificativa">
+                  O que aconteceu? *
+                </label>
+                <textarea
+                  id="justificativa"
+                  name="justificativa"
+                  value={formData.justificativa}
+                  onChange={handleInputChange}
+                  rows={5}
+                  className="form-input"
+                  maxLength={MAX_JUSTIFICATIVA}
+                  placeholder="Conte com suas palavras. Quanto mais concreto, melhor a peça — datas, distâncias, sinalização, o que você viu."
+                  required
+                  aria-invalid={Boolean(errors.justificativa)}
+                  aria-describedby={errors.justificativa ? 'err-justificativa' : 'hint-justificativa'}
+                />
+                <div className="flex items-start justify-between gap-4">
+                  {errors.justificativa ? (
+                    <p className="form-error" id="err-justificativa">{errors.justificativa}</p>
+                  ) : (
+                    <p className="form-hint" id="hint-justificativa">
+                      Algumas perguntas que ajudam: havia placa de velocidade no trecho? Você conhece a via?
+                      Houve alguma emergência? Conte só o que você viveu ou viu, com as suas palavras — se
+                      não tiver certeza de algo, diga isso.
+                    </p>
+                  )}
+                  {/* Só quando o teto se aproxima: um contador permanente vira ruído. */}
+                  {formData.justificativa.length > MAX_JUSTIFICATIVA * 0.75 && (
+                    <p className="form-counter" aria-live="polite">
+                      {formData.justificativa.length} / {MAX_JUSTIFICATIVA}
+                    </p>
+                  )}
+                </div>
+
+              </div>
+            )}
+          </fieldset>
+
           {/* ---- Identificação ---- */}
           <fieldset className="fieldset">
             <legend className="fieldset__legend">
@@ -1394,38 +1705,6 @@ const Form = () => {
               <span className="fieldset__rule" aria-hidden="true" />
             </legend>
 
-            {/* O estágio abre o bloco porque decide a peça inteira: a quem ela é
-                endereçada e qual artigo do CTB a fundamenta. */}
-            <fieldset className="mb-5">
-              <legend className="form-label">Em que estágio está o seu caso? *</legend>
-              <div className="choice-group" role="radiogroup" aria-describedby="hint-estagio">
-                {ESTAGIOS.map((estagio, i) => (
-                  <label className="choice" key={estagio.valor}>
-                    <input
-                      type="radio"
-                      className="choice__input"
-                      id={i === 0 ? 'estagio' : undefined}
-                      name="estagio"
-                      value={estagio.valor}
-                      checked={formData.estagio === estagio.valor}
-                      onChange={handleInputChange}
-                      aria-invalid={Boolean(errors.estagio)}
-                    />
-                    <span>
-                      <span className="choice__name">{estagio.nome}</span>
-                      <span className="choice__desc">{estagio.descricao}</span>
-                    </span>
-                  </label>
-                ))}
-              </div>
-              {errors.estagio ? (
-                <p className="form-error" id="hint-estagio">{errors.estagio}</p>
-              ) : (
-                <p className="form-hint" id="hint-estagio">
-                  Está escrito no alto do papel que você recebeu.
-                </p>
-              )}
-            </fieldset>
 
             <div className="form-grid">
               <div className="form-field--wide">
@@ -1571,105 +1850,7 @@ const Form = () => {
                 </p>
               </div>
 
-              <div className="form-field--wide">
-                <label className="form-label" htmlFor="amparoLegal">
-                  Amparo legal da autuação
-                </label>
-                <input
-                  type="text"
-                  id="amparoLegal"
-                  name="amparoLegal"
-                  value={formData.amparoLegal}
-                  onChange={handleInputChange}
-                  placeholder="Art. 218, II, do CTB"
-                  className="form-input"
-                  maxLength={120}
-                />
-              </div>
 
-              <div className="form-field--wide">
-                <div className="grid grid-cols-1 gap-x-3 gap-y-4 sm:grid-cols-3">
-                  <div>
-                    <label className="form-label" htmlFor="velocidade_permitida">
-                      Vel. permitida
-                    </label>
-                    <input
-                      type="text"
-                      id="velocidade_permitida"
-                      name="velocidade_permitida"
-                      value={formData.velocidade_permitida}
-                      onChange={handleInputChange}
-                      className="form-input form-input--code"
-                      inputMode="numeric"
-                      maxLength={3}
-                      placeholder="km/h"
-                      aria-invalid={Boolean(errors.velocidade_permitida)}
-                      aria-describedby={
-                        errors.velocidade_permitida ? 'err-velocidade_permitida' : undefined
-                      }
-                    />
-                    {errors.velocidade_permitida && (
-                      <p className="form-error" id="err-velocidade_permitida">
-                        {errors.velocidade_permitida}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="form-label" htmlFor="velocidade_aferida">
-                      Vel. aferida
-                    </label>
-                    <input
-                      type="text"
-                      id="velocidade_aferida"
-                      name="velocidade_aferida"
-                      value={formData.velocidade_aferida}
-                      onChange={handleInputChange}
-                      className="form-input form-input--code"
-                      inputMode="numeric"
-                      maxLength={3}
-                      placeholder="km/h"
-                      aria-invalid={Boolean(errors.velocidade_aferida)}
-                      aria-describedby={
-                        errors.velocidade_aferida ? 'err-velocidade_aferida' : undefined
-                      }
-                    />
-                    {errors.velocidade_aferida && (
-                      <p className="form-error" id="err-velocidade_aferida">
-                        {errors.velocidade_aferida}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="form-label" htmlFor="velocidade_considerada">
-                      Vel. considerada
-                    </label>
-                    <input
-                      type="text"
-                      id="velocidade_considerada"
-                      name="velocidade_considerada"
-                      value={formData.velocidade_considerada}
-                      onChange={handleInputChange}
-                      className="form-input form-input--code"
-                      inputMode="numeric"
-                      maxLength={3}
-                      placeholder="km/h"
-                      aria-invalid={Boolean(errors.velocidade_considerada)}
-                      aria-describedby={
-                        errors.velocidade_considerada ? 'err-velocidade_considerada' : 'hint-velocidades'
-                      }
-                    />
-                    {errors.velocidade_considerada && (
-                      <p className="form-error" id="err-velocidade_considerada">
-                        {errors.velocidade_considerada}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <p className="form-hint" id="hint-velocidades">
-                  No auto de radar vêm a velocidade medida e a considerada, que já desconta a
-                  tolerância. Copie as duas como estão.
-                </p>
-              </div>
 
               {/*
                * Sempre à vista, como as velocidades: esconder atrás de heurística
@@ -1738,88 +1919,6 @@ const Form = () => {
             </div>
           </fieldset>
 
-          {/* ---- Sua versão ---- */}
-          <fieldset className="fieldset">
-            <legend className="fieldset__legend">
-              <span className="fieldset__name">Sua versão</span>
-              <span className="fieldset__rule" aria-hidden="true" />
-            </legend>
-
-            {/* Não vai escrito na peça: decide a regra sobre a direção no prompt
-                e o aviso de indicação do condutor no e-mail (spec 2026-10-05). */}
-            <fieldset className="mb-5">
-              <legend className="form-label">
-                Era você quem dirigia o veículo no momento da infração? *
-              </legend>
-              <div
-                className="choice-group"
-                role="radiogroup"
-                aria-describedby="hint-cliente_conduzia"
-                aria-invalid={Boolean(errors.cliente_conduzia)}
-              >
-                {[
-                  { valor: 'sim', nome: 'Sim, eu dirigia' },
-                  { valor: 'nao', nome: 'Não, outra pessoa dirigia' }
-                ].map((opcao, i) => (
-                  <label className="choice" key={opcao.valor}>
-                    <input
-                      type="radio"
-                      className="choice__input"
-                      id={i === 0 ? 'cliente_conduzia' : undefined}
-                      name="cliente_conduzia"
-                      value={opcao.valor}
-                      checked={formData.cliente_conduzia === opcao.valor}
-                      onChange={handleInputChange}
-                      aria-invalid={Boolean(errors.cliente_conduzia)}
-                    />
-                    <span>
-                      <span className="choice__name">{opcao.nome}</span>
-                    </span>
-                  </label>
-                ))}
-              </div>
-              {errors.cliente_conduzia ? (
-                <p className="form-error" id="hint-cliente_conduzia">{errors.cliente_conduzia}</p>
-              ) : (
-                <p className="form-hint" id="hint-cliente_conduzia">
-                  Isto não vai escrito na peça. Serve para não afirmarmos que era você ao volante
-                  sem que você diga, e para avisar sobre a indicação do condutor.
-                </p>
-              )}
-            </fieldset>
-
-            <label className="form-label" htmlFor="justificativa">
-              O que aconteceu? *
-            </label>
-            <textarea
-              id="justificativa"
-              name="justificativa"
-              value={formData.justificativa}
-              onChange={handleInputChange}
-              rows={5}
-              className="form-input"
-              maxLength={MAX_JUSTIFICATIVA}
-              placeholder="Conte com suas palavras. Quanto mais concreto, melhor a peça — datas, distâncias, sinalização, o que você viu."
-              required
-              aria-invalid={Boolean(errors.justificativa)}
-              aria-describedby={errors.justificativa ? 'err-justificativa' : 'hint-justificativa'}
-            />
-            <div className="flex items-start justify-between gap-4">
-              {errors.justificativa ? (
-                <p className="form-error" id="err-justificativa">{errors.justificativa}</p>
-              ) : (
-                <p className="form-hint" id="hint-justificativa">
-                  É este texto que a IA usa para montar a defesa.
-                </p>
-              )}
-              {/* Só quando o teto se aproxima: um contador permanente vira ruído. */}
-              {formData.justificativa.length > MAX_JUSTIFICATIVA * 0.75 && (
-                <p className="form-counter" aria-live="polite">
-                  {formData.justificativa.length} / {MAX_JUSTIFICATIVA}
-                </p>
-              )}
-            </div>
-          </fieldset>
 
           {falha && (
             <div
