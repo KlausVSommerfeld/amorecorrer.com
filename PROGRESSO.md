@@ -1655,3 +1655,38 @@ Passado sobre as peças guardadas de todas as sondas, o filtro final removeu 9 f
 Repassado sobre as 875 frases das peças guardadas, o filtro removeu as mesmas 9 frases sobre o relato, e nenhuma outra.
 
 **Advertência condicional, em 06/10/2026 (decisão do Klaus).** O revisor tinha deixado de lado um ponto, que um agente lateral trouxe de volta antes do deploy. Com "Não, outra pessoa dirigia", a peça pedia a advertência do art. 267 como se o autuado fosse o infrator, o que soaria como assumir a infração. Mas, se ele não indicar o condutor no prazo, passa a ser o responsável (art. 257, § 7º). Opção A, escolhida: com "não", o pedido fica condicionado ("caso o autuado venha a ser considerado responsável pela infração, não havendo outra infração…"). Com "sim" ou sem resposta, o texto continua como antes. A mudança está em `peca.pedido` (`_ADVERTENCIA_CONDICIONAL`), com três testes, o do caso novo visto falhando antes.
+
+## Sessão de 08/10/2026 — Questionário de triagem antes do pagamento (projeto 1)
+
+**Origem.** Ideia do Klaus: perguntar antes do pagamento o que muda a peça (estágio, prazo, quem dirigia, versão), em vez de deixar o cliente decidir sozinho num formulário longo depois de pagar. Dois objetivos: resolver essas dúvidas no lugar certo e aumentar a conversão pelo princípio da coerência. Dividido em três projetos: este, a consulta ao radar antes do pagamento (2) e a defesa em nome do condutor (3), os dois no `PENDENCIAS.md`. Spec: `docs/superpowers/specs/2026-10-07-questionario-de-triagem-design.md`; plano: `docs/superpowers/plans/2026-10-07-questionario-de-triagem.md`.
+
+**Feito**, na branch `feat/questionario-triagem`:
+- **Front:**
+  - `/questionario` com cinco passos (estágio, data-limite, quem dirigia, radar/enquadramento/velocidades, versão), tela de prazo vencido e tela de resumo com o diagnóstico, as garantias da lei e o checkout (`src/pages/Questionario.tsx`, `src/components/questionario/`);
+  - `src/lib/questionario.ts`: respostas em `localStorage`, copiadas para `questionario_<case_id>` no checkout, e "hoje" pela data local;
+  - `src/lib/diagnostico.ts`;
+  - `src/lib/estagios.ts`;
+  - `src/hooks/use-checkout.ts` e `src/components/FalhaCheckout.tsx`;
+  - a home leva ao questionário;
+  - `Form.tsx` com o bloco "Suas respostas", a data-limite e a versão com o "?".
+- **Edge e banco:** a coluna `form_submissions.data_limite_protocolo` (`date`), normalizada por `dataLimiteProtocolo` (`campos.ts`), fora do `dup_guard`; aplicada no banco local.
+- **Pipeline:**
+  - o pedido sempre na ordem arquivamento, desclassificação, advertência (reverte a ordem de 30/09);
+  - o e-mail diz "protocole até dd/mm/aaaa";
+  - `data_limite_protocolo` em `CAMPOS_INTERNOS`.
+- **Paridade:** `tests/compartilhados/velocidade.json` (22 casos gerados pelo próprio pipeline) roda no Python (`test_diagnostico_paridade.py`) e no TypeScript (`diagnostico.test.ts`).
+
+**O que a lei garante, conferido no CTB versionado:**
+- a penalidade só depois da defesa julgada (art. 282);
+- o recurso à JARI suspende a penalidade, menos se for intempestivo (art. 285, §§ 1º e 5º);
+- os pontos só "esgotados os recursos" (art. 290, p. único);
+- nenhuma restrição de licenciamento enquanto o processo corre (art. 284, § 3º);
+- é possível pagar com 20% de desconto e recorrer mesmo assim (arts. 284, § 2º, e 286, § 2º).
+
+**Decisões tomadas na execução:**
+- o "?" virou um botão de mostrar e esconder, porque o `@radix-ui/react-popover` não está instalado e o popover do shadcn não compila;
+- a conferência no navegador abriu de verdade uma sessão do Stripe sandbox (`CASO_52a22149…`, não paga), que entra na limpeza.
+
+**Ficou de fora:** o deploy (`db push` e `functions deploy form-submit`) e o teste ponta a ponta pelo questionário; os projetos 2 e 3; o contador de funil.
+
+**Arquivos:** `src/pages/{Questionario,Home,Form}.tsx`, `src/components/questionario/*`, `src/components/FalhaCheckout.tsx`, `src/hooks/use-checkout.ts`, `src/lib/{questionario,diagnostico,estagios,checkout}.ts` e testes, `src/App.tsx`, `vite.config.ts`, `supabase/migrations/20261007000000_data_limite_protocolo.sql`, `supabase/functions/form-submit/{campos,campos.test,index}.ts`, `pipeline/{peca,prompt,test_peca,test_prompt,test_diagnostico_paridade}.py`, `tests/compartilhados/velocidade.json`, `CLAUDE.md`, `PENDENCIAS.md`.
