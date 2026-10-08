@@ -1,6 +1,6 @@
 # Amo Recorrer
 
-Venda de recursos de multa de trânsito redigidos por IA (R$ 19,99, ticket único, sem cadastro). O cliente paga no Stripe, preenche o formulário do auto de infração, e o backend redige a peça com o DeepSeek, gera o PDF e o envia por e-mail. Cada pedido é identificado por um **`case_id`** (`CASO_<uuid>`), criado no servidor no momento do checkout.
+Venda de recursos de multa de trânsito redigidos por IA (R$ 19,99, ticket único, sem cadastro). O cliente responde a um questionário de triagem, paga no Stripe, preenche o formulário com os dados pessoais e do auto, e o backend redige a peça com o DeepSeek, gera o PDF e o envia por e-mail. Cada pedido é identificado por um **`case_id`** (`CASO_<uuid>`), criado no servidor no momento do checkout.
 
 Onde está o resto da documentação:
 
@@ -16,16 +16,16 @@ Quatro runtimes, encadeados pelo `case_id`:
 
 | Runtime | Pasta | Papel |
 |---|---|---|
-| Frontend | `src/` | React 18 + Vite + Tailwind/shadcn: home, formulário, páginas legais |
+| Frontend | `src/` | React 18 + Vite + Tailwind/shadcn: home, questionário, formulário, páginas legais |
 | Edge Functions | `supabase/functions/` | `create-checkout-session`, `stripe-webhook`, `form-submit` (Deno, no Supabase) |
 | API interna | `server/` | Express: o **único** caminho do pipeline até o Postgres (`/internal/*`) |
 | Pipeline | `pipeline/` | FastAPI + worker: DeepSeek → PDF (reportlab) → Storage → e-mail |
 
 O fluxo de um pedido:
 
-1. A home chama `create-checkout-session`, que gera o `case_id`, cria a sessão no Stripe e grava em `stripe_sessions`. O Stripe devolve o cliente para `/form?success=true&case_id=…`.
+1. A home leva a `/questionario`: cinco passos (estágio, data-limite, quem dirigia, enquadramento e velocidades, versão) e um resumo com o diagnóstico. As respostas ficam no navegador. O botão de pagar do resumo chama `create-checkout-session`, que gera o `case_id`, cria a sessão no Stripe e grava em `stripe_sessions`. O Stripe devolve o cliente para `/form?success=true&case_id=…`.
 2. O Stripe avisa a `stripe-webhook`, que marca o pagamento como `paid`.
-3. O cliente envia o formulário à `form-submit`, que grava o caso, cria o dispatch e manda um POST assinado (HMAC) ao pipeline.
+3. O formulário chega preenchido com as respostas do questionário; o cliente completa os dados pessoais e do auto e o envia à `form-submit`, que grava o caso, cria o dispatch e manda um POST assinado (HMAC) ao pipeline.
 4. O pipeline responde `202` na hora e trabalha em segundo plano: lê o caso pelo Express, monta a base legal do CTB, chama o DeepSeek, gera o PDF, sobe para o bucket privado e envia o e-mail.
 5. O pipeline avisa o Express, que fecha o caso (`document_status = completed` ou `failed`).
 

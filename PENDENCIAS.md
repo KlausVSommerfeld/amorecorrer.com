@@ -87,6 +87,16 @@ Decisões jurídicas do Klaus primeiro; o pipeline só chega ao cliente depois d
 - **`expedidaEm` é texto livre** — virar campo de data é decisão de produto. → Sessão de 26/08/2026 (noite)
 - **Contador anônimo de funil do questionário** (começou, terminou, foi ao pagamento; sem dado pessoal), para medir o efeito do questionário na conversão. Falta escolher onde gravar os eventos (serviço de analytics ou tabela de eventos). Decisão do Klaus: fora do projeto 1 do questionário. → Sessão de 07/10/2026 (questionário de triagem)
 - **Projeto 2 do questionário: consulta ao radar antes do pagamento** — depende das pendências da tese do radar (`RADAR_TESE_ATIVA`, avisos legais, `docs/verificacao-radar.md`, ingestão recorrente) e de proteger a consulta aberta a quem ainda não pagou; `sem_registro` não é "radar irregular". → Sessão de 07/10/2026 (questionário de triagem)
+- **Texto do `ComoFunciona` na home contradiz o fluxo novo**: ainda diz "01 Pagamento… a única parte que depende de você é o formulário". Precisa de texto novo do Klaus. → Sessão de 08/10/2026 (revisão final)
+- **O resumo do questionário não mostra a advertência** que a peça pede (considerada abaixo da permitida no inciso I; infração leve ou média fora do art. 218). É o texto da spec; sugestão: diagnosticar a advertência pela natureza da infração. → Sessão de 08/10/2026 (revisão final)
+- **Achados menores da revisão final do questionário:**
+  - acessibilidade: grupos de opções e a data do passo 2 sem nome acessível, erro não ligado ao campo (`aria-describedby`), um título repetido e um anúncio duplo para leitor de tela;
+  - rascunho do formulário: o aviso "Rascunho guardado" aparece logo ao chegar do questionário, e "Limpar" apaga as respostas, que voltam ao recarregar;
+  - o questionário não barra velocidade acima de 400 km/h, como o formulário faz;
+  - o teste do fuso (`hojeLocal`) não pega o erro numa máquina em UTC: fixar `TZ` no teste;
+  - as respostas no navegador nunca expiram (incluem o relato de quem não comprou);
+  - rascunho do formulário anterior ao deploy teria relato sem a escolha de versão (hoje não existe nenhum, o site não está no ar).
+  → Sessão de 08/10/2026 (revisão final)
 - **Projeto 3 do questionário: defesa em nome do condutor** — com "não, outra pessoa dirigia", pedir os dados de quem dirigia e sair a peça em nome dele, como condutor identificado. Depende de conferir no CONTRAN quem pode assinar a defesa e o paralelo com a indicação. Resolver junto com o "cliente que dirigia mas não é o dono". → Sessão de 07/10/2026 (questionário de triagem)
 
 ## Repositório e testes

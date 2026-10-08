@@ -1674,7 +1674,7 @@ Repassado sobre as 875 frases das peças guardadas, o filtro removeu as mesmas 9
   - o pedido sempre na ordem arquivamento, desclassificação, advertência (reverte a ordem de 30/09);
   - o e-mail diz "protocole até dd/mm/aaaa";
   - `data_limite_protocolo` em `CAMPOS_INTERNOS`.
-- **Paridade:** `tests/compartilhados/velocidade.json` (22 casos gerados pelo próprio pipeline) roda no Python (`test_diagnostico_paridade.py`) e no TypeScript (`diagnostico.test.ts`).
+- **Paridade:** `tests/compartilhados/velocidade.json` (26 casos gerados pelo próprio pipeline, 4 deles com texto acentuado) roda no Python (`test_diagnostico_paridade.py`) e no TypeScript (`diagnostico.test.ts`).
 
 **O que a lei garante, conferido no CTB versionado:**
 - a penalidade só depois da defesa julgada (art. 282);
@@ -1687,6 +1687,15 @@ Repassado sobre as 875 frases das peças guardadas, o filtro removeu as mesmas 9
 - o "?" virou um botão de mostrar e esconder, porque o `@radix-ui/react-popover` não está instalado e o popover do shadcn não compila;
 - a conferência no navegador abriu de verdade uma sessão do Stripe sandbox (`CASO_52a22149…`, não paga), que entra na limpeza.
 
-**Ficou de fora:** o deploy (`db push` e `functions deploy form-submit`) e o teste ponta a ponta pelo questionário; os projetos 2 e 3; o contador de funil.
+**Revisão final** (subagente opus sobre a branch inteira; nada crítico). Cinco achados corrigidos no commit `6df55dc`, cada um com teste ou reprodução que falhou antes:
+- enquadramento com acento ("à máxima", "infração média") dava "neutro" no resumo e desclassificação no pipeline: o `\b` do JavaScript só conhece ASCII; as regex passaram a lookarounds Unicode;
+- duas abas abertas misturavam respostas no pagamento: `vincularAoCaso` grava as respostas da tela que pagou;
+- "continua de onde parou" não existia: a volta do Stripe ou do cancelamento abre o resumo, o primeiro passo incompleto ou o prazo vencido (`telaInicial`);
+- o botão ficava em "Abrindo pagamento…" ao voltar do Stripe pelo bfcache (Safari do iPhone): listener de `pageshow`;
+- o prazo que vencia com o resumo aberto ainda vendia, e o texto dizia "faltam 1 dias": o clique confere o prazo de novo (`textoDoPrazo`).
+
+Suítes depois da correção: 82 testes de front e Edge, 230 do pipeline, build limpo. Os achados menores foram para o `PENDENCIAS.md`; a documentação (`CLAUDE.md`, `README.md`, `PRODUCT.md`, docstring do `peca.pedido`) foi atualizada para o fluxo novo.
+
+**Ficou de fora:** o deploy (`db push` e `functions deploy form-submit`) e o teste ponta a ponta pelo questionário; os projetos 2 e 3; o contador de funil; o texto do `ComoFunciona` na home.
 
 **Arquivos:** `src/pages/{Questionario,Home,Form}.tsx`, `src/components/questionario/*`, `src/components/FalhaCheckout.tsx`, `src/hooks/use-checkout.ts`, `src/lib/{questionario,diagnostico,estagios,checkout}.ts` e testes, `src/App.tsx`, `vite.config.ts`, `supabase/migrations/20261007000000_data_limite_protocolo.sql`, `supabase/functions/form-submit/{campos,campos.test,index}.ts`, `pipeline/{peca,prompt,test_peca,test_prompt,test_diagnostico_paridade}.py`, `tests/compartilhados/velocidade.json`, `CLAUDE.md`, `PENDENCIAS.md`.

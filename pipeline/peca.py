@@ -468,8 +468,8 @@ def pedido(
     cabe_advertencia: bool,
 ) -> tuple[str, ...]:
     """O pedido é do código (spec 2026-10-02, §3.3): o modelo nunca formula um
-    pedido contra o cliente nem esquece o principal. A ordem da desclassificação
-    é a da spec de 30/09/2026."""
+    pedido contra o cliente nem esquece o principal. Na desclassificação, o
+    arquivamento vem primeiro e a desclassificação é subsidiária (07/10/2026)."""
     recurso = _estagio(case) == RECURSO_JARI
     auto = _txt(case, "numero_auto") or LINHA_EM_BRANCO
     inconsistencia = (
