@@ -168,6 +168,9 @@ CAMPOS_INTERNOS = frozenset(
         # resposta sobre o condutor só como a regra escolhida (spec 2026-10-05).
         "justificativa",
         "cliente_conduzia",
+        # Prazo de protocolo: vai ao e-mail, não à redação, e competiria com a data
+        # da infração (spec 2026-10-07, §6.5).
+        "data_limite_protocolo",
     }
 )
 

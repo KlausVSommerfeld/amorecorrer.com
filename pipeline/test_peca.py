@@ -344,18 +344,21 @@ class TestPedido(unittest.TestCase):
                          pedido(DEFESA, "sem_infracao", None, False))
 
     def test_desclassificacao(self):
-        subsidiario = ("b) subsidiariamente, o arquivamento do Auto de Infração nº E123456789 por "
-                       "inconsistência, nos termos do art. 281, § 1º, I, do CTB.")
+        # 07/10/2026, decisão do Klaus: pede-se mais do que se espera obter —
+        # o arquivamento primeiro, a desclassificação como subsidiária.
         self.assertEqual(pedido(DEFESA, "desclassificacao", "I", False), (
-            "a) a desclassificação da infração para o art. 218, I, do CTB, compatível com a "
-            "velocidade considerada no próprio auto;",
-            subsidiario,
+            "a) o arquivamento do Auto de Infração nº E123456789 por inconsistência, nos termos "
+            "do art. 281, § 1º, I, do CTB;",
+            "b) subsidiariamente, a desclassificação da infração para o art. 218, I, do CTB, "
+            "compatível com a velocidade considerada no próprio auto.",
         ))
         self.assertEqual(pedido(RECURSO, "desclassificacao", "I", False), (
-            "a) o provimento deste recurso, para desclassificar a infração para o art. 218, I, do "
-            "CTB, compatível com a velocidade considerada no próprio auto, com a readequação da "
-            "penalidade;",
-            subsidiario,
+            "a) o provimento deste recurso, com o cancelamento da penalidade imposta e o "
+            "arquivamento do Auto de Infração nº E123456789 por inconsistência, nos termos do "
+            "art. 281, § 1º, I, do CTB;",
+            "b) subsidiariamente, a desclassificação da infração para o art. 218, I, do CTB, "
+            "compatível com a velocidade considerada no próprio auto, com a readequação da "
+            "penalidade.",
         ))
 
     def test_desclassificacao_sem_inciso_vira_caso_comum(self):
@@ -428,6 +431,22 @@ class TestCorpoDoEmail(unittest.TestCase):
             with self.subTest(trecho=trecho):
                 self.assertIn(trecho, corpo)
         self.assertNotIn("rascunho", corpo.lower())
+
+    def test_passo_3_com_a_data_limite(self):
+        corpo = corpo_do_email({"case_id": "CASO_abc", "data_limite_protocolo": "2026-10-30"})
+        self.assertIn(
+            "3. Protocole no órgão de trânsito até 30/10/2026, a data-limite que consta da sua "
+            "notificação — no balcão, pelos Correios ou pelo site do órgão, conforme ele aceitar.",
+            corpo,
+        )
+        self.assertNotIn("até o prazo que consta da sua notificação", corpo)
+
+    def test_passo_3_sem_data_ou_com_data_invalida_fica_como_antes(self):
+        for valor in (None, "", "30/10/2026", "2026-02-30", 20261030):
+            with self.subTest(valor=valor):
+                corpo = corpo_do_email({"case_id": "CASO_abc", "data_limite_protocolo": valor})
+                self.assertIn("3. Protocole no órgão de trânsito até o prazo que consta da sua "
+                              "notificação", corpo)
 
     def test_aviso_so_na_defesa_previa_com_outra_pessoa_dirigindo(self):
         corpo = corpo_do_email({"case_id": "CASO_abc", "especie_documento": DEFESA_PREVIA,

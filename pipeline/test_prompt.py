@@ -311,6 +311,9 @@ class TestRelatoNoContexto(unittest.TestCase):
             with self.subTest(valor=valor):
                 ctx = build_case_context({"nome": "Fulana", "cliente_conduzia": valor})
                 self.assertNotIn("cliente_conduzia", ctx)
+        self.assertIn("data_limite_protocolo", CAMPOS_INTERNOS)
+        self.assertNotIn("data_limite_protocolo",
+                         build_case_context({"nome": "Fulana", "data_limite_protocolo": "2026-10-30"}))
 
 
 class TestRegrasDoRelato(unittest.TestCase):

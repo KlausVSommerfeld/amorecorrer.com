@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import html
 import re
+from datetime import date
 from dataclasses import dataclass
 from typing import Any
 
@@ -489,14 +490,18 @@ def pedido(
             f"para o art. 218, {inciso_da_conta}, do CTB, compatível com a velocidade "
             "considerada no próprio auto"
         )
+        # 07/10/2026, decisão do Klaus: o arquivamento primeiro, a desclassificação
+        # como subsidiária (reverte a ordem da spec de 30/09/2026).
         if recurso:
             itens.append(
-                f"o provimento deste recurso, para desclassificar a infração {alvo}, com a "
-                "readequação da penalidade"
+                f"o provimento deste recurso, com o cancelamento da penalidade imposta e {inconsistencia}"
+            )
+            itens.append(
+                f"subsidiariamente, a desclassificação da infração {alvo}, com a readequação da penalidade"
             )
         else:
-            itens.append(f"a desclassificação da infração {alvo}")
-        itens.append(f"subsidiariamente, {inconsistencia}")
+            itens.append(inconsistencia)
+            itens.append(f"subsidiariamente, a desclassificação da infração {alvo}")
     elif recurso:
         itens.append(
             "o conhecimento e o provimento deste recurso, com o cancelamento da penalidade "
@@ -535,6 +540,18 @@ def titulo_documento(case: dict[str, Any]) -> str:
     return f"{nome} — Auto nº {auto}" if auto else nome
 
 
+def _data_br(valor: Any) -> str | None:
+    """'2026-10-30' → '30/10/2026'; qualquer outra coisa → None (data impossível também)."""
+    if not isinstance(valor, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", valor):
+        return None
+    ano, mes, dia = (int(p) for p in valor.split("-"))
+    try:
+        date(ano, mes, dia)
+    except ValueError:
+        return None
+    return f"{dia:02d}/{mes:02d}/{ano}"
+
+
 def corpo_do_email(case: dict[str, Any]) -> str:
     """O aviso de revisão saiu da peça (o cliente protocola o PDF como está) e
     veio para cá, em passos (spec 2026-10-02, §4.7). O aviso de indicação do
@@ -544,13 +561,20 @@ def corpo_do_email(case: dict[str, Any]) -> str:
         if _estagio(case) == DEFESA_PREVIA and case.get("cliente_conduzia") is False
         else ""
     )
+    prazo = _data_br(case.get("data_limite_protocolo"))
+    passo_3 = (
+        f"3. Protocole no órgão de trânsito até {prazo}, a data-limite que consta da sua "
+        "notificação — no balcão, pelos Correios ou pelo site do órgão, conforme ele aceitar.\n\n"
+        if prazo
+        else "3. Protocole no órgão de trânsito até o prazo que consta da sua notificação — no "
+        "balcão, pelos Correios ou pelo site do órgão, conforme ele aceitar.\n\n"
+    )
     return (
         "Olá,\n\n"
         "Sua peça está pronta, em anexo, para você imprimir e protocolar:\n\n"
         "1. Confira os dados e preencha à mão as linhas em branco.\n"
         "2. Assine no espaço indicado.\n"
-        "3. Protocole no órgão de trânsito até o prazo que consta da sua notificação — no "
-        "balcão, pelos Correios ou pelo site do órgão, conforme ele aceitar.\n\n"
+        f"{passo_3}"
         f"{aviso}"
         "Revise o texto antes de protocolar: ele foi redigido com apoio de inteligência "
         "artificial a partir das informações que você enviou.\n\n"
