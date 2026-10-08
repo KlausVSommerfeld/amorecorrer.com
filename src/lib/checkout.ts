@@ -36,6 +36,11 @@ export interface CreateCheckoutOptions {
    * o botão travado em "Abrindo pagamento…" para sempre.
    */
   signal?: AbortSignal;
+  /**
+   * Roda com o `case_id` recém-criado, antes de o navegador sair para o Stripe.
+   * O questionário usa isto para copiar as respostas para a chave do caso.
+   */
+  aoCriarCaso?: (caseId: string) => void;
 }
 
 /**
@@ -99,6 +104,15 @@ export async function createCheckout(
         localStorage.setItem('case_id', caseId);
       } catch (err) {
         console.warn('Failed to persist case_id locally:', err);
+      }
+    }
+
+    if (caseId && options.aoCriarCaso) {
+      try {
+        options.aoCriarCaso(caseId);
+      } catch (err) {
+        // Nunca impede o pagamento: o formulário tem o caminho sem questionário.
+        console.warn('aoCriarCaso falhou:', err);
       }
     }
 
