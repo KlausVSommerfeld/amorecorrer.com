@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  CHAVE_ATUAL, RESPOSTAS_VAZIAS, apagarRespostas, chaveDoCaso, diasAteDataLimite, erroDoPasso,
+  CHAVE_ATUAL, RESPOSTAS_VAZIAS, apagarRespostas, chaveDoCaso, diasAteDataLimite, erroDoPasso, telaInicial, textoDoPrazo,
   gravarRespostas, hojeLocal, lerRespostas, mesclarComRascunho, paraCamposDoFormulario, vincularAoCaso,
   type Armazenamento, type RespostasQuestionario,
 } from './questionario.ts'
@@ -34,7 +34,7 @@ test('gravar e ler a resposta atual', () => {
 test('vincular copia para a chave do caso e mantém a atual (voltar do Stripe sem pagar)', () => {
   const a = new Memoria()
   gravarRespostas(a, CHAVE_ATUAL, R)
-  assert.equal(vincularAoCaso(a, 'CASO_1'), true)
+  assert.equal(vincularAoCaso(a, 'CASO_1', R), true)
   assert.deepEqual(lerRespostas(a, chaveDoCaso('CASO_1')), R)
   assert.deepEqual(lerRespostas(a, CHAVE_ATUAL), R)
 })
@@ -42,9 +42,9 @@ test('vincular copia para a chave do caso e mantém a atual (voltar do Stripe se
 test('duas compras seguidas não misturam respostas', () => {
   const a = new Memoria()
   gravarRespostas(a, CHAVE_ATUAL, R)
-  vincularAoCaso(a, 'CASO_A')
+  vincularAoCaso(a, 'CASO_A', lerRespostas(a, CHAVE_ATUAL)!)
   gravarRespostas(a, CHAVE_ATUAL, { ...R, justificativa: 'Outra história.' })
-  vincularAoCaso(a, 'CASO_B')
+  vincularAoCaso(a, 'CASO_B', lerRespostas(a, CHAVE_ATUAL)!)
   assert.equal(lerRespostas(a, chaveDoCaso('CASO_A'))!.justificativa, 'Não vi a placa.')
   assert.equal(lerRespostas(a, chaveDoCaso('CASO_B'))!.justificativa, 'Outra história.')
 })
@@ -52,7 +52,7 @@ test('duas compras seguidas não misturam respostas', () => {
 test('apagar remove a do caso e a atual', () => {
   const a = new Memoria()
   gravarRespostas(a, CHAVE_ATUAL, R)
-  vincularAoCaso(a, 'CASO_1')
+  vincularAoCaso(a, 'CASO_1', R)
   apagarRespostas(a, 'CASO_1')
   assert.equal(lerRespostas(a, chaveDoCaso('CASO_1')), null)
   assert.equal(lerRespostas(a, CHAVE_ATUAL), null)
@@ -62,7 +62,7 @@ test('armazenamento bloqueado ou ausente nunca lança', () => {
   for (const a of [new Quebrado(), null]) {
     assert.equal(gravarRespostas(a, CHAVE_ATUAL, R), false)
     assert.equal(lerRespostas(a, CHAVE_ATUAL), null)
-    assert.equal(vincularAoCaso(a, 'CASO_1'), false)
+    assert.equal(vincularAoCaso(a, 'CASO_1', R), false)
     assert.doesNotThrow(() => apagarRespostas(a, 'CASO_1'))
   }
 })
@@ -123,4 +123,38 @@ test('rascunho antigo, sem os campos novos, não apaga as respostas', () => {
   const rascunho = { nome: 'Fulana', data_limite: '' } as Partial<typeof base>
   assert.deepEqual(mesclarComRascunho(base, rascunho), { estagio: DEFESA_PREVIA, data_limite: '2026-10-30', nome: 'Fulana' })
   assert.deepEqual(mesclarComRascunho(base, null), base)
+})
+
+// Revisão final: duas abas — a aba A paga com o que mostra, não com o que a aba B gravou depois.
+test('vincular grava as respostas da tela, não as que outra aba deixou no armazenamento', () => {
+  const a = new Memoria()
+  const B = { ...R, justificativa: 'Resposta da aba B.' }
+  gravarRespostas(a, CHAVE_ATUAL, B)
+  vincularAoCaso(a, 'CASO_A', R)
+  assert.equal(lerRespostas(a, chaveDoCaso('CASO_A'))!.justificativa, 'Não vi a placa.')
+})
+
+// Revisão final: "ao voltar a /questionario, o cliente continua de onde parou" (spec §6.1).
+test('tela inicial: sem respostas começa no passo 1', () => {
+  assert.equal(telaInicial(RESPOSTAS_VAZIAS, new Date(2026, 9, 8)), 1)
+})
+
+test('tela inicial: o primeiro passo incompleto', () => {
+  const agora = new Date(2026, 9, 8)
+  assert.equal(telaInicial({ ...R, cliente_conduzia: '' }, agora), 3)
+  assert.equal(telaInicial({ ...R, versao: '' }, agora), 5)
+  assert.equal(telaInicial({ ...R, data_limite: '' }, agora), 2)
+})
+
+test('tela inicial: tudo respondido vai ao resumo, ou ao prazo vencido', () => {
+  assert.equal(telaInicial(R, new Date(2026, 9, 8)), 'resumo')
+  assert.equal(telaInicial(R, new Date(2026, 9, 31)), 'vencido')
+  assert.equal(telaInicial({ ...R, cliente_conduzia: '' }, new Date(2026, 9, 31)), 'vencido')
+})
+
+// Revisão final: "faltam 1 dias".
+test('texto do prazo, com singular e plural', () => {
+  assert.equal(textoDoPrazo(0, '2026-10-30'), 'a data-limite é hoje')
+  assert.equal(textoDoPrazo(1, '2026-10-30'), 'falta 1 dia para a data-limite (30/10/2026)')
+  assert.equal(textoDoPrazo(22, '2026-10-30'), 'faltam 22 dias para a data-limite (30/10/2026)')
 })

@@ -6,10 +6,8 @@ import Resumo from '../components/questionario/Resumo';
 import { DEFESA_PREVIA, ESTAGIOS } from '../lib/estagios';
 import {
   CHAVE_ATUAL, RESPOSTAS_VAZIAS, armazenamentoDoNavegador, diasAteDataLimite, erroDoPasso,
-  gravarRespostas, lerRespostas, type RespostasQuestionario,
+  gravarRespostas, lerRespostas, telaInicial, type RespostasQuestionario, type Tela,
 } from '../lib/questionario';
-
-type Tela = 1 | 2 | 3 | 4 | 5 | 'resumo' | 'vencido';
 const TITULOS: Record<1 | 2 | 3 | 4 | 5, string> = {
   1: 'Em que estágio está o seu caso?',
   2: 'Qual é a data-limite que consta da sua notificação?',
@@ -36,7 +34,8 @@ const Opcao = ({ nome, valor, atual, rotulo, descricao, invalido, aoEscolher, ex
 const Questionario = () => {
   const arm = useRef(armazenamentoDoNavegador()).current;
   const [r, setR] = useState<RespostasQuestionario>(() => lerRespostas(arm, CHAVE_ATUAL) ?? RESPOSTAS_VAZIAS);
-  const [tela, setTela] = useState<Tela>(1);
+  // Quem volta (do Stripe, do /cancel, de outra aba) continua de onde parou (spec §6.1).
+  const [tela, setTela] = useState<Tela>(() => telaInicial(r, new Date()));
   const [erro, setErro] = useState<string | null>(null);
   const tituloRef = useRef<HTMLHeadingElement>(null);
 
@@ -80,7 +79,7 @@ const Questionario = () => {
             <h1 ref={tituloRef} tabIndex={-1} className="page__title">{titulo}</h1>
           </div>
 
-          {tela === 'resumo' && <Resumo r={r} aoRevisar={() => setTela(1)} />}
+          {tela === 'resumo' && <Resumo r={r} aoRevisar={() => setTela(1)} aoVencer={() => setTela('vencido')} />}
           {tela === 'vencido' && <PrazoVencido estagio={r.estagio} aoCorrigir={() => setTela(2)} />}
 
           {typeof tela === 'number' && (

@@ -81,9 +81,10 @@ export function gravarRespostas(arm: Armazenamento | null, chave: string, r: Res
   }
 }
 
-export function vincularAoCaso(arm: Armazenamento | null, caseId: string): boolean {
-  const atual = lerRespostas(arm, CHAVE_ATUAL)
-  return atual ? gravarRespostas(arm, chaveDoCaso(caseId), atual) : false
+/** Grava, na chave do caso, as respostas que a tela está mostrando — não as de
+ *  `questionario_atual`, que outra aba pode ter mudado depois (revisão final). */
+export function vincularAoCaso(arm: Armazenamento | null, caseId: string, r: RespostasQuestionario): boolean {
+  return gravarRespostas(arm, chaveDoCaso(caseId), r)
 }
 
 export function apagarRespostas(arm: Armazenamento | null, caseId: string): void {
@@ -173,4 +174,24 @@ export function mesclarComRascunho<T extends object>(base: T, rascunho: Partial<
     if (typeof v === 'string' && v !== '') (saida as Record<string, unknown>)[k] = v
   }
   return saida
+}
+
+export type Tela = 1 | 2 | 3 | 4 | 5 | 'resumo' | 'vencido'
+
+/** Onde o cliente retoma o questionário (spec §6.1): o primeiro passo incompleto; com
+ *  a data-limite vencida, a tela de prazo vencido; com tudo respondido, o resumo. */
+export function telaInicial(r: RespostasQuestionario, agora: Date): Tela {
+  if (erroDoPasso(1, r)) return 1
+  if (erroDoPasso(2, r)) return 2
+  if ((diasAteDataLimite(r.data_limite, agora) ?? 0) < 0) return 'vencido'
+  for (const passo of [3, 4, 5] as const) if (erroDoPasso(passo, r)) return passo
+  return 'resumo'
+}
+
+const dataBr = (iso: string) => iso.split('-').reverse().join('/')
+
+export function textoDoPrazo(dias: number, dataLimite: string): string {
+  if (dias === 0) return 'a data-limite é hoje'
+  if (dias === 1) return `falta 1 dia para a data-limite (${dataBr(dataLimite)})`
+  return `faltam ${dias} dias para a data-limite (${dataBr(dataLimite)})`
 }

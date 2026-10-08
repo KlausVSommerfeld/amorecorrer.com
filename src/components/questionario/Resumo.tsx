@@ -5,7 +5,7 @@ import { usePromoExpirada } from '../../hooks/use-promo';
 import { diagnostico } from '../../lib/diagnostico';
 import { DEFESA_PREVIA, ESTAGIOS, RECURSO_JARI } from '../../lib/estagios';
 import { PRECO_CHEIO, precoVigente } from '../../lib/preco';
-import { armazenamentoDoNavegador, diasAteDataLimite, vincularAoCaso, type RespostasQuestionario } from '../../lib/questionario';
+import { armazenamentoDoNavegador, diasAteDataLimite, textoDoPrazo, vincularAoCaso, type RespostasQuestionario } from '../../lib/questionario';
 
 const GARANTIAS_COMUNS = [
   'Os pontos só vão para a sua CNH se a decisão final for contra você (art. 290).',
@@ -20,11 +20,15 @@ const GARANTIAS: Record<string, string[]> = {
   ],
 };
 
-const dataBr = (iso: string) => iso.split('-').reverse().join('/');
-
-const Resumo = ({ r, aoRevisar }: { r: RespostasQuestionario; aoRevisar: () => void }) => {
+const Resumo = ({ r, aoRevisar, aoVencer }: { r: RespostasQuestionario; aoRevisar: () => void; aoVencer: () => void }) => {
   const expirado = usePromoExpirada();
-  const { estado, enviando, iniciar } = useCheckout((caseId) => vincularAoCaso(armazenamentoDoNavegador(), caseId));
+  const { estado, enviando, iniciar } = useCheckout((caseId) => vincularAoCaso(armazenamentoDoNavegador(), caseId, r));
+  // O resumo pode ficar aberto até depois da meia-noite do último dia: o prazo é
+  // conferido de novo no clique, e vencido não vende (spec §2; revisão final).
+  const pagar = () => {
+    if ((diasAteDataLimite(r.data_limite, new Date()) ?? -1) < 0) aoVencer();
+    else iniciar();
+  };
   const dias = diasAteDataLimite(r.data_limite, new Date()) ?? 0;
   const d = diagnostico(r);
   const nomeEstagio = ESTAGIOS.find((e) => e.valor === r.estagio)?.nome ?? '';
@@ -34,7 +38,7 @@ const Resumo = ({ r, aoRevisar }: { r: RespostasQuestionario; aoRevisar: () => v
       <section className="field mb-6">
         <span className="field__label">Seu caso</span>
         <span className="field__value">
-          {nomeEstagio} · {dias === 0 ? 'a data-limite é hoje' : `faltam ${dias} dias para a data-limite (${dataBr(r.data_limite)})`}
+          {nomeEstagio} · {textoDoPrazo(dias, r.data_limite)}
         </span>
       </section>
 
@@ -69,13 +73,13 @@ const Resumo = ({ r, aoRevisar }: { r: RespostasQuestionario; aoRevisar: () => v
       </section>
 
       <div className="flex flex-col items-start gap-3">
-        <button type="button" onClick={iniciar} disabled={enviando} aria-busy={enviando}
+        <button type="button" onClick={pagar} disabled={enviando} aria-busy={enviando}
           className={`btn ${enviando ? 'btn--disabled' : 'btn--solid'} px-8 py-4 text-lg`}>
           {enviando ? 'Abrindo pagamento…' : 'Ir para o pagamento'}
         </button>
         <button type="button" className="text-sm underline underline-offset-2" onClick={aoRevisar}>Revisar respostas</button>
         {estado.fase === 'erro' && (
-          <FalhaCheckout mensagem={estado.mensagem} tentativas={estado.tentativas} aoTentarDeNovo={iniciar} />
+          <FalhaCheckout mensagem={estado.mensagem} tentativas={estado.tentativas} aoTentarDeNovo={pagar} />
         )}
         <p className="form-hint">O resultado depende da análise do órgão; nenhuma defesa tem resultado garantido.</p>
       </div>

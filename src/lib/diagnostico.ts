@@ -28,10 +28,12 @@ const GRAVIDADE: Record<Inciso, number> = { I: 1, II: 2, III: 3 }
 
 // Mesma gramática de parse_ref: o inciso é romano em maiúsculas (sem /i), a alínea
 // é uma letra minúscula solta; parágrafo, alínea ou item no art. 218 não existem.
+// O `\b` do JS só conhece ASCII ("m" de "máxima" vira palavra solta); o do Python
+// é Unicode. Por isso os limites de palavra são lookarounds com \p{L} (revisão final).
 const REF_RE = /^\s*(?:art(?:igo)?\.?\s*)?(\d+)\s*[ºo°]?\s*(?:-\s*([A-Z]))?\s*[.,;]?\s*(.*)$/i
 const PARAGRAFO = /par[áa]grafo\s+[úu]nico|p\.\s*[úu]nico|(?:§|par[áa]grafo)\s*\d+/i
-const INCISO = /(?:inciso\s+)?\b([IVXLC]+)\b(?:-([A-Z])\b)?/
-const ALINEA = /(?:al[íi]nea\s+)?["'“]?\b([a-z])\b["'”)]?/
+const INCISO = /(?:inciso\s+)?(?<![\p{L}\p{N}_])([IVXLC]+)(?![\p{L}\p{N}_])(?:-([A-Z])(?![\p{L}\p{N}_]))?/u
+const ALINEA = /(?:al[íi]nea\s+)?["'“]?(?<![\p{L}\p{N}_])([a-z])(?![\p{L}\p{N}_])["'”)]?/u
 const ITEM = /item\s+\d+/i
 
 export function enquadramento218(amparo: string): string | null {

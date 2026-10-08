@@ -70,6 +70,19 @@ export function useCheckout(aoCriarCaso?: (caseId: string) => void) {
     };
   }, []);
 
+  // Voltar do Stripe pelo botão "voltar" pode restaurar a página do bfcache
+  // (comum no Safari iOS) com o botão em "Abrindo pagamento…" e a trava armada:
+  // sem isto, a única saída era recarregar (revisão final).
+  useEffect(() => {
+    const aoMostrar = (e: PageTransitionEvent) => {
+      if (!e.persisted) return;
+      emVooRef.current = false;
+      setEstado({ fase: 'ocioso' });
+    };
+    window.addEventListener('pageshow', aoMostrar);
+    return () => window.removeEventListener('pageshow', aoMostrar);
+  }, []);
+
   const iniciar = useCallback(async () => {
     // O `disabled` do botão barra o segundo toque só depois do render; esta
     // trava barra no mesmo tick. Cada chamada que passa cria um `case_id` e
