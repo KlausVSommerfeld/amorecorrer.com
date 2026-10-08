@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getCaseIdFromUrl } from '../lib/caseId';
 import { submitForm } from '../lib/api';
 import { normalizarNumeroDigitos, normalizarNumeroSerie } from '../lib/medidor';
+import { ESTAGIOS } from '../lib/estagios';
 import { consideradaMaiorQueAferida } from '../lib/velocidade';
 import PageShell from '../components/PageShell';
 
@@ -78,24 +79,6 @@ interface FormData {
   stripe_session_id: string;
 }
 
-/** As duas peças que o produto redige. O valor vai para `especie_documento` —
- *  coluna que já existe, já atravessa a Edge Function e já entra no contexto
- *  que o pipeline monta para o modelo. Enquanto o estágio era um campo de texto
- *  livre que ninguém preenchia, a peça saía sem saber a quem se endereçar. */
-const ESTAGIOS = [
-  {
-    valor: 'Notificação de autuação — defesa prévia',
-    nome: 'Defesa da autuação',
-    descricao:
-      'O papel diz "notificação de autuação". A multa ainda não foi aplicada e a peça vai para o próprio órgão autuador.'
-  },
-  {
-    valor: 'Notificação de penalidade — recurso à JARI',
-    nome: 'Recurso à JARI',
-    descricao:
-      'O papel diz "notificação de penalidade" e traz o valor a pagar. A peça vai para a Junta Administrativa de Recursos de Infrações.'
-  }
-] as const;
 
 function onlyDigits(value: string) {
   return value.replace(/\D/g, '');
