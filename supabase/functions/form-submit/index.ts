@@ -1,4 +1,5 @@
-// form-submit (dispatch pipeline + deferred confirm_dispatch for async runners)
+// form-submit: grava o formulário e entrega o caso ao pipeline pelo módulo
+// compartilhado (supabase/functions/_shared/entrega.ts, spec 2026-10-09).
 // Uses Deno.serve and @supabase/supabase-js@2.x
 // Import from bare specifier, assuming deno.json imports: "@supabase/supabase-js": "jsr:@supabase/supabase-js@2"
 import { createClient } from "jsr:@supabase/supabase-js@2";
@@ -12,6 +13,7 @@ import {
   type Verificacao,
 } from "./verificacao.ts";
 import { clienteConduzia, dataLimiteProtocolo } from "./campos.ts";
+import { entregar, statusDoFormulario, type DepsEntrega } from "../_shared/entrega.ts";
 
 const MAX_BODY_BYTES = 64 * 1024; // 64KB
 const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
@@ -91,6 +93,7 @@ function normalizePayload(p: Record<string, unknown>) {
   for (const k of Object.keys(norm)) {
     if (typeof norm[k] === "string") norm[k] = norm[k].trim();
   }
+  // `stripe_session_id`, se vier, é ignorado: a sessão é a do caso (spec 2026-10-09).
   return norm;
 }
 
@@ -115,28 +118,6 @@ async function sha256Hex(input: string) {
     .join("");
 }
 
-function hmacSha256Hex(secret: string, message: string) {
-  const enc = new TextEncoder();
-  const keyData = enc.encode(secret);
-  const msgData = enc.encode(message);
-  return crypto.subtle
-    .importKey("raw", keyData, { name: "HMAC", hash: "SHA-256" }, false, ["sign"])
-    .then((key) => crypto.subtle.sign("HMAC", key, msgData))
-    .then((sig) =>
-      Array.from(new Uint8Array(sig))
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("")
-    );
-}
-
-function logDispatchError(stage: string, details: Record<string, unknown>) {
-  console.error(`[dispatch] ${stage}`, details);
-}
-
-function logDispatchInfo(stage: string, details: Record<string, unknown>) {
-  console.info(`[dispatch] ${stage}`, details);
-}
-
 function formatDispatchError(err: unknown): string {
   if (err instanceof Error) return err.message;
   if (typeof err === "object" && err !== null) {
@@ -156,46 +137,6 @@ function formatDispatchError(err: unknown): string {
     }
   }
   return String(err);
-}
-
-/**
- * `confirm_dispatch` devolve uma linha { confirmed }. Desde 09/09/2026 esse
- * booleano diz se o UPDATE pegou alguma linha — antes era o eco do argumento
- * `success`, ou seja, repetia o que o caller já sabia.
- */
-function confirmDispatchOk(data: unknown): boolean {
-  const row = Array.isArray(data) ? data[0] : data;
-  if (typeof row === "object" && row !== null) {
-    return (row as Record<string, unknown>).confirmed === true;
-  }
-  return row === true;
-}
-
-function extractDispatchKey(data: unknown): string | null {
-  if (!data) return null;
-
-  if (typeof data === "string") {
-    const v = data.trim();
-    return v.length > 0 ? v : null;
-  }
-
-  if (Array.isArray(data)) {
-    for (const row of data) {
-      const key = extractDispatchKey(row);
-      if (key) return key;
-    }
-    return null;
-  }
-
-  if (typeof data === "object") {
-    const row = data as Record<string, unknown>;
-    const key = row.dispatch_key;
-    if (typeof key === "string" && key.trim().length > 0) {
-      return key.trim();
-    }
-  }
-
-  return null;
 }
 
 Deno.serve(async (req) => {
@@ -284,6 +225,13 @@ Deno.serve(async (req) => {
   });
 
   const norm = normalizePayload(raw);
+  const depsEntrega: DepsEntrega = {
+    rpc: (fn, args) => supabase.rpc(fn, args),
+    fetch: (url, init) => fetch(url, init),
+    env: (nome) => Deno.env.get(nome),
+  };
+  const MENSAGEM_ENTREGA_FALHOU =
+    "Recebemos seus dados, mas não conseguimos começar a gerar a sua peça agora. Tente de novo em um minuto.";
 
   try {
     const { data: existingCase, error: caseErr } = await supabase
@@ -297,13 +245,18 @@ Deno.serve(async (req) => {
       return bad("DB error", 500, corsHeadersForOrigin);
     }
 
+    // A sessão de pagamento é a do próprio caso, lida pelo servidor. O
+    // `stripe_session_id` que o navegador manda é ignorado desde 09/10/2026: o
+    // CASO_6b03e11a… chegou com a sessão de outro caso (spec 2026-10-09).
+    let sessaoDoCaso: string | null = null;
+
     if (!existingCase) {
       // Atualiza stripe_sessions: status = 'complete', payment_at = agora
       const { data: sessionRow, error: sessionErr } = await supabase
         .from("stripe_sessions")
         .update({ status: "complete" })
         .eq("case_id", norm.case_id)
-        .select("case_id")
+        .select("id,case_id")
         .limit(1)
         .maybeSingle();
 
@@ -314,6 +267,7 @@ Deno.serve(async (req) => {
       if (!sessionRow) {
         return bad("case_id inválido", 404, corsHeadersForOrigin);
       }
+      sessaoDoCaso = typeof sessionRow.id === "string" ? sessionRow.id : null;
     }
 
     if (existingCase && ["completed", "failed"].includes(existingCase.document_status)) {
@@ -338,29 +292,20 @@ Deno.serve(async (req) => {
     };
     const dup_guard = await sha256Hex(JSON.stringify(dupSource));
 
-    // Check for duplicate by dup_guard
+    // Reenvio idêntico: os dados não mudam, mas a entrega é tentada de novo —
+    // é assim que o cliente que recebeu o 503 dispara a nova tentativa. Num
+    // caso em `generating` ou encerrado a reserva volta vazia e nada acontece.
+    // (A duplicata por `stripe_session_id` saiu: dependia do valor do navegador.)
     if (existingCase && existingCase.dup_guard === dup_guard) {
+      const resultado = await entregar(depsEntrega, String(norm.case_id), "formulario");
+      if (resultado === "falhou") {
+        return bad(MENSAGEM_ENTREGA_FALHOU, statusDoFormulario(resultado), corsHeadersForOrigin);
+      }
       return json(
         {
           ok: true,
           message: "Duplicate submission (no-op)",
           dup_guard
-        },
-        200,
-        corsHeadersForOrigin
-      );
-    }
-
-    // Check for duplicate by stripe_session_id
-    if (
-      norm.stripe_session_id &&
-      existingCase &&
-      existingCase.stripe_session_id === norm.stripe_session_id
-    ) {
-      return json(
-        {
-          ok: true,
-          message: "Duplicate submission by stripe_session_id (no-op)"
         },
         200,
         corsHeadersForOrigin
@@ -405,7 +350,6 @@ Deno.serve(async (req) => {
       // Também fora do dup_guard, pela mesma regra.
       data_limite_protocolo: dataLimiteProtocolo(norm.data_limite_protocolo),
       dup_guard,
-      stripe_session_id: norm.stripe_session_id ?? null,
       updated_at: new Date().toISOString()
     };
 
@@ -416,8 +360,8 @@ Deno.serve(async (req) => {
     // schema. Isso exige as duas coisas ao mesmo tempo: a INSERÇÃO precisa
     // informar a coluna, e o UPDATE precisa NÃO tocá-la — reescrever 'pending'
     // por cima de um caso já em 'generating' (a guarda de 409 acima só barra
-    // 'completed' e 'failed') faria attempt_dispatch devolver a MESMA
-    // dispatch_key e o worker mandar um SEGUNDO e-mail ao cliente.
+    // 'completed' e 'failed') reabriria a reserva
+    // (reservar_entrega) e o worker mandaria um SEGUNDO e-mail ao cliente.
     //
     // Um `.upsert()` não consegue as duas: o ramo de INSERT é sempre montado,
     // então omitir a coluna resulta em 23502 (not-null violation) mesmo quando
@@ -437,7 +381,7 @@ Deno.serve(async (req) => {
     } else {
       const r = await supabase
         .from("form_submissions")
-        .insert({ ...updateFields, document_status: "pending" })
+        .insert({ ...updateFields, document_status: "pending", stripe_session_id: sessaoDoCaso })
         .select("*")
         .single();
       updated = r.data;
@@ -466,7 +410,7 @@ Deno.serve(async (req) => {
 
     // Verificação do medidor de velocidade — Fase 5 do plano do radar.
     //
-    // ANTES do attempt_dispatch, para o pipeline já ler o caso com ela. Nada
+    // ANTES da entrega, para o pipeline já ler o caso com ela. Nada
     // aqui pode derrubar o envio: toda falha vira `nao_aplicavel` e é só
     // logada. O UPDATE não toca document_status (ver o comentário do INSERT
     // acima: reescrevê-lo manda um segundo e-mail ao cliente).
@@ -518,314 +462,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    // After successful update, attempt dispatch via RPC
-    try {
-      let dispatch_key: string | null = null;
-      const dispatchRpcErrors: string[] = [];
-      let dispatchRpcRawData: unknown = null;
-
-      // Uma assinatura só: attempt_dispatch(p_case_id). Conferido em produção e
-      // no banco local (09/09/2026) — a variante attempt_dispatch(case_id) foi
-      // dropada e não existe em lugar nenhum.
-      //
-      // A lista de tentativas que existia aqui chamava a inexistente PRIMEIRO,
-      // levava PGRST202 em TODO envio, e empilhava o erro num array que só era
-      // logado quando NENHUMA tentativa devolvia chave. Como a segunda quase
-      // sempre devolvia, o array era descartado — e com ele qualquer falha real
-      // desta etapa. Era um supressor de log na parte mais crítica do fluxo.
-      const rpcResult = await supabase.rpc("attempt_dispatch", {
-        p_case_id: norm.case_id
-      });
-      dispatchRpcRawData = rpcResult.data;
-
-      if (rpcResult.error) {
-        const detalhe = formatDispatchError(rpcResult.error);
-        dispatchRpcErrors.push(`p_case_id: ${detalhe}`);
-        logDispatchError("attempt_dispatch_falhou", {
-          case_id: norm.case_id,
-          error: detalhe
-        });
-      } else {
-        // Resultado vazio não é erro: significa que as pré-condições
-        // (payment_status = 'paid' e document_status = 'pending') não valem.
-        dispatch_key = extractDispatchKey(rpcResult.data);
-      }
-
-      // Recovery path: if RPC call shape failed but dispatch row already exists, resume from it.
-      if (!dispatch_key) {
-        const { data: dispatchRow, error: dispatchRowErr } = await supabase
-          .from("dispatches")
-          .select("dispatch_key,status")
-          .eq("case_id", norm.case_id)
-          .in("status", ["pending", "in_progress"])
-          .order("updated_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        if (dispatchRowErr) {
-          dispatchRpcErrors.push(`dispatches_lookup: ${formatDispatchError(dispatchRowErr)}`);
-        } else if (dispatchRow?.dispatch_key) {
-          dispatch_key = String(dispatchRow.dispatch_key);
-          logDispatchInfo("dispatch_key_recuperado", {
-            case_id: norm.case_id,
-            dispatch_key,
-            status: dispatchRow.status ?? null
-          });
-        }
-      }
-
-      if (dispatch_key) {
-        logDispatchInfo("dispatch_iniciado", {
-          case_id: norm.case_id,
-          dispatch_key
-        });
-
-        const pipelineUrl = Deno.env.get("DISPATCH_PIPELINE_URL") ??
-          Deno.env.get("N8N_WEBHOOK_URL");
-        const pipelineHmacSecret =
-          Deno.env.get("DISPATCH_PIPELINE_HMAC_SECRET") ??
-          Deno.env.get("N8N_HMAC_SECRET");
-
-        if (pipelineUrl) {
-          const payload = {
-            case_id: norm.case_id,
-            email: norm.email,
-            dispatch_key
-          };
-          const idempotencyKey = dispatch_key;
-          const bodyStr = JSON.stringify(payload);
-
-          const sigPromise = pipelineHmacSecret
-            ? hmacSha256Hex(pipelineHmacSecret, bodyStr)
-            : Promise.resolve("");
-
-          let shouldConfirmDispatch = true;
-          let confirmSuccess = false;
-
-          try {
-            const signature = await sigPromise;
-
-            const headers: Record<string, string> = {
-              "Content-Type": "application/json",
-              "Idempotency-Key": idempotencyKey
-            };
-            if (signature) headers["X-Signature"] = signature;
-
-            const dispatchSentAt = new Date().toISOString();
-            const res = await fetch(pipelineUrl, {
-              method: "POST",
-              headers,
-              body: bodyStr
-            });
-            confirmSuccess = res.ok;
-            // Python/FastAPI pipeline acknowledges work with 202; confirm_dispatch runs via Express callback
-            const asyncAccepted = res.ok && res.status === 202;
-            if (asyncAccepted) {
-              shouldConfirmDispatch = false;
-            }
-
-            if (res.ok) {
-              const { error: statusErr } = await supabase
-                .from("form_submissions")
-                .update({
-                  document_status: "generating",
-                  updated_at: dispatchSentAt
-                })
-                .eq("case_id", norm.case_id);
-
-              if (statusErr) {
-                console.error(
-                  "Failed to update document_status after pipeline dispatch:",
-                  statusErr
-                );
-              }
-            }
-
-            if (!res.ok) {
-              const txt = await res.text().catch(() => "<no body>");
-              logDispatchError("pipeline_dispatch_non_2xx", {
-                case_id: norm.case_id,
-                dispatch_key,
-                status: res.status,
-                body: txt
-              });
-            }
-          } catch (err) {
-            logDispatchError("pipeline_dispatch_error", {
-              case_id: norm.case_id,
-              dispatch_key,
-              error: err instanceof Error ? err.message : String(err)
-            });
-            confirmSuccess = false;
-            shouldConfirmDispatch = true;
-          } finally {
-            try {
-              if (shouldConfirmDispatch) {
-                // supabase-js NÃO lança em erro do PostgREST — devolve
-                // { data, error }. O try/catch em volta só pegava falha de
-                // rede, então um erro da RPC passava batido e o dispatch ficava
-                // sem confirmação, em silêncio.
-                const { data: confirmData, error: confirmErr } =
-                  await supabase.rpc("confirm_dispatch", {
-                    dispatch_key,
-                    success: confirmSuccess
-                  });
-
-                if (confirmErr) {
-                  logDispatchError("confirm_dispatch_rpc_error", {
-                    case_id: norm.case_id,
-                    dispatch_key,
-                    error: formatDispatchError(confirmErr)
-                  });
-                } else if (!confirmDispatchOk(confirmData)) {
-                  logDispatchError("confirm_dispatch_sem_efeito", {
-                    case_id: norm.case_id,
-                    dispatch_key
-                  });
-                }
-              }
-            } catch (rpcErr) {
-              logDispatchError("confirm_dispatch_rpc_error", {
-                case_id: norm.case_id,
-                dispatch_key,
-                error:
-                  rpcErr instanceof Error ? rpcErr.message : String(rpcErr)
-              });
-            }
-          }
-        } else {
-          logDispatchError("pipeline_webhook_url_missing", {
-            case_id: norm.case_id,
-            dispatch_key
-          });
-          try {
-            const { data: confirmData, error: confirmErr } =
-              await supabase.rpc("confirm_dispatch", {
-                dispatch_key,
-                success: false
-              });
-
-            if (confirmErr) {
-              logDispatchError("confirm_dispatch_rpc_error", {
-                case_id: norm.case_id,
-                dispatch_key,
-                error: formatDispatchError(confirmErr)
-              });
-            } else if (!confirmDispatchOk(confirmData)) {
-              logDispatchError("confirm_dispatch_sem_efeito", {
-                case_id: norm.case_id,
-                dispatch_key
-              });
-            }
-          } catch (rpcErr) {
-            logDispatchError("confirm_dispatch_rpc_error", {
-              case_id: norm.case_id,
-              dispatch_key,
-              error:
-                rpcErr instanceof Error ? rpcErr.message : String(rpcErr)
-            });
-          }
-        }
-      } else {
-        const missing: string[] = [];
-        let document_status: string | null = null;
-        let stripe_session_id: string | null = null;
-        let payment_status: string | null = null;
-
-        const { data: formRowData, error: formErr } = await supabase
-          .from("form_submissions")
-          .select("document_status,stripe_session_id")
-          .eq("case_id", norm.case_id)
-          .maybeSingle();
-
-        if (formErr) {
-          logDispatchError("dispatch_status_lookup_error", {
-            case_id: norm.case_id,
-            error: formErr instanceof Error ? formErr.message : String(formErr)
-          });
-          missing.push("form_submissions_lookup_error");
-        }
-
-        const formRow = formRowData as {
-          document_status?: string | null;
-          stripe_session_id?: string | null;
-        } | null;
-
-        if (!formRow) {
-          missing.push("form_submissions");
-        } else {
-          document_status = formRow.document_status ?? null;
-          stripe_session_id = formRow.stripe_session_id ?? null;
-
-          if (document_status !== "pending") {
-            missing.push("form_submissions.document_status=pending");
-          }
-
-          if (!stripe_session_id) {
-            missing.push("form_submissions.stripe_session_id");
-          } else {
-            const { data: stripeRowData, error: stripeErr } = await supabase
-              .from("stripe_sessions")
-              .select("payment_status")
-              .eq("id", stripe_session_id)
-              .maybeSingle();
-
-            if (stripeErr) {
-              logDispatchError("dispatch_status_lookup_error", {
-                case_id: norm.case_id,
-                stripe_session_id,
-                error: stripeErr instanceof Error ? stripeErr.message : String(stripeErr)
-              });
-              missing.push("stripe_sessions_lookup_error");
-            }
-
-            const stripeRow = stripeRowData as { payment_status?: string | null } | null;
-            if (!stripeRow) {
-              missing.push("stripe_sessions");
-            } else {
-              payment_status = stripeRow.payment_status ?? null;
-              if (payment_status !== "paid") {
-                missing.push("stripe_sessions.payment_status=paid");
-              }
-            }
-          }
-        }
-
-        if (missing.length === 0) {
-          missing.push("dispatch_precondition_unknown");
-        }
-
-        // Race condition esperada: form submetido antes do webhook Stripe confirmar pagamento.
-        // Neste caso NÃO é erro — o webhook chamará attempt_dispatch quando payment_status=paid.
-        const isPendingPayment =
-          missing.length === 1 &&
-          missing[0] === "stripe_sessions.payment_status=paid";
-
-        if (isPendingPayment) {
-          logDispatchInfo("dispatch_aguardando_pagamento", {
-            case_id: norm.case_id,
-            stripe_session_id,
-            payment_status,
-            note: "Webhook Stripe ainda não confirmou pagamento. attempt_dispatch será chamado pelo stripe-webhook."
-          });
-        } else {
-          // Qualquer outro motivo de falha é um erro real e deve ser logado como tal.
-          logDispatchError("dispatch_ignorado", {
-            case_id: norm.case_id,
-            missing,
-            document_status,
-            stripe_session_id,
-            payment_status,
-            rpc_errors: dispatchRpcErrors,
-            rpc_data: dispatchRpcRawData
-          });
-        }
-      }
-    } catch (rpcErr) {
-      logDispatchError("attempt_dispatch_rpc_error", {
-        case_id: norm.case_id,
-        error: rpcErr instanceof Error ? rpcErr.message : String(rpcErr)
-      });
+    // Entrega ao pipeline (spec 2026-10-09): a reserva atômica no banco decide
+    // quem entrega. Sem pagamento confirmado ainda, ela volta vazia e quem
+    // entrega é a `stripe-webhook`, quando o pagamento chegar.
+    const resultado = await entregar(depsEntrega, String(norm.case_id), "formulario");
+    if (resultado === "falhou") {
+      return bad(MENSAGEM_ENTREGA_FALHOU, statusDoFormulario(resultado), corsHeadersForOrigin);
     }
 
     return json(
