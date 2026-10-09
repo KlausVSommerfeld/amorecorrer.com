@@ -60,7 +60,7 @@ congelada.
 ### 3.1 `reservar_entrega(p_case_id text)`
 
 ```
-RETURNS TABLE(dispatch_key uuid, email text, stripe_session_id text)
+RETURNS TABLE(dispatch_key text, email text, stripe_session_id text)
 LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public'
 ```
 
@@ -89,7 +89,7 @@ Numa transação só:
 
    ```sql
    INSERT INTO dispatches (case_id, dispatch_key, stripe_session_id, status, created_at)
-   VALUES (p_case_id, gen_random_uuid(), <id da sessão>, 'pending', now())
+   VALUES (p_case_id, gen_random_uuid()::text, <id da sessão>, 'pending', now())
    ON CONFLICT (case_id) DO UPDATE
       SET status = 'pending',
           stripe_session_id = EXCLUDED.stripe_session_id,
@@ -101,7 +101,9 @@ Numa transação só:
    (`Resend-Idempotency-Key`) e do registro do PDF (`generated_documents.dispatch_key` é único).
 4. Devolve `(dispatch_key, email, stripe_session_id)`.
 
-### 3.2 `devolver_entrega(p_dispatch_key uuid)`
+### 3.2 `devolver_entrega(p_dispatch_key text)`
+
+(`dispatches.dispatch_key` é `text`, como o argumento de `confirm_dispatch`.)
 
 ```
 RETURNS TABLE(devolvido boolean)
@@ -134,8 +136,10 @@ trabalho. Só esta função faz isso.
 
 Se o POST estourar o tempo **depois** de o pipeline ter aceitado o trabalho (o 202 se perdeu na
 volta), o caso volta a `pending` e uma nova tentativa pode rodar uma segunda geração. O e-mail não
-duplica — a Resend descarta o segundo envio com a mesma chave em até 24 h —, e o segundo registro do
-PDF bate na unicidade de `dispatch_key`. É raro, porque o pipeline responde 202 antes de qualquer
+duplica — a Resend descarta o segundo envio com a mesma chave em até 24 h —, e a segunda geração
+sobrescreve a primeira no mesmo caminho do Storage e na mesma linha de `generated_documents` (o
+Express faz *upsert* por `dispatch_key`). O cliente fica com o PDF do primeiro e-mail, e o bucket com
+o da segunda geração — redigidos dos mesmos dados, mas não idênticos. É raro, porque o pipeline responde 202 antes de qualquer
 trabalho (`main.py` só valida a assinatura e agenda), e é muito menos grave que o caso preso de hoje.
 
 ## 4. O módulo de entrega
