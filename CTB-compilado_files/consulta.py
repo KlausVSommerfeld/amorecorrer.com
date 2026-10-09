@@ -53,6 +53,19 @@ PROCESSUAIS_PADRAO: tuple[str, ...] = (
 STATUS_TAG = {"revogado": "REVOGADO", "vetado": "VETADO", "sem_efeito": "SEM EFEITO", "vazio": "SEM TEXTO"}
 ROMANO = r"[IVXLC]+"
 
+# Inciso em algarismo arábico ("inciso 2", "inc. 3"), só com a palavra: um número
+# solto ("218, 2") é ambíguo. É como o cliente digita no questionário.
+INCISO_ARABICO = r"\binc(?:iso)?\.?\s*(\d{1,3})\s*[ºo°]?(?!\d)(?:-([A-Z])\b)?"
+
+
+def _romano(n: int) -> str:
+    saida = ""
+    for valor, letra in ((100, "C"), (90, "XC"), (50, "L"), (40, "XL"), (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I")):
+        while n >= valor:
+            saida += letra
+            n -= valor
+    return saida
+
 
 def _sem_acento(s: str) -> str:
     return unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode().lower()
@@ -117,7 +130,7 @@ REF_RE = re.compile(
 
 def parse_ref(texto: str) -> Ref:
     """Aceita: 'art. 218, III', '218 III', '218, inciso III', '280 § 2º', '18, parágrafo único',
-    '230, V, a', 'art. 7º-A', '181, XVII', '162, II, item 1'."""
+    '230, V, a', 'art. 7º-A', '181, XVII', '162, II, item 1', '218, inciso 2'."""
     m = REF_RE.match(texto)
     if not m:
         raise ReferenciaInvalida(f"referência não reconhecida: {texto!r}")
@@ -130,7 +143,10 @@ def parse_ref(texto: str) -> Ref:
     elif pm := re.search(r"(?:§|par[áa]grafo)\s*(\d+)\s*[ºo°]?\s*(?:-\s*([A-Z]))?", resto, re.I):
         par = pm.group(1) + (f"-{pm.group(2).upper()}" if pm.group(2) else "")
         resto = resto[: pm.start()] + resto[pm.end():]
-    if im := re.search(rf"(?:inciso\s+)?\b({ROMANO})\b(?:-([A-Z])\b)?", resto):
+    if (im := re.search(INCISO_ARABICO, resto, re.I)) and int(im.group(1)) > 0:
+        inc = _romano(int(im.group(1))) + (f"-{im.group(2).upper()}" if im.group(2) else "")
+        resto = resto[im.end():]
+    elif im := re.search(rf"(?:inciso\s+)?\b({ROMANO})\b(?:-([A-Z])\b)?", resto):
         inc = im.group(1) + (f"-{im.group(2)}" if im.group(2) else "")
         resto = resto[im.end():]
     if am := re.search(r"(?:al[íi]nea\s+)?[\"'“]?\b([a-z])\b[\"'”)]?", resto):

@@ -24,5 +24,9 @@
   {"amparo_legal": "Art. 218, III - transitar em velocidade superior à máxima permitida em mais de 50%", "velocidade_permitida": 80, "velocidade_aferida": 110, "velocidade_considerada": 103, "enquadramento_218": "art. 218, III", "situacao": "desclassificacao", "inciso_da_conta": "II"},
   {"amparo_legal": "Art. 218, I, infração média", "velocidade_permitida": 80, "velocidade_aferida": 91, "velocidade_considerada": 84, "enquadramento_218": "art. 218, I", "situacao": null, "inciso_da_conta": null},
   {"amparo_legal": "Art. 218 do Código de Trânsito Brasileiro", "velocidade_permitida": 80, "velocidade_aferida": 80, "velocidade_considerada": 78, "enquadramento_218": "art. 218", "situacao": "sem_infracao", "inciso_da_conta": null},
-  {"amparo_legal": "art. 218, II, Resolução 798", "velocidade_permitida": 80, "velocidade_aferida": 91, "velocidade_considerada": 84, "enquadramento_218": "art. 218, II", "situacao": "desclassificacao", "inciso_da_conta": "I"}
+  {"amparo_legal": "art. 218, II, Resolução 798", "velocidade_permitida": 80, "velocidade_aferida": 91, "velocidade_considerada": 84, "enquadramento_218": "art. 218, II", "situacao": "desclassificacao", "inciso_da_conta": "I"},
+  {"amparo_legal": "Artigo 218, inciso 2, do CTB", "velocidade_permitida": 80, "velocidade_aferida": 91, "velocidade_considerada": 84, "enquadramento_218": "art. 218, II", "situacao": "desclassificacao", "inciso_da_conta": "I"},
+  {"amparo_legal": "art. 218, inc. 3", "velocidade_permitida": 80, "velocidade_aferida": 130, "velocidade_considerada": 125, "enquadramento_218": "art. 218, III", "situacao": null, "inciso_da_conta": null},
+  {"amparo_legal": "Art. 218, inciso 3º", "velocidade_permitida": 60, "velocidade_aferida": 80, "velocidade_considerada": 73, "enquadramento_218": "art. 218, III", "situacao": "desclassificacao", "inciso_da_conta": "II"},
+  {"amparo_legal": "218, 2", "velocidade_permitida": 80, "velocidade_aferida": 91, "velocidade_considerada": 84, "enquadramento_218": "art. 218", "situacao": null, "inciso_da_conta": null}
 ]

@@ -33,8 +33,23 @@ const GRAVIDADE: Record<Inciso, number> = { I: 1, II: 2, III: 3 }
 const REF_RE = /^\s*(?:art(?:igo)?\.?\s*)?(\d+)\s*[ºo°]?\s*(?:-\s*([A-Z]))?\s*[.,;]?\s*(.*)$/i
 const PARAGRAFO = /par[áa]grafo\s+[úu]nico|p\.\s*[úu]nico|(?:§|par[áa]grafo)\s*\d+/i
 const INCISO = /(?:inciso\s+)?(?<![\p{L}\p{N}_])([IVXLC]+)(?![\p{L}\p{N}_])(?:-([A-Z])(?![\p{L}\p{N}_]))?/u
+// Inciso em algarismo arábico ("inciso 2", "inc. 3"), só com a palavra — como
+// INCISO_ARABICO no parse_ref. Número solto ("218, 2") continua sem inciso.
+const INCISO_ARABICO = /(?<![\p{L}\p{N}_])inc(?:iso)?\.?\s*(\d{1,3})\s*[ºo°]?(?!\d)(?:-([A-Z])(?![\p{L}\p{N}_]))?/iu
 const ALINEA = /(?:al[íi]nea\s+)?["'“]?(?<![\p{L}\p{N}_])([a-z])(?![\p{L}\p{N}_])["'”)]?/u
 const ITEM = /item\s+\d+/i
+
+function romano(n: number): string {
+  const tabela: [number, string][] = [[100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']]
+  let saida = ''
+  for (const [valor, letra] of tabela) {
+    while (n >= valor) {
+      saida += letra
+      n -= valor
+    }
+  }
+  return saida
+}
 
 export function enquadramento218(amparo: string): string | null {
   const m = REF_RE.exec(amparo ?? '')
@@ -42,8 +57,14 @@ export function enquadramento218(amparo: string): string | null {
   let resto = m[3]
   if (PARAGRAFO.test(resto)) return null
   let inciso: string | null = null
-  const im = INCISO.exec(resto)
-  if (im) {
+  const ia = INCISO_ARABICO.exec(resto)
+  const arabico = ia ? parseInt(ia[1], 10) : 0
+  const im = arabico > 0 ? null : INCISO.exec(resto)
+  if (ia && arabico > 0) {
+    if (ia[2]) return null
+    inciso = romano(arabico)
+    resto = resto.slice(ia.index + ia[0].length)
+  } else if (im) {
     if (im[2]) return null
     inciso = im[1]
     resto = resto.slice(im.index + im[0].length)

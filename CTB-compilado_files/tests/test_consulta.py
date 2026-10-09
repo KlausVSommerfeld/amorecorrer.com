@@ -27,6 +27,15 @@ JSON = RAIZ / "saida" / "ctb.json"
         ("art. 7º-A", Ref("7-A")),
         ("61 §1 II a item 2", Ref("61", paragrafo="1", inciso="II", alinea="a", item="2")),
         ("147, § 1º-A", Ref("147", paragrafo="1-A")),
+        # Inciso em algarismo arábico, só com a palavra "inciso" (ou "inc."): é como
+        # o cliente digita no questionário (teste ponta a ponta de 08/10/2026).
+        ("Artigo 218, inciso 2, do CTB", Ref("218", inciso="II")),
+        ("art. 218, inc. 3", Ref("218", inciso="III")),
+        ("218, inciso 1º", Ref("218", inciso="I")),
+        ("art. 230, inciso 5, a", Ref("230", inciso="V", alinea="a")),
+        ("280, § 2º, inciso 1", Ref("280", paragrafo="2", inciso="I")),
+        # Número solto continua sem inciso: "218, 2" é ambíguo.
+        ("218, 2", Ref("218")),
     ],
 )
 def test_parse_ref(txt, esperado):
