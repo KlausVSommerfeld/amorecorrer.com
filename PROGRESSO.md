@@ -1725,3 +1725,15 @@ Com o pipeline reiniciado e túnel novo (`mix-stream-wireless-ideas.trycloudflar
 **Limpeza, com autorização do Klaus:** os sete casos de teste (`CASO_cfc1b0f7…`, `CASO_a736dc94…`, `CASO_52a22149…`, `CASO_608d9541…`, `CASO_7a1c2dac…`, `CASO_24a37eb2…`, `CASO_228701e6…`) eram todas as linhas das tabelas do fluxo. Os `form_submissions` e o `radar_consultas_log` dos seis primeiros já tinham sido apagados à mão pelo editor SQL às 17:22, e no mesmo minuto o `DELETE` em `dispatches` falhou duas vezes, barrado pela chave de `generated_documents` (`ON DELETE RESTRICT`). O resto saiu na ordem das chaves, `generated_documents` → `dispatches` → `radar_consultas_log` → `form_submissions` → `stripe_sessions`: 5 + 5 + 1 + 1 + 7 linhas, e as cinco tabelas conferidas com zero. Os 5 PDFs desses casos saíram do bucket; ficaram duas pastas órfãs de testes antigos (no `PENDENCIAS.md`).
 
 **Arquivos:** `PENDENCIAS.md`, `PROGRESSO.md`.
+
+## Sessão de 09/10/2026 — Entrega única ao pipeline
+
+Spec `docs/superpowers/specs/2026-10-09-entrega-unica-ao-pipeline-design.md`, plano `docs/superpowers/plans/2026-10-09-entrega-unica-ao-pipeline.md`. Resolve as duas lacunas do teste na nuvem de 02/10/2026.
+
+- **Banco:** `reservar_entrega(p_case_id)` confere o pagamento pela sessão do caso, passa o formulário de `pending` a `generating` (a trava) e cria ou reaproveita o dispatch; `devolver_entrega(p_dispatch_key)` desfaz quando o POST falha. `attempt_dispatch` saiu. As duas funções só executam com a service role. 29 testes pgTAP e uma prova de concorrência com dois `psql`.
+- **Edge:** `supabase/functions/_shared/entrega.ts` (reserva → POST assinado com tempo-limite de 10 s → devolução), usado pela `form-submit` (503 na falha; o reenvio idêntico tenta de novo) e pela `stripe-webhook` (entrega quando a sessão está paga, mesmo num evento reenviado; 500 na falha, e o Stripe reenvia). O `stripe_session_id` do navegador é ignorado.
+- **Formulário:** não exige mais a sessão no `localStorage` (quem abre o link em outro aparelho consegue enviar) e tem mensagem própria para o 503. O Express lê a sessão pelo `case_id`.
+
+**Arquivos:** `supabase/migrations/20261009000000_entrega_unica.sql`, `supabase/tests/{entrega_test.sql,entrega_concorrencia.sh}`, `supabase/functions/_shared/{entrega,entrega.test}.ts`, `supabase/functions/stripe-webhook/{index,pagamento,pagamento.test}.ts`, `supabase/functions/form-submit/index.ts`, `src/lib/{falhaDoEnvio,falhaDoEnvio.test}.ts`, `src/pages/Form.tsx`, `src/integrations/supabase/types.ts`, `server/src/index.ts`, `package.json`, `CLAUDE.md`, `PENDENCIAS.md`.
+
+**Falta:** publicar e os três testes ponta a ponta (no `PENDENCIAS.md`).
