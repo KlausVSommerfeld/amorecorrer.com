@@ -1,5 +1,7 @@
 import Stripe from "npm:stripe@12.16.0";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { entregar, statusDoWebhook, type DepsEntrega } from "../_shared/entrega.ts";
+import { sessaoPaga } from "./pagamento.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -41,32 +43,17 @@ function shouldPromoteStatus(current: string | null, next: string): boolean {
   return (rank[next] ?? 0) >= (rank[current] ?? 0);
 }
 
-async function triggerDispatch(case_id: string): Promise<void> {
-  // Uma assinatura só: attempt_dispatch(p_case_id). A lista de tentativas que
-  // existia aqui protegia contra uma variante attempt_dispatch(case_id) que não
-  // existe em banco nenhum — conferido em produção e no local em 09/09/2026.
-  const { data, error } = await supabaseAdmin.rpc("attempt_dispatch", {
-    p_case_id: case_id,
-  });
-
-  if (error) {
-    console.error("[webhook] attempt_dispatch falhou", {
-      case_id,
-      error: error.message,
-    });
-    return;
-  }
-
-  // Resultado vazio não é erro: significa que as pré-condições (pago e
-  // documento pendente) ainda não foram atendidas.
-  console.info("[webhook] attempt_dispatch concluído", { case_id, result: data });
-}
+const depsEntrega: DepsEntrega = {
+  rpc: (fn, args) => supabaseAdmin.rpc(fn, args),
+  fetch: (url, init) => fetch(url, init),
+  env: (nome) => Deno.env.get(nome),
+};
 
 async function handleSessionUpsertAndFormUpdate(
   event: any,
   session: any,
   statusToApply: string | null
-): Promise<{ paymentConfirmed: boolean; case_id: string | null }> {
+): Promise<{ pago: boolean; case_id: string | null }> {
   const case_id = session.client_reference_id ?? session.metadata?.case_id ?? null;
 
   // Guard: sessão sem case_id não pode ser persistida (coluna NOT NULL).
@@ -75,7 +62,7 @@ async function handleSessionUpsertAndFormUpdate(
       session_id: session.id,
       event_type: event.type,
     });
-    return { paymentConfirmed: false, case_id: null };
+    return { pago: false, case_id: null };
   }
 
   // Determina o status a promover
@@ -218,8 +205,7 @@ async function handleSessionUpsertAndFormUpdate(
     throw new Error("Failed to patch form_submissions");
   }
 
-  const paymentConfirmed = nextPaymentStatus === "paid";
-  return { paymentConfirmed, case_id };
+  return { pago: sessaoPaga(nextPaymentStatus, existingRow?.payment_status ?? null), case_id };
 }
 
 Deno.serve(async (req) => {
@@ -258,11 +244,11 @@ Deno.serve(async (req) => {
     const session = event.data.object ?? {};
     const statusToApply = mapStripeToLocalStatus(event.type, session);
 
-    let paymentConfirmed = false;
+    let pago = false;
     let case_id: string | null = null;
 
     try {
-      ({ paymentConfirmed, case_id } = await handleSessionUpsertAndFormUpdate(
+      ({ pago, case_id } = await handleSessionUpsertAndFormUpdate(
         event,
         session,
         statusToApply
@@ -272,9 +258,15 @@ Deno.serve(async (req) => {
       return new Response("Internal Server Error", { status: 500 });
     }
 
-    if (paymentConfirmed && case_id) {
-      console.info("[webhook] Pagamento confirmado — disparando attempt_dispatch", { case_id });
-      await triggerDispatch(case_id);
+    if (pago && case_id) {
+      // Formulário enviado antes da confirmação: é aqui que ele é entregue
+      // (spec 2026-10-09). Se a entrega falhar, o 500 faz o Stripe reenviar o
+      // evento — com intervalos crescentes, por até 3 dias — e a reserva tenta
+      // de novo. Sem formulário, ou já entregue, a reserva volta vazia.
+      const resultado = await entregar(depsEntrega, case_id, "webhook");
+      if (resultado === "falhou") {
+        return new Response("Entrega ao pipeline falhou", { status: statusDoWebhook(resultado) });
+      }
     }
 
     return new Response(JSON.stringify({ received: true }), {
