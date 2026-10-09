@@ -26,6 +26,7 @@ from velocidade import bloco_velocidade
 from pdf_peca import gerar_pdf
 from prompt import argumentos_da_chamada, build_case_context, system_prompt, texto_da_resposta
 from verificacao import bloco_verificacao
+from tentativas import com_novas_tentativas
 
 log = logging.getLogger(__name__)
 
@@ -338,8 +339,13 @@ async def run_dispatch_pipeline(body_text: str) -> None:
             email_failed = False
             email_error: str | None = None
             try:
-                msg_id = await send_email_pdf(
-                    official_email, pdf_bytes, payload.case_id, dk, intro, peca.nome_arquivo
+                # Falha passageira (DNS, conexão, 4xx) é repetida duas vezes antes
+                # de o caso ir a `failed`; a Resend-Idempotency-Key evita e-mail duplo.
+                msg_id = await com_novas_tentativas(
+                    lambda: send_email_pdf(
+                        official_email, pdf_bytes, payload.case_id, dk, intro, peca.nome_arquivo
+                    ),
+                    rotulo=f"email dispatch_key={dk}",
                 )
             except Exception as mail_exc:
                 email_failed = True

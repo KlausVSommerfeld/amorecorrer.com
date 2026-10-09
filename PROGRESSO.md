@@ -1699,3 +1699,17 @@ Suítes depois da correção: 82 testes de front e Edge, 230 do pipeline, build 
 **Ficou de fora:** o deploy (`db push` e `functions deploy form-submit`) e o teste ponta a ponta pelo questionário; os projetos 2 e 3; o contador de funil; o texto do `ComoFunciona` na home.
 
 **Arquivos:** `src/pages/{Questionario,Home,Form}.tsx`, `src/components/questionario/*`, `src/components/FalhaCheckout.tsx`, `src/hooks/use-checkout.ts`, `src/lib/{questionario,diagnostico,estagios,checkout}.ts` e testes, `src/App.tsx`, `vite.config.ts`, `supabase/migrations/20261007000000_data_limite_protocolo.sql`, `supabase/functions/form-submit/{campos,campos.test,index}.ts`, `pipeline/{peca,prompt,test_peca,test_prompt,test_diagnostico_paridade}.py`, `tests/compartilhados/velocidade.json`, `CLAUDE.md`, `PENDENCIAS.md`.
+
+## Sessão de 08/10/2026 (noite) — Teste ponta a ponta pelo questionário: três falhas
+
+Deploy conferido pelo conector antes do teste: migration `data_limite_protocolo` aplicada (`date`, anulável, com comentário) e `form-submit` v74 com `dataLimiteProtocolo`. Túnel em `survivor-petition-stays-specifies.trycloudflare.com`.
+
+O teste (`CASO_608d9541…`: defesa prévia, data-limite 28/10/2026, "Sim, eu dirigia", 80/91/84, sem versão) terminou em `failed`. Diagnóstico:
+- **E-mail:** o PDF foi gerado e registrado, mas o envio morreu em `Error connecting to smtp.resend.com on port 587: [Errno 11001] getaddrinfo failed`, segundos depois de o mesmo processo falar com o DeepSeek e o Supabase. Era DNS instável na máquina do Klaus (um download do PDF pelo WSL também caiu no meio, com curl 56, e passou nas três tentativas seguintes). Defeito exposto: uma falha passageira levava o caso a `failed` sem nova tentativa. **Corrigido:** `pipeline/tentativas.py` repete o envio duas vezes (5 s e 15 s) em falha passageira (`OSError`, resposta 4xx); 5xx e SMTP não configurado falham na hora. Conferido contra um `aiosmtplib.send` real para host inexistente: `SMTPConnectError`, três envios.
+- **Checkout:** as duas falhas antes do Stripe não chegaram ao Supabase (logs da `create-checkout-session` só têm a chamada que deu certo, e há uma única sessão nova). O pedido morreu no navegador: a mesma rede instável. Nada a corrigir no código.
+- **Peça sem desclassificação:** o enquadramento digitado foi "Artigo 218, inciso 2, do CTB". O `parse_ref` e o `diagnostico.ts` só liam inciso romano: art. 218 sem inciso, resumo neutro e pedido só com o arquivamento (a paridade se manteve). **Corrigido** nos dois lados: inciso arábico com a palavra ("inciso 2", "inc. 3", "inciso 1º"); número solto continua sem inciso. 6 casos novos no `test_consulta.py` e 4 no arquivo de paridade, gerados pelo pipeline.
+- O e-mail, gerado localmente para este caso, diz "Protocole… até 28/10/2026". A peça trouxe de novo o enchimento sobre o art. 281-A (menor já registrado).
+
+Suítes: 82 testes de front e Edge, 239 do pipeline, 25 do `test_consulta.py`. O teste ponta a ponta precisa ser refeito (Task 9, no `PENDENCIAS.md`).
+
+**Arquivos:** `CTB-compilado_files/{consulta.py,tests/test_consulta.py}`, `src/lib/diagnostico.ts`, `tests/compartilhados/velocidade.json`, `pipeline/{tentativas,test_tentativas,worker}.py`, `CLAUDE.md`, `PENDENCIAS.md`.
