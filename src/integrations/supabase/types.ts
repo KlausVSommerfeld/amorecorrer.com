@@ -535,16 +535,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      attempt_dispatch: {
-        Args: { p_case_id: string }
-        Returns: {
-          dispatch_key: string
-        }[]
-      }
       confirm_dispatch: {
         Args: { dispatch_key: string; success: boolean }
         Returns: {
           confirmed: boolean
+        }[]
+      }
+      devolver_entrega: {
+        Args: { p_dispatch_key: string }
+        Returns: {
+          devolvido: boolean
         }[]
       }
       radar_classificar_resultado: {
@@ -552,6 +552,14 @@ export type Database = {
         Returns: string
       }
       radar_unaccent_imutavel: { Args: { entrada: string }; Returns: string }
+      reservar_entrega: {
+        Args: { p_case_id: string }
+        Returns: {
+          dispatch_key: string
+          email: string
+          stripe_session_id: string
+        }[]
+      }
       verificar_medidor: {
         Args: {
           p_data_infracao?: string

@@ -5,6 +5,7 @@ import { getCaseIdFromUrl } from '../lib/caseId';
 import { submitForm } from '../lib/api';
 import { normalizarNumeroDigitos, normalizarNumeroSerie } from '../lib/medidor';
 import { DEFESA_PREVIA, ESTAGIOS } from '../lib/estagios';
+import { mensagemDeFalha } from '../lib/falhaDoEnvio';
 import {
   apagarRespostas,
   armazenamentoDoNavegador,
@@ -89,7 +90,6 @@ interface FormData {
 
   form_token: string;
   case_id: string;
-  stripe_session_id: string;
 }
 
 
@@ -183,30 +183,6 @@ function agoraParaInput(): string {
   return brasilAgora.replace(' ', 'T');
 }
 
-/**
- * O que o usuário lê quando o envio falha. O erro cru — `Request failed: 500 …`
- * seguido do corpo da resposta — dizia o problema do servidor, nunca o do
- * usuário, e vazava detalhes de infraestrutura na tela.
- */
-function mensagemDeFalha(status: number): string {
-  if (status === 409) {
-    return 'Este caso já foi finalizado. Se você não recebeu o PDF, fale com a gente com o número do caso em mãos.';
-  }
-  if (status === 404) {
-    return 'Não localizamos este pedido. Confira se você abriu o link que veio depois do pagamento.';
-  }
-  if (status === 413) {
-    return 'O texto ficou grande demais. Encurte o campo "O que aconteceu?" e envie de novo.';
-  }
-  if (status === 429) {
-    return 'Muitas tentativas em pouco tempo. Espere um minuto e tente de novo.';
-  }
-  if (status === 400 || status === 401 || status === 403) {
-    return 'O envio foi recusado. Recarregue a página pelo link do pagamento e tente de novo.';
-  }
-  return 'Nossos servidores não responderam agora. Seus dados continuam aqui — tente de novo.';
-}
-
 const INITIAL_FORM: FormData = {
   nomeCompleto: '',
   email: '',
@@ -245,12 +221,11 @@ const INITIAL_FORM: FormData = {
   medidor_numero_certificado: '',
 
   form_token: '',
-  case_id: '',
-  stripe_session_id: ''
+  case_id: ''
 };
 
 /** Campos de sistema nunca entram no rascunho: eles vêm da URL e do checkout. */
-const CAMPOS_DE_SISTEMA = ['form_token', 'case_id', 'stripe_session_id'] as const;
+const CAMPOS_DE_SISTEMA = ['form_token', 'case_id'] as const;
 
 /** Há algo digitado? Campos de sistema não contam — eles vêm da URL. */
 function temConteudo(dados: Partial<FormData>): boolean {
@@ -385,13 +360,6 @@ const Form = () => {
       token = token || uuidv4();
     }
 
-    let stripeSessionId: string | null = null;
-    try {
-      stripeSessionId = localStorage.getItem('stripe_session_id');
-    } catch {
-      stripeSessionId = null;
-    }
-
     // Um envio bem-sucedido que sobreviva a um F5: sem conta de usuário, o
     // número do caso na tela é o único comprovante que a pessoa tem.
     if (caseId) {
@@ -421,8 +389,7 @@ const Form = () => {
       return {
         ...mesclarComRascunho(comQuestionario, rascunho),
         form_token: token!,
-        case_id: caseId ?? prev.case_id,
-        stripe_session_id: stripeSessionId ?? prev.stripe_session_id
+        case_id: caseId ?? prev.case_id
       };
     });
 
@@ -724,7 +691,6 @@ const Form = () => {
     return {
       case_id: data.case_id,
       form_token: data.form_token,
-      stripe_session_id: data.stripe_session_id || null,
 
       nome: data.nomeCompleto.trim(),
       email: data.email.trim().toLowerCase(),
@@ -786,14 +752,6 @@ const Form = () => {
       setMessage({
         type: 'error',
         text: 'Não localizamos o seu pedido. Abra de novo o link que apareceu depois do pagamento.'
-      });
-      return;
-    }
-
-    if (!formData.stripe_session_id) {
-      setMessage({
-        type: 'error',
-        text: 'Não localizamos o seu pagamento neste navegador. Abra o formulário pelo link que veio depois de pagar.'
       });
       return;
     }
@@ -860,8 +818,7 @@ const Form = () => {
       setFormData(prev => ({
         ...INITIAL_FORM,
         form_token: prev.form_token,
-        case_id: prev.case_id,
-        stripe_session_id: prev.stripe_session_id
+        case_id: prev.case_id
       }));
       setErrors({});
     } catch (error) {
@@ -953,8 +910,7 @@ const Form = () => {
     setFormData(prev => ({
       ...INITIAL_FORM,
       form_token: prev.form_token,
-      case_id: prev.case_id,
-      stripe_session_id: prev.stripe_session_id
+      case_id: prev.case_id
     }));
     setErrors({});
     setCidadeManual(false);
@@ -1019,7 +975,7 @@ const Form = () => {
   // O pedido não veio pelo caminho do pagamento. Dizer isso agora vale mais que
   // deixar a pessoa preencher trinta campos para descobrir no botão de enviar.
   const pedidoIncompleto =
-    pronto && (!formData.case_id || !formData.stripe_session_id);
+    pronto && !formData.case_id;
 
   return (
     <PageShell bottomSpacer>
@@ -1050,11 +1006,11 @@ const Form = () => {
 
         {pedidoIncompleto && (
           <div className="error-message error-message--surface mb-6" role="alert">
-            <p className="font-semibold">Não encontramos o seu pagamento neste navegador.</p>
+            <p className="font-semibold">Não encontramos o número do seu pedido.</p>
             <p className="mt-1 text-sm leading-snug text-foreground">
-              Abra o formulário pelo link que apareceu depois do pagamento, no
-              mesmo aparelho e navegador. Se você já pagou e o link se perdeu,
-              fale com a gente — a cobrança está registrada.
+              Abra o formulário pelo link que apareceu depois do pagamento. Se
+              você já pagou e o link se perdeu, fale com a gente — a cobrança
+              está registrada.
             </p>
             {SUPORTE_URL && (
               <a

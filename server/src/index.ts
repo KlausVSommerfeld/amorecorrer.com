@@ -175,15 +175,15 @@ app.get("/internal/cases/:caseId", verifyGetCaseSignature, async (req: Request, 
       return res.status(404).json({ error: "Case not found" });
     }
 
+    // Pela sessão do caso, nunca pelo stripe_session_id gravado no formulário,
+    // que até 09/10/2026 vinha do navegador (spec 2026-10-09, §5.5).
     let stripe_session: Record<string, unknown> | null = null;
-    if (form.stripe_session_id) {
-      const { data: ss, error: ssErr } = await supabase
-        .from("stripe_sessions")
-        .select("id, case_id, payment_status, status")
-        .eq("id", form.stripe_session_id)
-        .maybeSingle();
-      if (!ssErr) stripe_session = ss as Record<string, unknown>;
-    }
+    const { data: ss, error: ssErr } = await supabase
+      .from("stripe_sessions")
+      .select("id, case_id, payment_status, status")
+      .eq("case_id", caseId)
+      .maybeSingle();
+    if (!ssErr) stripe_session = ss as Record<string, unknown>;
 
     const { data: dispatchRow, error: dispErr } = await supabase
       .from("dispatches")
