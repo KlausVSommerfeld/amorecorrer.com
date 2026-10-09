@@ -14,6 +14,7 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 
 ## Produção e lançamento
 
+- **RLS aberta: a chave anônima lê e escreve as tabelas do fluxo (conferido em produção, 09/10/2026).** As políticas de `stripe_sessions`, `form_submissions`, `dispatches` e `generated_documents` são `FOR ALL USING (true)` para o papel `public` (o nome diz "Service role", mas não restringe), e `anon`/`authenticated` têm todos os privilégios de tabela. Com a chave do bundle, qualquer um lê CPF, endereço e placa dos clientes e pode reabrir um caso (`document_status`), o caminho do segundo e-mail. O site não consulta essas tabelas (`grep` em `src/` vazio), então dá para fechar: migration que restringe as políticas a `service_role` (ou as remove — a service role ignora RLS), `REVOKE` dos privilégios de `anon` e `authenticated`, e o mesmo para o `EXECUTE` de `confirm_dispatch`. Corrigir antes do lançamento; o `CLAUDE.md` descreve como "política permissiva para service role". → Sessão de 09/10/2026 (revisão final da entrega única)
 - **#11 Endereço estável do pipeline** — `DISPATCH_PIPELINE_URL` aponta para túnel morto. → Sessão de 31/08/2026 · plano `docs/superpowers/plans/2026-09-17-endereco-estavel-do-pipeline.md` (nenhuma task executada):
   - Task 1 — contêineres (`deploy/`) validados localmente
   - Task 2 — VPS na Hostinger, firewall e acesso *(gasta dinheiro; com o Klaus)*
@@ -34,6 +35,7 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 
 - **Caso `failed` com o PDF pronto não tem caminho de reenvio**: a `form-submit` recusa caso finalizado (409) e o worker não reprocessa. Com as novas tentativas do e-mail fica mais raro, mas um SMTP fora do ar por mais de ~20 s ainda deixa o cliente pagante sem nada. Falta um reenvio (manual ou automático) que use o PDF já registrado em `generated_documents`. → Sessão de 08/10/2026 (teste ponta a ponta pelo questionário)
 - **Publicar e testar a entrega única** — `npx supabase db push` ANTES de `npx supabase functions deploy form-submit` e `… stripe-webhook`; reiniciar Express e Vite; os três testes ponta a ponta da spec (§6): caso preso de 02/10 com o webhook desativado e reenviado, falha com o uvicorn parado e nova tentativa, e formulário numa aba anônima. → Sessão de 09/10/2026 (entrega única)
+- **Caso pago parado em `pending` depois de um 503, se o cliente não clicar de novo** — a webhook já respondeu 200 e não volta a tentar; o caso fica visível (503 na tela, `[entrega] pipeline_*` e `devolvido` no log), mas sem alerta nem varredura. Mesma família do #6 (fila durável): uma varredura de casos pagos em `pending` ou um alerta resolveria. → Sessão de 09/10/2026 (revisão final da entrega única)
 - **#26 `.env.local` sobrescreve variáveis reais de ambiente no Express** (`override: true`) — corrigir e documentar a regra no `CLAUDE.md`. → Sessão de 18/09/2026
 - **#6 Sem fila durável no pipeline** — processo morto entre `202` e `finish` deixa o caso em `generating`. → Sessão de 31/08/2026
 - **Caminho legado do `202`** — pipeline respondendo `200` deixa `document_status` preso em `generating`. → Sessão de 09/09/2026 ("Ficou de fora")
