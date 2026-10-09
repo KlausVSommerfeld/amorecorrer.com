@@ -1713,3 +1713,11 @@ O teste (`CASO_608d9541…`: defesa prévia, data-limite 28/10/2026, "Sim, eu di
 Suítes: 82 testes de front e Edge, 239 do pipeline, 25 do `test_consulta.py`. O teste ponta a ponta precisa ser refeito (Task 9, no `PENDENCIAS.md`).
 
 **Arquivos:** `CTB-compilado_files/{consulta.py,tests/test_consulta.py}`, `src/lib/diagnostico.ts`, `tests/compartilhados/velocidade.json`, `pipeline/{tentativas,test_tentativas,worker}.py`, `CLAUDE.md`, `PENDENCIAS.md`.
+
+## Sessão de 09/10/2026 — Teste ponta a ponta pelo questionário: aprovado
+
+A segunda rodada de 08/10 (`CASO_24a37eb2…`) chegou a `completed` e ao e-mail, mas o pedido saiu só com o arquivamento: o uvicorn do Windows não tinha sido reiniciado depois das correções (os `.pyc` em `pipeline/__pycache__/` mostravam o `worker` de 07/10 e nenhum `tentativas`). O uvicorn **não recarrega sozinho** — e o `consulta.py` só é compilado na primeira peça (`carregar_ctb` é preguiçoso), então o `.pyc` dele não serve de prova antes disso.
+
+Com o pipeline reiniciado e túnel novo (`mix-stream-wireless-ideas.trycloudflare.com`, publicado em `DISPATCH_PIPELINE_URL`), o teste `CASO_228701e6…` (defesa prévia, "Artigo 218, inciso 2, do CTB", 80/91/84, "Sim, eu dirigia", data-limite 28/10/2026, sem versão) passou de ponta a ponta: pago, `completed`, dispatch `sent`, PDF de 2 páginas registrado e e-mail `delivered` na Resend, ~20 s entre o formulário e o envio. O PDF traz o percentual calculado pelo código (5,0% sobre a considerada), aponta a inconsistência com o inciso II e pede, nesta ordem: a) o arquivamento por inconsistência (art. 281, § 1º, I), b) subsidiariamente a desclassificação para o art. 218, I, c) subsidiariamente a advertência do art. 267. Endereçamento à Autoridade de Trânsito, data do fecho em branco, sem o enchimento do art. 281-A desta vez.
+
+**Arquivos:** `PENDENCIAS.md`.
