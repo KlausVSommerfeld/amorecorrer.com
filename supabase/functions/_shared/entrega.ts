@@ -56,11 +56,13 @@ function primeiraLinha(data: unknown): Record<string, unknown> | null {
   return typeof linha === "object" && linha !== null ? (linha as Record<string, unknown>) : null;
 }
 
-// Variável presente mas vazia conta como ausente: `fetch("")` não é uma entrega.
+// Variável presente mas vazia (ou só espaço) conta como ausente: `fetch("")`
+// não é uma entrega. O valor volta como está: o segredo assina sem aparar,
+// porque o Express e o pipeline conferem com o valor cru.
 function primeiraDefinida(deps: DepsEntrega, ...nomes: string[]): string | null {
   for (const nome of nomes) {
-    const valor = deps.env(nome)?.trim();
-    if (valor) return valor;
+    const valor = deps.env(nome);
+    if (valor && valor.trim()) return valor;
   }
   return null;
 }
@@ -132,6 +134,26 @@ export async function entregar(
     }
   };
 
+  // Daqui em diante o caso está reservado (`generating`): qualquer exceção
+  // inesperada também devolve, senão o caso ficaria preso sem nova tentativa.
+  try {
+    return await postarAoPipeline(deps, log, caseId, linha, dispatchKey, contexto, devolver);
+  } catch (err) {
+    log("error", "falha_inesperada", { ...contexto, erro: descreverErro(err) });
+    await devolver();
+    return "falhou";
+  }
+}
+
+async function postarAoPipeline(
+  deps: DepsEntrega,
+  log: NonNullable<DepsEntrega["log"]>,
+  caseId: string,
+  linha: Record<string, unknown>,
+  dispatchKey: string,
+  contexto: Record<string, unknown>,
+  devolver: () => Promise<void>,
+): Promise<ResultadoEntrega> {
   const url = primeiraDefinida(deps, "DISPATCH_PIPELINE_URL", "N8N_WEBHOOK_URL");
   if (!url) {
     log("error", "pipeline_url_ausente", contexto);

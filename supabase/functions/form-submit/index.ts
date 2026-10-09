@@ -312,6 +312,39 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Verificação do medidor de velocidade — Fase 5 do plano do radar.
+    //
+    // Calculada ANTES de gravar e gravada NA MESMA escrita do formulário: desde
+    // a entrega única (spec 2026-10-09) a `stripe-webhook` também entrega, e um
+    // UPDATE à parte deixava uma janela em que ela reservava o caso sem a
+    // verificação — ou, num reenvio editado, com a do aparelho antigo. Nada aqui
+    // pode derrubar o envio: toda falha vira `nao_aplicavel` e é só logada.
+    let entrada: ReturnType<typeof entradaDaVerificacao> = null;
+    let verificacao: Verificacao = naoAplicavel(AVISO_SEM_DADOS);
+    try {
+      entrada = entradaDaVerificacao(norm);
+      if (entrada) {
+        const { data, error } = await supabase
+          .rpc("verificar_medidor", entrada)
+          .abortSignal(AbortSignal.timeout(VERIFICACAO_TIMEOUT_MS));
+        if (error || !data) {
+          console.error("[radar] verificar_medidor_falhou", {
+            case_id: norm.case_id,
+            error: error ? formatDispatchError(error) : "resposta vazia"
+          });
+          verificacao = naoAplicavel(AVISO_INDISPONIVEL);
+        } else {
+          verificacao = data as Verificacao;
+        }
+      }
+    } catch (err) {
+      console.error("[radar] verificacao_excecao", {
+        case_id: norm.case_id,
+        error: err instanceof Error ? err.message : String(err)
+      });
+      verificacao = naoAplicavel(AVISO_INDISPONIVEL);
+    }
+
     const updateFields = {
       case_id: norm.case_id,
       form_token: norm.form_token,
@@ -350,6 +383,7 @@ Deno.serve(async (req) => {
       // Também fora do dup_guard, pela mesma regra.
       data_limite_protocolo: dataLimiteProtocolo(norm.data_limite_protocolo),
       dup_guard,
+      verificacao_medidor: verificacao,
       updated_at: new Date().toISOString()
     };
 
@@ -408,44 +442,10 @@ Deno.serve(async (req) => {
       return bad("DB upsert error", 500, corsHeadersForOrigin);
     }
 
-    // Verificação do medidor de velocidade — Fase 5 do plano do radar.
-    //
-    // ANTES da entrega, para o pipeline já ler o caso com ela. Nada
-    // aqui pode derrubar o envio: toda falha vira `nao_aplicavel` e é só
-    // logada. O UPDATE não toca document_status (ver o comentário do INSERT
-    // acima: reescrevê-lo manda um segundo e-mail ao cliente).
+    // Log da consulta do medidor — também para `nao_aplicavel`: a calibração
+    // precisa saber quantos casos chegam sem os números do medidor. Fica
+    // depois da escrita porque a linha do log referencia o formulário.
     try {
-      const entrada = entradaDaVerificacao(norm);
-      let verificacao: Verificacao = naoAplicavel(AVISO_SEM_DADOS);
-
-      if (entrada) {
-        const { data, error } = await supabase
-          .rpc("verificar_medidor", entrada)
-          .abortSignal(AbortSignal.timeout(VERIFICACAO_TIMEOUT_MS));
-        if (error || !data) {
-          console.error("[radar] verificar_medidor_falhou", {
-            case_id: norm.case_id,
-            error: error ? formatDispatchError(error) : "resposta vazia"
-          });
-          verificacao = naoAplicavel(AVISO_INDISPONIVEL);
-        } else {
-          verificacao = data as Verificacao;
-        }
-      }
-
-      const { error: colunaErr } = await supabase
-        .from("form_submissions")
-        .update({ verificacao_medidor: verificacao })
-        .eq("case_id", norm.case_id);
-      if (colunaErr) {
-        console.error("[radar] gravar_verificacao_falhou", {
-          case_id: norm.case_id,
-          error: formatDispatchError(colunaErr)
-        });
-      }
-
-      // Também para `nao_aplicavel`: a calibração precisa saber quantos casos
-      // chegam sem os números do medidor.
       const { error: logErr } = await supabase
         .from("radar_consultas_log")
         .upsert(linhaDoLog(String(norm.case_id), entrada, verificacao), { onConflict: "case_id" });
@@ -456,7 +456,7 @@ Deno.serve(async (req) => {
         });
       }
     } catch (err) {
-      console.error("[radar] verificacao_excecao", {
+      console.error("[radar] log_consulta_excecao", {
         case_id: norm.case_id,
         error: err instanceof Error ? err.message : String(err)
       });

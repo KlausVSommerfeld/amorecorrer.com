@@ -188,3 +188,21 @@ test('status HTTP: 503 no formulário e 500 na webhook só quando falhou', () =>
   assert.equal(statusDoWebhook('entregue'), 200)
   assert.equal(statusDoWebhook('nada_a_fazer'), 200)
 })
+
+test('o segredo assina como está: espaço no fim não é aparado (Express e pipeline não aparam)', async () => {
+  const f = falso({ env: { DISPATCH_PIPELINE_URL: ENV.DISPATCH_PIPELINE_URL, DISPATCH_PIPELINE_HMAC_SECRET: 'segredo\n' } })
+  await entregar(f.deps, CASO, 'formulario')
+  const [, init] = f.fetches[0]
+  const esperado = createHmac('sha256', 'segredo\n').update(String(init.body)).digest('hex')
+  assert.equal((init.headers as Record<string, string>)['X-Signature'], esperado)
+})
+
+test('falha inesperada depois da reserva: devolve e falha, não propaga', async () => {
+  const f = falso()
+  f.deps.env = (k) => {
+    if (k === 'DISPATCH_PIPELINE_HMAC_SECRET') throw new Error('ambiente quebrado')
+    return (ENV as Record<string, string>)[k]
+  }
+  assert.equal(await entregar(f.deps, CASO, 'formulario'), 'falhou')
+  assert.equal(f.chamou('devolver_entrega').length, 1)
+})
