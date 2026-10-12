@@ -94,7 +94,7 @@ O mesmo padrão de `reservar_entrega`, `devolver_entrega` e `verificar_medidor`.
 ficam como estão: `update_updated_at_column` (a função do gatilho de `updated_at`),
 `radar_unaccent_imutavel` e `radar_classificar_resultado` (texto puro). Nenhuma é `SECURITY DEFINER`:
 pela chave anônima, só transformam o texto que recebem. E revogá-las teria risco sem ganho — a
-`radar_unaccent_imutavel` entra em índice das tabelas do radar, e quem grava ali precisa de `EXECUTE`
+`radar_unaccent_imutavel` calcula a coluna gerada `radar_instruments.local_via_norm`, e quem grava ali precisa de `EXECUTE`
 sobre ela.
 
 ### 3.4 Privilégio padrão para objetos novos
@@ -188,8 +188,8 @@ Com a migration aplicada no banco local (pelo `psql`, como as anteriores): os 29
 
 ## 5. Deploy
 
-- **Branch:** `fix/rls-fechada`, a partir de `fix/entrega-unica` (a migration de 09/10 já está em
-  produção e esta precisa vir depois dela). No merge, as duas entram na ordem.
+- **Branch:** `fix/rls-fechada`, a partir da `main` (já com a entrega única mesclada em 12/10/2026; a
+  migration de 09/10 está em produção e esta vem depois dela).
 - **Antes, por mim:** nos logs da API (`edge_logs`, na janela que a Supabase guarda), procurar pedidos
   a `/rest/v1/` feitos com a chave anônima. Responde se algum serviço legítimo usa o acesso (se usar,
   a publicação para) e se há sinal de alguém lendo os dados. Não responde pelo passado anterior à
