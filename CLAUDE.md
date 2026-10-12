@@ -47,6 +47,11 @@ docker exec -i supabase_db_<ref> psql -U postgres -d postgres -Xqt \
   -f - < supabase/tests/entrega_test.sql | grep -E '^ *(not )?ok|ERROR'
 bash supabase/tests/entrega_concorrencia.sh
 
+# 53 testes da RLS fechada (pgTAP, transação revertida): a chave anônima barrada, a service_role
+# funcionando e varreduras do catálogo que reprovam tabela, política ou função nova aberta:
+docker exec -i supabase_db_<ref> psql -U postgres -d postgres -Xqt \
+  -f - < supabase/tests/rls_test.sql | grep -E '^ *(not )?ok|ERROR'
+
 # asserção de Storage — buckets e policies NÃO entram no `db dump`, então é a
 # única rede contra a regressão do bucket sumir:
 npx supabase db query --local -f tests/sql/assert_storage_setup.sql
@@ -90,9 +95,9 @@ Mensagens assinadas: o corpo JSON **compacto** (`separators=(",",":")`) nos POST
 
 `stripe_sessions` → `form_submissions` (1 por `case_id`) → `dispatches` (1 por caso; `dispatch_key` UNIQUE = chave de idempotência) → `generated_documents` (auditoria: bucket/path/sha256/status de e-mail; o binário fica no Storage).
 
-Invariantes: `reservar_entrega` só devolve a chave se a sessão **do caso** (`stripe_sessions` pelo `case_id`) está `paid` **e** o formulário está `pending` — e na mesma transação passa o formulário a `generating`: de dois disparos simultâneos, um só recebe a chave. Caso contrário retorna conjunto vazio (não é erro). A `dispatch_key` é reaproveitada nas novas tentativas — é a chave de idempotência do e-mail. As duas funções da entrega têm `EXECUTE` só para `service_role`: `devolver_entrega` exposta à chave anônima reabriria casos em `generating`. RLS habilitada em todas as tabelas com política permissiva para service role. O `id` de uma linha existente em `stripe_sessions` nunca é reescrito pelo webhook, para preservar a FK `dispatches.stripe_session_id`.
+Invariantes: `reservar_entrega` só devolve a chave se a sessão **do caso** (`stripe_sessions` pelo `case_id`) está `paid` **e** o formulário está `pending` — e na mesma transação passa o formulário a `generating`: de dois disparos simultâneos, um só recebe a chave. Caso contrário retorna conjunto vazio (não é erro). A `dispatch_key` é reaproveitada nas novas tentativas — é a chave de idempotência do e-mail. As duas funções da entrega têm `EXECUTE` só para `service_role`: `devolver_entrega` exposta à chave anônima reabriria casos em `generating`. **A chave anônima não tem acesso a nada do schema `public`** (migration `20261012000000_rls_fechada`): `anon` e `authenticated` não têm privilégio em tabela alguma, toda política é `TO service_role`, e só a `service_role` (Edge, Express, pipeline) lê e grava. Tabela nova liga a RLS e nasce sem privilégio para a chave anônima (o privilégio padrão do `public` foi mudado); dar acesso a ela exige um `GRANT` explícito, justificado na migration. Toda função `SECURITY DEFINER` sai com `REVOKE ALL … FROM PUBLIC, anon, authenticated` — o `EXECUTE` para `PUBLIC` é padrão global do Postgres e não sai por schema. O `supabase/tests/rls_test.sql` varre o catálogo e reprova quem esquecer. Até 12/10/2026 a baseline tinha as políticas do fluxo sem `TO` (valiam para `public`) e o radar era legível pela chave anônima. O `id` de uma linha existente em `stripe_sessions` nunca é reescrito pelo webhook, para preservar a FK `dispatches.stripe_session_id`.
 
-**O schema vive em dez migrations**: uma baseline (09-10/09/2026) que consolidou as doze antigas e corrigiu o que elas deixaram errado, duas do radar, a do bucket, a dos campos do medidor em `form_submissions`, a da verificação do medidor no fluxo (ambas de 24/09/2026), a da velocidade considerada (30/09/2026), a do condutor do veículo (05/10/2026), a da data-limite de protocolo (07/10/2026) e a da entrega única (09/10/2026). A baseline é um **retrato congelado** — toda mudança de schema entra como migration NOVA. Ela só voltaria a ser editada se o remoto fosse reconstruído de novo.
+**O schema vive em onze migrations**: uma baseline (09-10/09/2026) que consolidou as doze antigas e corrigiu o que elas deixaram errado, duas do radar, a do bucket, a dos campos do medidor em `form_submissions`, a da verificação do medidor no fluxo (ambas de 24/09/2026), a da velocidade considerada (30/09/2026), a do condutor do veículo (05/10/2026), a da data-limite de protocolo (07/10/2026), a da entrega única (09/10/2026) e a da RLS fechada (12/10/2026). A baseline é um **retrato congelado** — toda mudança de schema entra como migration NOVA. Ela só voltaria a ser editada se o remoto fosse reconstruído de novo.
 
 Nove invariantes que quebram em silêncio se forem desfeitas:
 

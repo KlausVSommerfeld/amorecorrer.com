@@ -1749,3 +1749,16 @@ O Klaus publicou (`db push`, depois `functions deploy form-submit` e `stripe-web
 O túnel mudou no meio (`intervals-exceed-weapon-thompson.trycloudflare.com`, publicado em `DISPATCH_PIPELINE_URL`).
 
 **Arquivos:** `PENDENCIAS.md`, `PROGRESSO.md`, `CLAUDE.md`.
+
+## Sessão de 12/10/2026 — RLS fechada para a chave anônima
+
+Spec `docs/superpowers/specs/2026-10-12-rls-fechada-design.md`, plano `docs/superpowers/plans/2026-10-12-rls-fechada.md`. Antes, a `fix/entrega-unica` entrou na `main` por fast-forward (push do Klaus).
+
+Levantamento em produção (11/10): as quatro tabelas do fluxo tinham a política `FOR ALL USING (true)` **sem `TO`** — vale para `public`, logo para a chave anônima, que vai no bundle do site —, e o padrão da Supabase dava todos os privilégios a `anon` e `authenticated`; `confirm_dispatch` (`SECURITY DEFINER`) era executável pela chave anônima; o radar era legível de propósito. Ninguém usava esse acesso: o site só usa a chave anônima para `supabase.auth` e chama as Edge Functions por `fetch`.
+
+- **Migration `20261012000000_rls_fechada`:** políticas do fluxo só para a `service_role`, leitura pública do radar removida (decisão do Klaus: a consulta antes do pagamento, no projeto 2, passaria por uma Edge Function), `REVOKE ALL` de `anon`/`authenticated` nas nove tabelas, `confirm_dispatch` só para a `service_role`, e o privilégio padrão do `public` sem acesso para a chave anônima em tabela, sequência e função novas.
+- **Teste:** `supabase/tests/rls_test.sql`, 53 asserções — a chave anônima e `authenticated` barradas (`42501`), a `service_role` lendo, gravando, disparando o gatilho de `updated_at` e a coluna gerada do radar, as políticas, quatro varreduras do catálogo e o privilégio padrão.
+
+**Arquivos:** `supabase/migrations/20261012000000_rls_fechada.sql`, `supabase/tests/rls_test.sql`, `CLAUDE.md`, `PENDENCIAS.md`, `PROGRESSO.md`.
+
+**Falta:** publicar e conferir (no `PENDENCIAS.md`).
