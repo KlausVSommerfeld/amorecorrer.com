@@ -1737,3 +1737,15 @@ Spec `docs/superpowers/specs/2026-10-09-entrega-unica-ao-pipeline-design.md`, pl
 **Arquivos:** `supabase/migrations/20261009000000_entrega_unica.sql`, `supabase/tests/{entrega_test.sql,entrega_concorrencia.sh}`, `supabase/functions/_shared/{entrega,entrega.test}.ts`, `supabase/functions/stripe-webhook/{index,pagamento,pagamento.test}.ts`, `supabase/functions/form-submit/index.ts`, `src/lib/{falhaDoEnvio,falhaDoEnvio.test}.ts`, `src/pages/Form.tsx`, `src/integrations/supabase/types.ts`, `server/src/index.ts`, `package.json`, `CLAUDE.md`, `PENDENCIAS.md`.
 
 **Falta:** publicar e os três testes ponta a ponta (no `PENDENCIAS.md`).
+
+## Sessão de 11/10/2026 — Entrega única publicada e testada de ponta a ponta
+
+O Klaus publicou (`db push`, depois `functions deploy form-submit` e `stripe-webhook`). Conferido em produção: migration `20261009000000_entrega_unica` aplicada, `reservar_entrega` e `devolver_entrega` com `EXECUTE` só para a `service_role` (`anon` e `authenticated` sem), `attempt_dispatch` removida, e o código publicado da `stripe-webhook` (v69) já com as correções da revisão final. Os três testes da spec (§6), na sandbox:
+
+1. **Caso preso (`CASO_2286e251…`):** com o endpoint do webhook desativado, pagamento e formulário → sessão `pending`, formulário `pending` com a sessão do caso, nenhum dispatch, log `nada_a_fazer origem=formulario`. O painel não oferece "Reenviar" para um evento que o endpoint desativado nunca tentou entregar: o evento real (`evt_1UPWRC…`) foi buscado na API da sandbox, assinado com o `STRIPE_WEBHOOK_SECRET` do `.env` e enviado à função → 200, `entregue origem=webhook` (202), PDF e e-mail em 18 s.
+2. **Falha e nova tentativa (`CASO_9b5fb056…`):** com o uvicorn parado e o túnel no ar, o túnel respondeu 502 → `pipeline_recusou`, `devolvido: true`, formulário de volta a `pending`, dispatch `failed`, e a tela mostrou a mensagem do 503. Com o uvicorn de volta, o mesmo clique → `entregue` com a **mesma** `dispatch_key`, um PDF e um e-mail. O Klaus viu "dois e-mails": eram o deste caso e o do teste 1, que o Gmail juntou na mesma conversa pelo assunto igual — a Resend registra um envio por caso.
+3. **Outro aparelho (`CASO_902226b1…`):** a URL de volta do Stripe aberta numa janela anônima, sem nada no `localStorage` → o formulário enviou, `entregue origem=formulario`, PDF e e-mail. O aviso do webhook chegou antes do formulário e saiu com `nada_a_fazer`, como deve.
+
+O túnel mudou no meio (`intervals-exceed-weapon-thompson.trycloudflare.com`, publicado em `DISPATCH_PIPELINE_URL`).
+
+**Arquivos:** `PENDENCIAS.md`, `PROGRESSO.md`, `CLAUDE.md`.
