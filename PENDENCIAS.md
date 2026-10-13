@@ -8,7 +8,7 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 - `#N` é o número estável da pendência em `PROGRESSO.md › Pendências e decisões em aberto`. Item sem número não tem entrada lá.
 - Sem explicação aqui: uma linha por item.
 
-*Atualizado em 2026-10-12.*
+*Atualizado em 2026-10-13.*
 
 ---
 
@@ -86,8 +86,6 @@ Decisões jurídicas do Klaus primeiro; o pipeline só chega ao cliente depois d
 - **`expedidaEm` é texto livre** — virar campo de data é decisão de produto. → Sessão de 26/08/2026 (noite)
 - **Contador anônimo de funil do questionário** (começou, terminou, foi ao pagamento; sem dado pessoal), para medir o efeito do questionário na conversão. Falta escolher onde gravar os eventos (serviço de analytics ou tabela de eventos). Decisão do Klaus: fora do projeto 1 do questionário. → Sessão de 07/10/2026 (questionário de triagem)
 - **Projeto 2 do questionário: consulta ao radar antes do pagamento** — depende das pendências da tese do radar (`RADAR_TESE_ATIVA`, avisos legais, `docs/verificacao-radar.md`, ingestão recorrente) e de proteger a consulta aberta a quem ainda não pagou (desde 12/10 a chave anônima não lê o radar: a consulta passaria por uma Edge Function); `sem_registro` não é "radar irregular". → Sessão de 07/10/2026 (questionário de triagem)
-- **PDFs órfãos de testes antigos no bucket `generated-recursos`**: as pastas `CASO_6b03e11a…` (teste do Stripe de 02/10) e `CASO_e1c924cc…` não têm mais linha em tabela nenhuma. Apagar com autorização. → Sessão de 09/10/2026
-- **Casos de teste no banco e no bucket**: `CASO_2286e251…`, `CASO_9b5fb056…`, `CASO_902226b1…` (entrega única) e `CASO_e7065caa…` (RLS fechada) — sandbox, linhas nas tabelas do fluxo e um PDF cada. Apagar com autorização, na ordem das chaves. → Sessão de 11/10/2026 · Sessão de 12/10/2026 (RLS fechada)
 - **Texto do `ComoFunciona` na home contradiz o fluxo novo**: ainda diz "01 Pagamento… a única parte que depende de você é o formulário". Precisa de texto novo do Klaus. → Sessão de 08/10/2026 (revisão final)
 - **O resumo do questionário não mostra a advertência** que a peça pede (considerada abaixo da permitida no inciso I; infração leve ou média fora do art. 218). É o texto da spec; sugestão: diagnosticar a advertência pela natureza da infração. → Sessão de 08/10/2026 (revisão final)
 - **Achados menores da revisão final do questionário:**
