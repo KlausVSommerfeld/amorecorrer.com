@@ -1,0 +1,37 @@
+# Endereço estável NA MÁQUINA DO KLAUS, enquanto o VPS não existe: o ngrok, com o
+# domínio fixo gratuito da conta, faz o papel do Caddy (TLS e só os dois caminhos
+# públicos). Usar sempre junto com o compose principal e sem o caddy:
+#
+#   bash deploy/ngrok-local.sh up -d --build express pipeline ngrok
+#
+# A configuração vem do `.env` da raiz — o mesmo perfil web que o uvicorn e o
+# Express do Windows leem —, para não existir uma segunda cópia dos segredos.
+# É lido em tempo de execução: nenhum .env entra nas imagens.
+services:
+  express:
+    env_file: !override [../.env]
+
+  pipeline:
+    env_file: !override [../.env]
+
+  ngrok:
+    image: ngrok/ngrok:3
+    # Só as duas variáveis que o agente usa, e não o .env inteiro: o contêiner do
+    # ngrok não tem por que ver os segredos do resto. Vêm por interpolação, que é
+    # por isso que o compose roda com `--env-file ../.env` (ver ngrok-local.sh).
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN:?falta NGROK_AUTHTOKEN no .env da raiz}
+    command:
+      - http
+      - http://pipeline:8000
+      - --url
+      - ${NGROK_URL:?falta NGROK_URL no .env da raiz}
+      - --traffic-policy-file
+      - /etc/ngrok/politica.yml
+      - --log
+      - stdout
+    volumes:
+      - ./ngrok-politica.yml:/etc/ngrok/politica.yml:ro
+    depends_on:
+      - pipeline
+    restart: unless-stopped

@@ -1,0 +1,9 @@
+# A mesma regra do Caddyfile: só o pipeline é público, e só nos dois caminhos que
+# precisam ser. O resto (o /docs do FastAPI, qualquer outro) não existe para o mundo.
+on_http_request:
+  - expressions:
+      - "!(req.url.path in ['/hooks/dispatch', '/health'])"
+    actions:
+      - type: deny
+        config:
+          status_code: 404
