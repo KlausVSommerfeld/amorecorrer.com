@@ -1,0 +1,29 @@
+# Pipeline FastAPI — DeepSeek -> PDF -> Storage -> SMTP.
+# Python 3.12 e não 3.14: as versões fixadas em requirements.txt têm wheels
+# prontos para 3.12, e sem wheel o reportlab exigiria compilador na imagem.
+FROM python:3.12-slim
+WORKDIR /app
+
+RUN pip install --no-cache-dir --upgrade pip
+
+COPY pipeline/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Todos os módulos do pipeline (a Fase 5 e a base legal acrescentaram prompt.py,
+# verificacao.py, peca.py, base_legal.py e conferencia.py); testes ficam de fora.
+COPY pipeline/*.py ./
+RUN rm -f test_*.py
+
+# Fontes da peça (template de 02/10/2026): o pdf_peca as procura em fontes/, ao
+# lado do próprio arquivo, e o main.py chama registrar_fontes() no import — sem
+# elas o uvicorn não sobe. O pyphen, que a peça também exige, vem do requirements.
+COPY pipeline/fontes ./fontes
+
+# Base normativa do CTB: o pipeline só lê consulta.py e saida/ctb.json
+# (+ ctb_infracoes.json, que a consulta usa para a sanção). CTB_DIR aponta para cá.
+COPY CTB-compilado_files/consulta.py /app/ctb/consulta.py
+COPY CTB-compilado_files/saida/ctb.json CTB-compilado_files/saida/ctb_infracoes.json /app/ctb/saida/
+ENV CTB_DIR=/app/ctb
+
+EXPOSE 8000
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

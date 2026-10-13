@@ -1,0 +1,18 @@
+# Só o pipeline é público, e só nos dois caminhos que precisam ser.
+# O Express NÃO aparece aqui: ele vive na rede interna do compose.
+{$PIPELINE_DOMAIN} {
+	encode gzip
+
+	handle /hooks/dispatch {
+		reverse_proxy pipeline:8000
+	}
+
+	handle /health {
+		reverse_proxy pipeline:8000
+	}
+
+	# Qualquer outro caminho não existe para o mundo.
+	handle {
+		respond "not found" 404
+	}
+}

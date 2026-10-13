@@ -1,0 +1,46 @@
+services:
+  express:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.server
+    # `expose`, nunca `ports`: o Express não tem razão para existir na internet.
+    expose:
+      - "3001"
+    env_file: [.env.vps]
+    restart: unless-stopped
+
+  pipeline:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.pipeline
+    expose:
+      - "8000"
+    env_file: [.env.vps]
+    environment:
+      # Nome do serviço na rede do compose — substitui o 127.0.0.1 local.
+      EXPRESS_INTERNAL_URL: http://express:3001
+    depends_on:
+      - express
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    # env_file, e não `environment: ${PIPELINE_DOMAIN}`: a interpolação do
+    # compose lê do shell ou de um arquivo chamado exatamente `.env` — nunca de
+    # `.env.vps`. Pelo env_file a variável chega ao ambiente do contêiner, que é
+    # de onde o `{$PIPELINE_DOMAIN}` do Caddyfile a lê.
+    env_file: [.env.vps]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - pipeline
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:

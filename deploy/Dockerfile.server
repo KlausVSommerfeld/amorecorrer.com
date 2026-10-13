@@ -1,0 +1,22 @@
+# Express — API interna. Único caminho do pipeline até o Postgres.
+# Node 22, e não 20: o supabase-js fixado no lockfile exige WebSocket nativo,
+# que só chega no Node 22 (no 20 o Express morre ao criar o cliente).
+FROM node:22-slim AS build
+WORKDIR /app
+COPY server/package.json server/package-lock.json* ./
+RUN npm install
+COPY server/tsconfig.json ./
+COPY server/src ./src
+RUN npm run build
+
+FROM node:22-slim
+WORKDIR /app
+ENV NODE_ENV=production
+COPY server/package.json server/package-lock.json* ./
+RUN npm install --omit=dev
+COPY --from=build /app/dist ./dist
+# O código lê .env da raiz do repositório; em contêiner isso não existe, e é de
+# propósito: a configuração vem por variável de ambiente, que o dotenv não
+# sobrescreve.
+EXPOSE 3001
+CMD ["node", "dist/index.js"]

@@ -1,0 +1,12 @@
+.git
+**/node_modules
+**/dist
+**/.venv
+.env
+.env.*
+!.env.example
+!.env.local.example
+!.env.production.example
+deploy/.env*
+*.log
+docs

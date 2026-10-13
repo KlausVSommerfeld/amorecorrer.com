@@ -38,3 +38,6 @@ secrets.json
 recursos testes/
 # Maquetes do brainstorm (visual companion)
 .superpowers/
+
+# segredos do deploy — criados no servidor, nunca versionados
+deploy/.env.vps
