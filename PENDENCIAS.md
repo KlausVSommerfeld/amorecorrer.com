@@ -28,7 +28,6 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 - **`.env.production`** — 13 valores ainda como `SUBSTITUA_`. → `CLAUDE.md › Variáveis de ambiente`
 - **#25 Caixa de e-mail do produto** — contato oficial é Gmail; `no-reply@` sem caminho de resposta. *Decisão do Klaus.* → Sessão de 13–14/09/2026
 - **#17 `VITE_STRIPE_PUBLISHABLE_KEY` `pk_live_…` órfã** — remover ou trocar pela de teste. → Sessão de 03/09/2026
-- **#12 Rotacionar a chave `service_role`** — impressa num transcript. → Sessão de 31/08/2026
 
 ## Robustez do fluxo
 
