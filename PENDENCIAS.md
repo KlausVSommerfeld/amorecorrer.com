@@ -84,6 +84,7 @@ Decisões jurídicas do Klaus primeiro; o pipeline só chega ao cliente depois d
 
 ## Produto e formulário
 
+- **Enquadramento escolhido numa lista com busca** no questionário e no formulário, em vez de texto livre: gerada do `CTB-compilado_files/saida/ctb_infracoes.json` (173 infrações, com dispositivo, conduta, gravidade e penalidade), carregada só no passo do enquadramento, com teste que pegue a lista desatualizada em relação ao CTB (como o `velocidade.json`). Cuidados: buscar pelo número impresso na notificação e mostrar a conduta por extenso para conferência (escolha válida e errada passa calada, ao contrário do texto livre, que cai no rito); saída "não encontro / só tenho o código" sem enquadramento (a tabela de códigos ainda não existe). A trava dos arts. 162–255 no pipeline fica. Desenho próprio. → Sessão de 15/10/2026 (achados dos casos)
 - **#8 "HTML da peça"** — implementar ou deixar fora. → 2026-08-15 — Home (Fase 3)
 - **Velocidade considerada igual à aferida é aceita** (200/200 no `CASO_363f15e6…`): num auto real a tolerância a deixa sempre menor, e a cópia da aferida faz a conta sobre ela (o erro de 29/09). Barrar a igualdade ou só avisar? *Decisão do Klaus.* → Sessão de 13–15/10/2026
 - **`expedidaEm` é texto livre** — virar campo de data é decisão de produto. → Sessão de 26/08/2026 (noite)
