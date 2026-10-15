@@ -121,12 +121,29 @@ export function diasAteDataLimite(dataLimite: string, agora: Date): number | nul
   return Math.round((limite - hoje) / 86_400_000)
 }
 
-export function erroDoPasso(passo: 1 | 2 | 3 | 4 | 5, r: RespostasQuestionario): string | null {
+/**
+ * Erro da data-limite, ou null. Além de data válida: nunca antes do dia da infração
+ * (quando `dataInfracao` traz um dia; o questionário ainda não o tem) nem mais de um
+ * ano depois de hoje — prazo real é de 30 a 60 dias da notificação, e o teto conta de
+ * hoje porque a de penalidade pode chegar mais de um ano depois da infração. A Edge
+ * aplica a mesma regra (`supabase/functions/form-submit/campos.ts`).
+ */
+export function erroDaDataLimite(dataLimite: string, dataInfracao: string, agora: Date): string | null {
+  const limite = diaUtc(dataLimite)
+  if (limite === null) return 'Informe a data que está impressa na notificação.'
+  const teto = Date.UTC(agora.getFullYear() + 1, agora.getMonth(), agora.getDate())
+  if (limite > teto) return 'Confira a data-limite impressa na notificação: ela não fica a mais de um ano de hoje.'
+  const infracao = diaUtc(dataInfracao.slice(0, 10))
+  if (infracao !== null && limite < infracao) return 'A data-limite não pode ser anterior à data da infração.'
+  return null
+}
+
+export function erroDoPasso(passo: 1 | 2 | 3 | 4 | 5, r: RespostasQuestionario, agora: Date = new Date()): string | null {
   switch (passo) {
     case 1:
       return r.estagio ? null : 'Escolha o estágio do seu caso.'
     case 2:
-      return diaUtc(r.data_limite) !== null ? null : 'Informe a data que está impressa na notificação.'
+      return erroDaDataLimite(r.data_limite, '', agora)
     case 3:
       return r.cliente_conduzia ? null : 'Marque uma das opções.'
     case 4:
@@ -182,7 +199,7 @@ export type Tela = 1 | 2 | 3 | 4 | 5 | 'resumo' | 'vencido'
  *  a data-limite vencida, a tela de prazo vencido; com tudo respondido, o resumo. */
 export function telaInicial(r: RespostasQuestionario, agora: Date): Tela {
   if (erroDoPasso(1, r)) return 1
-  if (erroDoPasso(2, r)) return 2
+  if (erroDoPasso(2, r, agora)) return 2
   if ((diasAteDataLimite(r.data_limite, agora) ?? 0) < 0) return 'vencido'
   for (const passo of [3, 4, 5] as const) if (erroDoPasso(passo, r)) return passo
   return 'resumo'

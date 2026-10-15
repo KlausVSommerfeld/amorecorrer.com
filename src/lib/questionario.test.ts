@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  CHAVE_ATUAL, RESPOSTAS_VAZIAS, apagarRespostas, chaveDoCaso, diasAteDataLimite, erroDoPasso, telaInicial, textoDoPrazo,
+  CHAVE_ATUAL, RESPOSTAS_VAZIAS, apagarRespostas, chaveDoCaso, diasAteDataLimite, erroDaDataLimite, erroDoPasso, telaInicial, textoDoPrazo,
   gravarRespostas, hojeLocal, lerRespostas, mesclarComRascunho, paraCamposDoFormulario, vincularAoCaso,
   type Armazenamento, type RespostasQuestionario,
 } from './questionario.ts'
@@ -90,6 +90,25 @@ test('dias até a data-limite: hoje vale, ontem venceu, inválida é null', () =
   assert.equal(diasAteDataLimite('2026-10-07', agora), -1)
   assert.equal(diasAteDataLimite('2026-02-30', agora), null)
   assert.equal(diasAteDataLimite('', agora), null)
+})
+
+// CASO_363f15e6 (15/10/2026): 3000-10-28 passou, e o e-mail mandou protocolar até 28/10/3000.
+test('data-limite mais de um ano depois de hoje é recusada', () => {
+  const agora = new Date(2026, 9, 15, 10, 0)
+  const longe = 'Confira a data-limite impressa na notificação: ela não fica a mais de um ano de hoje.'
+  assert.equal(erroDaDataLimite('3000-10-28', '', agora), longe)
+  assert.equal(erroDaDataLimite('2027-10-16', '', agora), longe)
+  assert.equal(erroDaDataLimite('2027-10-15', '', agora), null)
+  assert.equal(erroDoPasso(2, { ...RESPOSTAS_VAZIAS, data_limite: '3000-10-28' }, agora), longe)
+})
+
+test('data-limite anterior à data da infração é recusada; sem infração, só o teto vale', () => {
+  const agora = new Date(2026, 9, 15, 10, 0)
+  assert.equal(erroDaDataLimite('2026-09-19', '2026-09-20T08:15', agora),
+    'A data-limite não pode ser anterior à data da infração.')
+  assert.equal(erroDaDataLimite('2026-09-20', '2026-09-20T08:15', agora), null)
+  assert.equal(erroDaDataLimite('2026-09-19', '', agora), null)
+  assert.equal(erroDaDataLimite('', '2026-09-20T08:15', agora), 'Informe a data que está impressa na notificação.')
 })
 
 test('erros de cada passo, com os textos da spec', () => {

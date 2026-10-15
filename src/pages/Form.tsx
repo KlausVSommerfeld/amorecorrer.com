@@ -10,6 +10,7 @@ import {
   apagarRespostas,
   armazenamentoDoNavegador,
   chaveDoCaso,
+  erroDaDataLimite,
   lerRespostas,
   mesclarComRascunho,
   paraCamposDoFormulario
@@ -564,8 +565,8 @@ const Form = () => {
       newErrors.dataHora = 'Informe a data e a hora que estão na notificação.';
     if (!formData.cliente_conduzia)
       newErrors.cliente_conduzia = 'Marque uma das opções.';
-    if (!formData.data_limite)
-      newErrors.data_limite = 'Informe a data que está impressa na notificação.';
+    const erroDataLimite = erroDaDataLimite(formData.data_limite, formData.dataHora, new Date());
+    if (erroDataLimite) newErrors.data_limite = erroDataLimite;
     if (!formData.versao)
       newErrors.versao = 'Escolha uma das opções.';
     else if (formData.versao === 'propria' && !formData.justificativa.trim())
