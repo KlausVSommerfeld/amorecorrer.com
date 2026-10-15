@@ -15,6 +15,7 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 ## Produção e lançamento
 
 - **#11 Endereço estável do pipeline** — desde 15/10/2026 o endereço é fixo **na máquina do Klaus** (contêineres + domínio do ngrok, `deploy/README.md`); falta levá-lo ao VPS para o lançamento. → Sessão de 31/08/2026 · Sessão de 13–15/10/2026 · plano `docs/superpowers/plans/2026-09-17-endereco-estavel-do-pipeline.md` (Task 1 feita):
+  - *Menores da revisão final (antes do VPS):* limite de 64 KB no corpo antes do HMAC (Caddyfile e política do ngrok); `npm ci` no `Dockerfile.server`; `test_*.py` fora pelo `.dockerignore`, não por `rm` numa camada posterior; imagens como root, tags flutuantes e sem healthcheck; `.env.vps` enxuto por serviço; `AsyncOpenAI` com `async with`; CLAUDE.md dizer que a precedência do `.env.local` não vale para os contêineres. → Sessão de 13–15/10/2026
   - Task 2 — VPS na Hostinger, firewall e acesso *(gasta dinheiro; com o Klaus)*
   - Task 3 — subdomínio apontando para o VPS
   - Task 4 — serviços no VPS com TLS (Caddy)
