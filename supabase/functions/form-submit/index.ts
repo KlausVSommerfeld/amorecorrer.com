@@ -381,7 +381,7 @@ Deno.serve(async (req) => {
       // reenvio que mude só esta resposta é duplicata, como a justificativa.
       cliente_conduzia: clienteConduzia(norm.cliente_conduzia),
       // Também fora do dup_guard, pela mesma regra.
-      data_limite_protocolo: dataLimiteProtocolo(norm.data_limite_protocolo),
+      data_limite_protocolo: dataLimiteProtocolo(norm.data_limite_protocolo, norm.data_infracao),
       dup_guard,
       verificacao_medidor: verificacao,
       updated_at: new Date().toISOString()

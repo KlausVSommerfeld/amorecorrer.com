@@ -13,13 +13,34 @@ test('qualquer outra coisa vira null, sem recusar o envio', () => {
   }
 })
 
+// Relógio fixo: o teto da data-limite depende de hoje.
+const HOJE = new Date('2026-10-15T15:00:00Z')
+
 test('data-limite válida passa como está', () => {
-  assert.equal(dataLimiteProtocolo('2026-10-30'), '2026-10-30')
-  assert.equal(dataLimiteProtocolo('2028-02-29'), '2028-02-29')
+  assert.equal(dataLimiteProtocolo('2026-10-30', '2026-09-20T08:15', HOJE), '2026-10-30')
+  assert.equal(dataLimiteProtocolo('2028-02-29', null, new Date('2027-06-01T12:00:00Z')), '2028-02-29')
 })
 
 test('data-limite impossível, em outro formato ou de outro tipo vira null', () => {
   for (const valor of ['2026-02-30', '2027-02-29', '30/10/2026', '2026-10-30T00:00', '', ' ', 20261030, null, undefined, {}]) {
-    assert.equal(dataLimiteProtocolo(valor), null, `valor: ${JSON.stringify(valor)}`)
+    assert.equal(dataLimiteProtocolo(valor, null, HOJE), null, `valor: ${JSON.stringify(valor)}`)
+  }
+})
+
+// CASO_363f15e6 (15/10/2026): 3000-10-28 passou, e o e-mail mandou protocolar até 28/10/3000.
+test('data-limite mais de um ano depois de hoje vira null', () => {
+  assert.equal(dataLimiteProtocolo('3000-10-28', '2026-09-20T08:15', HOJE), null)
+  assert.equal(dataLimiteProtocolo('2027-10-16', null, HOJE), null)
+  assert.equal(dataLimiteProtocolo('2027-10-15', null, HOJE), '2027-10-15')
+})
+
+test('data-limite anterior à data da infração vira null', () => {
+  assert.equal(dataLimiteProtocolo('2026-09-19', '2026-09-20T08:15', HOJE), null)
+  assert.equal(dataLimiteProtocolo('2026-09-20', '2026-09-20T08:15', HOJE), '2026-09-20')
+})
+
+test('sem data da infração legível, só o teto vale', () => {
+  for (const infracao of [null, undefined, '', 'ontem', 20260920]) {
+    assert.equal(dataLimiteProtocolo('2020-01-10', infracao, HOJE), '2020-01-10', `infração: ${JSON.stringify(infracao)}`)
   }
 })
