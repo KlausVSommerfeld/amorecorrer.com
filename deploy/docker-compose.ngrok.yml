@@ -14,6 +14,11 @@ services:
   pipeline:
     env_file: !override [../.env]
 
+  # Fora do modo local: um `up -d` sem lista de serviços não sobe o Caddy nas
+  # portas 80/443 do Windows. Só com `--profile vps`, que aqui não se usa.
+  caddy:
+    profiles: [vps]
+
   ngrok:
     image: ngrok/ngrok:3
     # Só as duas variáveis que o agente usa, e não o .env inteiro: o contêiner do

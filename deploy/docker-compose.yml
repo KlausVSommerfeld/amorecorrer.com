@@ -21,6 +21,11 @@ services:
       EXPRESS_INTERNAL_URL: http://express:3001
     depends_on:
       - express
+    # Um caso pode levar duas chamadas ao modelo (até 180 s cada) e as novas
+    # tentativas do e-mail. O uvicorn espera as BackgroundTasks ao receber o
+    # SIGTERM, mas o Docker manda SIGKILL depois de 10 s: sem isto, um rebuild
+    # ou um restart deixa o caso em andamento preso em `generating`.
+    stop_grace_period: 7m
     restart: unless-stopped
 
   caddy:
@@ -28,11 +33,16 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    # env_file, e não `environment: ${PIPELINE_DOMAIN}`: a interpolação do
-    # compose lê do shell ou de um arquivo chamado exatamente `.env` — nunca de
-    # `.env.vps`. Pelo env_file a variável chega ao ambiente do contêiner, que é
-    # de onde o `{$PIPELINE_DOMAIN}` do Caddyfile a lê.
-    env_file: [.env.vps]
+    # Só a variável que o Caddyfile lê (`{$PIPELINE_DOMAIN}`): pelo env_file, o
+    # processo exposto à internet receberia todos os segredos do .env.vps. Vem
+    # por interpolação, que o compose lê sozinho de um arquivo chamado `.env` na
+    # pasta do projeto: no VPS, `deploy/.env` com só `PIPELINE_DOMAIN=…`.
+    # `:-` e não `:?`: o compose interpola o arquivo inteiro, e o modo local
+    # (sem caddy) não tem a variável. Sem o `deploy/.env`, o domínio chega vazio
+    # e o Caddy recusa o Caddyfile ("unrecognized global option") — não sobe,
+    # em vez de servir sem TLS.
+    environment:
+      PIPELINE_DOMAIN: ${PIPELINE_DOMAIN:-}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data

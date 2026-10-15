@@ -200,11 +200,11 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    # env_file, e não `environment: ${PIPELINE_DOMAIN}`: a interpolação do
-    # compose lê do shell ou de um arquivo chamado exatamente `.env` — nunca de
-    # `.env.vps`. Pelo env_file a variável chega ao ambiente do contêiner, que é
-    # de onde o `{$PIPELINE_DOMAIN}` do Caddyfile a lê.
-    env_file: [.env.vps]
+    # Corrigido na revisão final de 15/10/2026: era `env_file: [.env.vps]`, que
+    # dava ao processo exposto todos os segredos. Só o domínio, por interpolação
+    # de `deploy/.env` (ver deploy/docker-compose.yml, que é a versão em vigor).
+    environment:
+      PIPELINE_DOMAIN: ${PIPELINE_DOMAIN:-}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
@@ -499,7 +499,11 @@ MAIL_FROM=no-reply@amorecorrer.com
 PORT=3001
 EOF
 ssh -i ~/.ssh/amorecorrer_vps root@<VPS_IP> 'chmod 600 /opt/amorecorrer/deploy/.env.vps'
+# O Caddy recebe só o domínio, por interpolação de deploy/.env (revisão final de 15/10/2026):
+ssh -i ~/.ssh/amorecorrer_vps root@<VPS_IP> 'printf "PIPELINE_DOMAIN=pipeline.amorecorrer.com\n" > /opt/amorecorrer/deploy/.env'
 ```
+
+Antes de cada `up -d --build` no servidor, confira se não há caso em `generating`: o `stop_grace_period: 7m` do pipeline dá tempo ao caso em andamento, mas o build espera junto.
 
 `MAIL_FROM=no-reply@amorecorrer.com` só é válido porque o domínio foi verificado na Resend em 17/09/2026. Com `PIPELINE_ENV=production`, SMTP ausente derruba o worker em vez de pular o e-mail.
 

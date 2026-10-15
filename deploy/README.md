@@ -55,7 +55,7 @@ O `--env-file` só serve às duas variáveis do ngrok. Express e pipeline recebe
 **Regras do dia a dia:**
 
 - **Um pipeline por vez.** Com os contêineres no ar, não suba o uvicorn, o Express nem o `cloudflared` do Windows.
-- **Mudou código do pipeline ou do Express?** Rode o `up` de novo com `--build`. O contêiner roda a imagem que foi construída, não os arquivos do disco.
+- **Mudou código do pipeline ou do Express?** Rode o `up` de novo com `--build`. O contêiner roda a imagem que foi construída, não os arquivos do disco. Recriar o pipeline espera até 7 minutos (`stop_grace_period`) que um caso em andamento termine; confira antes se há caso em `generating`.
 - **Mudou o `.env`?** Basta recriar os contêineres (`up -d`, sem `--build`).
 - **Os contêineres voltam sozinhos** (`restart: unless-stopped`), mas só se o Docker Desktop iniciar com o Windows.
 - **O perfil é sempre o web.** Os contêineres leem só o `.env`, mesmo que exista um `.env.local`.
@@ -68,4 +68,4 @@ O `--env-file` só serve às duas variáveis do ngrok. Express e pipeline recebe
 
 ## Modo VPS
 
-Ainda não executado. O roteiro está nas Tasks 2 a 6 do plano: VPS, firewall, subdomínio, `deploy/.env.vps` no servidor (modelo na Task 4) e `docker compose up -d --build` na pasta `deploy/`. A validação local da Task 1 (os 9 testes, com o Caddy em `localhost` por HTTPS) foi feita em 13/10/2026.
+Ainda não executado. O roteiro está nas Tasks 2 a 6 do plano: VPS, firewall, subdomínio, `deploy/.env.vps` no servidor (modelo na Task 4), um `deploy/.env` com só `PIPELINE_DOMAIN=…` (o Caddy recebe só essa variável, por interpolação) e `docker compose up -d --build` na pasta `deploy/`. A validação local da Task 1 (os 9 testes, com o Caddy em `localhost` por HTTPS) foi feita em 13/10/2026.
