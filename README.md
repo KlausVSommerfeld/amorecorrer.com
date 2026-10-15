@@ -34,7 +34,7 @@ O fluxo de um pedido:
 - **Node.js 18+** e **npm** (o lockfile é versionado; não use Bun, Yarn ou pnpm).
 - **Docker Desktop** e o **Supabase CLI** (`npx supabase`), para o banco local.
 - **Python 3.11+** para o pipeline. O `pipeline/.venv` é um venv de **Windows**.
-- **Stripe CLI** (`stripe`) para o teste local, e **cloudflared** para o teste contra a nuvem.
+- **Stripe CLI** (`stripe`) para o teste local, e uma **conta grátis no ngrok** (com o domínio fixo dela) para o teste contra a nuvem — ver `deploy/README.md`.
 - **Rode tudo pelo PowerShell do Windows.** Do WSL, o venv do pipeline não funciona e a Edge em Docker não alcança um pipeline que escute na distro (detalhes em `CLAUDE.md › Armadilhas conhecidas`).
 
 ```powershell
@@ -69,7 +69,7 @@ Há dois jeitos, e eles exercitam coisas diferentes:
 |---|---|---|
 | Banco, Storage, Edge Functions | Docker na sua máquina | o projeto de **produção** |
 | Como o Stripe avisa o pagamento | `stripe listen`, na sua máquina | o endpoint da sandbox chama a função na nuvem |
-| Como a Edge alcança o pipeline | `host.docker.internal:8000` | túnel `trycloudflare` publicado em `DISPATCH_PIPELINE_URL` |
+| Como a Edge alcança o pipeline | `host.docker.internal:8000` | domínio fixo do ngrok, já publicado em `DISPATCH_PIPELINE_URL` |
 | Porta do site | 8080 | **4173** (a única que os secrets da nuvem aceitam) |
 | DeepSeek e SMTP | vazios no `.env.local` de propósito — informados só na janela do pipeline | já preenchidos no `.env` |
 | Sujeira que fica | só no Docker | **linhas nas tabelas de produção** — limpe ao fim |
@@ -116,28 +116,25 @@ Get-Content supabase\migrations\<arquivo>.sql | docker exec -i supabase_db_tsdzv
 
 ### B. Contra a nuvem, com `.env` (como em produção)
 
-O site e o pipeline rodam na sua máquina; todo o resto é o ambiente de produção.
+O site e o pipeline rodam na sua máquina; todo o resto é o ambiente de produção. Express e pipeline rodam em contêineres, atrás do domínio fixo do ngrok: a configuração de uma vez (conta, `NGROK_*` no `.env`, `DISPATCH_PIPELINE_URL` publicado) está em `deploy/README.md`.
 
 ```powershell
-# 1. Tirar o perfil local do caminho
+# 1. Tirar o perfil local do caminho (os contêineres leem só o .env, mas o site lê os dois)
 Rename-Item .env.local .env.local.off
 #    Atenção: o .gitignore cobre .env.local, mas não .env.local.off — não faça
 #    `git add .` até renomear de volta.
 
-# 2. Em quatro janelas:
-npm run dev --prefix server                                                           # Express
-cd pipeline; .\.venv\Scripts\python -m uvicorn main:app --host 127.0.0.1 --port 8000  # pipeline
-cloudflared tunnel --url http://localhost:8000                                        # túnel
-npm run dev -- --port 4173 --strictPort                                               # site
+# 2. Express, pipeline e ngrok (com o Docker Desktop aberto; --build se o código mudou)
+docker compose --env-file .env -f deploy/docker-compose.yml -f deploy/docker-compose.ngrok.yml up -d --build express pipeline ngrok
+#    Abra https://<seu-domínio-ngrok>/health no navegador: precisa responder {"ok":true}.
 
-# 3. Conferir o túnel e apontar a Edge para ele
-#    Abra https://<endereço-do-túnel>/health no navegador: precisa responder {"ok":true}.
-npx supabase secrets set DISPATCH_PIPELINE_URL=https://<endereço-do-túnel>/hooks/dispatch
+# 3. O site, numa janela
+npm run dev -- --port 4173 --strictPort
 ```
 
 Abra o site **por `http://localhost:4173`**, não por `127.0.0.1`: o Stripe devolve o cliente para `localhost`, e o `localStorage` (onde fica o `form_token`) é separado por origem.
 
-Acompanhe pelo Studio do projeto (SQL Editor), pelos logs das funções no painel do Supabase e pela janela do pipeline, que deve mostrar `base legal …`, `velocidade …` e `pipeline ok`:
+Acompanhe pelo Studio do projeto (SQL Editor), pelos logs das funções no painel do Supabase e pelo log do contêiner do pipeline (Docker Desktop, ou `docker compose … logs -f pipeline`), que deve mostrar `base legal …`, `velocidade …` e `pipeline ok`:
 
 ```sql
 select f.case_id, f.document_status, d.status as dispatch, g.status as documento, g.storage_path
@@ -150,7 +147,7 @@ O esperado é `completed`, `sent` e `emailed`.
 
 **Ao terminar:**
 
-1. Feche as quatro janelas. O túnel morre junto; o `DISPATCH_PIPELINE_URL` pode ficar apontando para ele.
+1. Feche a janela do site. Os contêineres podem ficar no ar (`docker compose … down` para descê-los); o `DISPATCH_PIPELINE_URL` não muda.
 2. `Rename-Item .env.local.off .env.local`
 3. Apague os casos de teste das tabelas de produção, nesta ordem (as chaves estrangeiras exigem): `generated_documents` → `dispatches` → `radar_consultas_log` → `form_submissions` → `stripe_sessions`. O PDF fica no bucket `generated-recursos` até ser apagado à parte.
 
@@ -162,6 +159,8 @@ O esperado é `completed`, `sent` e `emailed`.
 | `form-submit` responde 403 | O site não está na porta 4173 (ou foi aberto por outro endereço). |
 | O caso fica em `pending` com `dispatch` também `pending`, depois do pagamento confirmado | O formulário foi enviado **antes** de o pagamento ser confirmado: a `stripe-webhook` cria o dispatch mas não o entrega ao pipeline (lacuna conhecida, em `PENDENCIAS.md`). Reenvie o formulário alterando o telefone. |
 | O caso vai a `failed` no upload do PDF, com `Invalid API key` | O venv tem o `supabase-py` antigo: rode o `pip install -r pipeline\requirements.txt` dos Requisitos. |
+| O caso vai a `failed` no e-mail, com `CERTIFICATE_VERIFY_FAILED … self-signed certificate in certificate chain` | O antivírus está interceptando o SMTP que sai do Docker (visto com o *Mail Shield* do Norton): desligue a verificação de e-mail dele. |
+| O caso fica minutos em `generating` e vai a `failed` com `modelo sem resposta no prazo` | A DeepSeek está sobrecarregada (`Service is too busy`); tente mais tarde. |
 
 ## Produção
 
@@ -170,7 +169,7 @@ O que já roda e o que falta — o detalhe de cada item está em `PENDENCIAS.md`
 | Peça | Onde roda | Estado |
 |---|---|---|
 | Banco, Storage e Edge Functions | projeto Supabase `tsdzvxgkokrjqayxukud` | **no ar** |
-| Express e pipeline | VPS na Hostinger, em contêineres, atrás de um Caddy com TLS, em `pipeline.amorecorrer.com` | planejado (`docs/superpowers/plans/2026-09-17-endereco-estavel-do-pipeline.md`), **nenhuma task executada** |
+| Express e pipeline | contêineres (`deploy/`); hoje na máquina do Klaus, atrás do domínio fixo do ngrok; no lançamento, num VPS na Hostinger atrás de um Caddy, em `pipeline.amorecorrer.com` | contêineres prontos e **no ar localmente** desde 15/10/2026; VPS planejado (Tasks 2–6 de `docs/superpowers/plans/2026-09-17-endereco-estavel-do-pipeline.md`) |
 | Site (`dist/`) | ainda não decidido — a recomendação é o mesmo VPS, servido pelo Caddy | **nunca esteve no ar** |
 | Pagamentos | conta Stripe "AMO RECORRER", modo live | falta criar o produto, os preços e o endpoint de webhook live |
 | E-mail | Resend, remetente `@amorecorrer.com` | domínio verificado |

@@ -8,14 +8,13 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 - `#N` é o número estável da pendência em `PROGRESSO.md › Pendências e decisões em aberto`. Item sem número não tem entrada lá.
 - Sem explicação aqui: uma linha por item.
 
-*Atualizado em 2026-10-13.*
+*Atualizado em 2026-10-15.*
 
 ---
 
 ## Produção e lançamento
 
-- **#11 Endereço estável do pipeline** — `DISPATCH_PIPELINE_URL` aponta para túnel morto. → Sessão de 31/08/2026 · plano `docs/superpowers/plans/2026-09-17-endereco-estavel-do-pipeline.md` (nenhuma task executada):
-  - Task 1 — contêineres (`deploy/`) validados localmente
+- **#11 Endereço estável do pipeline** — desde 15/10/2026 o endereço é fixo **na máquina do Klaus** (contêineres + domínio do ngrok, `deploy/README.md`); falta levá-lo ao VPS para o lançamento. → Sessão de 31/08/2026 · Sessão de 13–15/10/2026 · plano `docs/superpowers/plans/2026-09-17-endereco-estavel-do-pipeline.md` (Task 1 feita):
   - Task 2 — VPS na Hostinger, firewall e acesso *(gasta dinheiro; com o Klaus)*
   - Task 3 — subdomínio apontando para o VPS
   - Task 4 — serviços no VPS com TLS (Caddy)
@@ -27,6 +26,7 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 - **#2 Preço na conta live** — criar produto e os dois preços em `acct_1RrARg…`, `secrets set STRIPE_PRICE_ID_FULL`; decidir prazo global de campanha vs. por visitante. → 2026-08-15 — Preço cheio fora da promoção
 - **`.env.production`** — 13 valores ainda como `SUBSTITUA_`. → `CLAUDE.md › Variáveis de ambiente`
 - **#25 Caixa de e-mail do produto** — contato oficial é Gmail; `no-reply@` sem caminho de resposta. *Decisão do Klaus.* → Sessão de 13–14/09/2026
+- **Casos de teste de 14–15/10 na produção** — `CASO_c661b93e…` (`failed`, DeepSeek fora do ar) e `CASO_363f15e6…` (`completed`, PDF no bucket): apagar com autorização. → Sessão de 13–15/10/2026
 - **#17 `VITE_STRIPE_PUBLISHABLE_KEY` `pk_live_…` órfã** — remover ou trocar pela de teste. → Sessão de 03/09/2026
 
 ## Robustez do fluxo
@@ -34,6 +34,7 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 - **Caso `failed` com o PDF pronto não tem caminho de reenvio**: a `form-submit` recusa caso finalizado (409) e o worker não reprocessa. Com as novas tentativas do e-mail fica mais raro, mas um SMTP fora do ar por mais de ~20 s ainda deixa o cliente pagante sem nada. Falta um reenvio (manual ou automático) que use o PDF já registrado em `generated_documents`. → Sessão de 08/10/2026 (teste ponta a ponta pelo questionário)
 - **Caso pago parado em `pending` depois de um 503, se o cliente não clicar de novo** — a webhook já respondeu 200 e não volta a tentar; o caso fica visível (503 na tela, `[entrega] pipeline_*` e `devolvido` no log), mas sem alerta nem varredura. Mesma família do #6 (fila durável): uma varredura de casos pagos em `pending` ou um alerta resolveria. → Sessão de 09/10/2026 (revisão final da entrega única)
 - **#26 `.env.local` sobrescreve variáveis reais de ambiente no Express** (`override: true`) — corrigir e documentar a regra no `CLAUDE.md`. → Sessão de 18/09/2026
+- **Ninguém fica sabendo quando um caso pago vai a `failed`** — nem o Klaus (só pelo log do contêiner) nem o cliente (pagou e não recebe nada, nem aviso). Falta um alerta ao operador e, talvez, um e-mail ao cliente. → Sessão de 13–15/10/2026 (análise dos dois casos)
 - **#6 Sem fila durável no pipeline** — processo morto entre `202` e `finish` deixa o caso em `generating`. → Sessão de 31/08/2026
 - **Caminho legado do `202`** — pipeline respondendo `200` deixa `document_status` preso em `generating`. → Sessão de 09/09/2026 ("Ficou de fora")
 - **Reprocessar casos em `failed`** — `scripts/redispatch.py` não existe. → Sessão de 18/09/2026 · plano `2026-09-08-bloqueios-de-producao-bucket-e-email.md`, Task 4
@@ -73,6 +74,9 @@ Decisões jurídicas do Klaus primeiro; o pipeline só chega ao cliente depois d
 - **Falso positivo da conferência: "do Código determina" lido como "Código de…"** (norma externa). Visto numa rodada real de 05/10: "o art. 281, § 1º, I, do Código determina…" foi recusado. No worker custa uma refação e, se o modelo repetir, leva o caso a `failed`. Anterior à branch do relato. → Sessão de 05/10/2026 (relato e condutor)
 - **Confirmar com um auto real a dica do campo "Vel. considerada"** (texto genérico hoje) e se todo auto de radar do RJ imprime a considerada. → Sessão de 30/09/2026 (velocidade considerada)
 - **Tese de "estado de necessidade" sem norma** — pedida pelo cliente, a IA deixou de citar o Código Penal (a conferência recusou) mas manteve o argumento de que "afasta a culpabilidade". A conferência olha citações, não teses. *Decisão do Klaus* se a tese pode entrar numa defesa de trânsito. → Sessão de 29/09/2026 (base legal do CTB)
+- **Próxima branch — a rede do relato deixou passar uma frase** (`CASO_363f15e6…`): "O autuado não apresentou relato sobre as circunstâncias…" — falsa (havia relato, pedindo uma mentira) e falando do relato ao órgão. `_FALA_DO_RELATO` (`pipeline/peca.py`) não pega "[sujeito] não apresentou relato" nem "não relatou". → Sessão de 13–15/10/2026 (análise dos dois casos)
+- **Próxima branch — o enquadramento aceita qualquer artigo vigente**: "Artigo 5 …" virou `art. 5º` (Sistema Nacional de Trânsito) e foi ao modelo como dispositivo da infração. Aceitar só o capítulo das infrações (arts. 161–255); o resto, como não reconhecido (só o rito). → Sessão de 13–15/10/2026
+- *Menor:* a peça citou "art. 281, inciso I" — o inciso é do parágrafo único; a conferência não pega dispositivo errado dentro de artigo certo. → Sessão de 13–15/10/2026
 - **Tabela de códigos de enquadramento** — o auto traz um código ("7455-0") que o CTB não mapeia; hoje esses casos ficam sem enquadramento (só o rito). Base separada, a construir. → Sessão de 29/09/2026 (base legal do CTB)
 - **"Modo sem IA" chega ao cliente** — com `DEEPSEEK_API_KEY` vazia, o worker gera um PDF-placeholder e o envia; em produção deveria falhar, como já faz o SMTP. Pré-existente, apontado na revisão final. → Sessão de 29/09/2026 (base legal do CTB)
 - **Ferramenta de consulta ao CTB (caminho B)** — descartada por ora (teste de 26/09); voltaria só com uma busca de descoberta melhor que a atual (trecho exato). → Sessão de 26/09/2026 (spike: contexto × ferramenta)
@@ -82,6 +86,8 @@ Decisões jurídicas do Klaus primeiro; o pipeline só chega ao cliente depois d
 ## Produto e formulário
 
 - **#8 "HTML da peça"** — implementar ou deixar fora. → 2026-08-15 — Home (Fase 3)
+- **Próxima branch — a data-limite não tem faixa**: `3000-10-28` passou pelo questionário, pelo formulário e pela `form-submit`, e o e-mail mandou "Protocole … até 28/10/3000". Aceitar só entre a data da infração e ~1 ano depois, no front e na Edge (exige deploy da `form-submit`). → Sessão de 13–15/10/2026
+- **Velocidade considerada igual à aferida é aceita** (200/200 no `CASO_363f15e6…`): num auto real a tolerância a deixa sempre menor, e a cópia da aferida faz a conta sobre ela (o erro de 29/09). Barrar a igualdade ou só avisar? *Decisão do Klaus.* → Sessão de 13–15/10/2026
 - **`expedidaEm` é texto livre** — virar campo de data é decisão de produto. → Sessão de 26/08/2026 (noite)
 - **Contador anônimo de funil do questionário** (começou, terminou, foi ao pagamento; sem dado pessoal), para medir o efeito do questionário na conversão. Falta escolher onde gravar os eventos (serviço de analytics ou tabela de eventos). Decisão do Klaus: fora do projeto 1 do questionário. → Sessão de 07/10/2026 (questionário de triagem)
 - **Projeto 2 do questionário: consulta ao radar antes do pagamento** — depende das pendências da tese do radar (`RADAR_TESE_ATIVA`, avisos legais, `docs/verificacao-radar.md`, ingestão recorrente) e de proteger a consulta aberta a quem ainda não pagou (desde 12/10 a chave anônima não lê o radar: a consulta passaria por uma Edge Function); `sem_registro` não é "radar irregular". → Sessão de 07/10/2026 (questionário de triagem)
