@@ -118,6 +118,18 @@ Detalhe de cada um na entrada de sessão correspondente, ao fim do arquivo.
 - **Dois conjuntos de `.env`** (pendência 13) — decidir o canônico e apagar o outro.
 - **`tests/edge-functions/README.md` desatualizado** — e nenhum dos quatro scripts cobre PDF ou e-mail.
 
+## Sessão de 15/10/2026 — Achados dos casos de teste (branch `fix/achados-dos-casos`)
+
+Os três achados da análise do `CASO_363f15e6…`, cada um com o teste que falhava antes:
+
+- **Rede do relato** (`pipeline/peca.py`, `_FALA_DO_RELATO`): passa a tirar "o autuado/recorrente/requerente/interessado/defendente não apresentou (trouxe, forneceu, prestou, fez) relato" e "… não relatou/relata". Só com esses sujeitos: "o auto de infração não relata as circunstâncias" e "a notificação não apresenta relato da conduta" são argumentos e ficam (teste próprio).
+- **Enquadramento** (`pipeline/base_legal.py`): só artigos de 162 a 255 (Capítulo XV, contando os com letra, como 165-A). "Artigo 5", "Art. 161", "Art. 280" e "Art. 256" caem no caminho de amparo não reconhecido (só o rito). A advertência herda a regra, porque o worker a decide pelo `base.enquadramento`.
+- **Data-limite**: entre o dia da infração e um ano depois de hoje. O teto conta de hoje, não da infração, porque a notificação de penalidade pode chegar mais de um ano depois. Questionário (só o teto) e formulário (piso e teto) pela mesma `erroDaDataLimite`; a `form-submit` aplica a regra com o relógio do servidor e transforma o valor fora da faixa em `null`, sem recusar o envio. Conferido no navegador: as duas mensagens aparecem e nenhuma chamada sai para a `form-submit`.
+
+Testes: suíte do pipeline 248/248, `npm run radar:test` 116/116, `eslint` limpo nos arquivos tocados (o `tsc` acusa 46 erros de módulo ausente, iguais com e sem a mudança — `node_modules` do Windows). **Falta o deploy da `form-submit`** (Klaus).
+
+**Arquivos:** `pipeline/peca.py`, `pipeline/base_legal.py`, `supabase/functions/form-submit/campos.ts` e `index.ts`, `src/lib/questionario.ts`, `src/pages/Form.tsx`, os testes de cada um, `CLAUDE.md`, `PENDENCIAS.md`, `PROGRESSO.md`.
+
 ## Sessão de 15/10/2026 — Merge do #11 e limpeza dos casos de teste
 
 A branch `feat/endereco-estavel` entrou na `main` por avanço direto (seis commits, `f3a535a` a `2fc6c50`; suíte do pipeline 244/244 sobre o resultado) e o Klaus fez o push. Com autorização dele, saíram os dois casos de teste de 14–15/10: `CASO_c661b93e…` e `CASO_363f15e6…`. Ordem: `generated_documents` (1), `dispatches` (2), `radar_consultas_log` (2), `form_submissions` (2) e `stripe_sessions` (2); o PDF do `363f` saiu do bucket pela API de Storage.
