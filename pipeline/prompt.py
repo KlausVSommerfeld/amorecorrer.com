@@ -7,8 +7,9 @@ desligada, o que sai daqui é idêntico ao que o worker produzia antes.
 
 from __future__ import annotations
 
+import asyncio
 import re
-from typing import Any
+from typing import Any, Awaitable, TypeVar
 
 from verificacao import bloco_verificacao
 
@@ -216,7 +217,7 @@ def build_case_context(case: dict[str, Any], tese_ativa: bool = False) -> str:
 
 
 class RespostaDoModeloInvalida(RuntimeError):
-    """Resposta vazia ou cortada: nunca vira peça.
+    """Resposta vazia, cortada ou que não chegou no prazo: nunca vira peça.
 
     É RuntimeError de propósito — o `run_dispatch_pipeline` já trata qualquer
     exceção levando o caso a `failed`, sem e-mail ao cliente.
@@ -251,6 +252,34 @@ def texto_da_resposta(conteudo: str | None, finish_reason: str | None) -> str:
     if finish_reason == "length":
         raise RespostaDoModeloInvalida("resposta cortada pelo limite de tokens")
     return texto
+
+
+def texto_da_completion(completion: Any) -> str:
+    # Sobrecarregada, a DeepSeek segura a conexão e depois responde 200 sem
+    # `choices`, com o motivo num campo `error` (14/10/2026).
+    escolhas = getattr(completion, "choices", None)
+    if not escolhas:
+        erro = getattr(completion, "error", None)
+        motivo = erro.get("message") if isinstance(erro, dict) else erro
+        raise RespostaDoModeloInvalida(f"resposta do modelo sem escolhas: {motivo or 'sem motivo'}")
+    escolha = escolhas[0]
+    return texto_da_resposta(escolha.message.content, escolha.finish_reason)
+
+
+# Prazo do pedido inteiro, novas tentativas do cliente incluídas. O timeout do
+# httpx é por leitura, e as linhas vazias que a DeepSeek manda enquanto o pedido
+# espera na fila o reiniciam: em 14/10/2026 um caso ficou ~15 min em `generating`.
+# Uma peça normal sai em segundos.
+PRAZO_DO_MODELO_S = 180.0
+
+_T = TypeVar("_T")
+
+
+async def com_prazo_do_modelo(chamada: Awaitable[_T], segundos: float = PRAZO_DO_MODELO_S) -> _T:
+    try:
+        return await asyncio.wait_for(chamada, segundos)
+    except asyncio.TimeoutError as e:
+        raise RespostaDoModeloInvalida(f"modelo sem resposta no prazo de {segundos:g} s") from e
 
 
 def pedido_de_correcao(recusas) -> str:

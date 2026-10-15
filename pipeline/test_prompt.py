@@ -5,7 +5,9 @@
 Nunca `unittest discover`: test_resend_smtp.py manda e-mail real ao ser importado.
 """
 
+import asyncio
 import unittest
+from types import SimpleNamespace
 
 from prompt import (
     CAMPOS_INTERNOS,
@@ -25,8 +27,10 @@ from prompt import (
     RespostaDoModeloInvalida,
     argumentos_da_chamada,
     build_case_context,
+    com_prazo_do_modelo,
     pedido_de_correcao,
     system_prompt,
+    texto_da_completion,
     texto_da_resposta,
 )
 from verificacao import INSTRUCAO_EXIBICAO
@@ -143,6 +147,51 @@ class TestChamadaAoModelo(unittest.TestCase):
     def test_erro_e_runtime_error(self):
         # O worker já trata RuntimeError: caso vai a failed, sem e-mail ao cliente.
         self.assertTrue(issubclass(RespostaDoModeloInvalida, RuntimeError))
+
+    def test_completion_com_escolha_devolve_o_texto(self):
+        escolha = SimpleNamespace(
+            message=SimpleNamespace(content=" Texto da peça. "), finish_reason="stop"
+        )
+        completion = SimpleNamespace(choices=[escolha])
+        self.assertEqual(texto_da_completion(completion), "Texto da peça.")
+
+    def test_completion_sem_escolhas_nunca_vira_peca(self):
+        # Rodada real de 14/10/2026, com a DeepSeek sobrecarregada: depois de ~15 min
+        # de conexão aberta, ela devolveu 200 com `choices` nulo, e o worker caiu num
+        # TypeError ('NoneType' object is not subscriptable) que não dizia nada.
+        for escolhas in (None, []):
+            with self.subTest(choices=escolhas):
+                with self.assertRaises(RespostaDoModeloInvalida):
+                    texto_da_completion(SimpleNamespace(choices=escolhas))
+
+    def test_completion_sem_escolhas_leva_o_erro_da_api_ao_log(self):
+        # O corpo real daquela resposta, depois de 902 s de linhas vazias.
+        completion = SimpleNamespace(choices=None, error={
+            "message": "We were unable to start processing your request within "
+                       "the 900-second timeout limit. Please try again later."
+        })
+        with self.assertRaises(RespostaDoModeloInvalida) as ctx:
+            texto_da_completion(completion)
+        self.assertIn("900-second timeout limit", str(ctx.exception))
+
+
+class TestPrazoDoModelo(unittest.TestCase):
+    # Na mesma rodada, a DeepSeek mandava linhas vazias enquanto o pedido esperava
+    # na fila. Cada byte reinicia o timeout de leitura do httpx, e o caso ficou
+    # ~15 min em `generating`. O prazo é do pedido inteiro, não de cada leitura.
+    def test_resposta_dentro_do_prazo_passa(self):
+        async def rapida():
+            return "peça"
+
+        self.assertEqual(asyncio.run(com_prazo_do_modelo(rapida(), 1.0)), "peça")
+
+    def test_sem_resposta_no_prazo_vira_erro_do_modelo(self):
+        async def presa():
+            await asyncio.sleep(10)
+
+        with self.assertRaises(RespostaDoModeloInvalida) as ctx:
+            asyncio.run(com_prazo_do_modelo(presa(), 0.05))
+        self.assertIn("prazo", str(ctx.exception))
 
 
 class TestBaseLegalNoPrompt(unittest.TestCase):

@@ -24,7 +24,13 @@ from base_legal import cabe_advertencia, carregar_ctb, montar_base
 from conferencia import gerar_com_conferencia, resumo_alertas
 from velocidade import bloco_velocidade
 from pdf_peca import gerar_pdf
-from prompt import argumentos_da_chamada, build_case_context, system_prompt, texto_da_resposta
+from prompt import (
+    argumentos_da_chamada,
+    build_case_context,
+    com_prazo_do_modelo,
+    system_prompt,
+    texto_da_completion,
+)
 from verificacao import bloco_verificacao
 from tentativas import com_novas_tentativas
 
@@ -124,15 +130,16 @@ async def call_deepseek(
         api_key=settings.deepseek_api_key,
         base_url=settings.deepseek_api_base,
     )
-    completion = await client.chat.completions.create(
-        **argumentos_da_chamada(
-            settings.deepseek_model, sistema or system_prompt(False), text_context, historico
+    completion = await com_prazo_do_modelo(
+        client.chat.completions.create(
+            **argumentos_da_chamada(
+                settings.deepseek_model, sistema or system_prompt(False), text_context, historico
+            )
         )
     )
-    escolha = completion.choices[0]
-    # Vazia ou cortada lança erro: o caso vai a `failed` em vez de o cliente
-    # receber um PDF sem peça (antes saía "(resposta vazia do modelo)").
-    return texto_da_resposta(escolha.message.content, escolha.finish_reason)
+    # Vazia, cortada, sem escolhas ou fora do prazo lança erro: o caso vai a `failed`
+    # em vez de o cliente receber um PDF sem peça (antes saía "(resposta vazia do modelo)").
+    return texto_da_completion(completion)
 
 
 def _message_id_domain(mail_from: str) -> str:
