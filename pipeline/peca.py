@@ -73,7 +73,12 @@ _FALA_DO_RELATO = re.compile(
     r"|\b(os?|estes?|esses?|tal|tais)\s+relatos?(\s+[\wÀ-ÿ]+){0,3}?\s+"
     r"(não\s+(traz|trazem|trouxe|trouxeram|contém|contêm|apresenta|apresentam|menciona|mencionam"
     r"|informa|informam|descreve|descrevem|narra|narram)|limita-se|limitam-se|se\s+limitam?|limitando-se)\b"
-    r"|\brelatos?\b[^.]*\b(solicit\w*|pede|pedem|pedindo|pediu)\s+(que\s+se|que\s+a\s+peça|para\s+que\s+se|que\s+seja)\b",
+    r"|\brelatos?\b[^.]*\b(solicit\w*|pede|pedem|pedindo|pediu)\s+(que\s+se|que\s+a\s+peça|para\s+que\s+se|que\s+seja)\b"
+    # Quem pediu a peça "não apresentou relato" / "não relatou". Só com esses sujeitos:
+    # "o auto não relata as circunstâncias" é argumento contra a autuação.
+    r"|\b(autuad[oa]|recorrente|requerente|interessad[oa]|defendente)\s+não\s+"
+    r"(relat(ou|a)\b|(apresentou|apresenta|trouxe|traz|forneceu|fornece|prestou|presta|fez|faz)"
+    r"\s+(qualquer\s+|nenhum\s+)?relatos?\b)",
     re.IGNORECASE,
 )
 # Fim de frase: pontuação (ponto, "!", "?", reticências), talvez seguida de aspas ou

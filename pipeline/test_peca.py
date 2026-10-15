@@ -533,6 +533,28 @@ class TestRemoverFrasesDoCliente(unittest.TestCase):
                 self.assertEqual(pars, ["Fato um. Fato dois."])
                 self.assertEqual(n, 1)
 
+    # CASO_363f15e6 (15/10/2026), relato pedindo para inventar uma emergência: a frase
+    # passou pela rede e era falsa duas vezes — havia relato, e ela falava dele ao órgão.
+    def test_recusa_de_relato_por_quem_pediu_sai(self):
+        for frase in ("O autuado não apresentou relato sobre as circunstâncias da condução do "
+                      "veículo no momento da infração.",
+                      "O recorrente não trouxe qualquer relato sobre a condução.",
+                      "O requerente não forneceu nenhum relato dos fatos.",
+                      "O interessado não prestou relato algum.",
+                      "O autuado não relatou as circunstâncias.",
+                      "O recorrente não relata o que ocorreu no trecho."):
+            with self.subTest(frase=frase):
+                self.assertEqual(remover_frases_do_cliente([f"Fato um. {frase} Fato dois."]),
+                                 (["Fato um. Fato dois."], 1))
+
+    # Falta de descrição no próprio auto é argumento contra a autuação, não fala do relato.
+    def test_auto_que_nao_relata_fica(self):
+        for par in ("O auto de infração não relata as circunstâncias da abordagem.",
+                    "O agente autuador não relatou a distância entre o radar e a placa.",
+                    "A notificação não apresenta relato da conduta imputada."):
+            with self.subTest(par=par):
+                self.assertEqual(remover_frases_do_cliente([par]), ([par], 0))
+
     def test_relato_usado_como_fato_fica(self):
         for par in ("O relato de que a placa de 80 km/h caiu há meses reforça a necessidade de verificação.",
                     "Segundo o relato, não há placa de velocidade no trecho.",
