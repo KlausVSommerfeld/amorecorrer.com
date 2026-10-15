@@ -27,7 +27,6 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 - **#2 Preço na conta live** — criar produto e os dois preços em `acct_1RrARg…`, `secrets set STRIPE_PRICE_ID_FULL`; decidir prazo global de campanha vs. por visitante. → 2026-08-15 — Preço cheio fora da promoção
 - **`.env.production`** — 13 valores ainda como `SUBSTITUA_`. → `CLAUDE.md › Variáveis de ambiente`
 - **#25 Caixa de e-mail do produto** — contato oficial é Gmail; `no-reply@` sem caminho de resposta. *Decisão do Klaus.* → Sessão de 13–14/09/2026
-- **Casos de teste de 14–15/10 na produção** — `CASO_c661b93e…` (`failed`, DeepSeek fora do ar) e `CASO_363f15e6…` (`completed`, PDF no bucket): apagar com autorização. → Sessão de 13–15/10/2026
 - **#17 `VITE_STRIPE_PUBLISHABLE_KEY` `pk_live_…` órfã** — remover ou trocar pela de teste. → Sessão de 03/09/2026
 
 ## Robustez do fluxo

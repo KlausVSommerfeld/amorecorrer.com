@@ -118,6 +118,14 @@ Detalhe de cada um na entrada de sessão correspondente, ao fim do arquivo.
 - **Dois conjuntos de `.env`** (pendência 13) — decidir o canônico e apagar o outro.
 - **`tests/edge-functions/README.md` desatualizado** — e nenhum dos quatro scripts cobre PDF ou e-mail.
 
+## Sessão de 15/10/2026 — Merge do #11 e limpeza dos casos de teste
+
+A branch `feat/endereco-estavel` entrou na `main` por avanço direto (seis commits, `f3a535a` a `2fc6c50`; suíte do pipeline 244/244 sobre o resultado) e o Klaus fez o push. Com autorização dele, saíram os dois casos de teste de 14–15/10: `CASO_c661b93e…` e `CASO_363f15e6…`. Ordem: `generated_documents` (1), `dispatches` (2), `radar_consultas_log` (2), `form_submissions` (2) e `stripe_sessions` (2); o PDF do `363f` saiu do bucket pela API de Storage.
+
+Sobrou um terceiro caso: `CASO_a5d46982…`, de 13/10 às 23:07 UTC (pago, `promo`, despacho `sent`, PDF no bucket), **sem linha em `form_submissions` nem em `radar_consultas_log`** — do dia da rotação das chaves, depois da limpeza de 13/10, e sem menção no `PROGRESSO`. Também com autorização, saiu sem investigação: `generated_documents` (1), `dispatches` (1), `stripe_sessions` (1) e o PDF. As cinco tabelas do fluxo e o bucket `generated-recursos` estão vazios.
+
+**Arquivos:** `PENDENCIAS.md`, `PROGRESSO.md`.
+
 ## Sessão de 13–15/10/2026 — Endereço estável do pipeline na máquina do Klaus (#11)
 
 O Klaus ainda não pode contratar o VPS (Task 2 do plano). Para parar de republicar a `DISPATCH_PIPELINE_URL` a cada túnel `trycloudflare`, os contêineres da Task 1 passaram a rodar na máquina dele, atrás do domínio fixo gratuito do ngrok. Branch `feat/endereco-estavel`.
