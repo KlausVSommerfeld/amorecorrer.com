@@ -86,6 +86,22 @@ class TestMontarBase(unittest.TestCase):
                 self.assertIn("280", b.artigos)
                 self.assertIn("90", b.artigos)
 
+    # CASO_363f15e6 (15/10/2026): "Artigo 5" virou o art. 5º, e a peça sustentaria como
+    # infração um artigo que não tipifica nenhuma. Só o Capítulo XV (162 a 255) tipifica.
+    def test_artigo_fora_das_infracoes_fica_so_com_rito(self):
+        for amparo in ("Artigo 5", "Art. 5", "Art. 161", "Art. 280", "Art. 256"):
+            with self.subTest(amparo=amparo):
+                b = montar_base(self.c, amparo)
+                self.assertIsNone(b.enquadramento)
+                self.assertIn("280", b.artigos)
+
+    def test_bordas_das_infracoes_valem(self):
+        for amparo, numero in (("Art. 162, I", "162"), ("Art. 165-A", "165-A"), ("Art. 255", "255")):
+            with self.subTest(amparo=amparo):
+                b = montar_base(self.c, amparo)
+                self.assertIsNotNone(b.enquadramento)
+                self.assertIn(numero, b.artigos)
+
     def test_numero_vigente_normaliza(self):
         self.assertEqual(numero_vigente(self.c, "90"), "90")
         self.assertEqual(numero_vigente(self.c, "281-a"), "281-A")

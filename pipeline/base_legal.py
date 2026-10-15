@@ -113,7 +113,19 @@ def _enquadramento(c: Ctb, amparo_legal: str | None) -> tuple[str, str] | None:
         return None
     if disp.get("status") != "vigente" or artigo.get("status") != "vigente":
         return None
+    if not _tipifica_infracao(artigo["numero"]):
+        return None
     return disp["citacao"], artigo["numero"]
+
+
+# Capítulo XV do CTB, "Das Infrações": o art. 161 define infração e os arts. 162 a 255
+# a tipificam. Amparo fora daí ("Artigo 5", "Art. 280") não é enquadramento.
+_PRIMEIRA_INFRACAO, _ULTIMA_INFRACAO = 162, 255
+
+
+def _tipifica_infracao(numero: str) -> bool:
+    m = re.match(r"\d+", numero)
+    return bool(m) and _PRIMEIRA_INFRACAO <= int(m.group()) <= _ULTIMA_INFRACAO
 
 
 # Teto de segurança: medido em 29/09/2026, o fecho das remissões tem mediana de
