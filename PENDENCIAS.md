@@ -26,7 +26,7 @@ Lista bruta do que ainda está em aberto. O contexto de cada item está no `PROG
 - **Hospedagem do frontend** — o site **nunca foi ao ar**: `amorecorrer.com` e `www` não resolvem (conferido em 01/10/2026). É o primeiro deploy, não uma republicação, e leva junto o `Form.tsx` da Fase 4 e o campo da velocidade considerada. Falta: escolher onde (recomendação: o mesmo VPS do #11, com o Caddy servindo o `dist/`), build com as `VITE_*` de produção, fallback de SPA (`/form` vem do redirect do Stripe; `public/.htaccess` já resolve em Apache, no Caddy é um `try_files`), DNS da raiz e do `www`, e `ORIGIN_WHITELIST`/`FRONTEND_URL` da Edge batendo com o domínio. **Só junto com o #11 ou depois dele** — sem pipeline, o cliente paga e não recebe nada. → Sessão de 01/10/2026 · plano do VPS, "Notas de execução"
 - **#2 Preço na conta live** — criar produto e os dois preços em `acct_1RrARg…`, `secrets set STRIPE_PRICE_ID_FULL`; decidir prazo global de campanha vs. por visitante. → 2026-08-15 — Preço cheio fora da promoção
 - **`.env.production`** — 13 valores ainda como `SUBSTITUA_`. → `CLAUDE.md › Variáveis de ambiente`
-- **Deploy da `form-submit` com a faixa da data-limite** — `npx supabase functions deploy form-submit` (do terminal do Klaus). Até lá, a nuvem continua aceitando data-limite fora da faixa (o front já barra). → Sessão de 15/10/2026 (achados dos casos)
+- **Deploy do enquadramento por lista** — na ordem: `npx supabase db push` (coluna `codigo_enquadramento`), `npx supabase functions deploy form-submit`, rebuild do contêiner do pipeline (`--build`, que leva a tabela; conferir antes se há caso em `generating`). Na ordem inversa, todo envio do formulário falharia no insert. O site só vai com o campo novo depois dos três. → Sessão de 15–16/10/2026 (enquadramento por lista)
 - **#25 Caixa de e-mail do produto** — contato oficial é Gmail; `no-reply@` sem caminho de resposta. *Decisão do Klaus.* → Sessão de 13–14/09/2026
 - **#17 `VITE_STRIPE_PUBLISHABLE_KEY` `pk_live_…` órfã** — remover ou trocar pela de teste. → Sessão de 03/09/2026
 
@@ -76,7 +76,6 @@ Decisões jurídicas do Klaus primeiro; o pipeline só chega ao cliente depois d
 - **Confirmar com um auto real a dica do campo "Vel. considerada"** (texto genérico hoje) e se todo auto de radar do RJ imprime a considerada. → Sessão de 30/09/2026 (velocidade considerada)
 - **Tese de "estado de necessidade" sem norma** — pedida pelo cliente, a IA deixou de citar o Código Penal (a conferência recusou) mas manteve o argumento de que "afasta a culpabilidade". A conferência olha citações, não teses. *Decisão do Klaus* se a tese pode entrar numa defesa de trânsito. → Sessão de 29/09/2026 (base legal do CTB)
 - *Menor:* a peça citou "art. 281, inciso I" — o inciso é do parágrafo único; a conferência não pega dispositivo errado dentro de artigo certo. → Sessão de 13–15/10/2026
-- **Tabela de códigos de enquadramento** — o auto traz um código ("7455-0") que o CTB não mapeia; hoje esses casos ficam sem enquadramento (só o rito). Base separada, a construir. → Sessão de 29/09/2026 (base legal do CTB)
 - **"Modo sem IA" chega ao cliente** — com `DEEPSEEK_API_KEY` vazia, o worker gera um PDF-placeholder e o envia; em produção deveria falhar, como já faz o SMTP. Pré-existente, apontado na revisão final. → Sessão de 29/09/2026 (base legal do CTB)
 - **Ferramenta de consulta ao CTB (caminho B)** — descartada por ora (teste de 26/09); voltaria só com uma busca de descoberta melhor que a atual (trecho exato). → Sessão de 26/09/2026 (spike: contexto × ferramenta)
 - *Menor:* conferência não confere o 29 em "arts. 280, § 2º, e 29", nem lê "art 29" sem ponto; base com JSON de forma errada sai como erro genérico (o caso vai a `failed` do mesmo jeito). → Sessão de 29/09/2026 (base legal do CTB)
@@ -84,14 +83,13 @@ Decisões jurídicas do Klaus primeiro; o pipeline só chega ao cliente depois d
 
 ## Produto e formulário
 
-- **Enquadramento escolhido numa lista com busca** no questionário e no formulário, em vez de texto livre: gerada do `CTB-compilado_files/saida/ctb_infracoes.json` (173 infrações, com dispositivo, conduta, gravidade e penalidade), carregada só no passo do enquadramento, com teste que pegue a lista desatualizada em relação ao CTB (como o `velocidade.json`). Cuidados: buscar pelo número impresso na notificação e mostrar a conduta por extenso para conferência (escolha válida e errada passa calada, ao contrário do texto livre, que cai no rito); saída "não encontro / só tenho o código" sem enquadramento (a tabela de códigos ainda não existe). A trava dos arts. 162–255 no pipeline fica. Desenho próprio. → Sessão de 15/10/2026 (achados dos casos)
 - **#8 "HTML da peça"** — implementar ou deixar fora. → 2026-08-15 — Home (Fase 3)
 - **Velocidade considerada igual à aferida é aceita** (200/200 no `CASO_363f15e6…`): num auto real a tolerância a deixa sempre menor, e a cópia da aferida faz a conta sobre ela (o erro de 29/09). Barrar a igualdade ou só avisar? *Decisão do Klaus.* → Sessão de 13–15/10/2026
 - **`expedidaEm` é texto livre** — virar campo de data é decisão de produto. → Sessão de 26/08/2026 (noite)
 - **Contador anônimo de funil do questionário** (começou, terminou, foi ao pagamento; sem dado pessoal), para medir o efeito do questionário na conversão. Falta escolher onde gravar os eventos (serviço de analytics ou tabela de eventos). Decisão do Klaus: fora do projeto 1 do questionário. → Sessão de 07/10/2026 (questionário de triagem)
 - **Projeto 2 do questionário: consulta ao radar antes do pagamento** — depende das pendências da tese do radar (`RADAR_TESE_ATIVA`, avisos legais, `docs/verificacao-radar.md`, ingestão recorrente) e de proteger a consulta aberta a quem ainda não pagou (desde 12/10 a chave anônima não lê o radar: a consulta passaria por uma Edge Function); `sem_registro` não é "radar irregular". → Sessão de 07/10/2026 (questionário de triagem)
 - **Texto do `ComoFunciona` na home contradiz o fluxo novo**: ainda diz "01 Pagamento… a única parte que depende de você é o formulário". Precisa de texto novo do Klaus. → Sessão de 08/10/2026 (revisão final)
-- **O resumo do questionário não mostra a advertência** que a peça pede (considerada abaixo da permitida no inciso I; infração leve ou média fora do art. 218). É o texto da spec; sugestão: diagnosticar a advertência pela natureza da infração. → Sessão de 08/10/2026 (revisão final)
+- **O resumo do questionário não mostra a advertência** que a peça pede (considerada abaixo da permitida no inciso I; infração leve ou média fora do art. 218). É o texto da spec; sugestão: diagnosticar a advertência pela natureza da infração. → Sessão de 08/10/2026 (revisão final) A gravidade já é conhecida antes do pagamento quando o cliente escolhe da lista (`src/data/enquadramentos.json`). → Sessão de 15–16/10/2026
 - **Achados menores da revisão final do questionário:**
   - acessibilidade: grupos de opções e a data do passo 2 sem nome acessível, erro não ligado ao campo (`aria-describedby`), um título repetido e um anúncio duplo para leitor de tela;
   - rascunho do formulário: o aviso "Rascunho guardado" aparece logo ao chegar do questionário, e "Limpar" apaga as respostas, que voltam ao recarregar;
@@ -104,6 +102,7 @@ Decisões jurídicas do Klaus primeiro; o pipeline só chega ao cliente depois d
 
 ## Repositório e testes
 
+- *Menor:* o campo de enquadramento (`CampoEnquadramento`) não tem teste de componente — o projeto não tem biblioteca para isso; a verificação foi no navegador (7 situações, incluindo lista bloqueada e lista atrasada). → Sessão de 15–16/10/2026 (enquadramento por lista)
 - **Branch `chore/limpeza-dependencias`** não mergeada. → Sessão de 20/09/2026
 - **`tests/edge-functions/README.md` desatualizado**; nenhum script cobre PDF ou e-mail; sem suíte automatizada do fluxo. → Próximos passos › Fora do caminho crítico
 - **`npm run lint`: 7 erros cosméticos** (`any` no `stripe-webhook`, `require()` no `tailwind.config.ts`, interface vazia no `textarea.tsx`). → Sessão de 31/08/2026

@@ -118,6 +118,21 @@ Detalhe de cada um na entrada de sessão correspondente, ao fim do arquivo.
 - **Dois conjuntos de `.env`** (pendência 13) — decidir o canônico e apagar o outro.
 - **`tests/edge-functions/README.md` desatualizado** — e nenhum dos quatro scripts cobre PDF ou e-mail.
 
+## Sessão de 15–16/10/2026 — Enquadramento por lista, com a tabela da SENATRAN (branch `feat/enquadramento-por-lista`)
+
+O enquadramento deixa de ser só texto livre: no questionário e no formulário, o cliente busca por código ("745-50", "7455-0", "74550"), artigo ("218", "art. 218, I") ou palavras da descrição, confere num cartão a descrição impressa na notificação e, se não achar, digita. Spec e plano de 2026-10-15.
+
+- **Fonte:** Anexo IV da Portaria SENATRAN 354/2022, versão "Anexos Retificados" do site da SENATRAN (`enquadramentos/Portaria3542022AnexoN4.pdf`, sha256 `81bceadb…35946`), que já traz as portarias 1.230/2022, 1.477/2022 e 4/2023; a 423/2024 (arts. 165-B a 165-D) transcrita em `enquadramentos/alteracoes.json`. Nenhuma alteração de 2025–2026 encontrada (busca de 15/10/2026).
+- **Extrator** (`enquadramentos/enquadramentos_parser.py`, pypdf): 439 linhas lidas, 442 códigos, 427 na lista (arts. 162–255), 1 rejeitado (6068-5, "209 c/c art. 17, § 5º, da Lei 13.103"). Cada amparo vira dispositivo vigente do `ctb.json` e a gravidade confere com o CTB (com "c/c", contra o dispositivo apontado: "163 c/c 162, II", "244, III c/c § 1º"). Um defeito de extração corrigido por código (7609-0).
+- **Bug antigo achado no caminho:** `parse_ref` descartava "§ único" e caía no caput — "Art. 252, § único" (celular, gravíssima) virava o art. 252. Corrigido em `CTB-compilado_files/consulta.py`.
+- **Pipeline:** `tabela_enquadramentos.py` (leitura de código e carga da tabela); `montar_base` resolve amparo → `codigo_enquadramento` → código escrito no amparo, sob a trava dos arts. 162–255; "Código da infração" no quadro da peça quando aponta o mesmo dispositivo; sem a tabela, não sobe. Com aprovação do Klaus, o art. 163 traz o 162 para a base.
+- **Site:** `src/lib/enquadramentos.ts` (busca), `CampoEnquadramento` (busca, cartão, texto livre; a lista vem num arquivo à parte, ~11 KB comprimidos), `codigo_enquadramento` nas respostas e no rascunho (o par amparo/código anda junto). No navegador, apareceu e foi corrigido: Enter com a lista ainda carregando mandava para o texto livre.
+- **Banco e Edge:** migration `20261016000000_codigo_enquadramento.sql` (aplicada no banco local; RLS 53/53); a `form-submit` aceita só `NNNN-N`.
+- **Testes:** pipeline 271/271, extrator 22/22, CTB 49/49, JS 132/132; contraste dos pares novos AA nos dois temas.
+- O item do deploy da `form-submit` com a faixa da data-limite saiu do `PENDENCIAS` (o Klaus publicou em 15/10/2026). **Falta o deploy desta branch** (migration, `form-submit`, pipeline), na ordem do `PENDENCIAS`.
+
+**Arquivos:** `enquadramentos/` (novo), `src/data/enquadramentos.json`, `src/lib/enquadramentos.ts`, `src/components/CampoEnquadramento.tsx`, `src/lib/questionario.ts`, `src/pages/Questionario.tsx`, `src/pages/Form.tsx`, `src/index.css`, `tsconfig.app.json`, `src/integrations/supabase/types.ts`, `pipeline/tabela_enquadramentos.py`, `pipeline/base_legal.py`, `pipeline/peca.py`, `pipeline/prompt.py`, `pipeline/config.py`, `pipeline/worker.py`, `pipeline/main.py`, `deploy/Dockerfile.pipeline`, `CTB-compilado_files/consulta.py`, `supabase/migrations/20261016000000_codigo_enquadramento.sql`, `supabase/functions/form-submit/`, `tests/compartilhados/codigos.json`, os testes de cada um, `CLAUDE.md`, `PENDENCIAS.md`, `PROGRESSO.md`.
+
 ## Sessão de 15/10/2026 — Achados dos casos de teste (branch `fix/achados-dos-casos`)
 
 Os três achados da análise do `CASO_363f15e6…`, cada um com o teste que falhava antes:
