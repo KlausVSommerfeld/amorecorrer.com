@@ -981,6 +981,52 @@
     @apply mt-1 block text-xs leading-snug text-muted-foreground;
   }
 
+  /* ---- Campo do enquadramento (spec 2026-10-15, §4.2) ----------------------
+     A lista e o cartão usam as superfícies do formulário: papel do cartão, creme
+     da seleção, código em mono na cor da marca, como na notificação. */
+  .enq {
+    @apply relative;
+  }
+
+  .enq__lista {
+    @apply absolute left-0 right-0 z-20 mt-1 max-h-80 overflow-y-auto rounded border border-input bg-card shadow-md;
+  }
+
+  .enq__opcao {
+    @apply flex cursor-pointer flex-col gap-0.5 border-b border-rule px-4 py-3 last:border-b-0;
+  }
+  .enq__opcao[aria-selected='true'] {
+    @apply bg-muted;
+  }
+
+  .enq__opcao--livre {
+    @apply font-mono text-[11px] uppercase tracking-[0.14em] text-primary;
+  }
+
+  .enq__codigo {
+    @apply font-mono text-xs tracking-wide text-primary;
+  }
+
+  .enq__descricao {
+    @apply text-sm leading-snug text-foreground;
+  }
+
+  .enq__dispositivo {
+    @apply font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground;
+  }
+
+  .enq__vazio {
+    @apply px-4 py-3 text-sm text-muted-foreground;
+  }
+
+  .enq__escolhido {
+    @apply flex flex-col gap-1 rounded border border-primary bg-muted p-4;
+  }
+
+  .enq__acao {
+    @apply mt-2 font-mono text-[11px] uppercase tracking-[0.14em] text-primary underline underline-offset-4;
+  }
+
   /* Contador da justificativa: número que se atualiza sozinho, logo tabular. */
   .form-counter {
     @apply mt-1 shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground;

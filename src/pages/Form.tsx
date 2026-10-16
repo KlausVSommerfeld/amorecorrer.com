@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { getCaseIdFromUrl } from '../lib/caseId';
@@ -17,6 +17,7 @@ import {
 } from '../lib/questionario';
 import AjudaSemVersao from '../components/questionario/AjudaSemVersao';
 import { consideradaMaiorQueAferida } from '../lib/velocidade';
+import CampoEnquadramento from '../components/CampoEnquadramento';
 import PageShell from '../components/PageShell';
 
 /** O envio dispara a Edge Function, que por sua vez chama o pipeline. É mais
@@ -73,6 +74,7 @@ interface FormData {
   renainf: string;
   descricaoInfracao: string;
   amparoLegal: string;
+  codigoEnquadramento: string;
   justificativa: string;
   // "Era você quem dirigia?" — '' até o cliente escolher; 'sim' | 'nao' depois.
   // String, e não booleano, para o rascunho (só guarda strings) e o rádio.
@@ -210,6 +212,7 @@ const INITIAL_FORM: FormData = {
   renainf: '',
   descricaoInfracao: '',
   amparoLegal: '',
+  codigoEnquadramento: '',
   justificativa: '',
   cliente_conduzia: '',
   data_limite: '',
@@ -319,6 +322,10 @@ const Form = () => {
 
   const maxDataHora = useMemo(agoraParaInput, []);
 
+  const mudarEnquadramento = useCallback((amparo: string, codigo: string) => {
+    setFormData((p) => ({ ...p, amparoLegal: amparo, codigoEnquadramento: codigo }));
+  }, []);
+
   /**
    * O `datetime-local` desenha a data no locale do **navegador**, não no `lang`
    * da página: num aparelho em inglês o campo pede `mm/dd/yyyy` e o motorista
@@ -388,7 +395,7 @@ const Form = () => {
     setFormData(prev => {
       const comQuestionario = respostas ? { ...prev, ...paraCamposDoFormulario(respostas) } : prev;
       return {
-        ...mesclarComRascunho(comQuestionario, rascunho),
+        ...mesclarComRascunho(comQuestionario, rascunho, [['amparoLegal', 'codigoEnquadramento']]),
         form_token: token!,
         case_id: caseId ?? prev.case_id
       };
@@ -719,6 +726,7 @@ const Form = () => {
       expedida_em: data.expedidaEm.trim() || null,
       descricao_infracao: data.descricaoInfracao.trim() || null,
       amparo_legal: data.amparoLegal.trim() || null,
+      codigo_enquadramento: data.codigoEnquadramento || null,
       justificativa: data.versao === 'propria' ? data.justificativa.trim() || null : null,
       data_limite_protocolo: data.data_limite || null,
       cliente_conduzia:
@@ -1145,19 +1153,9 @@ const Form = () => {
 
             <div className="form-grid mb-5">
               <div className="form-field--wide">
-                <label className="form-label" htmlFor="amparoLegal">
-                  Amparo legal da autuação
-                </label>
-                <input
-                  type="text"
-                  id="amparoLegal"
-                  name="amparoLegal"
-                  value={formData.amparoLegal}
-                  onChange={handleInputChange}
-                  placeholder="Art. 218, II, do CTB"
-                  className="form-input"
-                  maxLength={120}
-                />
+                <CampoEnquadramento id="amparoLegal" rotulo="Amparo legal da autuação"
+                  amparo={formData.amparoLegal} codigo={formData.codigoEnquadramento}
+                  aoMudar={mudarEnquadramento} />
               </div>
 
               <div className="form-field--wide">

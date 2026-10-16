@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import CampoEnquadramento from '../components/CampoEnquadramento';
 import PageShell from '../components/PageShell';
 import AjudaSemVersao from '../components/questionario/AjudaSemVersao';
 import PrazoVencido from '../components/questionario/PrazoVencido';
@@ -46,6 +47,10 @@ const Questionario = () => {
     setErro(null);
     setR((atual) => ({ ...atual, [campo]: valor }) as RespostasQuestionario);
   };
+  const mudarEnquadramento = useCallback((amparo: string, codigo: string) => {
+    setErro(null);
+    setR((atual) => ({ ...atual, amparo_legal: amparo, codigo_enquadramento: codigo }));
+  }, []);
 
   const continuar = () => {
     if (typeof tela !== 'number') return;
@@ -136,10 +141,10 @@ const Questionario = () => {
                     <Opcao nome="multa_de_radar" valor="nao" atual={r.multa_de_radar} rotulo="Não"
                       invalido={invalido} aoEscolher={(v) => mudar('multa_de_radar', v)} />
                   </div>
-                  <label className="form-label mt-5" htmlFor="q-amparo">Enquadramento (amparo legal)</label>
-                  <input id="q-amparo" type="text" className="form-input" maxLength={120} placeholder="Art. 218, II, do CTB"
-                    value={r.amparo_legal} onChange={(e) => mudar('amparo_legal', e.target.value)} />
-                  <p className="form-hint">Copie como está na notificação, no campo do enquadramento ou do amparo legal.</p>
+                  <div className="mt-5">
+                    <CampoEnquadramento id="q-amparo" rotulo="Enquadramento (amparo legal)"
+                      amparo={r.amparo_legal} codigo={r.codigo_enquadramento} aoMudar={mudarEnquadramento} />
+                  </div>
                   {r.multa_de_radar === 'sim' && (
                     <div className="mt-4 grid grid-cols-1 gap-x-3 gap-y-4 sm:grid-cols-3">
                       {([
