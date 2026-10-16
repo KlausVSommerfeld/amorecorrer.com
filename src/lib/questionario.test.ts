@@ -130,7 +130,7 @@ test('erros de cada passo, com os textos da spec', () => {
 test('campos do formulário a partir das respostas', () => {
   assert.deepEqual(paraCamposDoFormulario(R), {
     estagio: DEFESA_PREVIA, data_limite: '2026-10-30', cliente_conduzia: 'sim', amparoLegal: 'Art. 218, II',
-    velocidade_permitida: '80', velocidade_aferida: '91', velocidade_considerada: '84',
+    codigoEnquadramento: '', velocidade_permitida: '80', velocidade_aferida: '91', velocidade_considerada: '84',
     versao: 'propria', justificativa: 'Não vi a placa.',
   })
   // Sem versão: o relato que tenha sobrado no rascunho do questionário não vai.
@@ -176,4 +176,45 @@ test('texto do prazo, com singular e plural', () => {
   assert.equal(textoDoPrazo(0, '2026-10-30'), 'a data-limite é hoje')
   assert.equal(textoDoPrazo(1, '2026-10-30'), 'falta 1 dia para a data-limite (30/10/2026)')
   assert.equal(textoDoPrazo(22, '2026-10-30'), 'faltam 22 dias para a data-limite (30/10/2026)')
+})
+test('resposta nova traz o código do enquadramento, vazio', () => {
+  assert.equal(RESPOSTAS_VAZIAS.codigo_enquadramento, '')
+})
+
+// Spec 2026-10-15, §4.4: rascunho de antes da lista abre no texto livre, sem quebrar.
+test('rascunho antigo, sem o código, é lido com ele vazio', () => {
+  const a = new Memoria()
+  const { codigo_enquadramento: _, ...antigo } = { ...R, codigo_enquadramento: '' }
+  a.setItem(CHAVE_ATUAL, JSON.stringify(antigo))
+  assert.deepEqual(lerRespostas(a, CHAVE_ATUAL), { ...R, codigo_enquadramento: '' })
+})
+
+test('código que não é texto invalida a resposta', () => {
+  const a = new Memoria()
+  a.setItem(CHAVE_ATUAL, JSON.stringify({ ...R, codigo_enquadramento: 7455 }))
+  assert.equal(lerRespostas(a, CHAVE_ATUAL), null)
+})
+
+test('o código vai ao formulário', () => {
+  const r = { ...R, amparo_legal: 'art. 218, I', codigo_enquadramento: '7455-0' }
+  const f = paraCamposDoFormulario(r)
+  assert.equal(f.amparoLegal, 'art. 218, I')
+  assert.equal(f.codigoEnquadramento, '7455-0')
+})
+
+// Review Focus 1: amparo livre do rascunho com o código do questionário poria o
+// código errado no quadro da peça.
+test('amparo do rascunho leva o código do rascunho junto, mesmo vazio', () => {
+  const base = { amparoLegal: 'art. 218, I', codigoEnquadramento: '7455-0', nome: '' }
+  const rascunho = { amparoLegal: 'Art. 230', codigoEnquadramento: '', nome: 'Ana' }
+  const pares = [['amparoLegal', 'codigoEnquadramento']] as const
+  assert.deepEqual(mesclarComRascunho(base, rascunho, pares),
+    { amparoLegal: 'Art. 230', codigoEnquadramento: '', nome: 'Ana' })
+})
+
+test('sem amparo no rascunho, o par do questionário fica', () => {
+  const base = { amparoLegal: 'art. 218, I', codigoEnquadramento: '7455-0', nome: '' }
+  const pares = [['amparoLegal', 'codigoEnquadramento']] as const
+  assert.deepEqual(mesclarComRascunho(base, { nome: 'Ana' }, pares),
+    { amparoLegal: 'art. 218, I', codigoEnquadramento: '7455-0', nome: 'Ana' })
 })

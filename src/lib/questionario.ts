@@ -16,6 +16,8 @@ export type RespostasQuestionario = {
   cliente_conduzia: '' | 'sim' | 'nao'
   multa_de_radar: '' | 'sim' | 'nao'
   amparo_legal: string
+  /** "7455-0" quando o enquadramento veio da lista; '' no texto livre (spec 2026-10-15). */
+  codigo_enquadramento: string
   velocidade_permitida: string
   velocidade_aferida: string
   velocidade_considerada: string
@@ -25,7 +27,7 @@ export type RespostasQuestionario = {
 
 export const RESPOSTAS_VAZIAS: RespostasQuestionario = {
   versao_formato: 1, estagio: '', data_limite: '', cliente_conduzia: '', multa_de_radar: '',
-  amparo_legal: '', velocidade_permitida: '', velocidade_aferida: '', velocidade_considerada: '',
+  amparo_legal: '', codigo_enquadramento: '', velocidade_permitida: '', velocidade_aferida: '', velocidade_considerada: '',
   versao: '', justificativa: '',
 }
 
@@ -52,6 +54,8 @@ function valido(o: unknown): o is RespostasQuestionario {
   if (r.versao_formato !== 1) return false
   for (const chave of Object.keys(RESPOSTAS_VAZIAS) as (keyof RespostasQuestionario)[]) {
     if (chave === 'versao_formato') continue
+    // Rascunho de antes da lista (15/10/2026) não tem o código: lido como vazio.
+    if (chave === 'codigo_enquadramento' && r[chave] === undefined) continue
     if (typeof r[chave] !== 'string') return false
     const opcoes = OPCOES[chave]
     if (opcoes && !opcoes.includes(r[chave] as string)) return false
@@ -162,7 +166,7 @@ export function erroDoPasso(passo: 1 | 2 | 3 | 4 | 5, r: RespostasQuestionario, 
 }
 
 export type CamposDoQuestionarioNoFormulario = {
-  estagio: string; data_limite: string; cliente_conduzia: string; amparoLegal: string
+  estagio: string; data_limite: string; cliente_conduzia: string; amparoLegal: string; codigoEnquadramento: string
   velocidade_permitida: string; velocidade_aferida: string; velocidade_considerada: string
   versao: string; justificativa: string
 }
@@ -174,6 +178,7 @@ export function paraCamposDoFormulario(r: RespostasQuestionario): CamposDoQuesti
     data_limite: r.data_limite,
     cliente_conduzia: r.cliente_conduzia,
     amparoLegal: r.amparo_legal,
+    codigoEnquadramento: r.codigo_enquadramento,
     velocidade_permitida: r.velocidade_permitida,
     velocidade_aferida: r.velocidade_aferida,
     velocidade_considerada: r.velocidade_considerada,
@@ -183,14 +188,27 @@ export function paraCamposDoFormulario(r: RespostasQuestionario): CamposDoQuesti
 }
 
 /** O rascunho do formulário é mais recente e prevalece — mas só campo preenchido:
- *  um rascunho de antes do questionário não apaga as respostas com ''. */
-export function mesclarComRascunho<T extends object>(base: T, rascunho: Partial<T> | null): T {
+ *  um rascunho de antes do questionário não apaga as respostas com ''. Num par
+ *  ([amparo, código]), quem traz o primeiro traz o segundo, mesmo vazio: o amparo
+ *  livre do rascunho não pode herdar o código do questionário (spec 2026-10-15). */
+export function mesclarComRascunho<T extends object>(
+  base: T,
+  rascunho: Partial<T> | null,
+  pares: readonly (readonly [keyof T, keyof T])[] = [],
+): T {
   if (!rascunho) return base
-  const saida = { ...base }
+  const saida = { ...base } as Record<string, unknown>
   for (const [k, v] of Object.entries(rascunho)) {
-    if (typeof v === 'string' && v !== '') (saida as Record<string, unknown>)[k] = v
+    if (typeof v === 'string' && v !== '') saida[k] = v
   }
-  return saida
+  for (const [primeiro, segundo] of pares) {
+    const valor = rascunho[primeiro]
+    if (typeof valor === 'string' && valor !== '') {
+      const par = rascunho[segundo]
+      saida[segundo as string] = typeof par === 'string' ? par : ''
+    }
+  }
+  return saida as T
 }
 
 export type Tela = 1 | 2 | 3 | 4 | 5 | 'resumo' | 'vencido'
