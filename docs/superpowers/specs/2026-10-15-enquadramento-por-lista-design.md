@@ -158,8 +158,8 @@ Uma função pura, `buscarEnquadramentos(termo, itens)`, em `src/lib/enquadramen
 - **Artigo** — um a três dígitos, talvez com letra ("218", "165-A", "165a"), dão os itens do artigo.
 - **Palavras** — sem distinguir maiúsculas e acentos, todas as palavras precisam aparecer na descrição
   ("velocidade 20").
-- **Ordem** — código exato, prefixo de código, artigo, palavras; dentro de cada grupo, pelo código. No
-  máximo 30 resultados.
+- **Ordem** — o formato do termo decide o tipo de busca (código, artigo ou palavras; nas palavras, um
+  código escrito no meio também vale); os resultados saem pelo código, no máximo 30.
 
 A leitura de código é a mesma do pipeline (§6.1), garantida por `tests/compartilhados/codigos.json`.
 
