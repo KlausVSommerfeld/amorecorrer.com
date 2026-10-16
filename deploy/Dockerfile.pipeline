@@ -24,6 +24,9 @@ COPY pipeline/fontes ./fontes
 COPY CTB-compilado_files/consulta.py /app/ctb/consulta.py
 COPY CTB-compilado_files/saida/ctb.json CTB-compilado_files/saida/ctb_infracoes.json /app/ctb/saida/
 ENV CTB_DIR=/app/ctb
+# Tabela de códigos de enquadramento (enquadramentos/enquadramentos_parser.py).
+COPY enquadramentos/saida/enquadramentos.json /app/enquadramentos.json
+ENV ENQUADRAMENTOS_JSON=/app/enquadramentos.json
 
 EXPOSE 8000
 CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

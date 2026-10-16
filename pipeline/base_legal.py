@@ -19,6 +19,8 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
+from tabela_enquadramentos import Tabela, ler_codigo
+
 # Aprovado pelo Klaus: só entra item novo com aprovação dele.
 EXTRAS_POR_ARTIGO: dict[str, tuple[str, ...]] = {
     "218": ("61",),  # multa de velocidade → limites de velocidade por tipo de via
@@ -70,6 +72,9 @@ class BaseLegal:
     enquadramento: str | None
     sha256: str
     obtido_em: str
+    # Código da tabela da SENATRAN que aponta o mesmo dispositivo do enquadramento
+    # (vai ao quadro da peça); None sem código ou com código divergente.
+    codigo: str | None = None
 
 
 @lru_cache(maxsize=4)
@@ -162,12 +167,28 @@ def _fecho(c: Ctb, inicio: list[str]) -> list[str]:
     return vistos
 
 
-def montar_base(c: Ctb, amparo_legal: str | None, artigos_do_pedido: tuple[str, ...] = ()) -> BaseLegal:
+def _resolver(c: Ctb, amparo_legal: str | None, codigo: str | None,
+              tabela: Tabela | None) -> tuple[tuple[str, str] | None, str | None]:
+    """Spec 2026-10-15, §6.1: o amparo; sem ele, o código do caso; sem ele, um
+    código escrito no amparo. A trava dos arts. 162–255 vale para os três."""
+    enq = _enquadramento(c, amparo_legal)
+    candidatos = [cod for cod in (codigo, ler_codigo(amparo_legal)) if cod] if tabela else []
+    for cod in candidatos:
+        if enq:
+            break
+        disp = tabela.dispositivo(cod)
+        enq = _enquadramento(c, disp) if disp else None
+    no_quadro = next((cod for cod in candidatos if enq and tabela.dispositivo(cod) == enq[0]), None)
+    return enq, no_quadro
+
+
+def montar_base(c: Ctb, amparo_legal: str | None, artigos_do_pedido: tuple[str, ...] = (),
+                codigo_enquadramento: str | None = None, tabela: Tabela | None = None) -> BaseLegal:
     """`artigos_do_pedido`: artigos que o pedido escrito pelo código cita (hoje só o
     267, quando cabe advertência) — entram com remissões, para que nenhuma citação
     fora da base chegue ao PDF (spec 2026-10-02, §4.3)."""
     processuais = [n for n in c.consulta.PROCESSUAIS_PADRAO if numero_vigente(c, n)]
-    enq = _enquadramento(c, amparo_legal)
+    enq, codigo = _resolver(c, amparo_legal, codigo_enquadramento, tabela)
     citacao, proprio = enq if enq else (None, None)
     tabela = [n for n in EXTRAS_POR_ARTIGO.get(proprio, ()) if numero_vigente(c, n)] if proprio else []
     do_pedido = [n for n in (numero_vigente(c, a) for a in artigos_do_pedido) if n]
@@ -183,6 +204,7 @@ def montar_base(c: Ctb, amparo_legal: str | None, artigos_do_pedido: tuple[str, 
         enquadramento=citacao,
         sha256=c.ctb.meta["sha256"],
         obtido_em=str(c.ctb.meta.get("obtido_em", "")),
+        codigo=codigo,
     )
 
 

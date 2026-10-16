@@ -420,14 +420,16 @@ def data_da_infracao(valor: Any) -> str:
     return f"{dia}/{mes}/{ano}" + (f" {hora}:{minuto}" if hora else "")
 
 
-def campos(case: dict[str, Any]) -> tuple[tuple[str, str], ...]:
+def campos(case: dict[str, Any], codigo: str | None = None) -> tuple[tuple[str, str], ...]:
     auto = ("Auto de infração", _txt(case, "numero_auto") or LINHA_CURTA)
     placa = ("Placa", _txt(case, "placa").upper() or LINHA_CURTA)
     data = ("Data da infração", data_da_infracao(case.get("data_infracao")) or LINHA_CURTA)
+    # O auto imprime o código; sem ele, a linha não aparece (spec 2026-10-15, §6.2).
+    extra = (("Código da infração", codigo),) if codigo else ()
     if _estagio(case) == RECURSO_JARI:
         notificacao = ("Notificação de penalidade", _txt(case, "notificacao_penalidade") or LINHA_CURTA)
-        return (auto, notificacao, placa, data)
-    return (auto, placa, data)
+        return (auto, notificacao, placa, data) + extra
+    return (auto, placa, data) + extra
 
 
 def _cep(valor: Any) -> str:
@@ -613,6 +615,7 @@ def montar_peca(
     situacao_velocidade: str | None = None,
     inciso_da_conta: str | None = None,
     cabe_advertencia: bool = False,
+    codigo_da_infracao: str | None = None,
 ) -> Peca:
     secoes_cruas, removido = separar_secoes(rascunho, _txt(case, "nome"))
     limpas: list[tuple[str, tuple[str, ...]]] = []
@@ -628,7 +631,7 @@ def montar_peca(
     return Peca(
         enderecamento=enderecamento(case),
         titulo=titulo(case),
-        campos=campos(case),
+        campos=campos(case, codigo_da_infracao),
         qualificacao=qualificacao(case),
         secoes=tuple((f"{_ROMANOS[i]} – {nome}", p) for i, (nome, p) in enumerate(secoes)),
         titulo_pedido=f"{_ROMANOS[len(secoes)]} – DO PEDIDO",

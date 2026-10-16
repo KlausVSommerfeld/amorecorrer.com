@@ -426,5 +426,12 @@ class TestRegrasDoRelato(unittest.TestCase):
         )
 
 
+
+class TestCodigoFicaForaDoContexto(unittest.TestCase):
+    def test_codigo_nao_vai_cru_ao_modelo(self):
+        contexto = build_case_context({"nome": "Ana", "codigo_enquadramento": "7455-0"}, False)
+        self.assertNotIn("7455-0", contexto)
+        self.assertIn("Ana", contexto)
+
 if __name__ == "__main__":
     unittest.main()

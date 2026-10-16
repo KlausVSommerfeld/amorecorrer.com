@@ -19,8 +19,11 @@ from base_legal import (
     natureza,
     numero_vigente,
 )
+from tabela_enquadramentos import carregar_tabela
 
 CTB_DIR = str(Path(__file__).resolve().parent.parent / "CTB-compilado_files")
+
+TABELA = str(Path(__file__).resolve().parent.parent / "enquadramentos" / "saida" / "enquadramentos.json")
 
 
 def cabecalhos(texto):
@@ -163,6 +166,48 @@ class TestAdvertencia(unittest.TestCase):
     def test_artigo_do_pedido_inexistente_e_ignorado(self):
         b = montar_base(self.c, "Art. 218, I, do CTB", artigos_do_pedido=("9999",))
         self.assertNotIn("9999", b.artigos)
+
+
+class TestCodigoDeEnquadramento(unittest.TestCase):
+    """Spec 2026-10-15, §6.1: amparo → código → código no texto livre."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.c = carregar_ctb(CTB_DIR)
+        cls.t = carregar_tabela(TABELA)
+
+    def base(self, amparo, codigo=None):
+        return montar_base(self.c, amparo, codigo_enquadramento=codigo, tabela=self.t)
+
+    def test_amparo_da_lista_e_codigo(self):
+        b = self.base("art. 218, I", "7455-0")
+        self.assertEqual((b.enquadramento, b.codigo), ("art. 218, I", "7455-0"))
+
+    def test_codigo_sem_amparo(self):
+        b = self.base(None, "7463-0")
+        self.assertEqual((b.enquadramento, b.codigo), ("art. 218, II", "7463-0"))
+
+    def test_codigo_no_texto_livre(self):
+        for amparo in ("745-50", "Cód. 7455-0", "74550"):
+            with self.subTest(amparo=amparo):
+                b = self.base(amparo)
+                self.assertEqual((b.enquadramento, b.codigo), ("art. 218, I", "7455-0"))
+
+    def test_amparo_prevalece_e_codigo_divergente_nao_vai_ao_quadro(self):
+        b = self.base("Art. 181, XI", "7455-0")
+        self.assertEqual((b.enquadramento, b.codigo), ("art. 181, XI", None))
+
+    def test_codigo_fora_da_lista_nao_enquadra(self):
+        b = self.base("5002-0")  # art. 257, § 8º
+        self.assertEqual((b.enquadramento, b.codigo), (None, None))
+
+    def test_codigo_desconhecido(self):
+        b = self.base(None, "9999-9")
+        self.assertEqual((b.enquadramento, b.codigo), (None, None))
+
+    def test_sem_tabela_como_antes(self):
+        b = montar_base(self.c, "745-50")
+        self.assertEqual((b.enquadramento, b.codigo), (None, None))
 
 
 if __name__ == "__main__":

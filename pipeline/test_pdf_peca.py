@@ -67,6 +67,11 @@ class TestGerarPdf(unittest.TestCase):
         caso = dict(CASO, nome="Ana <b>& Cia", endereco="Rua A & B <fundos>", orgao_autuador="DER & <X>")
         self.assertTrue(gerar_pdf(peca(caso=caso)).startswith(b"%PDF-"))
 
+    def test_quadro_do_recurso_com_codigo(self):
+        caso = dict(CASO, especie_documento=RECURSO_JARI, notificacao_penalidade="P987654321")
+        b = gerar_pdf(montar_peca(RASCUNHO, caso, codigo_da_infracao="7455-0"))
+        self.assertTrue(b.startswith(b"%PDF-"))
+
     def test_quadro_do_recurso_com_valores_longos(self):
         caso = dict(CASO, especie_documento=RECURSO_JARI,
                     notificacao_penalidade="P" + "9" * 40, numero_auto="", placa="")

@@ -172,6 +172,9 @@ CAMPOS_INTERNOS = frozenset(
         # Prazo de protocolo: vai ao e-mail, não à redação, e competiria com a data
         # da infração (spec 2026-10-07, §6.5).
         "data_limite_protocolo",
+        # Código da tabela da SENATRAN: vai ao quadro da peça pelo código; o modelo
+        # recebe o enquadramento pela base (spec 2026-10-15, §6.2).
+        "codigo_enquadramento",
     }
 )
 

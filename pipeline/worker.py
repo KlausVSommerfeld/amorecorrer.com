@@ -21,6 +21,7 @@ from config import settings
 from hmac_utils import hmac_sha256_hex
 from peca import corpo_do_email, montar_peca
 from base_legal import cabe_advertencia, carregar_ctb, montar_base
+from tabela_enquadramentos import carregar_tabela
 from conferencia import gerar_com_conferencia, resumo_alertas
 from velocidade import bloco_velocidade
 from pdf_peca import gerar_pdf
@@ -255,7 +256,10 @@ async def run_dispatch_pipeline(body_text: str) -> None:
                 log.info("verificação do medidor no prompt case_id=%s bloco=%r", payload.case_id, bloco)
             # Base normativa do CTB: sem ela não há peça (BaseLegalIndisponivel → failed).
             ctb = carregar_ctb(settings.ctb_dir)
-            base = montar_base(ctb, case.get("amparo_legal"))
+            tabela = carregar_tabela(settings.enquadramentos_json)
+            codigo_do_caso = case.get("codigo_enquadramento")
+            base = montar_base(ctb, case.get("amparo_legal"),
+                               codigo_enquadramento=codigo_do_caso, tabela=tabela)
             # Enquadramento da velocidade decidido em código (sobre a considerada);
             # sem bloco nos casos neutros — a REGRA_ENQUADRAMENTO protege.
             bloco_vel = bloco_velocidade(case, base.enquadramento)
@@ -263,11 +267,12 @@ async def run_dispatch_pipeline(body_text: str) -> None:
             advertencia = cabe_advertencia(ctb, base.enquadramento, inciso)
             if advertencia:
                 # O pedido cita o art. 267: ele entra na base (spec 2026-10-02, §4.3).
-                base = montar_base(ctb, case.get("amparo_legal"), artigos_do_pedido=("267",))
+                base = montar_base(ctb, case.get("amparo_legal"), artigos_do_pedido=("267",),
+                                   codigo_enquadramento=codigo_do_caso, tabela=tabela)
             log.info(
-                "base legal case_id=%s ctb_sha256=%s obtido_em=%s enquadramento=%s artigos=%s",
+                "base legal case_id=%s ctb_sha256=%s obtido_em=%s enquadramento=%s codigo=%s artigos=%s",
                 payload.case_id, base.sha256[:12], base.obtido_em,
-                base.enquadramento or "não reconhecido", sorted(base.artigos),
+                base.enquadramento or "não reconhecido", base.codigo or "nenhum", sorted(base.artigos),
             )
             log.info(
                 "velocidade case_id=%s situacao=%s",
@@ -307,7 +312,8 @@ async def run_dispatch_pipeline(body_text: str) -> None:
 
             # A moldura é do código; o modelo escreveu só fatos e fundamentos (spec 2026-10-02).
             peca = montar_peca(
-                draft, case, bloco_vel.situacao if bloco_vel else None, inciso, advertencia
+                draft, case, bloco_vel.situacao if bloco_vel else None, inciso, advertencia,
+                codigo_da_infracao=base.codigo,
             )
             log.info(
                 "peca case_id=%s secoes=%d pedido_itens=%d advertencia=%s "

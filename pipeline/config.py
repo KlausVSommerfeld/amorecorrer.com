@@ -55,6 +55,10 @@ class Settings(BaseSettings):
     # pasta copiada pelo Dockerfile.
     ctb_dir: str = str(REPO_ROOT / "CTB-compilado_files")
 
+    # Tabela de códigos de enquadramento (enquadramentos/enquadramentos_parser.py).
+    # No contêiner, aponta para a cópia do Dockerfile.
+    enquadramentos_json: str = str(REPO_ROOT / "enquadramentos" / "saida" / "enquadramentos.json")
+
     # Runtime mode: production requires SMTP; development/test may skip email.
     pipeline_env: str = "development"
 

@@ -266,6 +266,14 @@ class TestCampos(unittest.TestCase):
     def test_estagio_desconhecido_usa_o_da_defesa(self):
         self.assertEqual(campos(DESCONHECIDO), campos(DEFESA))
 
+    def test_codigo_da_infracao_no_fim_do_quadro(self):
+        self.assertEqual(campos(DEFESA, "7455-0")[-1], ("Código da infração", "7455-0"))
+        self.assertEqual(campos(RECURSO, "7455-0")[-1], ("Código da infração", "7455-0"))
+
+    def test_sem_codigo_nao_ha_linha(self):
+        self.assertEqual(campos(DEFESA, None), campos(DEFESA))
+        self.assertNotIn("Código da infração", [r for r, _ in campos(DEFESA)])
+
     def test_ausentes_viram_linha_curta(self):
         self.assertEqual(campos({"especie_documento": DEFESA_PREVIA}), (
             ("Auto de infração", LINHA_CURTA),
@@ -777,6 +785,10 @@ class TestSepararSecoesRevisaoFinal(unittest.TestCase):
 
 
 class TestMontarPeca(unittest.TestCase):
+    def test_codigo_vai_ao_quadro(self):
+        p = montar_peca(RASCUNHO_COM_TITULOS, DEFESA, codigo_da_infracao="7455-0")
+        self.assertEqual(p.campos, campos(DEFESA, "7455-0"))
+
     def test_peca_completa(self):
         p = montar_peca(RASCUNHO_COM_TITULOS, dict(DEFESA, orgao_autuador="CET-RIO"),
                         "desclassificacao", "I", True)
