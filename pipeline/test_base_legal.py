@@ -86,6 +86,11 @@ class TestMontarBase(unittest.TestCase):
                 self.assertIn("280", b.artigos)
                 self.assertIn("90", b.artigos)
 
+    # "§ único" caía no caput (15/10/2026): o celular do art. 252 virava o caput.
+    def test_paragrafo_unico_com_sinal(self):
+        b = montar_base(self.c, "Art. 252, § único")
+        self.assertEqual(b.enquadramento, "art. 252, parágrafo único")
+
     # CASO_363f15e6 (15/10/2026): "Artigo 5" virou o art. 5º, e a peça sustentaria como
     # infração um artigo que não tipifica nenhuma. Só o Capítulo XV (162 a 255) tipifica.
     def test_artigo_fora_das_infracoes_fica_so_com_rito(self):

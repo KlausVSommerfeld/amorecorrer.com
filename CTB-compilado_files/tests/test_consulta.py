@@ -22,6 +22,9 @@ JSON = RAIZ / "saida" / "ctb.json"
         ("218, inciso III", Ref("218", inciso="III")),
         ("280 § 2º", Ref("280", paragrafo="2")),
         ("art. 2º, parágrafo único", Ref("2", paragrafo="unico")),
+        # Como a tabela da SENATRAN escreve (15/10/2026): o "§ único" era descartado.
+        ("252, § único", Ref("252", paragrafo="unico")),
+        ("165-B, §único", Ref("165-B", paragrafo="unico")),
         ("29, III, c", Ref("29", inciso="III", alinea="c")),
         ('230, V, "a"', Ref("230", inciso="V", alinea="a")),
         ("art. 7º-A", Ref("7-A")),

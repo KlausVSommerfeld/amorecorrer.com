@@ -129,7 +129,7 @@ REF_RE = re.compile(
 
 
 def parse_ref(texto: str) -> Ref:
-    """Aceita: 'art. 218, III', '218 III', '218, inciso III', '280 § 2º', '18, parágrafo único',
+    """Aceita: 'art. 218, III', '218 III', '218, inciso III', '280 § 2º', '18, parágrafo único', '252, § único',
     '230, V, a', 'art. 7º-A', '181, XVII', '162, II, item 1', '218, inciso 2'."""
     m = REF_RE.match(texto)
     if not m:
@@ -137,7 +137,7 @@ def parse_ref(texto: str) -> Ref:
     artigo = m.group("art") + (f"-{m.group('suf').upper()}" if m.group("suf") else "")
     resto = m.group("resto")
     par = inc = ali = item = None
-    if pm := re.search(r"par[áa]grafo\s+[úu]nico|p\.\s*[úu]nico", resto, re.I):
+    if pm := re.search(r"par[áa]grafo\s+[úu]nico|p\.\s*[úu]nico|§\s*[úu]nico", resto, re.I):
         par = "unico"
         resto = resto[: pm.start()] + resto[pm.end():]
     elif pm := re.search(r"(?:§|par[áa]grafo)\s*(\d+)\s*[ºo°]?\s*(?:-\s*([A-Z]))?", resto, re.I):
