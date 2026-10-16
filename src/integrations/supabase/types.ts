@@ -87,6 +87,7 @@ export type Database = {
           cep: string | null
           cidade: string | null
           cnh: string | null
+          codigo_enquadramento: string | null
           cpf: string | null
           created_at: string
           data_infracao: string | null
@@ -126,6 +127,7 @@ export type Database = {
           cep?: string | null
           cidade?: string | null
           cnh?: string | null
+          codigo_enquadramento?: string | null
           cpf?: string | null
           created_at?: string
           data_infracao?: string | null
@@ -165,6 +167,7 @@ export type Database = {
           cep?: string | null
           cidade?: string | null
           cnh?: string | null
+          codigo_enquadramento?: string | null
           cpf?: string | null
           created_at?: string
           data_infracao?: string | null

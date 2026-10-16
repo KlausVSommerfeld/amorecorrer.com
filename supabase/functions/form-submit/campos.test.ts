@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { clienteConduzia, dataLimiteProtocolo } from './campos.ts'
+import { clienteConduzia, codigoEnquadramento, dataLimiteProtocolo } from './campos.ts'
 
 test('booleano de verdade passa como está', () => {
   assert.equal(clienteConduzia(true), true)
@@ -42,5 +42,17 @@ test('data-limite anterior à data da infração vira null', () => {
 test('sem data da infração legível, só o teto vale', () => {
   for (const infracao of [null, undefined, '', 'ontem', 20260920]) {
     assert.equal(dataLimiteProtocolo('2020-01-10', infracao, HOJE), '2020-01-10', `infração: ${JSON.stringify(infracao)}`)
+  }
+})
+
+test('código de enquadramento no formato NNNN-N passa como está', () => {
+  assert.equal(codigoEnquadramento('7455-0'), '7455-0')
+  assert.equal(codigoEnquadramento('5169-1'), '5169-1')
+})
+
+// Review Focus 5: só o formato que o site manda; o resto vira null, sem recusar o envio.
+test('código em outro formato ou de outro tipo vira null', () => {
+  for (const valor of ['7455-00', '74550', '745-50', ' 7455-0', '7455-0 ', 'abcd-e', '', 74550, null, undefined, {}, []]) {
+    assert.equal(codigoEnquadramento(valor), null, `valor: ${JSON.stringify(valor)}`)
   }
 })

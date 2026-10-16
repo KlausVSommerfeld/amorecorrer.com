@@ -33,3 +33,13 @@ export function dataLimiteProtocolo(valor: unknown, dataInfracao: unknown, agora
   if (diaDaInfracao && valor < diaDaInfracao) return null;
   return valor;
 }
+
+/**
+ * `codigo_enquadramento` — o código da tabela da SENATRAN escolhido na lista
+ * (spec docs/superpowers/specs/2026-10-15-enquadramento-por-lista-design.md, §5).
+ * Só 'NNNN-N' passa; o resto vira null, e o envio nunca é recusado por causa deste
+ * campo. A Edge não confere o código contra a tabela: quem o traduz é o pipeline.
+ */
+export function codigoEnquadramento(valor: unknown): string | null {
+  return typeof valor === "string" && /^\d{4}-\d$/.test(valor) ? valor : null;
+}

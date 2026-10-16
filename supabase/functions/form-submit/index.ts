@@ -12,7 +12,7 @@ import {
   naoAplicavel,
   type Verificacao,
 } from "./verificacao.ts";
-import { clienteConduzia, dataLimiteProtocolo } from "./campos.ts";
+import { clienteConduzia, codigoEnquadramento, dataLimiteProtocolo } from "./campos.ts";
 import { entregar, statusDoFormulario, type DepsEntrega } from "../_shared/entrega.ts";
 
 const MAX_BODY_BYTES = 64 * 1024; // 64KB
@@ -382,6 +382,8 @@ Deno.serve(async (req) => {
       cliente_conduzia: clienteConduzia(norm.cliente_conduzia),
       // Também fora do dup_guard, pela mesma regra.
       data_limite_protocolo: dataLimiteProtocolo(norm.data_limite_protocolo, norm.data_infracao),
+      // Também fora do dup_guard. Só o formato; quem traduz o código é o pipeline.
+      codigo_enquadramento: codigoEnquadramento(norm.codigo_enquadramento),
       dup_guard,
       verificacao_medidor: verificacao,
       updated_at: new Date().toISOString()
