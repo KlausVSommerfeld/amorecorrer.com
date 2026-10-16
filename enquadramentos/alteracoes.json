@@ -1,0 +1,9 @@
+{
+ "conferido_em": "2026-10-15",
+ "codigos": [
+  {"codigo": "7790-0", "descricao": "Dirigir veículo sem realizar o exame toxicológico previsto no art. 148-A do CTB", "amparo": "165-B", "infrator": "Condutor", "gravidade": "gravíssima", "origem": "Portaria SENATRAN 423/2024"},
+  {"codigo": "7803-0", "descricao": "Dirigir veículo sem realizar o exame toxicológico previsto § 2º do art. 148-A do CTB", "amparo": "165-B, § único", "infrator": "Condutor", "gravidade": "gravíssima", "origem": "Portaria SENATRAN 423/2024"},
+  {"codigo": "7811-0", "descricao": "Dirigir veículo tendo obtido resultado positivo no exame toxicológico previsto no caput do art. 148-A do CTB", "amparo": "165-C", "infrator": "Condutor", "gravidade": "gravíssima", "origem": "Portaria SENATRAN 423/2024"},
+  {"codigo": "7820-0", "descricao": "Deixar de realizar o exame toxicológico previsto no § 2º do art. 148-A do CTB, após trinta dias do vencimento do prazo estabelecido", "amparo": "165-D", "infrator": "Condutor", "gravidade": "gravíssima", "origem": "Portaria SENATRAN 423/2024"}
+ ]
+}

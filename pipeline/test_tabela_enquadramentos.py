@@ -69,5 +69,33 @@ class TestCarregarTabela(unittest.TestCase):
                 carregar_tabela(_tabela_em(Path(tmp), {"meta": {}}))
 
 
+TABELA = RAIZ / "enquadramentos" / "saida" / "enquadramentos.json"
+SITE = RAIZ / "src" / "data" / "enquadramentos.json"
+CTB_JSON = RAIZ / "CTB-compilado_files" / "saida" / "ctb.json"
+
+
+class TestTabelaReal(unittest.TestCase):
+    """A tabela versionada, a cópia do site e o CTB andam juntos (spec §7)."""
+
+    def setUp(self):
+        self.dados = json.loads(TABELA.read_text(encoding="utf-8"))
+
+    def test_conferida_contra_este_ctb(self):
+        ctb = json.loads(CTB_JSON.read_text(encoding="utf-8"))
+        self.assertEqual(self.dados["meta"]["ctb_sha256"], ctb["meta"]["sha256"],
+                         "CTB atualizado: rode enquadramentos/enquadramentos_parser.py de novo")
+
+    def test_site_e_a_projecao_da_tabela(self):
+        esperado = [
+            {k: i[k] for k in ("codigo", "descricao", "dispositivo", "gravidade")}
+            for i in self.dados["enquadramentos"] if i["na_lista"]
+        ]
+        self.assertEqual(json.loads(SITE.read_text(encoding="utf-8")), esperado)
+
+    def test_carrega_a_tabela_real(self):
+        t = carregar_tabela(str(TABELA))
+        self.assertEqual(t.dispositivo("7455-0"), "art. 218, I")
+
+
 if __name__ == "__main__":
     unittest.main()

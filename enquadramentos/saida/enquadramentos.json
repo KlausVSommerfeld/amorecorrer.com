@@ -1,0 +1,4439 @@
+{
+ "meta": {
+  "fonte": "Portaria3542022AnexoN4.pdf",
+  "fonte_sha256": "81bceadbc1e48b84d7e5f21b1e8f1fbe79da14dbdb7b6768dc5ea99b13035946",
+  "alteracoes_conferidas_em": "2026-10-15",
+  "ctb_sha256": "e8b6414d820269ecda52eb7a203f85d32c6d341ea8d66b145c1b0a112cf502da",
+  "total": 442,
+  "na_lista": 427
+ },
+ "enquadramentos": [
+  {
+   "codigo": "5002-0",
+   "descricao": "Multa, por não identificação do condutor infrator, imposta à pessoa jurídica",
+   "amparo": "257, § 8º",
+   "dispositivo": "art. 257, § 8º",
+   "infrator": "Proprietário",
+   "gravidade": null,
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": false
+  },
+  {
+   "codigo": "5010-0",
+   "descricao": "Dirigir veículo sem possuir CNH/PPD/ACC",
+   "amparo": "162, I",
+   "dispositivo": "art. 162, I",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5029-1",
+   "descricao": "Dirigir veículo com CNH/PPD/ACC cassada",
+   "amparo": "162, II",
+   "dispositivo": "art. 162, II",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5029-2",
+   "descricao": "Dirigir veículo com CNH/PPD/ACC com suspensão do direito de dirigir",
+   "amparo": "162, II",
+   "dispositivo": "art. 162, II",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5037-1",
+   "descricao": "Dirigir veículo com CNH de categoria diferente da do veículo",
+   "amparo": "162, III",
+   "dispositivo": "art. 162, III",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5037-2",
+   "descricao": "Dirigir veículo com PPD de categoria diferente da do veículo",
+   "amparo": "162, III",
+   "dispositivo": "art. 162, III",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5045-0",
+   "descricao": "Dirigir veículo com validade de CNH/PPD vencida há mais de 30 dias",
+   "amparo": "162, V",
+   "dispositivo": "art. 162, V",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5053-1",
+   "descricao": "Dirigir veículo sem usar lentes corretoras de visão",
+   "amparo": "162, VI",
+   "dispositivo": "art. 162, VI",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5053-2",
+   "descricao": "Dirigir veículo sem usar aparelho auxiliar de audição",
+   "amparo": "162, VI",
+   "dispositivo": "art. 162, VI",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5053-3",
+   "descricao": "Dirigir veículo sem usar aparelho auxiliar de prótese física",
+   "amparo": "162, VI",
+   "dispositivo": "art. 162, VI",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5053-4",
+   "descricao": "Dirigir veículo sem adaptações impostas na concessão/renovação licença conduzir",
+   "amparo": "162, VI",
+   "dispositivo": "art. 162, VI",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5061-0",
+   "descricao": "Entregar veículo a pessoa sem CNH/PPD/ACC",
+   "amparo": "163 c/c 162, I",
+   "dispositivo": "art. 163",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5070-1",
+   "descricao": "Entregar veículo a pessoa com CNH/PPD/ACC cassada",
+   "amparo": "163 c/c 162, II",
+   "dispositivo": "art. 163",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5070-2",
+   "descricao": "Entregar veículo a pessoa com CNH/PPD/ACC com susp. do direito de dirigir",
+   "amparo": "163 c/c 162, II",
+   "dispositivo": "art. 163",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5088-1",
+   "descricao": "Entregar veículo a pessoa com CNH de categoria diferente da do veículo",
+   "amparo": "163 c/c 162, III",
+   "dispositivo": "art. 163",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5088-2",
+   "descricao": "Entregar veículo a pessoa com PPD de categoria diferente da do veículo",
+   "amparo": "163 c/c 162, III",
+   "dispositivo": "art. 163",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5096-0",
+   "descricao": "Entregar veículo a pessoa com CNH/PPD vencida há mais de 30 dias",
+   "amparo": "163 c/c 162, V",
+   "dispositivo": "art. 163",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5100-1",
+   "descricao": "Entregar o veículo a pessoa sem usar lentes corretoras de visão",
+   "amparo": "163 c/c 162, VI",
+   "dispositivo": "art. 163",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5100-2",
+   "descricao": "Entregar o veículo a pessoa sem usar aparelho auxiliar de audição",
+   "amparo": "163 c/c 162, VI",
+   "dispositivo": "art. 163",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5100-3",
+   "descricao": "Entregar o veículo a pessoa sem aparelho de prótese física",
+   "amparo": "163 c/c 162, VI",
+   "dispositivo": "art. 163",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5100-4",
+   "descricao": "Entregar veíc pessoa s/ adaptações impostas concessão/renovação licença conduzir",
+   "amparo": "163 c/c 162, VI",
+   "dispositivo": "art. 163",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5118-0",
+   "descricao": "Permitir posse/condução do veículo a pessoa sem CNH/PPD/ACC",
+   "amparo": "164 c/c 162, I",
+   "dispositivo": "art. 164",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5126-1",
+   "descricao": "Permitir posse/condução do veículo a pessoa com CNH/PPD/ACC cassada",
+   "amparo": "164 c/c 162, II",
+   "dispositivo": "art. 164",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5126-2",
+   "descricao": "Permitir posse/condução veíc pessoa com CNH/PPD/ACC c/ susp. direito de dirigir",
+   "amparo": "164 c/c 162, II",
+   "dispositivo": "art. 164",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5134-1",
+   "descricao": "Permitir posse/condução veíc a pessoa com CNH categoria diferente da do veículo",
+   "amparo": "164 c/c 162, III",
+   "dispositivo": "art. 164",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5134-2",
+   "descricao": "Permitir posse/condução veíc a pessoa com PPD categoria diferente da do",
+   "amparo": "164 c/c 162, III",
+   "dispositivo": "art. 164",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5142-0",
+   "descricao": "Permitir posse/condução do veíc a pessoa com CNH/PPD vencida há mais de 30 dias",
+   "amparo": "164 c/c 162, V",
+   "dispositivo": "art. 164",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5150-1",
+   "descricao": "Permitir posse/condução do veículo a pessoa sem usar lentes corretoras de visão",
+   "amparo": "164 c/c 162, VI",
+   "dispositivo": "art. 164",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5150-2",
+   "descricao": "Permitir posse/condução do veículo a pessoa s/ usar aparelho auxiliar de audição",
+   "amparo": "164 c/c 162, VI",
+   "dispositivo": "art. 164",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5150-3",
+   "descricao": "Permitir posse/condução do veículo a pessoa sem usar aparelho de prótese física",
+   "amparo": "164 c/c 162, VI",
+   "dispositivo": "art. 164",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5150-4",
+   "descricao": "Permitir posse/cond veíc s/ adaptações impostas concessão/renovação licença cond",
+   "amparo": "164 c/c 162, VI",
+   "dispositivo": "art. 164",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5169-1",
+   "descricao": "Dirigir sob a influência de álcool",
+   "amparo": "165",
+   "dispositivo": "art. 165",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5169-2",
+   "descricao": "Dirigir sob a influência de qquer substância psicoativa que deter. dependência",
+   "amparo": "165",
+   "dispositivo": "art. 165",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5177-0",
+   "descricao": "Confiar/entregar veíc pess c/ estado físico/psíquico s/ condições dirigir segur",
+   "amparo": "166",
+   "dispositivo": "art. 166",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5185-1",
+   "descricao": "Deixar o condutor de usar o cinto segurança",
+   "amparo": "167",
+   "dispositivo": "art. 167",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5185-2",
+   "descricao": "Deixar o passageiro de usar o cinto segurança",
+   "amparo": "167",
+   "dispositivo": "art. 167",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5193-0",
+   "descricao": "Transportar criança sem observância das normas de segurança estabelecidas p/ CTB",
+   "amparo": "168",
+   "dispositivo": "art. 168",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5207-0",
+   "descricao": "Dirigir sem atenção ou sem os cuidados indispensáveis à segurança",
+   "amparo": "169",
+   "dispositivo": "art. 169",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5215-1",
+   "descricao": "Dirigir ameaçando os pedestres que estejam atravessando a via pública",
+   "amparo": "170",
+   "dispositivo": "art. 170",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5215-2",
+   "descricao": "Dirigir ameaçando os demais veículos",
+   "amparo": "170",
+   "dispositivo": "art. 170",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5223-1",
+   "descricao": "Usar veículo para arremessar sobre os pedestres água ou detritos",
+   "amparo": "171",
+   "dispositivo": "art. 171",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5223-2",
+   "descricao": "Usar veículo para arremessar sobre os veículos água ou detritos",
+   "amparo": "171",
+   "dispositivo": "art. 171",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5231-1",
+   "descricao": "Atirar do veículo objetos ou substâncias",
+   "amparo": "172",
+   "dispositivo": "art. 172",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5231-2",
+   "descricao": "Abandonar na via objetos ou substâncias",
+   "amparo": "172",
+   "dispositivo": "art. 172",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5240-0",
+   "descricao": "Disputar corrida",
+   "amparo": "173",
+   "dispositivo": "art. 173",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5258-1",
+   "descricao": "Promover na via competição sem permissão",
+   "amparo": "174",
+   "dispositivo": "art. 174",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5258-2",
+   "descricao": "Promover na via eventos organizados sem permissão",
+   "amparo": "174",
+   "dispositivo": "art. 174",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5258-3",
+   "descricao": "Promover na via exibição e demonstração de perícia em manobra de veículo s/perm",
+   "amparo": "174",
+   "dispositivo": "art. 174",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5266-1",
+   "descricao": "Participar na via como condutor em competição sem permissão",
+   "amparo": "174",
+   "dispositivo": "art. 174",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5266-2",
+   "descricao": "Participar na via como condutor em eventos organizados sem permissão",
+   "amparo": "174",
+   "dispositivo": "art. 174",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5266-3",
+   "descricao": "Participar como condutor exib/demonst perícia em manobra de veíc s/ permissão",
+   "amparo": "174",
+   "dispositivo": "art. 174",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5274-1",
+   "descricao": "Utiliz veíc demonst/exibir manobra perigosa mediante arrancada brusca",
+   "amparo": "175",
+   "dispositivo": "art. 175",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5274-2",
+   "descricao": "Utiliz veíc dem/exibir manob perig med derrap/frenag c/desliz/arrast pneus",
+   "amparo": "175",
+   "dispositivo": "art. 175",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5282-0",
+   "descricao": "Deixar o cond envolvido em acidente, de prestar ou providenciar socorro à vítima",
+   "amparo": "176, I",
+   "dispositivo": "art. 176, I",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5290-0",
+   "descricao": "Deixar o cond envolvido em acid, de adotar provid p/ evitar perigo p/o trânsito",
+   "amparo": "176, II",
+   "dispositivo": "art. 176, II",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5304-0",
+   "descricao": "Deixar o cond envolvido em acidente, de preservar local p/ trab polícia/perícia",
+   "amparo": "176, III",
+   "dispositivo": "art. 176, III",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5312-0",
+   "descricao": "Deixar o cond envolvido em acid, de remover o veíc local qdo determ polic/agente",
+   "amparo": "176, IV",
+   "dispositivo": "art. 176, IV",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5320-0",
+   "descricao": "Deixar o cond envolvido em acid, de identificar-se policial e prestar inf p/o BO",
+   "amparo": "176, V",
+   "dispositivo": "art. 176, V",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5339-0",
+   "descricao": "Deixar o cond de prestar socorro vítima acid de trânsito, qdo solicit p/ agente",
+   "amparo": "177",
+   "dispositivo": "art. 177",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5347-0",
+   "descricao": "Deixar o condutor envolvido em acidente s/ vítima, de remover o veículo do local",
+   "amparo": "178",
+   "dispositivo": "art. 178",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5355-0",
+   "descricao": "Fazer ou deixar que se faça reparo em veíc, em rodovia e via de trânsito rápido",
+   "amparo": "179, I",
+   "dispositivo": "art. 179, I",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5363-0",
+   "descricao": "Fazer/deixar que se faça reparo em veíc nas vias (q não rodovia/transito rapido)",
+   "amparo": "179, II",
+   "dispositivo": "art. 179, II",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5371-0",
+   "descricao": "Ter seu veículo imobilizado na via por falta de combustível",
+   "amparo": "180",
+   "dispositivo": "art. 180",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5380-0",
+   "descricao": "Estacionar nas esquinas e a menos de 5m do alinhamento da via transversal",
+   "amparo": "181, I",
+   "dispositivo": "art. 181, I",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5398-0",
+   "descricao": "Estacionar afastado da guia da calçada (meio-fio) de 50 cm a 1 m",
+   "amparo": "181, II",
+   "dispositivo": "art. 181, II",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5401-0",
+   "descricao": "Estacionar afastado da guia da calçada (meio-fio) a mais de 1 m",
+   "amparo": "181, III",
+   "dispositivo": "art. 181, III",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5410-0",
+   "descricao": "Estacionar em desacordo com as posições estabelecidas no CTB",
+   "amparo": "181, IV",
+   "dispositivo": "art. 181, IV",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5428-1",
+   "descricao": "Estacionar na pista de rolamento das estradas",
+   "amparo": "181, V",
+   "dispositivo": "art. 181, V",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5428-2",
+   "descricao": "Estacionar na pista de rolamento das rodovias",
+   "amparo": "181, V",
+   "dispositivo": "art. 181, V",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5428-3",
+   "descricao": "Estacionar na pista de rolamento das vias de trânsito rápido",
+   "amparo": "181, V",
+   "dispositivo": "art. 181, V",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5428-4",
+   "descricao": "Estacionar na pista de rolamento das vias dotadas de acostamento",
+   "amparo": "181, V",
+   "dispositivo": "art. 181, V",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5436-0",
+   "descricao": "Estacionar junto/sobre hidr de incêndio, reg de água/tampa de poço visit gal sub",
+   "amparo": "181, VI",
+   "dispositivo": "art. 181, VI",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5444-0",
+   "descricao": "Estacionar nos acostamentos",
+   "amparo": "181, VII",
+   "dispositivo": "art. 181, VII",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5452-1",
+   "descricao": "Estacionar no passeio",
+   "amparo": "181, VIII",
+   "dispositivo": "art. 181, VIII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5452-2",
+   "descricao": "Estacionar sobre faixa destinada a pedestre",
+   "amparo": "181, VIII",
+   "dispositivo": "art. 181, VIII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5452-3",
+   "descricao": "Estacionar sobre ciclovia ou ciclofaixa",
+   "amparo": "181, VIII",
+   "dispositivo": "art. 181, VIII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5452-4",
+   "descricao": "Estacionar nas ilhas ou refúgios",
+   "amparo": "181, VIII",
+   "dispositivo": "art. 181, VIII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5452-5",
+   "descricao": "Estacionar ao lado ou sobre canteiro central/divisores de pista de rolamento",
+   "amparo": "181, VIII",
+   "dispositivo": "art. 181, VIII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5452-6",
+   "descricao": "Estacionar ao lado ou sobre marcas de canalização",
+   "amparo": "181, VIII",
+   "dispositivo": "art. 181, VIII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5452-7",
+   "descricao": "Estacionar ao lado ou sobre gramado ou jardim público",
+   "amparo": "181, VIII",
+   "dispositivo": "art. 181, VIII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5460-0",
+   "descricao": "Estacionar em guia de calçada rebaixada destinada à entrada/saída de veículos",
+   "amparo": "181, IX",
+   "dispositivo": "art. 181, IX",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5479-0",
+   "descricao": "Estacionar impedindo a movimentação de outro veículo",
+   "amparo": "181, X",
+   "dispositivo": "art. 181, X",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5487-0",
+   "descricao": "Estacionar ao lado de outro veículo em fila dupla",
+   "amparo": "181, XI",
+   "dispositivo": "art. 181, XI",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5495-0",
+   "descricao": "Estacionar na área de cruzamento de vias",
+   "amparo": "181, XII",
+   "dispositivo": "art. 181, XII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5509-0",
+   "descricao": "Estacionar no ponto de embarque/desembarque de passageiros transporte coletivo",
+   "amparo": "181, XIII",
+   "dispositivo": "art. 181, XIII",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5517-1",
+   "descricao": "Estacionar nos viadutos",
+   "amparo": "181, XIV",
+   "dispositivo": "art. 181, XIV",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5517-2",
+   "descricao": "Estacionar nas pontes",
+   "amparo": "181, XIV",
+   "dispositivo": "art. 181, XIV",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5517-3",
+   "descricao": "Estacionar nos túneis",
+   "amparo": "181, XIV",
+   "dispositivo": "art. 181, XIV",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5525-0",
+   "descricao": "Estacionar na contramão de direção",
+   "amparo": "181, XV",
+   "dispositivo": "art. 181, XV",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5533-0",
+   "descricao": "Estacionar aclive/declive ñ freado e sem calço segurança, PBT superior a 3500 kg",
+   "amparo": "181, XVI",
+   "dispositivo": "art. 181, XVI",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5541-1",
+   "descricao": "Estacionar em desacordo com a regulamentação especificada pela sinalização",
+   "amparo": "181, XVII",
+   "dispositivo": "art. 181, XVII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5541-2",
+   "descricao": "Estacionar em desacordo com a regulamentação - estacionamento rotativo",
+   "amparo": "181, XVII",
+   "dispositivo": "art. 181, XVII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5541-3",
+   "descricao": "Estacionar em desacordo com a regulamentação - ponto ou vaga de táxi",
+   "amparo": "181, XVII",
+   "dispositivo": "art. 181, XVII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5541-4",
+   "descricao": "Estacionar em desacordo com a regulamentação - vaga de carga/descarga",
+   "amparo": "181, XVII",
+   "dispositivo": "art. 181, XVII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5541-7",
+   "descricao": "Estacionar em desacordo com a regulamentação - vaga de curta duração",
+   "amparo": "181, XVII",
+   "dispositivo": "art. 181, XVII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5550-0",
+   "descricao": "Estacionar em local/horário proibido especificamente pela sinalização",
+   "amparo": "181, XVIII",
+   "dispositivo": "art. 181, XVIII",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5568-0",
+   "descricao": "Estacionar local/horário de estacionamento e parada proibidos pela sinalização",
+   "amparo": "181, XIX",
+   "dispositivo": "art. 181, XIX",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5576-0",
+   "descricao": "Parar nas esquinas e a menos 5 m do bordo do alinhamento da via transversal",
+   "amparo": "182, I",
+   "dispositivo": "art. 182, I",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5584-0",
+   "descricao": "Parar afastado da guia da calçada (meio-fio) de 50 cm a 1 m",
+   "amparo": "182, II",
+   "dispositivo": "art. 182, II",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5592-0",
+   "descricao": "Parar afastado da guia da calçada (meio-fio) a mais de 1 m",
+   "amparo": "182, III",
+   "dispositivo": "art. 182, III",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5606-0",
+   "descricao": "Parar em desacordo com as posições estabelecidas no CTB",
+   "amparo": "182, IV",
+   "dispositivo": "art. 182, IV",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5614-1",
+   "descricao": "Parar na pista de rolamento das estradas",
+   "amparo": "182, V",
+   "dispositivo": "art. 182, V",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5614-2",
+   "descricao": "Parar na pista de rolamento das rodovias",
+   "amparo": "182, V",
+   "dispositivo": "art. 182, V",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5614-3",
+   "descricao": "Parar na pista de rolamento das vias de trânsito rápido",
+   "amparo": "182, V",
+   "dispositivo": "art. 182, V",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5614-4",
+   "descricao": "Parar na pista de rolamento das demais vias dotadas de acostamento",
+   "amparo": "182, V",
+   "dispositivo": "art. 182, V",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5622-1",
+   "descricao": "Parar no passeio",
+   "amparo": "182, VI",
+   "dispositivo": "art. 182, VI",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5622-2",
+   "descricao": "Parar sobre faixa destinada a pedestres",
+   "amparo": "182, VI",
+   "dispositivo": "art. 182, VI",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5622-3",
+   "descricao": "Parar nas ilhas ou refúgios",
+   "amparo": "182, VI",
+   "dispositivo": "art. 182, VI",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5622-4",
+   "descricao": "Parar nos canteiros centrais/divisores de pista de rolamento",
+   "amparo": "182, VI",
+   "dispositivo": "art. 182, VI",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5622-5",
+   "descricao": "Parar nas marcas de canalização",
+   "amparo": "182, VI",
+   "dispositivo": "art. 182, VI",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5630-0",
+   "descricao": "Parar na área de cruzamento de vias",
+   "amparo": "182, VII",
+   "dispositivo": "art. 182, VII",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5649-1",
+   "descricao": "Parar nos viadutos",
+   "amparo": "182, VIII",
+   "dispositivo": "art. 182, VIII",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5649-2",
+   "descricao": "Parar nas pontes",
+   "amparo": "182, VIII",
+   "dispositivo": "art. 182, VIII",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5649-3",
+   "descricao": "Parar nos túneis",
+   "amparo": "182, VIII",
+   "dispositivo": "art. 182, VIII",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5657-0",
+   "descricao": "Parar na contramão de direção",
+   "amparo": "182, IX",
+   "dispositivo": "art. 182, IX",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5665-0",
+   "descricao": "Parar em local/horário proibidos especificamente pela sinalização",
+   "amparo": "182, X",
+   "dispositivo": "art. 182, X",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5673-1",
+   "descricao": "Parar sobre faixa de pedestres na mudança de sinal luminoso",
+   "amparo": "183",
+   "dispositivo": "art. 183",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5673-2",
+   "descricao": "Parar sobre faixa de pedestres na mudança de sinal luminoso (fisc eletrônica)",
+   "amparo": "183",
+   "dispositivo": "art. 183",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5681-0",
+   "descricao": "Transitar na faixa/pista da direita regul circulação exclusiva determ veículo",
+   "amparo": "184, I",
+   "dispositivo": "art. 184, I",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5690-0",
+   "descricao": "Transitar na faixa/pista da esquerda regul circulação exclusiva determ veículo",
+   "amparo": "184, II",
+   "dispositivo": "art. 184, II",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5703-0",
+   "descricao": "Deixar de conservar o veículo na faixa a ele destinada pela sinalização de regul",
+   "amparo": "185, I",
+   "dispositivo": "art. 185, I",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5711-0",
+   "descricao": "Deixar de conservar nas faixas da direita o veículo lento e de maior porte",
+   "amparo": "185, II",
+   "dispositivo": "art. 185, II",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5720-0",
+   "descricao": "Transitar pela contramão de direção em via com duplo sentido de circulação",
+   "amparo": "186, I",
+   "dispositivo": "art. 186, I",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5738-0",
+   "descricao": "Transitar pela contramão de direção em via c/ sinalização de regul sentido único",
+   "amparo": "186, II",
+   "dispositivo": "art. 186, II",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5746-1",
+   "descricao": "Transitar em local/horário não permitido pela regul estabelecida p/ autoridade",
+   "amparo": "187, I",
+   "dispositivo": "art. 187, I",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5746-2",
+   "descricao": "Transitar em local/horário não permitido pela regulamentação - rodízio",
+   "amparo": "187, I",
+   "dispositivo": "art. 187, I",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5746-3",
+   "descricao": "Transitar em local/horário não permitido pela regulamentação - caminhão",
+   "amparo": "187, I",
+   "dispositivo": "art. 187, I",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5762-0",
+   "descricao": "Transitar ao lado de outro veículo, interrompendo ou perturbando o trânsito",
+   "amparo": "188",
+   "dispositivo": "art. 188",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5770-1",
+   "descricao": "Deixar de dar passagem a veíc precedido de batedores devidamente identificados",
+   "amparo": "189",
+   "dispositivo": "art. 189",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5770-2",
+   "descricao": "Deixar de dar passagem a veíc socorro incêndio/salv serv urgência devid identif",
+   "amparo": "189",
+   "dispositivo": "art. 189",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5770-3",
+   "descricao": "Deixar de dar passagem a veíc de polícia em serviço de urgência devid identif",
+   "amparo": "189",
+   "dispositivo": "art. 189",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5770-4",
+   "descricao": "Deixar de dar passagem a veíc de operação e fiscalização de trânsito devid ident",
+   "amparo": "189",
+   "dispositivo": "art. 189",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5770-5",
+   "descricao": "Deixar de dar passagem a ambulância em serviço de urgência devid identificada",
+   "amparo": "189",
+   "dispositivo": "art. 189",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5789-0",
+   "descricao": "Seguir veículo em serv urgência devid identific p/ alarme sonoro/ilum vermelha",
+   "amparo": "190",
+   "dispositivo": "art. 190",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5797-0",
+   "descricao": "Forçar passagem entre veícs trans sent opostos na iminência realiz ultrapassagem",
+   "amparo": "191",
+   "dispositivo": "art. 191",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5800-0",
+   "descricao": "Deixar guardar dist segurança lat/front entre seu veíc e demais e ao bordo pista",
+   "amparo": "192",
+   "dispositivo": "art. 192",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5819-1",
+   "descricao": "Transitar com o veículo em calçadas, passeios",
+   "amparo": "193",
+   "dispositivo": "art. 193",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5819-2",
+   "descricao": "Transitar com o veículo em ciclovias, ciclofaixas",
+   "amparo": "193",
+   "dispositivo": "art. 193",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5819-3",
+   "descricao": "Transitar com o veículo em ajardinamentos, gramados, jardins públicos",
+   "amparo": "193",
+   "dispositivo": "art. 193",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5819-4",
+   "descricao": "Transitar com o veículo em canteiros centrais/divisores de pista de rolamento",
+   "amparo": "193",
+   "dispositivo": "art. 193",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5819-5",
+   "descricao": "Transitar com o veículo em ilhas, refúgios",
+   "amparo": "193",
+   "dispositivo": "art. 193",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5819-6",
+   "descricao": "Transitar com o veículo em marcas de canalização",
+   "amparo": "193",
+   "dispositivo": "art. 193",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5819-7",
+   "descricao": "Transitar com o veículo em acostamentos",
+   "amparo": "193",
+   "dispositivo": "art. 193",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5819-8",
+   "descricao": "Transitar com o veículo em passarelas",
+   "amparo": "193",
+   "dispositivo": "art. 193",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5827-0",
+   "descricao": "Transitar em marcha ré, salvo na distância necessária a pequenas manobras",
+   "amparo": "194",
+   "dispositivo": "art. 194",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5835-0",
+   "descricao": "Desobedecer às ordens emanadas da autorid compet de trânsito ou de seus agentes",
+   "amparo": "195",
+   "dispositivo": "art. 195",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5843-1",
+   "descricao": "Deixar de indicar c/ antec, med gesto de braço/luz indicadora, início da marcha",
+   "amparo": "196",
+   "dispositivo": "art. 196",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5843-2",
+   "descricao": "Deixar de indicar c/ antec, med gesto de braço/luz indicadora, manobra de parar",
+   "amparo": "196",
+   "dispositivo": "art. 196",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5843-3",
+   "descricao": "Deixar de indicar c/ antec, med gesto de braço/luz indicadora, mudança direção",
+   "amparo": "196",
+   "dispositivo": "art. 196",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5843-4",
+   "descricao": "Deixar de indicar c/ antec, med gesto de braço/luz indicadora, mudança de faixa",
+   "amparo": "196",
+   "dispositivo": "art. 196",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5851-1",
+   "descricao": "Deixar de deslocar c/antecedência veíc p/ faixa mais à esquerda qdo for manobrar",
+   "amparo": "197",
+   "dispositivo": "art. 197",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5851-2",
+   "descricao": "Deixar de deslocar c/antecedência veíc p/ faixa mais à direita qdo for manobrar",
+   "amparo": "197",
+   "dispositivo": "art. 197",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5860-0",
+   "descricao": "Deixar de dar passagem pela esquerda quando solicitado",
+   "amparo": "198",
+   "dispositivo": "art. 198",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5878-0",
+   "descricao": "Ultrapassar pela direita, salvo qdo veíc da frente der sinal p/ entrar esquerda",
+   "amparo": "199",
+   "dispositivo": "art. 199",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5886-0",
+   "descricao": "Ultrap pela direita veíc transp colet/escolar parado para emb/desemb passageiros",
+   "amparo": "200",
+   "dispositivo": "art. 200",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5894-0",
+   "descricao": "Deixar de guardar a distância lateral de 1,50 m ao passar/ultrapassar bicicleta",
+   "amparo": "201",
+   "dispositivo": "art. 201",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5908-0",
+   "descricao": "Ultrapassar pelo acostamento",
+   "amparo": "202, I",
+   "dispositivo": "art. 202, I",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5916-1",
+   "descricao": "Ultrapassar em interseções",
+   "amparo": "202, II",
+   "dispositivo": "art. 202, II",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5916-2",
+   "descricao": "Ultrapassar em passagem de nível",
+   "amparo": "202, II",
+   "dispositivo": "art. 202, II",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5924-1",
+   "descricao": "Ultrapassar pela contramão nas curvas sem visibilidade suficiente",
+   "amparo": "203, I",
+   "dispositivo": "art. 203, I",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5924-2",
+   "descricao": "Ultrapassar pela contramão nos aclives ou declives, sem visibilidade suficiente",
+   "amparo": "203, I",
+   "dispositivo": "art. 203, I",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5932-0",
+   "descricao": "Ultrapassar pela contramão nas faixas de pedestre",
+   "amparo": "203, II",
+   "dispositivo": "art. 203, II",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5940-1",
+   "descricao": "Ultrapassar pela contramão nas pontes",
+   "amparo": "203, III",
+   "dispositivo": "art. 203, III",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5940-2",
+   "descricao": "Ultrapassar pela contramão nos viadutos",
+   "amparo": "203, III",
+   "dispositivo": "art. 203, III",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5940-3",
+   "descricao": "Ultrapassar pela contramão nos túneis",
+   "amparo": "203, III",
+   "dispositivo": "art. 203, III",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5959-1",
+   "descricao": "Ultrapassar pela contramão veículo parado em fila junto sinal luminoso",
+   "amparo": "203, IV",
+   "dispositivo": "art. 203, IV",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5959-2",
+   "descricao": "Ultrapassar pela contramão veículo parado em fila junto a cancela/porteira",
+   "amparo": "203, IV",
+   "dispositivo": "art. 203, IV",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5959-3",
+   "descricao": "Ultrapassar pela contramão veículo parado em fila junto a cruzamento",
+   "amparo": "203, IV",
+   "dispositivo": "art. 203, IV",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5959-4",
+   "descricao": "Ultrapassar pela contramão veíc parado em fila junto qq impedimento à circulação",
+   "amparo": "203, IV",
+   "dispositivo": "art. 203, IV",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5967-0",
+   "descricao": "Ultrapassar pela contramão linha de divisão de fluxos opostos, contínua amarela",
+   "amparo": "203, V",
+   "dispositivo": "art. 203, V",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5975-0",
+   "descricao": "Deixar de parar no acostamento à direita, p/ cruzar pista ou entrar à esquerda",
+   "amparo": "204",
+   "dispositivo": "art. 204",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5983-0",
+   "descricao": "Ultrapassar veículo em movimento que integre cortejo/desfile/formação militar",
+   "amparo": "205",
+   "dispositivo": "art. 205",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "5991-0",
+   "descricao": "Executar operação de retorno em locais proibidos pela sinalização",
+   "amparo": "206, I",
+   "dispositivo": "art. 206, I",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6009-1",
+   "descricao": "Executar operação de retorno nas curvas",
+   "amparo": "206, II",
+   "dispositivo": "art. 206, II",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6009-2",
+   "descricao": "Executar operação de retorno nos aclives ou declives",
+   "amparo": "206, II",
+   "dispositivo": "art. 206, II",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6009-3",
+   "descricao": "Executar operação de retorno nas pontes",
+   "amparo": "206, II",
+   "dispositivo": "art. 206, II",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6009-4",
+   "descricao": "Executar operação de retorno nos viadutos",
+   "amparo": "206, II",
+   "dispositivo": "art. 206, II",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6009-5",
+   "descricao": "Executar operação de retorno nos túneis",
+   "amparo": "206, II",
+   "dispositivo": "art. 206, II",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6017-1",
+   "descricao": "Executar operação de retorno passando por cima de calçada, passeio",
+   "amparo": "206, III",
+   "dispositivo": "art. 206, III",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6017-2",
+   "descricao": "Executar operação de retorno passando por cima de ilha, refúgio",
+   "amparo": "206, III",
+   "dispositivo": "art. 206, III",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6017-3",
+   "descricao": "Executar operação de retorno passando por cima de ajardinamento",
+   "amparo": "206, III",
+   "dispositivo": "art. 206, III",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6017-4",
+   "descricao": "Executar operação de retorno passando por cima de canteiro de divisor de pista",
+   "amparo": "206, III",
+   "dispositivo": "art. 206, III",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6017-5",
+   "descricao": "Executar operação de retorno passando por cima de faixa de pedestres",
+   "amparo": "206, III",
+   "dispositivo": "art. 206, III",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6017-6",
+   "descricao": "Executar operação de retorno passando por cima de faixa de veíc não motorizados",
+   "amparo": "206, III",
+   "dispositivo": "art. 206, III",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6025-0",
+   "descricao": "Executar retorno nas interseções, entrando na contramão da via transversal",
+   "amparo": "206, IV",
+   "dispositivo": "art. 206, IV",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6033-0",
+   "descricao": "Executar retorno c/prejuízo da circulação/segurança ainda que em local permitido",
+   "amparo": "206, V",
+   "dispositivo": "art. 206, V",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6041-1",
+   "descricao": "Executar operação de conversão à direita em local proibido pela sinalização",
+   "amparo": "207",
+   "dispositivo": "art. 207",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6041-2",
+   "descricao": "Executar operação de conversão à esquerda em local proibido pela sinalização",
+   "amparo": "207",
+   "dispositivo": "art. 207",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6050-1",
+   "descricao": "Avançar o sinal vermelho do semáforo, exc onde houver sinaliz que perm livre conv à direita",
+   "amparo": "208",
+   "dispositivo": "art. 208",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6050-2",
+   "descricao": "Avançar o sinal de parada obrigatória",
+   "amparo": "208",
+   "dispositivo": "art. 208",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6050-3",
+   "descricao": "Avançar o sinal vermelho do semáforo, exc houver sinaliz perm livre conv à direita - fisc eletrônica",
+   "amparo": "208",
+   "dispositivo": "art. 208",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6068-1",
+   "descricao": "Transpor bloqueio viário com ou sem sinalização ou dispositivos auxiliares",
+   "amparo": "209",
+   "dispositivo": "art. 209",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6068-2",
+   "descricao": "Deixar de adentrar às áreas destinadas à pesagem de veículos",
+   "amparo": "209",
+   "dispositivo": "art. 209",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6076-0",
+   "descricao": "Transpor bloqueio viário policial",
+   "amparo": "210",
+   "dispositivo": "art. 210",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6084-1",
+   "descricao": "Ultrapassar veículos motorizados em fila, parados em razão de sinal luminoso",
+   "amparo": "211",
+   "dispositivo": "art. 211",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6084-2",
+   "descricao": "Ultrapassar veículos motorizados em fila, parados em razão de cancela",
+   "amparo": "211",
+   "dispositivo": "art. 211",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6084-3",
+   "descricao": "Ultrapassar veíc motorizados em fila parados em razão de bloqueio viário parcial",
+   "amparo": "211",
+   "dispositivo": "art. 211",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6084-4",
+   "descricao": "Ultrapassar veículos motorizados em fila, parados em razão de qualquer obstáculo",
+   "amparo": "211",
+   "dispositivo": "art. 211",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6092-0",
+   "descricao": "Deixar de parar o veículo antes de transpor linha férrea",
+   "amparo": "212",
+   "dispositivo": "art. 212",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6106-0",
+   "descricao": "Deixar de parar sempre que a marcha for interceptada por agrupamento de pessoas",
+   "amparo": "213, I",
+   "dispositivo": "art. 213, I",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6114-0",
+   "descricao": "Deixar de parar sempre que a marcha for interceptada por agrupamento de veículos",
+   "amparo": "213, II",
+   "dispositivo": "art. 213, II",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6122-0",
+   "descricao": "Deixar de dar preferência a pedestre/veic ñ motorizado na faixa a ele destinada",
+   "amparo": "214, I",
+   "dispositivo": "art. 214, I",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6130-0",
+   "descricao": "Deixar de dar preferência a pedestre/veic ñ mot que ñ haja concluído a travessia",
+   "amparo": "214, II",
+   "dispositivo": "art. 214, II",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6149-0",
+   "descricao": "Deixar de dar preferência a pedestre port deficiência fís/criança/idoso/gestante",
+   "amparo": "214, III",
+   "dispositivo": "art. 214, III",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6157-0",
+   "descricao": "Deixar de dar preferência a pedestre/veic ñ mot qdo iniciada travessia s/sinaliz",
+   "amparo": "214, IV",
+   "dispositivo": "art. 214, IV",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6165-0",
+   "descricao": "Deixar de dar preferência a pedestre/veic não mot atravessando a via transversal",
+   "amparo": "214, V",
+   "dispositivo": "art. 214, V",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6173-1",
+   "descricao": "Deixar de dar preferência em interseção ñ sinaliz, a veíc circulando por rodovia",
+   "amparo": "215, I, a",
+   "dispositivo": "art. 215, I, \"a\"",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6173-2",
+   "descricao": "Deixar de dar preferência em interseção ñ sinaliz, veíc circulando por rotatória",
+   "amparo": "215, I, a",
+   "dispositivo": "art. 215, I, \"a\"",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6173-3",
+   "descricao": "Deixar de dar prefer em interseção não sinalizada, a veículo que vier da direita",
+   "amparo": "215, I, b",
+   "dispositivo": "art. 215, I, \"b\"",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6181-0",
+   "descricao": "Deixar de dar preferência nas interseções com sinalização de Dê a Preferência",
+   "amparo": "215, II",
+   "dispositivo": "art. 215, II",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6190-0",
+   "descricao": "Entrar/sair área lindeira sem precaução com a segurança de pedestres e veículos",
+   "amparo": "216",
+   "dispositivo": "art. 216",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6203-0",
+   "descricao": "Entrar/sair de fila de veículos estacionados sem dar pref a pedestres/veículos",
+   "amparo": "217",
+   "dispositivo": "art. 217",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6254-0",
+   "descricao": "Transitar em velocidade inferior à metade da máxima da via, salvo faixa direita",
+   "amparo": "219",
+   "dispositivo": "art. 219",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6262-0",
+   "descricao": "Deixar de reduzir a veloc qdo se aproximar de passeata/aglomeração/desfile/etc",
+   "amparo": "220, I",
+   "dispositivo": "art. 220, I",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6270-0",
+   "descricao": "Deixar de reduzir a veloc onde o trânsito esteja sendo controlado pelo agente",
+   "amparo": "220, II",
+   "dispositivo": "art. 220, II",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6289-1",
+   "descricao": "Deixar de reduzir a velocidade do veículo ao aproximar-se da guia da calçada",
+   "amparo": "220, III",
+   "dispositivo": "art. 220, III",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6289-2",
+   "descricao": "Deixar de reduzir a velocidade do veículo ao aproximar-se do acostamento",
+   "amparo": "220, III",
+   "dispositivo": "art. 220, III",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6297-0",
+   "descricao": "Deixar de reduzir velocidade do veículo ao aproximar-se interseção ñ sinalizada",
+   "amparo": "220, IV",
+   "dispositivo": "art. 220, IV",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6300-0",
+   "descricao": "Deixar reduzir velocidade nas vias rurais cuja faixa domínio não esteja cercada",
+   "amparo": "220, V",
+   "dispositivo": "art. 220, V",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6319-0",
+   "descricao": "Deixar de reduzir a velocidade nos trechos em curva de pequeno raio",
+   "amparo": "220, VI",
+   "dispositivo": "art. 220, VI",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6327-0",
+   "descricao": "Deixar de reduzir veloc ao aproximar local sinaliz advert de obras/trabalhadores",
+   "amparo": "220, VII",
+   "dispositivo": "art. 220, VII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6335-0",
+   "descricao": "Deixar de reduzir a velocidade sob chuva/neblina/cerração/ventos fortes",
+   "amparo": "220, VIII",
+   "dispositivo": "art. 220, VIII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6343-0",
+   "descricao": "Deixar de reduzir a velocidade quando houver má visibilidade",
+   "amparo": "220, IX",
+   "dispositivo": "art. 220, IX",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6351-0",
+   "descricao": "Deixar de reduzir veloc qdo pavimento se apresentar escorreg/defeituoso/avariado",
+   "amparo": "220, X",
+   "dispositivo": "art. 220, X",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6360-0",
+   "descricao": "Deixar de reduzir a velocidade à aproximação de animais na pista",
+   "amparo": "220, XI",
+   "dispositivo": "art. 220, XI",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6378-0",
+   "descricao": "Deixar de reduzir a velocidade de forma compatível com a segurança, em declive",
+   "amparo": "220, XII",
+   "dispositivo": "art. 220, XII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6386-0",
+   "descricao": "Deixar de reduzir veloc de forma compatível c/ segurança ao ultrapassar ciclista",
+   "amparo": "220, XIII",
+   "dispositivo": "art. 220, XIII",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6394-1",
+   "descricao": "Deixar de reduzir a velocidade nas proximidades de escolas",
+   "amparo": "220, XIV",
+   "dispositivo": "art. 220, XIV",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6394-2",
+   "descricao": "Deixar de reduzir a velocidade nas proximidades de hospitais",
+   "amparo": "220, XIV",
+   "dispositivo": "art. 220, XIV",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6394-3",
+   "descricao": "Deixar de reduzir veloc na próxim estação embarque/desembarque passageiros",
+   "amparo": "220, XIV",
+   "dispositivo": "art. 220, XIV",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6394-4",
+   "descricao": "Deixar de reduzir veloc onde haja intensa movimentação de pedestres",
+   "amparo": "220, XIV",
+   "dispositivo": "art. 220, XIV",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6408-0",
+   "descricao": "Portar no veículo placas de identificação em desacordo c/ especif/modelo Contran",
+   "amparo": "221",
+   "dispositivo": "art. 221",
+   "infrator": "Proprietário",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6416-0",
+   "descricao": "Confec/distribuir/colocar veíc próprio/terceiro placa identif desacordo Contran",
+   "amparo": "221, § único",
+   "dispositivo": "art. 221, parágrafo único",
+   "infrator": "PF ou PJ",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6424-0",
+   "descricao": "Deixar de manter ligado em emerg sist ilum vermelha intermitente ainda q parado",
+   "amparo": "222",
+   "dispositivo": "art. 222",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6432-1",
+   "descricao": "Transitar com farol desregulado perturbando visão outro condutor",
+   "amparo": "223",
+   "dispositivo": "art. 223",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6432-2",
+   "descricao": "Transitar com o facho de luz alta perturbando visão outro condutor",
+   "amparo": "223",
+   "dispositivo": "art. 223",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6440-0",
+   "descricao": "Fazer uso do facho de luz alta dos faróis em vias providas de iluminação pública",
+   "amparo": "224",
+   "dispositivo": "art. 224",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6459-1",
+   "descricao": "Deixar de sinalizar via p/ tornar visível local qdo tiver remover veíc da pista",
+   "amparo": "225, I",
+   "dispositivo": "art. 225, I",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6459-2",
+   "descricao": "Deixar de sinalizar a via p/ tornar visível o local qdo permanecer acostamento",
+   "amparo": "225, I",
+   "dispositivo": "art. 225, I",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6467-0",
+   "descricao": "Deixar de sinalizar a via p/ tornar visível o local qdo a carga for derramada",
+   "amparo": "225, II",
+   "dispositivo": "art. 225, II",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6475-0",
+   "descricao": "Deixar de retirar qualquer objeto utilizado para sinalização temporária da via",
+   "amparo": "226",
+   "dispositivo": "art. 226",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6483-0",
+   "descricao": "Usar buzina que não a de toque breve como advertência a pedestre ou condutores",
+   "amparo": "227, I",
+   "dispositivo": "art. 227, I",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6491-0",
+   "descricao": "Usar buzina prolongada e sucessivamente a qualquer pretexto",
+   "amparo": "227, II",
+   "dispositivo": "art. 227, II",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6505-0",
+   "descricao": "Usar buzina entre as vinte e duas e as seis horas",
+   "amparo": "227, III",
+   "dispositivo": "art. 227, III",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6513-0",
+   "descricao": "Usar buzina em locais e horários proibidos pela sinalização",
+   "amparo": "227, IV",
+   "dispositivo": "art. 227, IV",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6521-0",
+   "descricao": "Usar buzina em desacordo c/ os padrões e frequências estabelecidas pelo Contran",
+   "amparo": "227, V",
+   "dispositivo": "art. 227, V",
+   "infrator": "Proprietário",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6530-0",
+   "descricao": "Usar no veículo equip c/ som em volume/frequência não autorizados pelo Contran",
+   "amparo": "228",
+   "dispositivo": "art. 228",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6548-0",
+   "descricao": "Usar no veíc alarme/aparelho produz som perturbe sossego púb desac norma Contran",
+   "amparo": "229",
+   "dispositivo": "art. 229",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6556-1",
+   "descricao": "Conduzir o veículo com o lacre de identificação violado/falsificado",
+   "amparo": "230, I",
+   "dispositivo": "art. 230, I",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6556-2",
+   "descricao": "Conduzir o veículo com a inscrição do chassi violada/falsificada",
+   "amparo": "230, I",
+   "dispositivo": "art. 230, I",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6556-3",
+   "descricao": "Conduzir o veículo com o selo violado/falsificado",
+   "amparo": "230, I",
+   "dispositivo": "art. 230, I",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6556-4",
+   "descricao": "Conduzir o veículo com a placa violada/falsificada",
+   "amparo": "230, I",
+   "dispositivo": "art. 230, I",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6556-5",
+   "descricao": "Conduzir o veículo com qualquer outro elem de identificação violado/falsificado",
+   "amparo": "230, I",
+   "dispositivo": "art. 230, I",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6564-0",
+   "descricao": "Conduzir o veículo transportando passageiros em compartimento de carga",
+   "amparo": "230, II",
+   "dispositivo": "art. 230, II",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6572-0",
+   "descricao": "Conduzir o veículo com dispositivo antirradar",
+   "amparo": "230, III",
+   "dispositivo": "art. 230, III",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6580-0",
+   "descricao": "Conduzir o veículo sem qualquer uma das placas de identificação",
+   "amparo": "230, IV",
+   "dispositivo": "art. 230, IV",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6599-1",
+   "descricao": "Conduzir o veículo que não esteja registrado",
+   "amparo": "230, V",
+   "dispositivo": "art. 230, V",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6599-2",
+   "descricao": "Conduzir o veículo registrado que não esteja devidamente licenciado",
+   "amparo": "230, V",
+   "dispositivo": "art. 230, V",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6602-0",
+   "descricao": "Conduzir o veículo com qualquer uma das placas sem legibilidade e visibilidade",
+   "amparo": "230, VI",
+   "dispositivo": "art. 230, VI",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6610-1",
+   "descricao": "Conduzir o veículo com a cor alterada",
+   "amparo": "230, VII",
+   "dispositivo": "art. 230, VII",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6610-2",
+   "descricao": "Conduzir o veículo com característica alterada",
+   "amparo": "230, VII",
+   "dispositivo": "art. 230, VII",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6629-0",
+   "descricao": "Conduzir veículo s/ ter sido submetido à inspeção seg veicular, qdo obrigatória",
+   "amparo": "230, VIII",
+   "dispositivo": "art. 230, VIII",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6637-1",
+   "descricao": "Conduzir o veículo sem equipamento obrigatório",
+   "amparo": "230, IX",
+   "dispositivo": "art. 230, IX",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6637-2",
+   "descricao": "Conduzir o veículo com equipamento obrigatório ineficiente/inoperante",
+   "amparo": "230, IX",
+   "dispositivo": "art. 230, IX",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6645-0",
+   "descricao": "Conduzir o veículo com equip obrigatório em desacordo com o estab pelo Contran",
+   "amparo": "230, X",
+   "dispositivo": "art. 230, X",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6653-1",
+   "descricao": "Conduzir o veículo com descarga livre",
+   "amparo": "230, XI",
+   "dispositivo": "art. 230, XI",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6653-2",
+   "descricao": "Conduzir o veículo com silenciador de motor defeituoso/deficiente/inoperante",
+   "amparo": "230, XI",
+   "dispositivo": "art. 230, XI",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6661-0",
+   "descricao": "Conduzir o veículo com equipamento ou acessório proibido",
+   "amparo": "230, XII",
+   "dispositivo": "art. 230, XII",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6670-0",
+   "descricao": "Conduzir o veículo c/ equip do sistema de iluminação e de sinalização alterados",
+   "amparo": "230, XIII",
+   "dispositivo": "art. 230, XIII",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6688-0",
+   "descricao": "Conduzir veíc c/ registrador instan inalt de velocidade/tempo viciado/defeituoso",
+   "amparo": "230, XIV",
+   "dispositivo": "art. 230, XIV",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6696-1",
+   "descricao": "Conduzir c/ inscr/adesivo/legenda/símbolo afixado para-brisa e extensão traseira",
+   "amparo": "230, XV",
+   "dispositivo": "art. 230, XV",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6696-2",
+   "descricao": "Conduzir c/ inscr/adesivo/legenda/símbolo pintado para-brisa e extensão traseira",
+   "amparo": "230, XV",
+   "dispositivo": "art. 230, XV",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6700-0",
+   "descricao": "Conduzir veíc com vidro total/parcialmente coberto por película, painéis/pintura",
+   "amparo": "230, XVI",
+   "dispositivo": "art. 230, XVI",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6718-0",
+   "descricao": "Conduzir o veículo com cortinas ou persianas fechadas",
+   "amparo": "230, XVII",
+   "dispositivo": "art. 230, XVII",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6726-1",
+   "descricao": "Conduzir o veículo em mau estado de conservação, comprometendo a segurança",
+   "amparo": "230, XVIII",
+   "dispositivo": "art. 230, XVIII",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6726-2",
+   "descricao": "Conduzir o veículo reprovado na avaliação de inspeção de segurança",
+   "amparo": "230, XVIII",
+   "dispositivo": "art. 230, XVIII",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6726-3",
+   "descricao": "Conduzir o veículo reprovado na avaliação de emissão de poluentes e ruído",
+   "amparo": "230, XVIII",
+   "dispositivo": "art. 230, XVIII",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6734-0",
+   "descricao": "Conduzir o veículo sem acionar o limpador de para-brisa sob chuva",
+   "amparo": "230, XIX",
+   "dispositivo": "art. 230, XIX",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6742-0",
+   "descricao": "Conduzir o veículo sem portar a autorização para condução de escolares",
+   "amparo": "230, XX",
+   "dispositivo": "art. 230, XX",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6750-0",
+   "descricao": "Conduzir o veíc de carga c/ falta inscrição da tara e demais previstas no CTB",
+   "amparo": "230, XXI",
+   "dispositivo": "art. 230, XXI",
+   "infrator": "Proprietário",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6769-0",
+   "descricao": "Conduzir veíc c/ defeito no sist de iluminação, sinaliz ou lâmpadas queimadas",
+   "amparo": "230, XXII",
+   "dispositivo": "art. 230, XXII",
+   "infrator": "Proprietário",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6777-0",
+   "descricao": "Transitar com o veículo danificando a via, suas instalações e equipamentos",
+   "amparo": "231, I",
+   "dispositivo": "art. 231, I",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6785-1",
+   "descricao": "Transitar com veículo derramando a carga que esteja transportando",
+   "amparo": "231, II, a",
+   "dispositivo": "art. 231, II, \"a\"",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6785-2",
+   "descricao": "Transitar com veículo lançando a carga que esteja transportando",
+   "amparo": "231, II, a",
+   "dispositivo": "art. 231, II, \"a\"",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6785-3",
+   "descricao": "Transitar com veículo arrastando a carga que esteja transportando",
+   "amparo": "231, II, a",
+   "dispositivo": "art. 231, II, \"a\"",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6793-0",
+   "descricao": "Transitar com veíc derramando/lançando combustível/lubrif que esteja utilizando",
+   "amparo": "231, II, b",
+   "dispositivo": "art. 231, II, \"b\"",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6807-0",
+   "descricao": "Transitar c/veíc derraman/lançando/arrastando objeto possa acarretar risco acid",
+   "amparo": "231, II, c",
+   "dispositivo": "art. 231, II, \"c\"",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6815-0",
+   "descricao": "Transitar com veículo produzindo fumaça, gases ou partículas em desac c/ Contran",
+   "amparo": "231, III",
+   "dispositivo": "art. 231, III",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6823-1",
+   "descricao": "Transitar c/ veíc e/ou carga c/ dimensões superiores limite legal s/ autorização",
+   "amparo": "231, IV",
+   "dispositivo": "art. 231, IV",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6823-2",
+   "descricao": "Transitar c/ veíc e/ou carga c/ dimensões superiores est p/sinalização s/autoriz",
+   "amparo": "231, IV",
+   "dispositivo": "art. 231, IV",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6831-1",
+   "descricao": "Transitar com o veículo com excesso de peso PBT/PBTC",
+   "amparo": "231, V",
+   "dispositivo": "art. 231, V",
+   "infrator": "Emb/Transp",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6831-2",
+   "descricao": "Transitar com o veículo com excesso de peso - Por Eixo",
+   "amparo": "231, V",
+   "dispositivo": "art. 231, V",
+   "infrator": "Emb/Transp",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6831-3",
+   "descricao": "Transitar com o veículo com excesso de peso - PBT/PBTC e Por Eixo",
+   "amparo": "231, V",
+   "dispositivo": "art. 231, V",
+   "infrator": "Emb/Transp",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6840-1",
+   "descricao": "Transitar em desacordo c/ autorização expedida p/veículo c/ dimensões excedentes",
+   "amparo": "231, VI",
+   "dispositivo": "art. 231, VI",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6840-2",
+   "descricao": "Transitar com autorização vencida, expedida p/ veículo c/ dimensões excedentes",
+   "amparo": "231, VI",
+   "dispositivo": "art. 231, VI",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6858-0",
+   "descricao": "Transitar com o veículo com lotação excedente",
+   "amparo": "231, VII",
+   "dispositivo": "art. 231, VII",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6866-1",
+   "descricao": "Transitar efetuando transporte remunerado de pessoas qdo ñ licenciado p/esse fim",
+   "amparo": "231, VIII",
+   "dispositivo": "art. 231, VIII",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6866-2",
+   "descricao": "Transitar efetuando transporte remunerado de bens qdo não licenciado p/ esse fim",
+   "amparo": "231, VIII",
+   "dispositivo": "art. 231, VIII",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6874-1",
+   "descricao": "Transitar com o veículo desligado em declive",
+   "amparo": "231, IX",
+   "dispositivo": "art. 231, IX",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6874-2",
+   "descricao": "Transitar com o veículo desengrenado em declive",
+   "amparo": "231, IX",
+   "dispositivo": "art. 231, IX",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6882-0",
+   "descricao": "Transitar com o veículo excedendo a CMT em até 600 kg",
+   "amparo": "231, X",
+   "dispositivo": "art. 231, X",
+   "infrator": "Proprietário",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6890-0",
+   "descricao": "Transitar com o veículo excedendo a CMT entre 601 e 1.000 kg",
+   "amparo": "231, X",
+   "dispositivo": "art. 231, X",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6904-0",
+   "descricao": "Transitar com o veículo excedendo a CMT acima de 1.000 kg",
+   "amparo": "231, X",
+   "dispositivo": "art. 231, X",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6912-0",
+   "descricao": "Conduzir veículo sem os documentos de porte obrigatório referidos no CTB",
+   "amparo": "232",
+   "dispositivo": "art. 232",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6920-1",
+   "descricao": "Deixar de efetuar registro do veículo em 30 dias, qdo for transf a propriedade",
+   "amparo": "233 c/c 123, I",
+   "dispositivo": "art. 233",
+   "infrator": "Proprietário",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6920-2",
+   "descricao": "Deixar de efetuar reg do veíc em 30 dias, qdo mudar o munic de domicílio/resid",
+   "amparo": "233 c/c 123, II",
+   "dispositivo": "art. 233",
+   "infrator": "Proprietário",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6920-3",
+   "descricao": "Deixar de efetuar reg de veíc em 30 dias, qdo for alterada qquer caract do veíc",
+   "amparo": "233 c/c 123, III",
+   "dispositivo": "art. 233",
+   "infrator": "Proprietário",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6920-4",
+   "descricao": "Deixar de efetuar registro de veículo em 30 dias, qdo houver mudança de categoria",
+   "amparo": "233 c/c 123, IV",
+   "dispositivo": "art. 233",
+   "infrator": "Proprietário",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6939-1",
+   "descricao": "Falsificar ou adulterar documento de habilitação",
+   "amparo": "234",
+   "dispositivo": "art. 234",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6939-2",
+   "descricao": "Falsificar ou adulterar documento de identificação do veículo",
+   "amparo": "234",
+   "dispositivo": "art. 234",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6947-1",
+   "descricao": "Conduzir pessoas nas partes externas do veículo",
+   "amparo": "235",
+   "dispositivo": "art. 235",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6947-2",
+   "descricao": "Conduzir animais nas partes externas do veículo",
+   "amparo": "235",
+   "dispositivo": "art. 235",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6947-3",
+   "descricao": "Conduzir carga nas partes externas do veículo",
+   "amparo": "235",
+   "dispositivo": "art. 235",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6955-0",
+   "descricao": "Rebocar outro veículo com cabo flexível ou corda",
+   "amparo": "236",
+   "dispositivo": "art. 236",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6963-0",
+   "descricao": "Trans c/veíc desac c/especificação/falta de inscr/simbologia necessária identif",
+   "amparo": "237",
+   "dispositivo": "art. 237",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6971-0",
+   "descricao": "Recusar-se a entregar CNH/CRV/CRLV/ outros documentos",
+   "amparo": "238",
+   "dispositivo": "art. 238",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6980-0",
+   "descricao": "Retirar do local veículo legalmente retido para regularização, sem permissão",
+   "amparo": "239",
+   "dispositivo": "art. 239",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "6998-0",
+   "descricao": "Deixar responsável de promover baixa registro de veíc irrecuperável/desmontado",
+   "amparo": "240",
+   "dispositivo": "art. 240",
+   "infrator": "Proprietário",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7005-1",
+   "descricao": "Deixar de atualizar o cadastro de registro do veículo",
+   "amparo": "241",
+   "dispositivo": "art. 241",
+   "infrator": "Proprietário",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7005-2",
+   "descricao": "Deixar de atualizar o cadastro de habilitação do condutor",
+   "amparo": "241",
+   "dispositivo": "art. 241",
+   "infrator": "Condutor",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7013-1",
+   "descricao": "Fazer falsa declaração de domicílio para fins de registro/licenciamento",
+   "amparo": "242",
+   "dispositivo": "art. 242",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7013-2",
+   "descricao": "Fazer falsa declaração de domicílio para fins de habilitação",
+   "amparo": "242",
+   "dispositivo": "art. 242",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7021-0",
+   "descricao": "Deixar seguradora de comunicar ocorrência perda total veíc e devolver placas/doc",
+   "amparo": "243",
+   "dispositivo": "art. 243",
+   "infrator": "P Jurídica",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7030-1",
+   "descricao": "Conduzir motocicleta, motoneta ou ciclomotor sem capacete de segurança",
+   "amparo": "244, I",
+   "dispositivo": "art. 244, I",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7030-3",
+   "descricao": "Conduzir motocicleta, motoneta ou ciclomotor sem vestuário de acordo com normas apr pelo Contran",
+   "amparo": "244, I",
+   "dispositivo": "art. 244, I",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7048-1",
+   "descricao": "Conduzir motocicleta, motoneta e ciclomotor transportando passageiro s/ capacete",
+   "amparo": "244, II",
+   "dispositivo": "art. 244, II",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7048-3",
+   "descricao": "Conduzir motocicleta/motoneta/ciclomotor transportando pas. fora do assento",
+   "amparo": "244, II",
+   "dispositivo": "art. 244, II",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7056-1",
+   "descricao": "Conduzir motoc/moton/ciclomotor fazendo malabarismo/equilibrando-se em uma roda",
+   "amparo": "244, III",
+   "dispositivo": "art. 244, III",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7056-2",
+   "descricao": "Conduzir ciclo fazendo malabarismo ou equilibrando-se em uma roda",
+   "amparo": "244, III c/c § 1º",
+   "dispositivo": "art. 244, III",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7072-1",
+   "descricao": "Conduzir motocicleta/motoneta/ciclomotor transportando criança menor de 10 anos de idade",
+   "amparo": "244, V",
+   "dispositivo": "art. 244, V",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7072-2",
+   "descricao": "Conduzir motoc/moton/ciclom transp criança s/ condição cuidar própria segurança",
+   "amparo": "244, V",
+   "dispositivo": "art. 244, V",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7080-0",
+   "descricao": "Conduzir motocicleta, motoneta e ciclomotor rebocando outro veículo",
+   "amparo": "244, VI",
+   "dispositivo": "art. 244, VI",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7099-1",
+   "descricao": "Conduzir motocicleta/motoneta/ciclomotor sem segurar o guidom com ambas as mãos",
+   "amparo": "244, VII",
+   "dispositivo": "art. 244, VII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7099-2",
+   "descricao": "Conduzir ciclo sem segurar o guidom com ambas as mãos",
+   "amparo": "244, VII c/c § 1º",
+   "dispositivo": "art. 244, VII",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7102-1",
+   "descricao": "Conduzir motocicleta, motoneta e ciclomotor transportando carga incompatível",
+   "amparo": "244, VIII",
+   "dispositivo": "art. 244, VIII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7102-2",
+   "descricao": "Conduzir ciclo transportando carga incompatível",
+   "amparo": "244, VIII c/c § 1º",
+   "dispositivo": "art. 244, VIII",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7102-3",
+   "descricao": "Conduzir motoc/moton/ transportando carga em desacordo c/ § 2º do Art 139- A CTB",
+   "amparo": "244, VIII",
+   "dispositivo": "art. 244, VIII",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7110-0",
+   "descricao": "Conduzir ciclo transportando passageiro fora da garupa/assento a ele destinado",
+   "amparo": "244, § 1º, a",
+   "dispositivo": "art. 244, § 1º, \"a\"",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7129-1",
+   "descricao": "Conduzir ciclo via de trâns rápido ou rodovia salvo se houver acostam/fx própria",
+   "amparo": "244, § 1º, b",
+   "dispositivo": "art. 244, § 1º, \"b\"",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7129-2",
+   "descricao": "Conduzir ciclomotor em via de trânsito rápido",
+   "amparo": "244, § 2º",
+   "dispositivo": "art. 244, § 2º",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7129-3",
+   "descricao": "Conduzir ciclomotor em rodovia salvo se houver acostamento ou faixa própria",
+   "amparo": "244, § 2º",
+   "dispositivo": "art. 244, § 2º",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7137-0",
+   "descricao": "Conduzir ciclo transportando criança s/ condição de cuidar própria segurança",
+   "amparo": "244, § 1º, c",
+   "dispositivo": "art. 244, § 1º, \"c\"",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7145-0",
+   "descricao": "Utilizar a via para depósito de mercadorias, materiais ou equipamentos",
+   "amparo": "245",
+   "dispositivo": "art. 245",
+   "infrator": "PF ou PJ",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7153-1",
+   "descricao": "Deixar de sinalizar obstáculo à circulação/segurança calçada/pista- s/agravamento",
+   "amparo": "246",
+   "dispositivo": "art. 246",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7153-2",
+   "descricao": "Obstaculizar a via indevidamente- s/agravamento",
+   "amparo": "246",
+   "dispositivo": "art. 246",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7161-1",
+   "descricao": "Deixar de sinalizar obstáculo circulação/segurança calçada/pista- agravamento 2X",
+   "amparo": "246",
+   "dispositivo": "art. 246",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7161-2",
+   "descricao": "Obstaculizar a via indevidamente- agravamento 2X",
+   "amparo": "246",
+   "dispositivo": "art. 246",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7170-1",
+   "descricao": "Deixar de sinalizar obstáculo circulação/segurança calçada/pista- agravamento 3X",
+   "amparo": "246",
+   "dispositivo": "art. 246",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7170-2",
+   "descricao": "Obstaculizar a via indevidamente- agravamento 3X",
+   "amparo": "246",
+   "dispositivo": "art. 246",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7188-1",
+   "descricao": "Deixar de sinalizar obstáculo circulação/segurança calçada/pista- agravamento 4X",
+   "amparo": "246",
+   "dispositivo": "art. 246",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7188-2",
+   "descricao": "Obstaculizar a via indevidamente- agravamento 4X",
+   "amparo": "246",
+   "dispositivo": "art. 246",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7196-1",
+   "descricao": "Deixar de sinalizar obstáculo circulação/segurança calçada/pista- agravamento 5X",
+   "amparo": "246",
+   "dispositivo": "art. 246",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7196-2",
+   "descricao": "Obstaculizar a via indevidamente- agravamento 5X",
+   "amparo": "246",
+   "dispositivo": "art. 246",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7200-1",
+   "descricao": "Deixar de conduzir pelo bordo pista em fila única veíc tração/propulsão humana",
+   "amparo": "247",
+   "dispositivo": "art. 247",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7200-2",
+   "descricao": "Deixar de conduzir pelo bordo da pista em fila única veículo de tração animal",
+   "amparo": "247",
+   "dispositivo": "art. 247",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7218-0",
+   "descricao": "Transportar em veíc destinado transp passageiros carga excedente desac art.109",
+   "amparo": "248",
+   "dispositivo": "art. 248",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7226-1",
+   "descricao": "Deixar de manter acesas à noite as luzes posição qdo o veículo estiver parado",
+   "amparo": "249",
+   "dispositivo": "art. 249",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7226-2",
+   "descricao": "Deixar de manter acesas à noite as luzes de posição veic fazendo carga/descarga",
+   "amparo": "249",
+   "dispositivo": "art. 249",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7234-0",
+   "descricao": "Em movimento, deixar de manter acesa a luz baixa durante à noite",
+   "amparo": "250, I, a",
+   "dispositivo": "art. 250, I, \"a\"",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7242-1",
+   "descricao": "Em movimento de dia, deixar de manter acesa luz baixa em túneis",
+   "amparo": "250, I, b",
+   "dispositivo": "art. 250, I, \"b\"",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7242-2",
+   "descricao": "Em movimento de dia, deixar de manter acesa luz baixa sob chuva, neblina ou cerração",
+   "amparo": "250, I, b",
+   "dispositivo": "art. 250, I, \"b\"",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7250-0",
+   "descricao": "Em mov de dia, deixar de manter acesa luz baixa veíc transp coletivo faixas/pistas destinadas",
+   "amparo": "250, I, c",
+   "dispositivo": "art. 250, I, \"c\"",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7269-0",
+   "descricao": "Em movimento de dia, deixar de manter acesa luz baixa de motocicletas/motonetas/ciclomotores",
+   "amparo": "250, I, d",
+   "dispositivo": "art. 250, I, \"d\"",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7285-0",
+   "descricao": "Em movimento, deixar de manter a placa traseira iluminada à noite",
+   "amparo": "250, III",
+   "dispositivo": "art. 250, III",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7293-0",
+   "descricao": "Utilizar o pisca-alerta, exceto em imobilizações ou situações de emergência",
+   "amparo": "251, I",
+   "dispositivo": "art. 251, I",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7307-0",
+   "descricao": "Utilizar luz alta e baixa intermitente, exceto quando permitido pelo CTB",
+   "amparo": "251, II",
+   "dispositivo": "art. 251, II",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7315-0",
+   "descricao": "Dirigir o veículo com o braço do lado de fora",
+   "amparo": "252, I",
+   "dispositivo": "art. 252, I",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7323-1",
+   "descricao": "Dirigir o veículo transport pessoas à sua esquerda ou entre os braços e pernas",
+   "amparo": "252, II",
+   "dispositivo": "art. 252, II",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7323-2",
+   "descricao": "Dirigir o veículo transport animais à sua esquerda ou entre os braços e pernas",
+   "amparo": "252, II",
+   "dispositivo": "art. 252, II",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7323-3",
+   "descricao": "Dirigir o veículo transport volume à sua esquerda ou entre os braços e pernas",
+   "amparo": "252, II",
+   "dispositivo": "art. 252, II",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7331-0",
+   "descricao": "Dirigir o veículo com incapacidade física ou mental temporária",
+   "amparo": "252, III",
+   "dispositivo": "art. 252, III",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7340-0",
+   "descricao": "Dirigir o veíc usando calçado que ñ se firme nos pés/comprometa utiliz pedais",
+   "amparo": "252, IV",
+   "dispositivo": "art. 252, IV",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7358-0",
+   "descricao": "Dirigir o veículo com apenas uma das mãos, exceto quando permitido pelo CTB",
+   "amparo": "252, V",
+   "dispositivo": "art. 252, V",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7366-1",
+   "descricao": "Dirigir o veículo utilizando-se de fones nos ouvidos conec a aparelhagem sonora",
+   "amparo": "252, VI",
+   "dispositivo": "art. 252, VI",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7366-2",
+   "descricao": "Dirigir veículo utilizando-se de telefone celular",
+   "amparo": "252, VI",
+   "dispositivo": "art. 252, VI",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7374-0",
+   "descricao": "Bloquear a via com veículo",
+   "amparo": "253",
+   "dispositivo": "art. 253",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7382-0",
+   "descricao": "É proib ao pedestre permanecer/andar pista, exceto p/ cruzá-las onde permitido",
+   "amparo": "254, I",
+   "dispositivo": "art. 254, I",
+   "infrator": "Pedestre",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7390-1",
+   "descricao": "É proibido ao pedestre cruzar pista de rolamento de viaduto exc onde permitido",
+   "amparo": "254, II",
+   "dispositivo": "art. 254, II",
+   "infrator": "Pedestre",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7390-2",
+   "descricao": "É proibido ao pedestre cruzar pista de rolamento de ponte exceto onde permitido",
+   "amparo": "254, II",
+   "dispositivo": "art. 254, II",
+   "infrator": "Pedestre",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7390-3",
+   "descricao": "É proibido ao pedestre cruzar pista de rolamento de túneis exceto onde permitido",
+   "amparo": "254, II",
+   "dispositivo": "art. 254, II",
+   "infrator": "Pedestre",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7404-0",
+   "descricao": "É proib ao pedestre atravessar via área cruzamento exc onde permitido p/ sinaliz",
+   "amparo": "254, III",
+   "dispositivo": "art. 254, III",
+   "infrator": "Pedestre",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7412-0",
+   "descricao": "É proib pedestre utilizar via em agrupam que perturbe trâns/prát esporte/desfile",
+   "amparo": "254, IV",
+   "dispositivo": "art. 254, IV",
+   "infrator": "Pedestre",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7420-1",
+   "descricao": "É proibido ao pedestre andar fora da faixa própria",
+   "amparo": "254, V",
+   "dispositivo": "art. 254, V",
+   "infrator": "Pedestre",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7420-2",
+   "descricao": "É proibido ao pedestre andar fora da passarela",
+   "amparo": "254, V",
+   "dispositivo": "art. 254, V",
+   "infrator": "Pedestre",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7420-3",
+   "descricao": "É proibido ao pedestre andar fora da passagem aérea",
+   "amparo": "254, V",
+   "dispositivo": "art. 254, V",
+   "infrator": "Pedestre",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7420-4",
+   "descricao": "É proibido ao pedestre andar fora da passagem subterrânea",
+   "amparo": "254, V",
+   "dispositivo": "art. 254, V",
+   "infrator": "Pedestre",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7439-0",
+   "descricao": "É proibido ao pedestre desobedecer a sinalização de trânsito específica",
+   "amparo": "254, VI",
+   "dispositivo": "art. 254, VI",
+   "infrator": "Pedestre",
+   "gravidade": "leve",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7447-1",
+   "descricao": "Conduzir bicicleta em passeios onde não seja permitida a circulação desta",
+   "amparo": "255",
+   "dispositivo": "art. 255",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7447-2",
+   "descricao": "Conduzir bicicleta de forma agressiva",
+   "amparo": "255",
+   "dispositivo": "art. 255",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7455-0",
+   "descricao": "Transitar em velocidade superior à máxima permitida em até 20%",
+   "amparo": "218, I",
+   "dispositivo": "art. 218, I",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7463-0",
+   "descricao": "Transitar em velocidade superior à máxima permitida em mais de 20% até 50%",
+   "amparo": "218, II",
+   "dispositivo": "art. 218, II",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7471-0",
+   "descricao": "Transitar em velocidade superior à máxima permitida em mais de 50%",
+   "amparo": "218, III",
+   "dispositivo": "art. 218, III",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7480-1",
+   "descricao": "Aprovar proj edificação polo atrativo trânsito s/ anuência órgão/entid trânsito",
+   "amparo": "93 c/c 95, § 4º",
+   "dispositivo": "art. 93",
+   "infrator": "Serv público",
+   "gravidade": null,
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": false
+  },
+  {
+   "codigo": "7480-2",
+   "descricao": "Aprovar proj edificação polo atrativo trâns s/ estacion/indicação vias de acesso",
+   "amparo": "93 c/c 95, § 4º",
+   "dispositivo": "art. 93",
+   "infrator": "Serv público",
+   "gravidade": null,
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": false
+  },
+  {
+   "codigo": "7498-0",
+   "descricao": "Não sinalizar devida/imed obstáculo à circul/segurança veíc/pedestre pista/calçada",
+   "amparo": "94",
+   "dispositivo": "art. 94",
+   "infrator": "Serv público",
+   "gravidade": null,
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": false
+  },
+  {
+   "codigo": "7501-0",
+   "descricao": "Utilizar ondulação transversal/sonorizador fora padrão/critério estab p/ Contran",
+   "amparo": "94, § único",
+   "dispositivo": "art. 94, parágrafo único",
+   "infrator": "Serv público",
+   "gravidade": null,
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": false
+  },
+  {
+   "codigo": "7510-1",
+   "descricao": "Iniciar obra perturbe/interrompa circulação/segurança veíc/pedestres s/permissão",
+   "amparo": "95",
+   "dispositivo": "art. 95",
+   "infrator": "PF ou PJ",
+   "gravidade": null,
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": false
+  },
+  {
+   "codigo": "7510-2",
+   "descricao": "Iniciar evento perturbe/interrompa circulaç/segurança veíc/pedestres s/permissão",
+   "amparo": "95",
+   "dispositivo": "art. 95",
+   "infrator": "PF ou PJ",
+   "gravidade": null,
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": false
+  },
+  {
+   "codigo": "7528-1",
+   "descricao": "Não sinalizar a execução ou manutenção da obra",
+   "amparo": "95, § 1º",
+   "dispositivo": "art. 95, § 1º",
+   "infrator": "PF ou PJ",
+   "gravidade": null,
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": false
+  },
+  {
+   "codigo": "7528-2",
+   "descricao": "Não sinalizar a execução ou manutenção do evento",
+   "amparo": "95, § 1º",
+   "dispositivo": "art. 95, § 1º",
+   "infrator": "PF ou PJ",
+   "gravidade": null,
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": false
+  },
+  {
+   "codigo": "7536-0",
+   "descricao": "Não avisar comunidade com 48h antec interdição via indicando caminho alternativo",
+   "amparo": "95, § 2º",
+   "dispositivo": "art. 95, § 2º",
+   "infrator": "Serv público",
+   "gravidade": null,
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": false
+  },
+  {
+   "codigo": "7544-1",
+   "descricao": "Falta de escrituração livro registro entrada/saída e de uso placa de experiência",
+   "amparo": "330, § 5º",
+   "dispositivo": "art. 330, § 5º",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": false
+  },
+  {
+   "codigo": "7544-2",
+   "descricao": "Atraso escrituração livro registro entrada/saída e de uso placa de experiência",
+   "amparo": "330, § 5º",
+   "dispositivo": "art. 330, § 5º",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": false
+  },
+  {
+   "codigo": "7544-3",
+   "descricao": "Fraude escrituração livro registro entrada/saída e de uso placa de experiência",
+   "amparo": "330, § 5º",
+   "dispositivo": "art. 330, § 5º",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": false
+  },
+  {
+   "codigo": "7544-4",
+   "descricao": "Recusa da exibição do livro registro entrada/saída e de uso placa de experiência",
+   "amparo": "330, § 5º",
+   "dispositivo": "art. 330, § 5º",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": false
+  },
+  {
+   "codigo": "7552-1",
+   "descricao": "Conduzir motoc/moton/ efetuando transp remun mercadoria desac c/ art 139-A CTB",
+   "amparo": "244, IX",
+   "dispositivo": "art. 244, IX",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7552-2",
+   "descricao": "Conduzir motoc/moton/ efet transp remun desac normas ativid profic mototaxistas",
+   "amparo": "244, IX",
+   "dispositivo": "art. 244, IX",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7560-0",
+   "descricao": "Conduzir veíc de transp passag ou carga em desacordo c/ as cond do art 67-C CTB",
+   "amparo": "230, XXIII",
+   "dispositivo": "art. 230, XXIII",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7579-0",
+   "descricao": "Rec sub test, ex clín, períc ou proc q perm cert infl álc/sub psic for art. 277",
+   "amparo": "165-A",
+   "dispositivo": "art. 165-A",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7587-0",
+   "descricao": "Transitar na faixa ou via exclusiva regulam. p/ transp. públ. coletivo passag.",
+   "amparo": "184, III",
+   "dispositivo": "art. 184, III",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7595-0",
+   "descricao": "Dirigir veículo realizando cobrança de tarifa com veículo em movimento",
+   "amparo": "252, VII",
+   "dispositivo": "art. 252, VII",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7609-0",
+   "descricao": "Organizar a conduta prevista no caput do art. 253-A",
+   "amparo": "253-A, § 1º",
+   "dispositivo": "art. 253-A, § 1º",
+   "infrator": "PF ou PJ",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7617-1",
+   "descricao": "Usar qq veículo para, delib, interromper circulação na via sem aut do órgão",
+   "amparo": "253-A",
+   "dispositivo": "art. 253-A",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7617-2",
+   "descricao": "Usar qq veículo para, delib, restringir circulação na via sem aut do órgão",
+   "amparo": "253-A",
+   "dispositivo": "art. 253-A",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7617-3",
+   "descricao": "Usar qq veículo para, delib, perturbar circulação na via sem aut do órgão",
+   "amparo": "253-A",
+   "dispositivo": "art. 253-A",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7625-1",
+   "descricao": "Estacionar nas vagas reserv às pess c/ deficiência, s/ credencial",
+   "amparo": "181, XX",
+   "dispositivo": "art. 181, XX",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7625-2",
+   "descricao": "Estacionar nas vagas reserv a idosos, s/ credencial",
+   "amparo": "181, XX",
+   "dispositivo": "art. 181, XX",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7633-1",
+   "descricao": "Dirigir veículo segurando telefone celular",
+   "amparo": "252, § único",
+   "dispositivo": "art. 252, parágrafo único",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7633-2",
+   "descricao": "Dirigir veículo manuseando telefone celular",
+   "amparo": "252, § único",
+   "dispositivo": "art. 252, parágrafo único",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7641-0",
+   "descricao": "Cond veíc exig hab C, D ou E sem realizar ex toxic prev no § 2º do art 148-A, após 30 dias do venc",
+   "amparo": "165-B",
+   "dispositivo": "art. 165-B",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7650-0",
+   "descricao": "Exerc at rem veíc e não compr a real ex toxic per ex p § 2º do art 148-A por oc ren hab C, D ou E",
+   "amparo": "165-B, § único",
+   "dispositivo": "art. 165-B, parágrafo único",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7670-0",
+   "descricao": "Parar o veículo sobre ciclovia ou ciclofaixa",
+   "amparo": "182, XI",
+   "dispositivo": "art. 182, XI",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7684-1",
+   "descricao": "Conduzir motoc/ moton/ ciclom c/ utilização de capacete de segurança s/ viseira/óculos de proteção",
+   "amparo": "244, X",
+   "dispositivo": "art. 244, X",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7684-2",
+   "descricao": "Conduzir motoc/ moton/ ciclom c/ útil capacete de seg c/ viseira/ óculos prot em des c/ regul Contran",
+   "amparo": "244, X",
+   "dispositivo": "art. 244, X",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7714-1",
+   "descricao": "Conduzir motoc/ moton/ ciclom transp pass c/ capacete de segurança s/ viseira/óculos de proteção",
+   "amparo": "244, XI",
+   "dispositivo": "art. 244, XI",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7714-2",
+   "descricao": "Conduzir motoc/ moton/ ciclom transp pass c/ cap seg c/ viseira/ óculos prot em des c/ regul Contran",
+   "amparo": "244, XI",
+   "dispositivo": "art. 244, XI",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7722-0",
+   "descricao": "Em mov deix de man aces luz baixa de dia, em rod pis simp sit fora per urb, veíc desp luz rod diur",
+   "amparo": "250, I, e",
+   "dispositivo": "art. 250, I, \"e\"",
+   "infrator": "Condutor",
+   "gravidade": "média",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7730-1",
+   "descricao": "Evadir-se da cobrança pelo uso de rodovias e vias urbanas para não efetuar seu pagamento",
+   "amparo": "209-A",
+   "dispositivo": "art. 209-A",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7730-2",
+   "descricao": "Deixar de efetuar pagamento, pelo uso de rodovias e vias urbanas, na forma estabelecida",
+   "amparo": "209-A",
+   "dispositivo": "art. 209-A",
+   "infrator": "Condutor",
+   "gravidade": "grave",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7749-1",
+   "descricao": "Dirigir veículo sem possuir cursos especializados obrigatórios",
+   "amparo": "162, VII",
+   "dispositivo": "art. 162, VII",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7749-2",
+   "descricao": "Dirigir veículo sem possuir cursos específicos obrigatórios",
+   "amparo": "162, VII",
+   "dispositivo": "art. 162, VII",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7757-1",
+   "descricao": "Em movimento, deixar veículo de transporte púb. coletivo passageiros de manter a porta fechada",
+   "amparo": "250, IV",
+   "dispositivo": "art. 250, IV",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7757-2",
+   "descricao": "Em movimento, deixar o veículo de escolares de manter a porta fechada",
+   "amparo": "250, IV",
+   "dispositivo": "art. 250, IV",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7765-0",
+   "descricao": "Fugir o condutor à ação policial",
+   "amparo": "278, § único c/c 210",
+   "dispositivo": "art. 278, parágrafo único",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": false
+  },
+  {
+   "codigo": "7773-1",
+   "descricao": "Entregar veículo a pessoa sem possuir cursos especializados obrigatórios",
+   "amparo": "163 c/c 162, VII",
+   "dispositivo": "art. 163",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7773-2",
+   "descricao": "Entregar veículo a pessoa sem possuir cursos específicos obrigatórios",
+   "amparo": "163 c/c 162, VII",
+   "dispositivo": "art. 163",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7781-1",
+   "descricao": "Permitir posse e condução do veículo por pessoa sem possuir cursos especializados obrigatórios",
+   "amparo": "164 c/c 162, VII",
+   "dispositivo": "art. 164",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7781-2",
+   "descricao": "Permitir posse e condução do veículo por pessoa sem possuir cursos específicos obrigatórios",
+   "amparo": "164 c/c 162, VII",
+   "dispositivo": "art. 164",
+   "infrator": "Proprietário",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 354/2022, Anexo IV (retificado)",
+   "na_lista": true
+  },
+  {
+   "codigo": "7790-0",
+   "descricao": "Dirigir veículo sem realizar o exame toxicológico previsto no art. 148-A do CTB",
+   "amparo": "165-B",
+   "dispositivo": "art. 165-B",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 423/2024",
+   "na_lista": true
+  },
+  {
+   "codigo": "7803-0",
+   "descricao": "Dirigir veículo sem realizar o exame toxicológico previsto § 2º do art. 148-A do CTB",
+   "amparo": "165-B, § único",
+   "dispositivo": "art. 165-B, parágrafo único",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 423/2024",
+   "na_lista": true
+  },
+  {
+   "codigo": "7811-0",
+   "descricao": "Dirigir veículo tendo obtido resultado positivo no exame toxicológico previsto no caput do art. 148-A do CTB",
+   "amparo": "165-C",
+   "dispositivo": "art. 165-C",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 423/2024",
+   "na_lista": true
+  },
+  {
+   "codigo": "7820-0",
+   "descricao": "Deixar de realizar o exame toxicológico previsto no § 2º do art. 148-A do CTB, após trinta dias do vencimento do prazo estabelecido",
+   "amparo": "165-D",
+   "dispositivo": "art. 165-D",
+   "infrator": "Condutor",
+   "gravidade": "gravíssima",
+   "origem": "Portaria SENATRAN 423/2024",
+   "na_lista": true
+  }
+ ],
+ "rejeitados": [
+  {
+   "codigo": "6068-5",
+   "amparo": "209 c/c 17, § 5º da Lei 13.103/2015",
+   "motivo": "amparo com outra norma"
+  }
+ ]
+}

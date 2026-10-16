@@ -113,7 +113,7 @@ def _enquadramento(c: Ctb, amparo_legal: str | None) -> tuple[str, str] | None:
         return None
     if disp.get("status") != "vigente" or artigo.get("status") != "vigente":
         return None
-    if not _tipifica_infracao(artigo["numero"]):
+    if not tipifica_infracao(artigo["numero"]):
         return None
     return disp["citacao"], artigo["numero"]
 
@@ -123,7 +123,7 @@ def _enquadramento(c: Ctb, amparo_legal: str | None) -> tuple[str, str] | None:
 _PRIMEIRA_INFRACAO, _ULTIMA_INFRACAO = 162, 255
 
 
-def _tipifica_infracao(numero: str) -> bool:
+def tipifica_infracao(numero: str) -> bool:
     m = re.match(r"\d+", numero)
     return bool(m) and _PRIMEIRA_INFRACAO <= int(m.group()) <= _ULTIMA_INFRACAO
 
