@@ -89,6 +89,10 @@ class TestMontarBase(unittest.TestCase):
                 self.assertIn("280", b.artigos)
                 self.assertIn("90", b.artigos)
 
+    # Aprovado pelo Klaus em 15/10/2026: o 163 remete ao "artigo anterior" sem número.
+    def test_163_traz_o_162(self):
+        self.assertIn("162", montar_base(self.c, "Art. 163").artigos)
+
     # "§ único" caía no caput (15/10/2026): o celular do art. 252 virava o caput.
     def test_paragrafo_unico_com_sinal(self):
         b = montar_base(self.c, "Art. 252, § único")

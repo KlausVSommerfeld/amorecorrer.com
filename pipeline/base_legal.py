@@ -24,6 +24,7 @@ from tabela_enquadramentos import Tabela, ler_codigo
 # Aprovado pelo Klaus: só entra item novo com aprovação dele.
 EXTRAS_POR_ARTIGO: dict[str, tuple[str, ...]] = {
     "218": ("61",),  # multa de velocidade → limites de velocidade por tipo de via
+    "163": ("162",),  # "nas condições previstas no artigo anterior", sem número
 }
 
 # Extrator ÚNICO de citações de artigo, usado aqui (remissões) e na
