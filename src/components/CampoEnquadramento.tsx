@@ -41,6 +41,7 @@ const CampoEnquadramento = ({ id, rotulo, amparo, codigo, aoMudar }: Props) => {
   const [aberto, setAberto] = useState(false);
   const [ativo, setAtivo] = useState(0);
   const campoRef = useRef<HTMLInputElement>(null);
+  const trocarRef = useRef<HTMLButtonElement>(null);
   const listaId = useId();
   const dicaId = useId();
 
@@ -80,6 +81,13 @@ const CampoEnquadramento = ({ id, rotulo, amparo, codigo, aoMudar }: Props) => {
     setModo('escolhido');
     setTermo('');
     setAberto(false);
+    // O campo some ao virar cartão: sem isto, o foco do teclado cairia no topo da página.
+    requestAnimationFrame(() => trocarRef.current?.focus());
+  };
+  // Texto digitado e não escolhido é o que está no papel: vira texto livre ao sair do
+  // campo ou no Enter com a lista fechada, em vez de sumir (revisão final).
+  const guardarTermo = () => {
+    if (termo.trim()) aoMudar(termo.trim(), '');
   };
   const naoEncontro = () => {
     aoMudar(termo.trim(), '');
@@ -118,6 +126,9 @@ const CampoEnquadramento = ({ id, rotulo, amparo, codigo, aoMudar }: Props) => {
       if (!itens) return;
       if (ativo < resultados.length) escolher(resultados[ativo]);
       else naoEncontro();
+    } else if (e.key === 'Enter' && termo.trim()) {
+      e.preventDefault();
+      guardarTermo();
     } else if (e.key === 'Escape') {
       setAberto(false);
     }
@@ -152,7 +163,7 @@ const CampoEnquadramento = ({ id, rotulo, amparo, codigo, aoMudar }: Props) => {
           </span>
         </div>
         <p className="form-hint">Confira se é a mesma descrição da sua notificação.</p>
-        <button type="button" id={id} className="enq__acao" onClick={trocar}>Trocar</button>
+        <button ref={trocarRef} type="button" id={id} className="enq__acao" onClick={trocar}>Trocar</button>
       </div>
     );
   }
@@ -164,7 +175,11 @@ const CampoEnquadramento = ({ id, rotulo, amparo, codigo, aoMudar }: Props) => {
         aria-expanded={mostrarLista} aria-controls={listaId} aria-autocomplete="list"
         aria-activedescendant={mostrarLista ? `${listaId}-${ativo}` : undefined}
         aria-describedby={dicaId} autoComplete="off" placeholder="745-50, 218 ou velocidade"
-        value={termo} onKeyDown={teclas} onFocus={() => setAberto(true)} onBlur={() => setAberto(false)}
+        value={termo} onKeyDown={teclas} onFocus={() => setAberto(true)}
+        onBlur={() => {
+          setAberto(false);
+          guardarTermo();
+        }}
         onChange={(e) => {
           setTermo(e.target.value);
           setAtivo(0);
