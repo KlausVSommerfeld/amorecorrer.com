@@ -118,7 +118,7 @@ Detalhe de cada um na entrada de sessão correspondente, ao fim do arquivo.
 - **Dois conjuntos de `.env`** (pendência 13) — decidir o canônico e apagar o outro.
 - **`tests/edge-functions/README.md` desatualizado** — e nenhum dos quatro scripts cobre PDF ou e-mail.
 
-## Sessão de 15–16/10/2026 — Enquadramento por lista, com a tabela da SENATRAN (branch `feat/enquadramento-por-lista`)
+## Sessão de 15–17/10/2026 — Enquadramento por lista, com a tabela da SENATRAN (branch `feat/enquadramento-por-lista`)
 
 O enquadramento deixa de ser só texto livre: no questionário e no formulário, o cliente busca por código ("745-50", "7455-0", "74550"), artigo ("218", "art. 218, I") ou palavras da descrição, confere num cartão a descrição impressa na notificação e, se não achar, digita. Spec e plano de 2026-10-15.
 
@@ -128,9 +128,10 @@ O enquadramento deixa de ser só texto livre: no questionário e no formulário,
 - **Pipeline:** `tabela_enquadramentos.py` (leitura de código e carga da tabela); `montar_base` resolve amparo → `codigo_enquadramento` → código escrito no amparo, sob a trava dos arts. 162–255; "Código da infração" no quadro da peça quando aponta o mesmo dispositivo; sem a tabela, não sobe. Com aprovação do Klaus, o art. 163 traz o 162 para a base.
 - **Site:** `src/lib/enquadramentos.ts` (busca), `CampoEnquadramento` (busca, cartão, texto livre; a lista vem num arquivo à parte, ~11 KB comprimidos), `codigo_enquadramento` nas respostas e no rascunho (o par amparo/código anda junto). No navegador, apareceu e foi corrigido: Enter com a lista ainda carregando mandava para o texto livre.
 - **Banco e Edge:** migration `20261016000000_codigo_enquadramento.sql` (aplicada no banco local; RLS 53/53); a `form-submit` aceita só `NNNN-N`.
-- **Revisão final** (revisor novo, opus): "pronto com correções". Corrigidos: o texto digitado na busca e não escolhido sumia (Tab, Esc+Enter) e a peça saía só com o rito — agora vira texto livre; os códigos de ciclo ("244, III c/c § 1º", média) gravavam o dispositivo do motociclista (gravíssima) — agora o § 1º; escolher pelo teclado jogava o foco no topo da página. Sete menores no `PENDENCIAS`.
+- **Revisão final** (17/10/2026, revisor novo, opus; interrompida uma vez pelo limite de uso e retomada): "pronto com correções". Corrigidos: o texto digitado na busca e não escolhido sumia (Tab, Esc+Enter) e a peça saía só com o rito — agora vira texto livre; os códigos de ciclo ("244, III c/c § 1º", média) gravavam o dispositivo do motociclista (gravíssima) — agora o § 1º; escolher pelo teclado jogava o foco no topo da página. Sete menores no `PENDENCIAS`.
 - **Testes:** pipeline 271/271, extrator 23/23, CTB 49/49, JS 132/132; contraste dos pares novos AA nos dois temas; as correções do campo conferidas no navegador.
 - O item do deploy da `form-submit` com a faixa da data-limite saiu do `PENDENCIAS` (o Klaus publicou em 15/10/2026). **Falta o deploy desta branch** (migration, `form-submit`, pipeline), na ordem do `PENDENCIAS`.
+- **Fechamento (17/10/2026):** merge na `main` por avanço direto, com as suítes verdes sobre o resultado; o push é do Klaus. A imagem de teste `deploycheck-pipeline` ficou no Docker (a remoção foi barrada pela checagem de segurança). Entrou no `PENDENCIAS` a regeneração do `src/integrations/supabase/types.ts`, desatualizado desde antes desta branch.
 
 **Arquivos:** `enquadramentos/` (novo), `src/data/enquadramentos.json`, `src/lib/enquadramentos.ts`, `src/components/CampoEnquadramento.tsx`, `src/lib/questionario.ts`, `src/pages/Questionario.tsx`, `src/pages/Form.tsx`, `src/index.css`, `tsconfig.app.json`, `src/integrations/supabase/types.ts`, `pipeline/tabela_enquadramentos.py`, `pipeline/base_legal.py`, `pipeline/peca.py`, `pipeline/prompt.py`, `pipeline/config.py`, `pipeline/worker.py`, `pipeline/main.py`, `deploy/Dockerfile.pipeline`, `CTB-compilado_files/consulta.py`, `supabase/migrations/20261016000000_codigo_enquadramento.sql`, `supabase/functions/form-submit/`, `tests/compartilhados/codigos.json`, os testes de cada um, `CLAUDE.md`, `PENDENCIAS.md`, `PROGRESSO.md`.
 
@@ -143,6 +144,8 @@ Os três achados da análise do `CASO_363f15e6…`, cada um com o teste que falh
 - **Data-limite**: entre o dia da infração e um ano depois de hoje. O teto conta de hoje, não da infração, porque a notificação de penalidade pode chegar mais de um ano depois. Questionário (só o teto) e formulário (piso e teto) pela mesma `erroDaDataLimite`; a `form-submit` aplica a regra com o relógio do servidor e transforma o valor fora da faixa em `null`, sem recusar o envio. Conferido no navegador: as duas mensagens aparecem e nenhuma chamada sai para a `form-submit`.
 
 Testes: suíte do pipeline 248/248, `npm run radar:test` 116/116, `eslint` limpo nos arquivos tocados (o `tsc` acusa 46 erros de módulo ausente, iguais com e sem a mudança — `node_modules` do Windows). **Falta o deploy da `form-submit`** (Klaus).
+
+**Fechamento (15/10/2026):** merge na `main` por avanço direto (suítes verdes sobre o resultado) e push do Klaus; o Klaus publicou a `form-submit` com a faixa da data-limite; os contêineres do Express e do pipeline foram reconstruídos pelo WSL (`DOCKER_CONFIG` vazio — o `bash` chamado do PowerShell cai no auxiliar de credenciais do Windows), sem caso em `generating`, com o código novo conferido dentro do contêiner e `/health` 200 pelo ngrok. A ideia da lista de enquadramentos com busca nasceu aqui e virou a sessão de 15–17/10.
 
 **Arquivos:** `pipeline/peca.py`, `pipeline/base_legal.py`, `supabase/functions/form-submit/campos.ts` e `index.ts`, `src/lib/questionario.ts`, `src/pages/Form.tsx`, os testes de cada um, `CLAUDE.md`, `PENDENCIAS.md`, `PROGRESSO.md`.
 
