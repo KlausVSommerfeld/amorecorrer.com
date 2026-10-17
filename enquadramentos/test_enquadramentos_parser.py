@@ -69,7 +69,7 @@ def test_totais(tabela):
         ("7471-0", "art. 218, III", "gravíssima", True),
         ("7633-1", "art. 252, parágrafo único", "gravíssima", True),  # "§ único"
         ("5070-1", "art. 163", "gravíssima", True),  # 163 c/c 162, II
-        ("7056-2", "art. 244, III", "média", True),  # c/c § 1º, de ciclos
+        ("7056-2", "art. 244, § 1º", "média", True),  # c/c § 1º, de ciclos: o dispositivo é o §
         ("7609-0", "art. 253-A, § 1º", "gravíssima", True),  # "1º" repetido no PDF
         ("7382-0", "art. 254, I", "leve", True),  # pedestre, "3 - Leve 50%"
         ("6785-1", 'art. 231, II, "a"', "gravíssima", True),  # alínea
@@ -101,6 +101,16 @@ def test_lista_so_nos_artigos_de_infracao(tabela):
             numero = int(re.match(r"art\. (\d+)", item["dispositivo"]).group(1))
             assert 162 <= numero <= 255, item["codigo"]
             assert item["gravidade"] in {"leve", "média", "grave", "gravíssima"}, item["codigo"]
+
+
+# Revisão final: "244, III c/c § 1º" (ciclo, média) gravava o dispositivo do motociclista
+# (gravíssima) — a peça sustentaria um enquadramento mais grave que o do auto.
+def test_gravidade_bate_com_o_dispositivo_gravado(ctb, tabela):
+    for item in tabela["enquadramentos"]:
+        if item["na_lista"]:
+            nat = ep.natureza(ctb, item["dispositivo"])
+            if nat and nat[0] in {"leve", "média", "grave", "gravíssima"}:
+                assert nat[0] == item["gravidade"], item["codigo"]
 
 
 def test_amparo_desconhecido_reprova(ctb):

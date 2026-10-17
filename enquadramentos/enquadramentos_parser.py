@@ -109,12 +109,18 @@ def conferir(c: Ctb, codigo: str, descricao: str, amparo: str, infrator: str,
     nat_ctb = None
     if resto:
         alvo = resto[0]
-        if alvo.startswith("§"):
+        mesmo_artigo = alvo.startswith("§")
+        if mesmo_artigo:
             alvo = f"{principal.split(',')[0]}, {alvo}"
         try:
-            nat_ctb = _natureza_do_ctb(c, _dispositivo(c, alvo)[1]["citacao"])
+            disp_alvo = _dispositivo(c, alvo)[1]
         except (c.consulta.ReferenciaInvalida, KeyError, ValueError):
             return rejeitar("amparo não reconhecido no CTB")
+        nat_ctb = _natureza_do_ctb(c, disp_alvo["citacao"])
+        # Parágrafo do mesmo artigo ("244, III c/c § 1º", de ciclos) é o dispositivo
+        # que pune: gravar o inciso enquadraria o ciclista na sanção do motociclista.
+        if mesmo_artigo and disp_alvo.get("status") == "vigente":
+            disp = disp_alvo
     nat_ctb = nat_ctb or _natureza_do_ctb(c, disp["citacao"])
     if gravidade and nat_ctb and gravidade != nat_ctb:
         return rejeitar(f"gravidade {gravidade} na tabela, {nat_ctb} no CTB")
