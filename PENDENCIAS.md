@@ -103,6 +103,7 @@ Decisões jurídicas do Klaus primeiro; o pipeline só chega ao cliente depois d
 ## Repositório e testes
 
 - *Menor:* o campo de enquadramento (`CampoEnquadramento`) não tem teste de componente — o projeto não tem biblioteca para isso; a verificação foi no navegador (7 situações, incluindo lista bloqueada e lista atrasada). → Sessão de 15–16/10/2026 (enquadramento por lista)
+- *Menores da revisão final do enquadramento por lista:* as setas não rolam a lista (falta `scrollIntoView` na opção ativa); o rótulo do cartão "Escolhido" não fica associado ao botão "Trocar"; falha passageira da lista zera o código e o rascunho o perde (o amparo canônico continua enquadrando); amparo de caput ("Art. 218") com código do mesmo artigo descarta o código mais específico; o extrator não exige consumir a linha inteira (`fullmatch`) e o teste das 439 linhas usa o mesmo regex de `linhas()`; o `CLAUDE.md` ainda diz "`EXTRAS_POR_ARTIGO`, hoje só o art. 61 no 218" antes de citar o 163. → Sessão de 15–16/10/2026 (enquadramento por lista)
 - **Branch `chore/limpeza-dependencias`** não mergeada. → Sessão de 20/09/2026
 - **`tests/edge-functions/README.md` desatualizado**; nenhum script cobre PDF ou e-mail; sem suíte automatizada do fluxo. → Próximos passos › Fora do caminho crítico
 - **`npm run lint`: 7 erros cosméticos** (`any` no `stripe-webhook`, `require()` no `tailwind.config.ts`, interface vazia no `textarea.tsx`). → Sessão de 31/08/2026
